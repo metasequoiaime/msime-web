@@ -1,8 +1,8 @@
 {
-  "version": "0.8.0",
-  "releaseUrl": "https://github.com/metasequoiaime/MSIME-Windows/releases/tag/v0.8.0",
-  "installerName": "MetasequoiaIME_Setup_v0.8.0.exe",
-  "installerUrl": "https://github.com/metasequoiaime/MSIME-Windows/releases/download/v0.8.0/MetasequoiaIME_Setup_v0.8.0.exe",
-  "installerSha256": "7176379f9f48103a6d6c7cfdbc6090fbf330184c2144727f336566aa057e9b23",
+  "version": "0.9.0",
+  "releaseUrl": "https://github.com/metasequoiaime/MSIME-Windows/releases/tag/v0.9.0",
+  "installerName": "MetasequoiaIME_Setup_v0.9.0.exe",
+  "installerUrl": "https://github.com/metasequoiaime/MSIME-Windows/releases/download/v0.9.0/MetasequoiaIME_Setup_v0.9.0.exe",
+  "installerSha256": "46edb595b59830c45109c51e969857e6227b8c4f05fd9e3e67c60fff4633fb8b",
   "signed": true
 }
