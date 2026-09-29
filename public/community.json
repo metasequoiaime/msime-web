@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-29T11:38:44.472Z",
-  "totalStars": 1696,
-  "repoCount": 15,
+  "generatedAt": "2026-09-29T17:01:49.215Z",
+  "totalStars": 1695,
+  "repoCount": 14,
   "starHistory": [
     {
       "month": "2023-10",
@@ -105,47 +105,47 @@
     },
     {
       "month": "2025-11",
-      "stars": 113
+      "stars": 112
     },
     {
       "month": "2025-12",
-      "stars": 117
+      "stars": 116
     },
     {
       "month": "2026-01",
-      "stars": 119
+      "stars": 118
     },
     {
       "month": "2026-02",
-      "stars": 119
+      "stars": 118
     },
     {
       "month": "2026-03",
-      "stars": 121
+      "stars": 120
     },
     {
       "month": "2026-04",
-      "stars": 126
+      "stars": 125
     },
     {
       "month": "2026-05",
-      "stars": 127
+      "stars": 126
     },
     {
       "month": "2026-06",
-      "stars": 128
+      "stars": 127
     },
     {
       "month": "2026-07",
-      "stars": 173
+      "stars": 171
     },
     {
       "month": "2026-08",
-      "stars": 842
+      "stars": 839
     },
     {
       "month": "2026-09",
-      "stars": 1696
+      "stars": 1695
     }
   ],
   "contributors": [
@@ -153,22 +153,22 @@
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 10593,
-      "repos": 14
+      "contributions": 10153,
+      "repos": 13
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1987,
-      "repos": 11
+      "contributions": 1731,
+      "repos": 10
     },
     {
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 76,
-      "repos": 3
+      "contributions": 70,
+      "repos": 2
     },
     {
       "login": "claude",
@@ -188,27 +188,20 @@
       "login": "ouchihao",
       "avatarUrl": "https://avatars.githubusercontent.com/u/108930485?v=4",
       "url": "https://github.com/ouchihao",
-      "contributions": 15,
-      "repos": 2
-    },
-    {
-      "login": "PathGao",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/42336971?v=4",
-      "url": "https://github.com/PathGao",
-      "contributions": 10,
-      "repos": 3
-    },
-    {
-      "login": "Aegon8719",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/127523266?v=4",
-      "url": "https://github.com/Aegon8719",
-      "contributions": 5,
-      "repos": 2
+      "contributions": 14,
+      "repos": 1
     },
     {
       "login": "AaGMix",
       "avatarUrl": "https://avatars.githubusercontent.com/u/295558529?v=4",
       "url": "https://github.com/AaGMix",
+      "contributions": 4,
+      "repos": 1
+    },
+    {
+      "login": "Aegon8719",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/127523266?v=4",
+      "url": "https://github.com/Aegon8719",
       "contributions": 4,
       "repos": 1
     },
@@ -220,9 +213,9 @@
       "repos": 1
     },
     {
-      "login": "ManwoodIsolation",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/209755561?v=4",
-      "url": "https://github.com/ManwoodIsolation",
+      "login": "PathGao",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/42336971?v=4",
+      "url": "https://github.com/PathGao",
       "contributions": 4,
       "repos": 2
     },
@@ -230,8 +223,15 @@
       "login": "metasequoiaime-dev",
       "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
       "url": "https://github.com/metasequoiaime-dev",
-      "contributions": 4,
-      "repos": 2
+      "contributions": 3,
+      "repos": 1
+    },
+    {
+      "login": "PLOKMCHINA",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/136961193?v=4",
+      "url": "https://github.com/PLOKMCHINA",
+      "contributions": 3,
+      "repos": 1
     }
   ]
 }
