@@ -13,7 +13,8 @@
     width: auto;
     height: auto;
     z-index: 30;
-    background-color: var(--bg-t);
+    /* More opaque than the design's --bg-t (84%): the hero gradient and seasonal backdrop showing through made the nav labels hard to read, especially in dark mode. */
+    background-color: color-mix(in srgb, var(--bg) 92%, transparent);
     -webkit-backdrop-filter: blur(18px) saturate(1.3);
     backdrop-filter: blur(18px) saturate(1.3);
     box-shadow: none;
@@ -136,10 +137,11 @@
     gap: 2px;
     width: auto;
     margin: 0;
-    padding: 4px;
+    padding: 0;
     border-radius: 999px;
-    background: var(--panel-2);
-    box-shadow: inset 0 0 0 1px var(--hair);
+    /* No well behind the items: on a tinted well the labels lost contrast and, in dark mode, the active pill read darker than its surroundings. */
+    background: transparent;
+    box-shadow: none;
     white-space: nowrap;
     list-style: none;
   }
@@ -160,9 +162,9 @@
     border-radius: 999px;
     background: transparent;
     box-shadow: none;
-    color: var(--muted);
+    color: var(--body);
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1;
     white-space: nowrap;
     transition:
@@ -181,7 +183,7 @@
   .nav-link:hover,
   .nav-link:focus-visible {
     color: var(--ink);
-    background: transparent;
+    background: var(--color-hover);
   }
 
   .nav-link:focus-visible {
@@ -196,7 +198,7 @@
   .nav-link[aria-current="page"] {
     /* Below the other items, so the sliding pill passes under their labels. A non-auto z-index already creates a stacking context, so the ::before at z-index -1 stays above the list's own background. */
     z-index: 0;
-    color: var(--ink);
+    color: var(--accent-ink);
     font-weight: 600;
     background: transparent;
   }
@@ -212,8 +214,8 @@
     inset: 0;
     z-index: -1;
     border-radius: 999px;
-    background: var(--panel);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    background: var(--accent-soft);
+    box-shadow: none;
   }
 
   /* The active pill slides in from the previous tab; the offset is measured by the shell before paint. */

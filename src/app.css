@@ -60,6 +60,8 @@
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
   --color-accent-ring: var(--accent-ring);
+  /* A neutral hover wash derived from the ink colour, so it stays visible on every theme and season background. */
+  --color-hover: color-mix(in srgb, var(--ink) 7%, transparent);
   --color-btn: var(--btn);
   --color-btn-fg: var(--btn-fg);
   --color-tree: var(--tree);
