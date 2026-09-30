@@ -1,9 +1,10 @@
 import type { SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform } from "../platform.ts";
-import { AnchorButton, CheckIcon, ChevronDownIcon, cx, DownloadIcon, ExternalIcon, Pill } from "../ui";
+import { LocaleLink } from "../locale-link";
+import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, cx, DownloadIcon, ExternalIcon, Pill, PlatformIcon } from "../ui";
 import { useLocale } from "../use-locale";
-import { describePackages, groupByArch, readableSize } from "./template";
+import { groupByArch, readableSize } from "./template";
 
 /** Windows mirror on Aliyun Drive, for visitors who cannot reach GitHub quickly. */
 const ALIPAN_URL = "https://www.alipan.com/s/wKbWStNYVLZ";
@@ -25,28 +26,18 @@ const PLATFORM_HINTS: Record<Platform, string> = {
 const PRIMARY_ACTION =
   "inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-btn bg-btn px-6 py-3 text-center text-base leading-snug font-semibold text-btn-fg no-underline shadow-btn transition-[transform,filter] duration-150 hover:-translate-y-px hover:text-btn-fg hover:brightness-[1.06] md:w-auto";
 
-/** What the tile's second line says: the current version, or how the platform is distributed. */
+/** What the tile's second line says: the current version, or, kept to a word, how the platform is distributed. The details sit in the action strip and the guide below. */
 const tileStatus = (entry: SitePlatformEntry) => {
-  if (entry.distribution === "testflight") return "TestFlight 公开测试";
-  if (entry.distribution === "source") return "开发中 · 从源码构建";
+  if (entry.distribution === "testflight") return "TestFlight";
+  if (entry.distribution === "source") return "开发中";
   return entry.release ? `v${entry.release.version}` : "查看发布页";
 };
 
-function FileLine({ entry, signed }: { entry: PlatformRelease["downloads"][number]; signed: boolean | null | undefined }) {
-  const { t } = useLocale();
-  return (
-    <p className="m-0 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[13px] text-muted">
-      <code className="min-w-0 rounded-row bg-panel-2 px-2 py-0.5 font-mono text-[12.5px] text-ink [overflow-wrap:anywhere]">{entry.name}</code>
-      <Pill tone="neutral" mono>
-        {t(entry.arch)}
-      </Pill>
-      <span className="tabular-nums">{t(readableSize(entry.size))}</span>
-      {/* signed 是三态：判不出来时（比如 Linux 的文件名不带签名信息）什么都不显示，而不是猜一个 */}
-      {signed === true && <Pill>{t("已签名")}</Pill>}
-      {signed === false && <Pill tone="warn">{t("未签名")}</Pill>}
-    </p>
-  );
-}
+/** Shared by the six platform tiles and the Aliyun Drive tile: a mark on the left, name and one status line on the right, compact enough that two columns fit a 320px phone. */
+const TILE =
+  "flex min-w-0 items-center gap-2.5 rounded-menu px-3 py-2.5 text-left text-ink transition-[background-color,box-shadow] duration-150 sm:gap-3 sm:px-4 sm:py-3.5";
+const TILE_NAME = "block text-[15px] leading-snug font-semibold [overflow-wrap:anywhere]";
+const TILE_STATUS = "block font-mono text-[12.5px] leading-snug text-accent-ink [overflow-wrap:anywhere]";
 
 /* 主推那个之外的包，按架构分组收进折叠区。正式版和预览版各用一份。 */
 function MorePackages({ downloads }: { downloads: PlatformRelease["downloads"] }) {
@@ -99,24 +90,17 @@ function PreviewPanel({ preview }: { preview: PreviewRelease }) {
           {t(`下载预览版 v${preview.version}`)}
         </a>
       </div>
-      <p className="m-0 mt-3 text-sm leading-[1.8] text-muted">
-        {t("包含尚未进入正式版的改动，可能不稳定。发布于")}
-        {t(preview.publishedAt.slice(0, 10))}
-        {t("。")}{" "}
-        <a className="inline-flex items-center gap-0.5 text-accent-ink hover:text-ink" href={preview.releaseUrl} target="_blank" rel="noreferrer">
-          {t("发布说明与校验值")}
-          <ExternalIcon size={12} />
-        </a>
-      </p>
-      <div className="mt-3">
-        <FileLine entry={first} signed={preview.signed} />
-      </div>
+      <p className="m-0 mt-3 text-sm leading-[1.8] text-muted">{t("包含尚未进入正式版的改动，可能不稳定。")}</p>
       {preview.downloads.length > 1 && <MorePackages downloads={preview.downloads.slice(1)} />}
     </section>
   );
 }
 
-/** The action strip under the tiles for the selected platform: download button, file details and release notes, or an honest status for platforms that do not ship packages yet. */
+/**
+ * The action strip under the tiles for the selected platform: the download button with one compatibility line, or an honest status for platforms that do not ship packages yet.
+ *
+ * File name, architecture, size, signature and checksums are deliberately not repeated here: they live in the release notes and the install guide below, and listing them next to the button only pushed it out of view.
+ */
 function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
   const { t } = useLocale();
   const hint = <p className="m-0 text-sm leading-[1.8] text-muted">{t(PLATFORM_HINTS[entry.id])}</p>;
@@ -128,11 +112,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           {t("通过 TestFlight 安装 iOS 版")}
           <ExternalIcon />
         </a>
-        <div className="min-w-0">
-          {hint}
-          {/* 没有版本号也没有校验值可说：iOS 装的是 TestFlight 当前放出的那个构建，版本由 Apple 那边决定。 */}
-          <p className="m-0 text-sm leading-[1.8] text-muted">{t("通过 TestFlight 安装，无需开发者账号。")}</p>
-        </div>
+        {hint}
       </div>
     );
   }
@@ -164,36 +144,10 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           {t(primary && release ? `下载 ${entry.name} 版 v${release.version}` : `前往 ${entry.name} 发布页`)}
           {primary ? <DownloadIcon /> : <ExternalIcon />}
         </a>
-        <div className="grid min-w-0 gap-1.5">
-          {hint}
-          {release && <p className="m-0 text-sm leading-[1.8] text-muted">{t(describePackages(release.downloads))}</p>}
-        </div>
+        {release ? hint : <p className="m-0 text-sm leading-[1.8] text-muted">{t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")}</p>}
       </div>
 
-      {primary && release && (
-        <div className="mt-4">
-          <FileLine entry={primary} signed={release.signed} />
-        </div>
-      )}
-
       {release && release.downloads.length > 1 && <MorePackages downloads={release.downloads.slice(1)} />}
-
-      <p className="m-0 mt-4 text-sm leading-[1.8] text-muted">
-        {release ? (
-          <>
-            {t(entry.id === "linux" ? "开发构建，" : "公开测试版本，")}
-            {t("发布于")}
-            {t(release.publishedAt.slice(0, 10))}
-            {t("。")}{" "}
-            <a className="inline-flex items-center gap-0.5 text-accent-ink hover:text-ink" href={release.releaseUrl} target="_blank" rel="noreferrer">
-              {t("发布说明与校验值")}
-              <ExternalIcon size={12} />
-            </a>
-          </>
-        ) : (
-          t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")
-        )}
-      </p>
 
       {release?.preview && <PreviewPanel preview={release.preview} />}
     </div>
@@ -201,7 +155,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 }
 
 /**
- * 页面顶部的下载入口（design-home §6「选择卡」）。
+ * 页面顶部的下载入口（design-home §6「选择卡」），也是整页的标题区：页面不再有单独的页头，h1 就在这里，平台卡片和下载按钮在首屏内。
  *
  * 六个平台都是可选的卡片，按 UA 猜到的那个只是默认选中；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 与 HarmonyOS 如实说明还在开发、只能从源码构建。阿里云盘镜像只有 Windows 安装包，单独占一格。
  *
@@ -212,14 +166,16 @@ export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePl
   const selected = entries.find((entry) => entry.id === platform) ?? entries[0];
 
   return (
-    <section
-      className="download-panel m-0 rounded-panel bg-panel p-[clamp(20px,3.4vw,40px)] shadow-feature"
-      aria-labelledby="download-choose"
-    >
-      <h2 id="download-choose" className="m-0 font-heading text-2xl leading-[1.35] font-bold text-ink">
-        {t("选择平台")}
-      </h2>
-      <div className="mt-[22px] grid grid-cols-[repeat(auto-fit,minmax(min(100%,132px),1fr))] gap-2.5 sm:grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] sm:gap-3">
+    <section className="download-panel m-0 rounded-panel bg-panel p-[clamp(16px,3.4vw,40px)] shadow-feature" aria-labelledby="download-title">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h1 id="download-title" className="m-0 font-heading text-[clamp(22px,2.6vw,28px)] leading-[1.35] font-bold text-ink">
+          {t("下载水杉输入法")}
+        </h1>
+        <LocaleLink to="/releases/" className="text-sm text-accent-ink hover:text-ink">
+          {t("更新日志")}
+        </LocaleLink>
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-3 xl:grid-cols-4">
         {entries.map((entry) => {
           const active = entry.id === platform;
           return (
@@ -230,17 +186,13 @@ export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePl
               onClick={() => {
                 onSelect(entry.id);
               }}
-              className={cx(
-                "flex min-w-0 cursor-pointer flex-col gap-1.5 rounded-menu px-4 py-3.5 text-left sm:px-5 sm:py-[18px] text-ink transition-[background-color,box-shadow] duration-150",
-                active ? "bg-accent-soft shadow-ring-accent" : "bg-panel-2 hover:bg-accent-soft"
-              )}
+              className={cx(TILE, "cursor-pointer", active ? "bg-accent-soft shadow-ring-accent" : "bg-panel-2 hover:bg-accent-soft")}
             >
-              <span className="flex w-full items-center gap-2 text-base font-semibold">
-                {t(entry.name)}
-                {active && <CheckIcon className="ml-auto flex-none text-accent-ink" />}
+              <PlatformIcon platform={entry.id} className="flex-none" />
+              <span className="min-w-0">
+                <span className={TILE_NAME}>{t(entry.name)}</span>
+                <span className={TILE_STATUS}>{t(tileStatus(entry))}</span>
               </span>
-              <span className="font-mono text-[12.5px] text-accent-ink [word-break:keep-all] [overflow-wrap:anywhere]">{t(tileStatus(entry))}</span>
-              <span className="hidden text-[13px] leading-[1.6] text-muted sm:block">{t(entry.host)}</span>
             </button>
           );
         })}
@@ -248,20 +200,20 @@ export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePl
           href={ALIPAN_URL}
           target="_blank"
           rel="noreferrer"
-          className="col-span-full flex min-w-0 flex-col gap-1.5 rounded-menu px-4 py-3.5 text-ink no-underline sm:col-span-1 sm:px-5 sm:py-[18px] shadow-ring-2 transition-colors duration-150 hover:bg-panel-2 hover:text-ink"
+          className={cx(TILE, "col-span-full no-underline shadow-ring-2 hover:bg-panel-2 hover:text-ink xl:col-span-1")}
         >
-          <span className="flex w-full items-center gap-2 text-base font-semibold">
-            {t("阿里云盘（Windows）")}
-            <ExternalIcon className="ml-auto flex-none text-accent-ink" />
+          <CloudDownloadIcon className="flex-none" />
+          <span className="min-w-0">
+            <span className={TILE_NAME}>{t("阿里云盘（Windows）")}</span>
+            <span className={TILE_STATUS}>
+              {t("提取码")} {ALIPAN_CODE}
+            </span>
           </span>
-          <span className="font-mono text-[12.5px] text-accent-ink">
-            {t("提取码")} {ALIPAN_CODE}
-          </span>
-          <span className="text-[13px] leading-[1.6] text-muted">{t("备用镜像，下载后请与官方 SHA256 核对")}</span>
+          <ExternalIcon className="ml-auto flex-none self-start text-accent-ink" />
         </a>
       </div>
 
-      <div className="mt-7 pt-7 shadow-divider-t" aria-live="polite">
+      <div className="mt-5 pt-5 shadow-divider-t sm:mt-7 sm:pt-7" aria-live="polite">
         <PlatformAction entry={selected} />
       </div>
     </section>
