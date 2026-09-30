@@ -14,6 +14,7 @@ export {
   SunIcon,
   MoonIcon,
   MonitorIcon,
+  PaletteIcon,
   MenuIcon,
   CloseIcon,
   DownloadIcon,
