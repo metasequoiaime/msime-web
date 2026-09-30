@@ -60,8 +60,21 @@ test('backend responses are parsed strictly and every documented status has a me
   assert.ok(readFileSync(new URL('../public/_headers', import.meta.url), 'utf8').match(/connect-src ([^;]+)/)[1].split(' ').includes(BACKEND_ORIGIN), 'CSP connect-src must allow the backend origin');
   assert.equal(wordsConfigSchema.safeParse({ site_key: 'k', enabled: true }).success, true);
   assert.equal(wordsConfigSchema.safeParse({ siteKey: 'k' }).success, false);
-  assert.equal(createdSchema.safeParse({ pull_request_url: 'https://github.com/metasequoiaime/msime-customdict/pull/12' }).success, true);
-  for (const url of ['https://github.com/attacker/msime-customdict/pull/1', 'https://evil.example/metasequoiaime/msime-customdict/pull/1', 'javascript:alert(1)']) assert.equal(createdSchema.safeParse({ pull_request_url: url }).success, false, url);
+  // msime-dictionary is the canonical name GitHub returns (ime-dictionary is only a redirect); msime-customdict stays accepted until msime-cloud deploys the switch. The first URL is the shape msime-cloud#58's tests expect.
+  for (const url of ['https://github.com/metasequoiaime/msime-dictionary/pull/12', 'https://github.com/metasequoiaime/msime-customdict/pull/12']) assert.equal(createdSchema.safeParse({ pull_request_url: url }).success, true, url);
+  for (const url of [
+    'https://github.com/metasequoiaime/ime-dictionary/pull/12',
+    'https://github.com/attacker/msime-dictionary/pull/1',
+    'https://github.com/attacker/msime-customdict/pull/1',
+    'https://evil.example/metasequoiaime/msime-dictionary/pull/1',
+    'https://evil.example/metasequoiaime/msime-customdict/pull/1',
+    'http://github.com/metasequoiaime/msime-dictionary/pull/1',
+    'https://github.com/metasequoiaime/msime-dictionary-fork/pull/1',
+    'https://github.com/metasequoiaime/msime/pull/1',
+    'https://github.com/metasequoiaime/msime-dictionary/pull/1/files',
+    'https://github.com/metasequoiaime/msime-dictionary/issues/1',
+    'javascript:alert(1)',
+  ]) assert.equal(createdSchema.safeParse({ pull_request_url: url }).success, false, url);
   assert.deepEqual(rejectedSchema.parse({ error: 'bad', rejected: [{ index: 1, reason: '重复' }] }).rejected, [{ index: 1, reason: '重复' }]);
   assert.match(submissionError(409, {}), /重新验证后再次提交/);
   assert.match(submissionError(429, {}), /频繁/);

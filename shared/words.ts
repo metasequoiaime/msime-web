@@ -62,7 +62,8 @@ export const formatLine = (entry: WordEntry) => `${entry.word}\t${entry.pinyin}\
 
 // Response shapes of the backend API.
 export const wordsConfigSchema = z.object({ site_key: z.string(), enabled: z.boolean() });
-export const createdSchema = z.object({ pull_request_url: z.string().regex(/^https:\/\/github\.com\/metasequoiaime\/msime-customdict\/pull\/\d+$/) });
+// Production still writes to msime-customdict, so WORDS_REPO_URL and the page copy stay on it. msime-dictionary (the canonical name GitHub returns in html_url; ime-dictionary is only a redirect) is accepted ahead of the msime-cloud switch so a created pull request is never reported as unknown. Drop msime-customdict once the backend writes to msime-dictionary in production.
+export const createdSchema = z.object({ pull_request_url: z.string().regex(/^https:\/\/github\.com\/metasequoiaime\/(?:msime-dictionary|msime-customdict)\/pull\/\d+$/) });
 export const rejectedSchema = z.object({ error: z.string().optional(), rejected: z.array(z.object({ index: z.number().int().nonnegative(), reason: z.string() })).optional() });
 
 /** User-facing message for each documented error status of the backend API. */
