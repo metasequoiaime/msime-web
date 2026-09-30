@@ -30,9 +30,28 @@ gh attestation verify .\{{installerName}} --repo metasequoiaime/MSIME-Windows
 
 ### 安装说明
 
+{{#macosDmg}}
+1. 打开下载的 DMG，把 MSIME 拖到「应用程序」。
+2. 打开「应用程序」里的 MSIME。它会把输入法装进 `~/Library/Input Methods` 并尝试启用。第一次安装时 MSIME 会提示注销并重新登录（苹果菜单 →「退出登录」），重新登录后输入法才会出现；以后更新不需要再注销。
+3. 添加输入法（菜单栏里已经有水杉输入法时可跳过）：打开「系统设置」→「键盘」，在「文字输入」下的「输入法」旁点「编辑…」，点左下角的「+」，选「简体中文」→「水杉输入法」，再点「添加」。macOS 对所有第三方输入法都会提示「开发者可以访问你通过此输入法键入的任何内容…」，水杉如何处理输入数据见[隐私说明](/privacy/)。
+4. 切换：点菜单栏的输入法图标选择水杉输入法，或按 `Control + 空格` 切换输入法。
+{{/macosDmg}}
+{{#macosLegacy}}
 安装包直接双击运行；压缩包解开后把输入法包放进 `~/Library/Input Methods`，再到「系统设置 → 键盘 → 文字输入 → 编辑」中启用「水杉输入法」。
 
 macOS 版内置 Sparkle 自动更新，安装后可从输入法菜单中的「检查更新…」直接升级。
+{{/macosLegacy}}
+
+{{#macosDmg}}
+### 装好后找不到水杉输入法？
+
+依次检查：
+
+- **只拖进了「应用程序」，没有打开 MSIME**：输入法是 MSIME 打开时才装进 `~/Library/Input Methods` 的，打开一次即可。
+- **第一次安装后没有注销**：macOS 只在登录时接纳新的输入法，注销并重新登录一次，再看菜单栏。
+- **没有添加到输入法列表**：按上面第 3 步添加；在「输入法」列表里删掉过水杉输入法的，也要重新添加。
+- **装过旧版 pkg 安装包**：旧版装在 `~/Library/Input Methods/MetasequoiaIME.app`，和新版用的是同一个输入法标识，新版不会替你删除它。在访达里按 `Command + Shift + G` 前往 `~/Library/Input Methods`，把 `MetasequoiaIME.app` 移到废纸篓，注销并重新登录后再打开一次 MSIME。更早的预览版 `水杉输入法（预览）.app` 会在打开 MSIME 时自动移除。
+{{/macosDmg}}
 
 ### 签名与校验
 
