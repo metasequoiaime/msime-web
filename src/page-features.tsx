@@ -16,15 +16,15 @@ import { useReveal } from "./use-reveal";
  */
 const SHOTS = [
   {
-    src: "/img/edge-screenshot-840w.webp",
-    srcSet: "/img/edge-screenshot-840w.webp 840w, /img/edge-screenshot-1680w.webp 1680w",
+    src: "/img/edge-candidate-826w.webp",
+    srcSet: "/img/edge-candidate-826w.webp 826w",
     title: "浏览器中的候选窗",
     body: "浏览器的搜索框里用双拼加辅助码打出「水杉输入法」。候选窗由输入法自己绘制，不依赖应用配合。",
     alt: "Edge 浏览器的搜索框中显示水杉输入法的候选窗，第一项是「水杉输入法」",
   },
   {
-    src: "/img/wt-screenshot-840w.webp",
-    srcSet: "/img/wt-screenshot-840w.webp 840w",
+    src: "/img/wt-candidate-696w.webp",
+    srcSet: "/img/wt-candidate-696w.webp 696w",
     title: "用辅助码区分同音候选",
     body: "终端里输入 fuvuma，候选按辅助码分开：辅助码 iU、辅助 iQ、附注 eD 各自可辨，便于进一步筛选。",
     alt: "Windows Terminal 中的深色候选窗，逐项标注辅助码",
@@ -194,9 +194,9 @@ export function FeaturesPage() {
             {SHOTS.map((shot) => (
               <Card as="article" key={shot.src} className="overflow-hidden rounded-tile" data-reveal>
                 <figure className="m-0">
-                  {/* 卡片里最多显示 ~400px 宽，原图有 1735px。sizes 让浏览器按实际显示宽度挑，别下大的那张。 */}
+                  {/* The browser and terminal shots are 16:10 crops around the candidate window (cut from the full screenshots in public/img); a whole-screen capture shrunk to card width left the candidate window unreadably small. */}
                   <img
-                    className="block aspect-[16/10] h-auto w-full bg-panel-2 object-cover object-left-top"
+                    className="block aspect-[16/10] h-auto w-full bg-panel-2 object-cover object-top"
                     src={shot.src}
                     srcSet={shot.srcSet}
                     sizes="(max-width: 700px) 92vw, (max-width: 1100px) 46vw, 400px"
