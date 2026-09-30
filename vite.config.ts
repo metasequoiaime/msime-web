@@ -2,11 +2,12 @@ import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   build: {
     manifest: true,
     rolldownOptions: {
@@ -26,6 +27,7 @@ export default defineConfig({
         price: resolve(projectRoot, "price/index.html"),
         privacy: resolve(projectRoot, "privacy/index.html"),
         resume: resolve(projectRoot, "resume/index.html"),
+        releases: resolve(projectRoot, "releases/index.html"),
       },
     },
   },

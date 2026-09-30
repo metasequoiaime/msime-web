@@ -20,6 +20,8 @@ const terms: [string, string][] = [
   ['釋出', '發布'], ['安裝包', '安裝套件'], ['倉庫', '儲存庫'], ['憑據', '憑證'],
   ['回報物件', '回報對象'], ['雲候選', '雲端候選字'], ['賬號', '帳號'], ['自定義', '自訂'], ['全域性', '全域'], ['豎排', '直排'], ['畫素', '像素'],
   ['皮膚', '佈景主題'], ['當前', '目前'], ['許可權', '權限'], ['識別', '辨識'], ['快捷短語', '快捷片語'], ['反饋', '回報'], ['提交', '送出'], ['重試', '再試一次'],
+  // 「提交」 as a git commit is not a form submission: undo the rule above for the contributor counts.
+  [' 次送出', ' 次提交'], ['送出數', '提交數'],
 ];
 /** Only presentation strings use this function. Do not transform user input or template option values. */
 export function toTraditional(text: string): string {

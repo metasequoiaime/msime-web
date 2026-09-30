@@ -18,11 +18,12 @@ export function TocNav({ entries, activeId, tocRef, onSelect, onNavigateNarrow }
         <a
           key={entry.id}
           href={`#${entry.id}`}
-          className={`${entry.isSubItem ? "docs-toc-subitem" : ""}${entry.id === activeId ? " is-active" : ""}`.trim()}
+          className={`${entry.isSubItem ? "docs-toc-sub" : ""}${entry.id === activeId ? " is-active" : ""}`.trim()}
           aria-current={entry.id === activeId ? "location" : undefined}
           onClick={() => {
             onSelect(entry.id);
-            if (window.matchMedia("(max-width: 900px)").matches) onNavigateNarrow?.();
+            // Below 960px the index is a disclosure above the content (styles/shell.css); close it once a section is picked.
+            if (window.matchMedia("(max-width: 959.98px)").matches) onNavigateNarrow?.();
           }}
         >
           {t(entry.text)}

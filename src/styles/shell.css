@@ -1,0 +1,436 @@
+/*
+ * Hook classes shared by the shell, PageHero and the section index.
+ *
+ * These class names are load-bearing (tests count `.header-wrap` / `.site-footer` / `.page-hero`, src/toc.ts measures `.header-wrap`, the shell's own JS drives `.nav-list.is-sliding` and `.route-progress.is-active`). Everything else on these elements is plain Tailwind utilities in the components.
+ */
+@layer site {
+  /* ---- Header ---- */
+  .header-wrap {
+    position: sticky;
+    top: 0;
+    left: auto;
+    right: auto;
+    width: auto;
+    height: auto;
+    z-index: 30;
+    background-color: var(--bg-t);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    backdrop-filter: blur(18px) saturate(1.3);
+    box-shadow: none;
+    transform: none;
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .header-wrap[data-raised] {
+    box-shadow: inset 0 -1px 0 var(--hair), 0 8px 24px rgba(0, 0, 0, 0.04);
+  }
+
+  .header-wrap.header--hidden {
+    transform: translateY(-100%);
+  }
+
+  /* ---- Route progress: a 2px line along the top edge while a slow navigation is pending ---- */
+  .route-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 40;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+
+  .route-progress.is-active {
+    opacity: 1;
+  }
+
+  .route-progress::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform-origin: left;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, transparent, var(--accent));
+  }
+
+  .route-progress.is-active::before {
+    /* There is no real progress to report, so the line eases towards 80% and stays there: it says "working", not "almost done". */
+    animation: routeProgress 2.4s cubic-bezier(0.1, 0.75, 0.25, 1) both;
+  }
+
+  @keyframes routeProgress {
+    from {
+      transform: scaleX(0);
+    }
+
+    to {
+      transform: scaleX(0.8);
+    }
+  }
+
+  /* ---- Skip link: off-screen until focused from the keyboard ---- */
+  .skip-link {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    z-index: 70;
+    padding: 10px 20px;
+    border-radius: 0 0 14px 14px;
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 14.5px;
+    transform: translate(-50%, -120%);
+    transition: transform 0.18s ease;
+  }
+
+  /* The shadow only exists while visible: its downward offset and blur reach ~56px below the card, so a parked card would still cast a sliver into the top of the viewport. */
+  .skip-link:focus-visible {
+    box-shadow: var(--shadow), 0 0 0 1px var(--hair);
+    transform: translate(-50%, 0);
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---- 繁/简 toggle: same geometry as the other round header controls ---- */
+  .header-language,
+  .header-language:link,
+  .header-language:visited {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    color: var(--ink);
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--hair-2);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    outline: none;
+    transition: background-color 0.15s ease;
+  }
+
+  .header-language:hover {
+    color: var(--ink);
+    background: var(--panel-2);
+  }
+
+  .header-language:focus-visible {
+    background: var(--panel-2);
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---- Desktop nav pill group ---- */
+  .nav-list {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    width: auto;
+    margin: 0;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    box-shadow: inset 0 0 0 1px var(--hair);
+    white-space: nowrap;
+    list-style: none;
+  }
+
+  .nav-link,
+  .nav-link:link,
+  .nav-link:visited {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    width: auto;
+    min-height: 0;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: transparent;
+    box-shadow: none;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  @media (min-width: 82.5rem) {
+    .nav-link,
+    .nav-link:link,
+    .nav-link:visited {
+      padding: 0 14px;
+    }
+  }
+
+  .nav-link:hover,
+  .nav-link:focus-visible {
+    color: var(--ink);
+    background: transparent;
+  }
+
+  .nav-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .nav-link::after {
+    content: none;
+  }
+
+  .nav-link[aria-current="page"] {
+    /* Below the other items, so the sliding pill passes under their labels. A non-auto z-index already creates a stacking context, so the ::before at z-index -1 stays above the list's own background. */
+    z-index: 0;
+    color: var(--ink);
+    font-weight: 600;
+    background: transparent;
+  }
+
+  .nav-link::before {
+    content: none;
+  }
+
+  .nav-link[aria-current="page"]::before {
+    content: "";
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 999px;
+    background: var(--panel);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  /* The active pill slides in from the previous tab; the offset is measured by the shell before paint. */
+  .nav-list.is-sliding .nav-link[aria-current="page"]::before {
+    animation: navPill 0.32s var(--ease-out-soft) both;
+  }
+
+  @keyframes navPill {
+    from {
+      transform: translateX(var(--pill-from, 0));
+    }
+
+    to {
+      transform: none;
+    }
+  }
+
+  /* ---- Footer ---- */
+  .site-footer {
+    margin-top: clamp(96px, 12vw, 144px);
+    padding: 0 clamp(16px, 3.6vw, 40px) 28px;
+    background: none;
+    box-shadow: none;
+  }
+
+  /* ---- Inner-page hero ---- */
+  .page-hero {
+    background-image: none;
+    box-shadow: none;
+  }
+
+  .page-hero[data-band] {
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 -1px 0 var(--hair);
+  }
+
+  /* ---- Section index (docs guides and content pages) ---- */
+  .docs-shell {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(20px, 3vw, 40px);
+    grid-template-columns: none;
+    overflow-anchor: none;
+  }
+
+  .docs-shell > .docs-sidebar,
+  .docs-shell > .docs-article {
+    animation: none;
+  }
+
+  .docs-shell > :not(.docs-sidebar) {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  .docs-sidebar {
+    position: sticky;
+    top: 84px;
+    flex: none;
+    align-self: flex-start;
+    width: 240px;
+    max-height: calc(100vh - 110px);
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .docs-toc-toggle {
+    display: none;
+  }
+
+  .docs-toc {
+    position: relative;
+    display: grid;
+    gap: 0;
+    max-height: none;
+    margin: 0;
+    overflow: visible;
+  }
+
+  /* The current section's highlight is one element that slides with the reader; src/toc.ts measures its position and height into these properties. */
+  .docs-toc::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: var(--toc-h, 34px);
+    border-radius: 0 8px 8px 0;
+    background: var(--accent-soft);
+    box-shadow: inset 2px 0 0 var(--accent);
+    opacity: var(--toc-on, 0);
+    transform: translateY(var(--toc-y, 0));
+    transition:
+      transform 0.28s var(--ease-out-soft),
+      height 0.28s var(--ease-out-soft),
+      opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  .docs-toc a {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 6px 12px 6px 16px;
+    border-radius: 0 8px 8px 0;
+    background: transparent;
+    box-shadow: inset 1px 0 0 var(--hair-2);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .docs-toc a:hover,
+  .docs-toc a:focus-visible {
+    color: var(--accent-ink);
+    background: transparent;
+  }
+
+  .docs-toc a.is-active {
+    color: var(--accent-ink);
+  }
+
+  .docs-toc a.docs-toc-sub {
+    padding-left: 30px;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .docs-toc a.docs-toc-sub.is-active,
+  .docs-toc a.docs-toc-sub:hover {
+    color: var(--accent-ink);
+  }
+
+  /* Below 960px the index collapses into a disclosure above the content. */
+  @media (max-width: 59.999rem) {
+    .docs-shell {
+      display: block;
+    }
+
+    .docs-sidebar {
+      position: static;
+      width: auto;
+      max-height: none;
+      overflow: visible;
+      margin-bottom: 20px;
+      padding: 6px;
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 0 0 1px var(--hair);
+    }
+
+    .docs-toc-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: 10px;
+      background: var(--panel-2);
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .docs-toc-toggle-icon {
+      flex: none;
+      width: 12px;
+      height: 12px;
+      margin-left: auto;
+      color: var(--muted);
+      transition: transform 0.2s ease;
+    }
+
+    .docs-toc-toggle-icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .docs-toc-toggle-icon path {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .docs-sidebar.is-open .docs-toc-toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .docs-toc {
+      display: none;
+      max-height: 60vh;
+      margin-top: 6px;
+      overflow-y: auto;
+    }
+
+    .docs-sidebar.is-open .docs-toc {
+      display: grid;
+    }
+  }
+}

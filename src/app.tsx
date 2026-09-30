@@ -1,3 +1,5 @@
+// Stylesheets first: app.css declares the cascade layer order before any other stylesheet reaches the page.
+import "./app.css";
 import { PageLoadError } from "./page-load-error";
 import { isTraditional } from "../shared/locales";
 import { loadTraditional } from "../shared/translate";
@@ -8,8 +10,6 @@ import { StrictMode } from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import { makeRouter } from "./routes";
 import { ThemeProvider } from "./theme";
-import "./style.scss";
-import "./docs.scss";
 
 async function start() {
   if (isTraditional(window.location.pathname)) await loadTraditional();

@@ -61,3 +61,47 @@ export function monthlyStarHistory(weeks) {
   return series;
 }
 
+
+const DAY = 86_400_000;
+
+/**
+ * Cumulative stars of one repository from the same `/stargazers/history` weeks, one point per month dated at the month's last day (or today for the current month). Per repository so the home chart can draw one line each; monthly for the same reason `monthlyStarHistory` is, which keeps a dozen series around ten kilobytes.
+ */
+export function repositoryStarSeries(weeks, now = new Date()) {
+  const perMonth = new Map();
+  for (const { week, days } of weeks) {
+    days.forEach((count, day) => {
+      const at = (week + day * 86400) * 1000;
+      if (at > now.getTime()) return;
+      const month = new Date(at).toISOString().slice(0, 7);
+      perMonth.set(month, (perMonth.get(month) ?? 0) + count);
+    });
+  }
+  const first = [...perMonth.keys()].sort()[0];
+  if (!first) return [];
+  const points = [];
+  let total = 0;
+  const cursor = new Date(`${first}-01T00:00:00Z`);
+  const today = now.toISOString().slice(0, 10);
+  while (cursor <= now) {
+    const month = cursor.toISOString().slice(0, 7);
+    total += perMonth.get(month) ?? 0;
+    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+    const monthEnd = new Date(cursor.getTime() - DAY).toISOString().slice(0, 10);
+    points.push({ date: monthEnd < today ? monthEnd : today, stars: total });
+  }
+  return points;
+}
+
+/** Stars gained in the `days` days up to `now`, summed over every repository's weekly history. */
+export function recentStars(weeks, days = 30, now = new Date()) {
+  const since = now.getTime() - days * DAY;
+  let total = 0;
+  for (const { week, days: counts } of weeks) {
+    counts.forEach((count, day) => {
+      const at = (week + day * 86400) * 1000;
+      if (at > since && at <= now.getTime()) total += count;
+    });
+  }
+  return total;
+}

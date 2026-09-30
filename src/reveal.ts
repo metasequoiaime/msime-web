@@ -13,9 +13,6 @@ const revealObserver = typeof IntersectionObserver === "undefined" ? undefined :
   { rootMargin: `0px 0px -${FOLD_OFFSET_PERCENT}% 0px`, threshold: 0 }
 );
 
-// 观察器建好之后才给根节点挂标记，样式表这时才会把 [data-reveal] 藏起来。顺序反过来的话，上面任何一步抛错都会让页面永远停在 opacity: 0。
-if (revealObserver) document.documentElement.classList.add("has-reveal");
-
 /**
  * 登记入场动画。只有需要滚动才看得到的部分才做动画 —— 否则每次换页整屏都要重新淡入一遍，看起来就是闪屏。markdown 渲染出来的节点在插入之后再调一次。
  *
@@ -34,6 +31,9 @@ export const observeReveals = (root: ParentNode = document) => {
     revealObserver?.observe(element);
     observed.push(element);
   });
+
+  // The stylesheet only hides [data-reveal] under `has-reveal`, and the mark goes on here rather than at module load: this runs in a layout effect after hydration, once everything above the fold has already lost its attribute. Marking earlier (the module is evaluated while the lazy route chunk loads, before hydrateRoot) would blank the prerendered first screen for the frames in between, and measuring after marking would read positions shifted by the hidden state's transform.
+  if (revealObserver) document.documentElement.classList.add("has-reveal");
 
   // 换页时把还没进过视口的节点退订。观察器对目标是强引用，客户端路由下这些节点已经从文档里摘掉了，不退订就再也不会有人放开它们。
   return () => {

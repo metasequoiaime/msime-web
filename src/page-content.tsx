@@ -7,27 +7,68 @@ import { useTocScrollSpy, withHeadingIds } from "./toc";
 import { useInternalLinks } from "./use-internal-links";
 import { TocNav } from "./toc-nav";
 import { useReveal } from "./use-reveal";
+import { cx } from "./ui";
 
 type PageHeroProps = {
   kicker: string;
   title: string;
-  leadHtml: string;
+  /** Lead paragraph as inline HTML from this repository's markdown (docs and content pages). */
+  leadHtml?: string;
+  /** Lead paragraph as React content, for pages that write their copy in code. Ignored when `leadHtml` is given. */
+  lead?: ReactNode;
+  /**
+   * `band`: full-width header with a hairline below it and the larger title (download, code, about, docs, content pages).
+   * `plain`: the title opens the page column directly (releases, feedback, words).
+   */
+  variant?: "band" | "plain";
+  /** Column width: 1200px (`inner`) or 960px (`narrow`, FAQ and release notes). */
+  width?: "inner" | "narrow";
+  /** Extra content under the lead, inside the hero column. */
+  children?: ReactNode;
 };
 
-/** 文档、下载和几个内容页共用的页头。`is-ready` 放开入场动画：正文由打包进来的 markdown 同步渲染，首帧标题就已经在了。 */
-export function PageHero({ kicker, title, leadHtml }: PageHeroProps) {
+/**
+ * The inner-page header (design-home §6 "页头"): accent eyebrow, one h1, lead paragraph.
+ *
+ * `.page-hero`, `#page-kicker`, `#page-title` and `#page-lead` are test and markdown-export hooks; keep them. It fades in on client-side navigation only (`page-enter`), never on the prerendered first paint.
+ */
+export function PageHero({ kicker, title, leadHtml, lead, variant = "band", width = "inner", children }: PageHeroProps) {
   const { t, path } = useLocale();
+  const band = variant === "band";
   return (
-    <div className="page-hero is-ready">
-      <div className="container page-hero-inner">
-        <p className="page-hero-kicker" id="page-kicker">
+    <div className="page-hero" data-band={band || undefined}>
+      <div
+        className={cx(
+          "page-enter mx-auto w-full px-[clamp(20px,4.4vw,48px)]",
+          width === "narrow" ? "max-w-narrow" : "max-w-inner",
+          band ? "pt-[clamp(48px,7vw,88px)] pb-[clamp(36px,5vw,56px)]" : "pt-[clamp(40px,6vw,72px)]"
+        )}
+      >
+        <p className="m-0 text-sm font-semibold text-accent-ink" id="page-kicker">
           {t(kicker)}
         </p>
-        <h1 className="page-hero-title" id="page-title">
+        <h1
+          className={cx(
+            "font-heading leading-[1.25] font-bold text-ink [word-break:keep-all] [overflow-wrap:anywhere]",
+            band ? "mt-4 mb-3.5 text-[clamp(34px,4.6vw,54px)]" : "mt-3 mb-3.5 text-[clamp(32px,4.2vw,50px)]"
+          )}
+          id="page-title"
+        >
           {t(title)}
         </h1>
-        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: 首段是本仓库自带 markdown 渲染出来的行内标记，markdown-it 关掉了 html 透传 */}
-        <p className="page-hero-lead" id="page-lead" dangerouslySetInnerHTML={{ __html: localizedHtml(leadHtml, path) }} />
+        {leadHtml !== undefined ? (
+          <p
+            className={cx("m-0 leading-[1.85] text-body empty:hidden [&_a]:text-accent-ink", band ? "text-[17px]" : "text-[16.5px]")}
+            id="page-lead"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: 首段是本仓库自带 markdown 渲染出来的行内标记，markdown-it 关掉了 html 透传
+            dangerouslySetInnerHTML={{ __html: localizedHtml(leadHtml, path) }}
+          />
+        ) : (
+          <p className={cx("m-0 leading-[1.85] text-body empty:hidden", band ? "text-[17px]" : "text-[16.5px]")} id="page-lead">
+            {t(lead)}
+          </p>
+        )}
+        {children}
       </div>
     </div>
   );
@@ -72,6 +113,9 @@ function SectionIndex({
         </span>
       </button>
 
+      <p className="m-0 mb-2 hidden pl-4 text-[13px] font-semibold text-muted 2xl:block" aria-hidden="true">
+        {t("本页小节")}
+      </p>
       <TocNav
         entries={entries}
         activeId={activeId}
@@ -184,21 +228,24 @@ export function ContentPage({
   return (
     <>
       <PageHero kicker={kicker} title={t(hero.title)} leadHtml={hero.leadHtml} />
-      <main className="content-page">
-        <div className={`container${hasIndex ? " docs-shell" : ""}${continuous ? " content-flow-container" : ""}`}>
-          {continuous ? <div className="card content-flow">{banner}{article}</div> : <>
-          {t(banner)}
-          {t(hasIndex && (
-            <SectionIndex
-              entries={content.toc}
-              activeId={activeId}
-              tocRef={tocRef}
-              sidebarRef={sidebarRef}
-              onSelect={lockUntilScrollEnds}
-            />
-          ))}
-          {article}
-          </>}
+      <main className="w-full pt-[clamp(28px,4vw,48px)]">
+        <div className={cx("mx-auto w-full px-[clamp(20px,4.4vw,48px)]", continuous ? "max-w-[1120px]" : "max-w-inner", hasIndex && "docs-shell")}>
+          {continuous ? (
+            <div className="content-flow rounded-panel bg-panel p-[clamp(20px,4vw,40px)] shadow-card">
+              {banner}
+              {article}
+            </div>
+          ) : (
+            <>
+              {t(banner)}
+              {t(
+                hasIndex && (
+                  <SectionIndex entries={content.toc} activeId={activeId} tocRef={tocRef} sidebarRef={sidebarRef} onSelect={lockUntilScrollEnds} />
+                )
+              )}
+              {article}
+            </>
+          )}
         </div>
       </main>
     </>

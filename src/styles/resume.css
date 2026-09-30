@@ -1,0 +1,243 @@
+/*
+ * The resume page (/resume/): a single sheet rendered from src/content/resume.md, outside the site shell. Imported by src/page-resume.tsx only, so it ships in that page's CSS chunk.
+ *
+ * Everything lives here rather than in utilities because most of the page is markdown output, and because print has to override the screen layout; a utility class would outrank any print rule in the site layer.
+ *
+ * Colours go through local --resume-* properties that read the theme tokens on screen and switch to fixed ink-on-paper values in print, whatever theme or season the reader has chosen.
+ */
+@page {
+  size: A4;
+  margin: 15mm 16mm;
+}
+
+@layer site {
+  body.resume-body {
+    background-image: radial-gradient(circle at 15% 0%, var(--accent-soft), transparent 30rem);
+  }
+
+  .resume-page {
+    --resume-ink: var(--ink);
+    --resume-body: var(--body);
+    --resume-muted: var(--muted);
+    --resume-accent: var(--accent-ink);
+    --resume-rule: var(--hair-2);
+    --resume-surface: var(--panel);
+
+    width: min(100% - 2rem, 940px);
+    margin: 0 auto;
+    padding: clamp(32px, 6vw, 72px) 0 clamp(48px, 8vw, 96px);
+  }
+
+  .resume-content {
+    padding: clamp(32px, 5vw, 72px);
+    border-radius: 24px;
+    background: var(--resume-surface);
+    box-shadow: var(--shadow), 0 0 0 1px var(--hair);
+    color: var(--resume-body);
+    font-size: 15px;
+    line-height: 1.85;
+    overflow-wrap: break-word;
+  }
+
+  .resume-content :is(h1, h2, h3, h4) {
+    color: var(--resume-ink);
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+
+  html:lang(zh-Hant-TW) .resume-content :is(h1, h2, h3, h4) {
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  }
+
+  /* Name, role line and contact line form the letterhead. */
+  .resume-content > h1:first-child {
+    margin: 0;
+    font-size: clamp(36px, 7vw, 56px);
+    letter-spacing: 0.08em;
+    line-height: 1.15;
+  }
+
+  .resume-content > h1:first-child + p {
+    margin: 12px 0 0;
+    color: var(--resume-accent);
+    font-size: 17px;
+    letter-spacing: 0.04em;
+  }
+
+  .resume-content > h1:first-child + p strong {
+    color: inherit;
+    font-weight: 600;
+  }
+
+  /* The contact block is one markdown paragraph written on two lines; keep the author's line break. */
+  .resume-content > h1:first-child + p + p {
+    margin: 14px 0 0;
+    color: var(--resume-muted);
+    font-size: 14px;
+    white-space: pre-line;
+  }
+
+  /* Section headings sit on a hairline, drawn as a shadow like every outline in the redesign. */
+  .resume-content h2,
+  .resume-content h1:not(:first-child) {
+    margin: 48px 0 16px;
+    padding-bottom: 10px;
+    box-shadow: inset 0 -1px 0 var(--resume-rule);
+    font-size: 22px;
+    line-height: 1.35;
+  }
+
+  .resume-content h3 {
+    margin: 28px 0 4px;
+    font-size: 18px;
+    line-height: 1.45;
+  }
+
+  .resume-content h4 {
+    margin: 20px 0 6px;
+    font-size: 16px;
+  }
+
+  .resume-content :is(p, ul, ol) {
+    margin: 10px 0;
+  }
+
+  .resume-content :is(ul, ol) {
+    padding-left: 1.25rem;
+  }
+
+  .resume-content ul > li {
+    list-style: disc;
+  }
+
+  .resume-content ol > li {
+    list-style: decimal;
+  }
+
+  .resume-content li::marker {
+    color: var(--resume-accent);
+  }
+
+  .resume-content li + li {
+    margin-top: 4px;
+  }
+
+  .resume-content strong {
+    color: var(--resume-ink);
+    font-weight: 600;
+  }
+
+  .resume-content a {
+    color: var(--resume-accent);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+  }
+
+  .resume-content a:hover {
+    color: var(--resume-ink);
+  }
+
+  .resume-content hr {
+    height: 1px;
+    margin: 40px 0;
+    border: 0;
+    background: var(--resume-rule);
+  }
+
+  .resume-content code {
+    padding: 0.1em 0.35em;
+    border-radius: 6px;
+    background: var(--panel-2);
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+  }
+
+  /* Phones: the sheet becomes the page itself, edge to edge. */
+  @media (max-width: 40rem) {
+    .resume-page {
+      width: 100%;
+      padding: 0;
+    }
+
+    .resume-content {
+      padding: 32px 20px 48px;
+      border-radius: 0;
+      box-shadow: none;
+      font-size: 14px;
+    }
+
+    .resume-content h2,
+    .resume-content h1:not(:first-child) {
+      margin-top: 40px;
+      font-size: 20px;
+    }
+  }
+
+  @media print {
+    /* The entry HTML's unlayered first-paint <style> paints html with the theme/season --bg, which a layered rule cannot outrank; !important inside a layer does, so the page margins print white instead of the dark or seasonal canvas when "background graphics" is on. */
+    html {
+      background: #fff !important;
+      color-scheme: light !important;
+    }
+
+    body.resume-body {
+      background: #fff;
+    }
+
+    .resume-page {
+      --resume-ink: #10241a;
+      --resume-body: #2f3b33;
+      --resume-muted: #56655b;
+      --resume-accent: #17783f;
+      --resume-rule: #cfd8d2;
+      --resume-surface: #fff;
+
+      width: auto;
+      padding: 0;
+    }
+
+    .resume-content {
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      font-size: 10pt;
+      line-height: 1.55;
+    }
+
+    .resume-content > h1:first-child {
+      font-size: 28pt;
+    }
+
+    .resume-content > h1:first-child + p {
+      font-size: 12pt;
+    }
+
+    .resume-content > h1:first-child + p + p {
+      font-size: 9.5pt;
+    }
+
+    .resume-content h2,
+    .resume-content h1:not(:first-child) {
+      margin-top: 1.6rem;
+      font-size: 15pt;
+      break-after: avoid;
+    }
+
+    .resume-content h3,
+    .resume-content h4 {
+      break-after: avoid;
+    }
+
+    .resume-content :is(p, li) {
+      orphans: 3;
+      widows: 3;
+    }
+
+    .resume-content a {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+}

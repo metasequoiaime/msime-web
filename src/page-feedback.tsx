@@ -13,14 +13,19 @@ import { usePageMeta } from "./page-meta";
 import { markdown } from "./markdown";
 import { FeedbackResponseError, readFeedbackResponse } from "./feedback-response";
 import { loadTurnstile } from "./turnstile";
-import "./feedback.scss";
+import { PageHero } from "./page-content";
+import { LocaleLink } from "./locale-link";
+import { Button, Container, Pill, cx } from "./ui";
+import { FeedbackAside } from "./feedback/feedback-aside";
+import { FeedbackSuccess } from "./feedback/feedback-success";
+import { alertClass, checkClass, fieldLabelClass, hintClass, inputClass, markdownClass, previewImageButtonClass, stepTitleClass } from "./feedback/styles";
 
 const emptyForm: Feedback = { target: "windows", title: "", templateId: "", templateRevision: "", answers: {}, screenshotFields: [], qq: "", qqNickname: "", wechat: "", github: "", email: "", consent: true };
 type LocalScreenshot = { id: string; field: string; file: File; url: string };
 type Draft = { title: string; answers: Answers; screenshots: LocalScreenshot[] };
 
 export function FeedbackPage() {
-  const { t, tw, href } = useLocale();
+  const { t, tw } = useLocale();
   usePageMeta("问题与建议 | 水杉输入法", "反馈问题或提出建议，提交内容将公开发布到 GitHub。");
   const { get, choice, update } = usePageSearch();
   const targetResult = feedbackSchema.shape.target.safeParse(get("target"));
@@ -248,10 +253,18 @@ export function FeedbackPage() {
   const completedFields = requiredFields.filter(field => template && !validateAnswers({ ...template, fields: [field] }, form.answers[field.id] === undefined ? {} : { [field.id]: form.answers[field.id] }, screenshots.filter(image => image.field === field.id).map(image => image.field))).length;
   const titleComplete = form.title.trim().length >= 5 && form.title.trim() !== template?.title.trim();
   const previewIssue = template ? formatIssue({ ...form, locale: tw ? "zh-TW" : "zh-CN" }, template, screenshots.map(item => ({ field: item.field, url: item.url }))) : undefined;
-  const renderUpload = (field = "") => <div className="feedback-upload">
-    <input id={`screenshots-${field || "general"}`} aria-label={t("选择截图")} type="file" accept="image/png,image/jpeg,image/webp" multiple hidden disabled={!screenshotsEnabled || busy || readingImages || screenshots.length >= 3} onChange={event => { const files = Array.from(event.target.files ?? []); event.target.value = ""; void addScreenshots(files, field); }} />
-    <button type="button" className="btn btn-ghost" disabled={!screenshotsEnabled || busy || readingImages || screenshots.length >= 3} onClick={() => document.getElementById(`screenshots-${field || "general"}`)?.click()}>{t(readingImages ? "正在读取…" : screenshots.length >= 3 ? "已选满 3 张" : "＋ 选择截图")}</button>
-    <span aria-live="polite">{t("已选")}{t(screenshots.length)} {t("/ 3 张 · 点击缩略图查看大图")}</span>
+  const target = targets[form.target];
+  const issuesUrl = `https://github.com/metasequoiaime/${target.repo}/issues`;
+  // Next thing standing between the user and a submission, shown beside the submit button (design-home §8 "提示文字").
+  const submitHint = !template ? "请先加载仓库模板" : !titleComplete ? "请填写标题" : completedFields < requiredFields.length ? `还有 ${requiredFields.length - completedFields} 项必填内容` : !consent ? "请先勾选同意" : !token ? "请完成提交验证" : `提交到 ${target.repo}`;
+  const uploadDisabled = !screenshotsEnabled || busy || readingImages || screenshots.length >= 3;
+  const renderUpload = (field = "") => <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-2">
+    <input id={`screenshots-${field || "general"}`} aria-label={t("选择截图")} type="file" accept="image/png,image/jpeg,image/webp" multiple hidden disabled={uploadDisabled} onChange={event => { const files = Array.from(event.target.files ?? []); event.target.value = ""; void addScreenshots(files, field); }} />
+    <button type="button" className="flex h-[72px] min-w-24 flex-col items-center justify-center gap-0.5 rounded-tab bg-accent-soft px-3 text-[13px] text-accent-ink shadow-[inset_0_0_0_1.5px_var(--accent-ring)] transition-[background-color] duration-150 hover:bg-accent-ring disabled:cursor-not-allowed disabled:opacity-45" disabled={uploadDisabled} onClick={() => document.getElementById(`screenshots-${field || "general"}`)?.click()}>
+      {!readingImages && screenshots.length < 3 && <span className="text-xl leading-none" aria-hidden="true">＋</span>}
+      {t(readingImages ? "正在读取…" : screenshots.length >= 3 ? "已选满 3 张" : "选择截图")}
+    </button>
+    <span className="text-[12.5px] text-muted" aria-live="polite">{t(`已选 ${screenshots.length} / 3 张 · 点击缩略图查看大图`)}</span>
   </div>;
   useEffect(() => {
     const root = previewBody.current;
@@ -262,7 +275,7 @@ export function FeedbackPage() {
       if (!screenshot) return;
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "feedback-preview-image";
+      button.className = previewImageButtonClass;
       button.setAttribute("aria-label", `${t("放大查看")} ${screenshot.file.name}`);
       image.replaceWith(button);
       button.append(image);
@@ -273,116 +286,183 @@ export function FeedbackPage() {
     return () => { cleanups.forEach(cleanup => { cleanup(); }); };
   }, [tab, previewIssue?.body, screenshots, t]);
   const selectTab = (value: "edit" | "preview", focus = false) => { setTab(value); if (focus) document.getElementById(`feedback-tab-${value}`)?.focus(); };
+  // "再提交一条": start a blank draft for the same repository and template, keeping the contact details the user chose to share.
+  function startOver() {
+    drafts.current = {};
+    setIssueUrl("");
+    setUncertainUrl("");
+    setConsent(false);
+    setError("");
+    setImageError("");
+    if (template) chooseTemplate(template); else setScreenshots([]);
+    setTab("edit");
+    requestAnimationFrame(() => { document.getElementById("feedback-tab-edit")?.focus({ preventScroll: true }); });
+  }
 
   return (
-    <main className="content-page feedback-page">
-      <ScreenshotViewer images={screenshots} selected={selectedScreenshot} onClose={() => setSelectedScreenshot(null)} />
-      <div className="container">
-        <div className="feedback-heading">
-          <p className="feedback-kicker">{t("一起改进水杉输入法")}</p>
-          <h1>{t("反馈问题或提出建议")}</h1>
-          <p>{t("遇到故障或希望改进功能，都可以在这里反馈。提交后会在 GitHub 对应仓库创建公开的 Issue（反馈记录），无需 GitHub 账号。")}</p>
-        </div>
-        {issueUrl ? <section className="card feedback-success" aria-live="polite" tabIndex={-1} ref={successPanel}>
-          <h2>{t("反馈已提交")}</h2><p>{t("感谢你帮助水杉输入法变得更好。你可以通过 Issue 查看后续讨论和处理进展。")}</p>
-          <a className="btn btn-primary" href={issueUrl} target="_blank" rel="noreferrer">{t("查看已创建的 Issue ↗")}</a>
-        </section> : <div className="feedback-layout">
-          <form className="card feedback-form" onSubmit={submit} noValidate>
-            <div className="feedback-tabs" role="tablist" aria-label={t("反馈表单")}>
-              {t((["edit", "preview"] as const).map(value => <button key={value} id={`feedback-tab-${value}`} type="button" role="tab" aria-selected={tab === value} aria-controls={`feedback-panel-${value}`} tabIndex={tab === value ? 0 : -1} onClick={() => selectTab(value)} onKeyDown={event => {
+    <>
+      <PageHero
+        variant="plain"
+        kicker="一起改进水杉输入法"
+        title="反馈问题或提出建议"
+        lead="遇到故障或希望改进功能，都可以在这里反馈。提交后会在 GitHub 对应仓库创建公开的 Issue（反馈记录），无需 GitHub 账号。"
+      />
+      <main className="w-full">
+        <ScreenshotViewer images={screenshots} selected={selectedScreenshot} onClose={() => setSelectedScreenshot(null)} />
+        <Container className="flex flex-wrap items-start gap-6 pt-8">
+          {issueUrl && <FeedbackSuccess issueUrl={issueUrl} repo={target.repo} onReset={startOver} panelRef={successPanel} />}
+          {/* The form stays mounted (only hidden) after a successful submission so the Turnstile widget keeps its container for "再提交一条". */}
+          <form className="min-w-0 flex-[1_1_min(100%,560px)] rounded-card bg-panel shadow-card" onSubmit={submit} noValidate hidden={Boolean(issueUrl)}>
+            <div className="flex gap-1 p-2 shadow-divider-b" role="tablist" aria-label={t("反馈表单")}>
+              {(["edit", "preview"] as const).map(value => <button key={value} id={`feedback-tab-${value}`} type="button" role="tab" className={cx("flex h-[38px] items-center rounded-tab px-[18px] text-[14.5px] font-semibold transition-colors duration-150", tab === value ? "bg-accent-soft text-accent-ink" : "bg-transparent text-muted hover:text-ink")} aria-selected={tab === value} aria-controls={`feedback-panel-${value}`} tabIndex={tab === value ? 0 : -1} onClick={() => selectTab(value)} onKeyDown={event => {
                 if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) { event.preventDefault(); selectTab(event.key === "Home" ? "edit" : event.key === "End" ? "preview" : tab === "edit" ? "preview" : "edit", true); }
-              }}>{t(value === "edit" ? "填写" : "预览")}</button>))}
+              }}>{t(value === "edit" ? "填写" : "预览")}</button>)}
             </div>
-            {t(error && <p className="feedback-error" role="alert">{t(error)}</p>)}
-            <div id="feedback-panel-edit" role="tabpanel" aria-labelledby="feedback-tab-edit" hidden={tab !== "edit"}>
+            <div className="p-[clamp(20px,3vw,32px)]">
+              {error && <p className="sticky top-[76px] z-[2] m-0 mb-5 rounded-field bg-panel px-4 py-3 text-sm leading-[1.75] text-ink shadow-[inset_0_0_0_1.5px_var(--warn),var(--shadow)]" role="alert">{t(error)}</p>}
+              <div id="feedback-panel-edit" role="tabpanel" aria-labelledby="feedback-tab-edit" hidden={tab !== "edit"}>
+                <fieldset className="m-0 min-w-0 border-0 p-0" disabled={busy || readingImages}>
+                  <section aria-labelledby="feedback-step-target">
+                    <h2 id="feedback-step-target" className={stepTitleClass}>{t("1. 选择反馈对象")}</h2>
+                    <p id="feedback-target-hint" className={cx(hintClass, "mt-1.5 text-sm")}>{t("先选你正在使用的平台。不确定该选哪一项，选输入法平台即可，我们会协助分类。")}</p>
+                    {/* 180px rather than the design's 150px: the real target labels ("macOS / iOS 输入法", "公共引擎、输入方案与词库") are longer and would otherwise break mid-word. */}
+                    <div className="mt-3.5 grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]" role="radiogroup" aria-labelledby="feedback-step-target" aria-describedby="feedback-target-hint">
+                      {Object.entries(targets).map(([key, item]) => <label key={key} className="flex min-h-11 cursor-pointer items-center rounded-field bg-panel-2 px-3 py-2 text-sm leading-normal text-ink transition-[background-color,box-shadow] duration-150 [word-break:keep-all] [overflow-wrap:anywhere] hover:bg-accent-soft has-[:checked]:bg-accent-soft has-[:checked]:font-semibold has-[:checked]:text-accent-ink has-[:checked]:shadow-ring-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
+                        <input className="sr-only" type="radio" name="target" value={key} checked={form.target === key} onChange={() => update({ target: key, template: undefined, tab: "edit" })} />
+                        <span>{t(item.label)}</span>
+                      </label>)}
+                    </div>
+                    <p className={cx(hintClass, "mt-3")}>
+                      {t("遇到使用问题？先看看")}
+                      <LocaleLink to="/faq/" target="_blank" rel="noreferrer">{t("常见问题")}</LocaleLink>
+                      {t("，或")}
+                      <a href={issuesUrl} target="_blank" rel="noreferrer">{t("搜索已有反馈 ↗")}</a>
+                    </p>
+                  </section>
 
-            <fieldset disabled={busy || readingImages}>
-              <legend>{t("1. 选择反馈对象")}</legend>
-              <p id="feedback-target-hint" className="feedback-hint">{t("先选你正在使用的平台。想反馈网站或文档，也可以在这里选择。")}</p>
-              <div className="feedback-target-grid" role="radiogroup" aria-label={t("反馈对象")} aria-describedby="feedback-target-hint">
-                {t(Object.entries(targets).map(([key, target]) => <label className="feedback-consent feedback-option" key={key}>
-                  <input type="radio" name="target" value={key} checked={form.target === key} onChange={() => update({ target: key, template: undefined, tab: "edit" })} />
-                  <span>{t(target.label)}</span>
-                </label>))}
-              </div>
-              <p className="feedback-hint">{t("不知道“公共引擎”或“公共 API”是什么？选你的输入法平台即可，我们会协助分类。")}</p>
-              <p className="feedback-help-link">{t("遇到使用问题？先看看")}<a href={href("/faq/")} target="_blank" rel="noreferrer">{t("常见问题 ↗")}</a>{t("，或")}<a href={`https://github.com/metasequoiaime/${targets[form.target].repo}/issues`} target="_blank" rel="noreferrer">{t("搜索已有反馈 ↗")}</a>。</p>
-              {t(templateLoading && <p className="feedback-hint" role="status">{t("正在读取仓库模板…")}</p>)}
-              {t(templateError && <div className="feedback-error" role="alert"><p>{t(templateError)}</p><button type="button" className="btn btn-ghost" onClick={() => { saveDraft(); setReload(value => value + 1); }}>{t("重新加载模板")}</button><a href={`https://github.com/metasequoiaime/${targets[form.target].repo}/issues/new/choose`} target="_blank" rel="noreferrer">{t("前往 GitHub 提交 ↗")}</a></div>)}
-              {t(template && !templateLoading && !templateError && <>
-                <fieldset className="feedback-choice-field feedback-template-picker">
-                  <legend>{t("2. 你想反馈什么？")}</legend>
-                  {t(catalog.templates.map(item => <label className="feedback-consent" key={item.id}>
-                    <input type="radio" name="issue-template" value={item.id} checked={template.id === item.id} onChange={() => update({ template: item.id })} />
-                    <span><strong>{t(item.name)}</strong><small>{t(item.description)}</small></span>
-                  </label>))}
+                  {templateLoading && <p className={cx(hintClass, "mt-8")} role="status">{t("正在读取仓库模板…")}</p>}
+                  {templateError && <div className={cx(alertClass, "mt-8")} role="alert">
+                    <p className="m-0">{t(templateError)}</p>
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <Button variant="ghost" size="sm" onClick={() => { saveDraft(); setReload(value => value + 1); }}>{t("重新加载模板")}</Button>
+                      <a className="text-sm" href={`${issuesUrl}/new/choose`} target="_blank" rel="noreferrer">{t("前往 GitHub 提交 ↗")}</a>
+                    </div>
+                  </div>}
+                  {template && !templateLoading && !templateError && <>
+                    <section className="mt-8" aria-labelledby="feedback-step-template">
+                      <h2 id="feedback-step-template" className={stepTitleClass}>{t("2. 反馈类型")}</h2>
+                      <div className="mt-3 inline-flex max-w-full flex-wrap gap-1 rounded-field bg-panel-2 p-1" role="radiogroup" aria-labelledby="feedback-step-template" aria-describedby="feedback-template-description">
+                        {catalog.templates.map(item => <label key={item.id} className="inline-flex min-h-[38px] cursor-pointer items-center rounded-[9px] px-[18px] py-1.5 text-[14.5px] font-semibold text-muted transition-[background-color,color,box-shadow] duration-150 [overflow-wrap:anywhere] hover:text-ink has-[:checked]:bg-panel has-[:checked]:text-ink has-[:checked]:shadow-tab has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
+                          <input className="sr-only" type="radio" name="issue-template" value={item.id} checked={template.id === item.id} onChange={() => update({ template: item.id })} />
+                          <span>{t(item.name)}</span>
+                        </label>)}
+                      </div>
+                      <div id="feedback-template-description" className={cx(hintClass, "mt-2.5")}>
+                        {template.description && <p className="m-0">{t(template.description)}</p>}
+                        <p className="m-0">{t("切换类型会保留当前页面中的草稿，刷新或关闭页面后不会保留。")}</p>
+                      </div>
+                    </section>
+
+                    <section className="mt-8" aria-labelledby="feedback-step-describe">
+                      <h2 id="feedback-step-describe" className={stepTitleClass}>{t("3. 描述")}</h2>
+                      <p className={cx(hintClass, "mt-1.5 text-sm")}>{t("带 * 的项目必须填写，其余可以跳过。按自己的话描述即可，不用考虑技术术语。")}</p>
+                      <div className="mt-3 flex items-center gap-3 text-[13px] text-muted">
+                        <span className="flex-none">{t(`必填 ${completedFields + Number(titleComplete)} / ${requiredFields.length + 1}`)}</span>
+                        <progress className="h-1.5 min-w-0 flex-1 appearance-none overflow-hidden rounded-full border-0 bg-panel-2 accent-accent [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-accent [&::-webkit-progress-bar]:bg-panel-2 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-accent" aria-label={t("必填内容完成进度")} value={completedFields + Number(titleComplete)} max={requiredFields.length + 1} />
+                      </div>
+                      <label className={cx(fieldLabelClass, "mt-4")}>
+                        {t("标题")}<span className="ml-1 text-warn" aria-hidden="true">*</span><span className="sr-only">{t("（必填）")}</span>
+                        <input className={inputClass} name="title" value={form.title} minLength={5} maxLength={100} required aria-describedby="feedback-title-hint" placeholder={t("例如：候选字显示为方框，或希望能调整字号")} onChange={event => setForm({ ...form, title: event.target.value })} />
+                      </label>
+                      <p id="feedback-title-hint" className={cx(hintClass, "mt-1.5 text-[13px]")}>{t("用一句话写清楚哪里出了问题，或希望增加什么，5–100 个字符。")}</p>
+                      <FeedbackFields template={template} answers={form.answers} onChange={(id, value) => setForm(previous => ({ ...previous, answers: { ...previous.answers, [id]: value } }))} upload={renderUpload} />
+                    </section>
+                  </>}
+
+                  <section className="mt-6" aria-labelledby="feedback-screenshots-label">
+                    <label id="feedback-screenshots-label" className={fieldLabelClass} htmlFor="screenshots-general">{t("补充截图（可选）")}</label>
+                    <p id="screenshot-hint" className={cx(hintClass, "mt-1 text-[13px] leading-[1.7]")}>{t("支持 PNG、JPEG、WebP，最多 3 张，每张不超过 5 MiB。截图将随 Issue 公开，请先遮挡个人信息。")}</p>
+                    {renderUpload()}
+                    {screenshotsEnabled === null && <p className={cx(hintClass, "mt-2 text-[13px]")} role="status">{t("正在检查截图上传服务…")}</p>}
+                    {screenshotsEnabled === false && <p className={cx(hintClass, "mt-2 text-[13px]")}>{t("截图上传暂不可用，仍可提交文字反馈。")}</p>}
+                    {readingImages && <p className={cx(hintClass, "mt-2 text-[13px]")} role="status">{t("正在读取截图…")}</p>}
+                    {imageError && <p className={cx(alertClass, "mt-3")} role="alert">{t(imageError)}</p>}
+                    {screenshots.length > 0 && <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(min(100%,190px),1fr))] gap-3">
+                      {screenshots.map((item, index) => <figure key={item.id} className="relative m-0 min-w-0 rounded-field bg-panel-2 p-2.5">
+                        <button type="button" className="block w-full cursor-zoom-in overflow-hidden rounded-row bg-panel p-0 shadow-hair-2" aria-label={t(`放大查看 ${item.file.name}`)} onClick={() => setSelectedScreenshot(item.id)}>
+                          <img className="block h-[120px] w-full object-contain" src={item.url} alt={t(`截图 ${index + 1}：${item.file.name}`)} />
+                        </button>
+                        <button type="button" className="absolute top-4 right-4 grid size-7 place-items-center rounded-full bg-black/60 text-xs text-white hover:bg-black/75" aria-label={t(`移除截图 ${index + 1}`)} onClick={() => setScreenshots(items => items.filter((_, i) => i !== index))}>✕</button>
+                        <figcaption className="mt-2 min-w-0 text-[13px] text-ink" title={item.file.name}>
+                          <span className="block truncate">{item.file.name}</span>
+                          <small className="block text-xs text-muted">{(item.file.size / 1024 / 1024).toFixed(2)} MiB</small>
+                        </figcaption>
+                        <details className="mt-1.5 text-[13px]">
+                          <summary className="flex min-h-9 cursor-pointer items-center text-muted hover:text-ink">{t("调整截图位置")}</summary>
+                          <label className="mt-1 block text-xs text-muted">{t("截图位置")}
+                            <select className="mt-1 block h-9 w-full min-w-0 rounded-row border-0 bg-panel px-2 font-sans text-[13px] text-ink shadow-ring-2" aria-label={t(`截图 ${index + 1} 的位置`)} value={item.field} onChange={event => setScreenshots(items => items.map(image => image.id === item.id ? { ...image, field: event.target.value } : image))}>
+                              <option value="">{t("单独的截图小节")}</option>
+                              {template?.fields.filter(field => canAttach(field) && acceptsScreenshot(field, item.file.type)).map(field => <option key={field.id} value={field.id}>{t(field.label)}</option>)}
+                            </select>
+                          </label>
+                        </details>
+                      </figure>)}
+                    </div>}
+                  </section>
+
+                  <section className="mt-8" aria-labelledby="feedback-step-contacts">
+                    <h2 id="feedback-step-contacts" className={stepTitleClass}>
+                      {t("4. 留下联系方式（可选）")}
+                      {contactFields.some(field => form[field.name].trim()) && <span className="ml-2 text-[13px] font-normal text-muted">{t("· 已填写")}</span>}
+                    </h2>
+                    <p className={cx(hintClass, "mt-1.5 text-sm")}>{t("方便维护者进一步了解情况，可填写任意一项或全部留空。联系方式会随 Issue 公开，请只提供愿意公开的账号。")}</p>
+                    <div className="mt-3 grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-x-2.5 gap-y-3">
+                      {contactFields.map(field => <label key={field.name} className="block min-w-0 text-[13px] text-muted">{t(field.label)}
+                        <input className={cx(inputClass, "mt-1.5 text-[14.5px]")} name={field.name} type={field.type} value={form[field.name]} maxLength={field.max} placeholder={t(field.placeholder)} autoCapitalize="none" spellCheck={false} onChange={event => setForm({ ...form, [field.name]: event.target.value })} />
+                      </label>)}
+                    </div>
+                  </section>
                 </fieldset>
-                <p className="feedback-hint">{t("遇到出错、无法使用，选择问题反馈；想增加功能或改善体验，选择功能建议。")}</p>
-                <p className="feedback-hint">{t("切换类型会保留当前页面中的草稿，刷新或关闭页面后不会保留。")}</p>
-                <h2 className="feedback-section-heading">{t("3. 描述你的反馈")}</h2>
-                <p className="feedback-hint">{t("标注“必填”或 * 的项目必须填写，其余可以跳过。按自己的话描述即可。")}</p>
-                <div className="feedback-progress"><span>{t("必填内容已完成")}{t(completedFields + Number(titleComplete))} / {t(requiredFields.length + 1)} {t("项")}</span><progress aria-label={t("必填内容完成进度")} value={completedFields + Number(titleComplete)} max={requiredFields.length + 1} /></div>
-                <label>{t("用一句话概括")}<span className="feedback-required" aria-hidden="true">*</span><input name="title" value={form.title} minLength={5} maxLength={100} required aria-describedby="feedback-title-hint" placeholder={t("例如：候选字显示为方框，或希望能调整字号")} onChange={event => setForm({ ...form, title: event.target.value })} /></label>
-                <p id="feedback-title-hint" className="feedback-hint">{t("写清楚哪里出了问题，或希望增加什么。5–100 个字符，不用考虑技术术语。")}</p>
-                <FeedbackFields template={template} answers={form.answers} onChange={(id, value) => setForm(previous => ({ ...previous, answers: { ...previous.answers, [id]: value } }))} upload={renderUpload} />
-              </>)}
-              <section className="feedback-screenshots">
-                <label htmlFor="screenshots-general">{t("补充截图（可选）")}</label>
-                <p id="screenshot-hint" className="feedback-hint">{t("支持 PNG、JPEG、WebP，最多 3 张，每张不超过 5 MiB。截图将随 Issue 公开，请先遮挡个人信息。")}</p>
-                {t(renderUpload())}
-                {t(screenshotsEnabled === null && <p className="feedback-hint" role="status">{t("正在检查截图上传服务…")}</p>)}
-                {t(screenshotsEnabled === false && <p className="feedback-hint">{t("截图上传暂不可用，仍可提交文字反馈。")}</p>)}
-                {t(readingImages && <p role="status">{t("正在读取截图…")}</p>)}
-                {t(imageError && <p className="feedback-error" role="alert">{t(imageError)}</p>)}
-                <div className="feedback-image-grid">{screenshots.map((item, index) => <figure key={item.id}>
-                  <button type="button" className="feedback-thumbnail" aria-label={t(`放大查看 ${item.file.name}`)} onClick={() => setSelectedScreenshot(item.id)}><img src={item.url} alt={t(`截图 ${index + 1}：${item.file.name}`)} /><span>{t("放大查看 ↗")}</span></button>
-                  <figcaption title={t(item.file.name)}>{item.file.name}<small>{t((item.file.size / 1024 / 1024).toFixed(2))} MiB</small></figcaption>
-                  <details className="feedback-image-position"><summary>{t("调整截图位置")}</summary><label>{t("截图位置")}<select aria-label={t(`截图 ${index + 1} 的位置`)} value={item.field} onChange={event => setScreenshots(items => items.map(image => image.id === item.id ? { ...image, field: event.target.value } : image))}><option value="">{t("单独的截图小节")}</option>{t(template?.fields.filter(field => canAttach(field) && acceptsScreenshot(field, item.file.type)).map(field => <option key={field.id} value={field.id}>{t(field.label)}</option>))}</select></label></details>
-                  <button type="button" className="btn btn-ghost" aria-label={t(`移除截图 ${index + 1}`)} onClick={() => setScreenshots(items => items.filter((_, i) => i !== index))}>{t("移除")}</button>
-                </figure>)}</div>
-              </section>
-              <details className="feedback-contacts">
-                <summary>{t("留下联系方式（可选）")}{t(contactFields.some(field => form[field.name].trim()) && <span className="feedback-hint"> {t("· 已填写")}</span>)}</summary>
-                <p className="feedback-hint">{t("方便维护者进一步了解情况，可填写任意一项或全部留空。填写的联系方式会随 Issue 公开，请只提供愿意公开的账号。")}</p>
-                <div className="feedback-contact-grid">
-                  {t(contactFields.map(field => <label key={field.name}>{t(field.label)}
-                    <input name={field.name} type={field.type} value={form[field.name]} maxLength={field.max} placeholder={t(field.placeholder)} autoCapitalize="none" spellCheck={false} onChange={event => setForm({ ...form, [field.name]: event.target.value })} />
-                  </label>))}
+              </div>
+
+              {/* biome-ignore lint/a11y/noNoninteractiveTabindex: WAI-ARIA Tab 面板允许键盘聚焦以阅读预览正文。 */}
+              <div id="feedback-panel-preview" role="tabpanel" aria-labelledby="feedback-tab-preview" hidden={tab !== "preview"} tabIndex={0}>
+                {previewIssue && !templateLoading && !templateError ? <article className="[overflow-wrap:anywhere]">
+                  <p className="m-0 text-[13px] text-muted">{t(`将在 ${target.repo} 创建的 Issue`)}</p>
+                  <h2 className="m-0 mt-1.5 font-heading text-[19px] leading-normal font-bold text-ink">{previewIssue.title || t("尚未填写标题")}</h2>
+                  {previewIssue.labels.length > 0 && <ul className="m-0 mt-3 flex list-none flex-wrap gap-1.5 p-0" aria-label={t("标签")}>
+                    {previewIssue.labels.map(label => <li key={label}><Pill tone="neutral" mono>{label}</Pill></li>)}
+                  </ul>}
+                  {/* biome-ignore lint/security/noDangerouslySetInnerHtml: markdown-it 禁用 HTML 透传并校验链接协议。 */}
+                  <div ref={previewBody} className={cx(markdownClass, "mt-5")} dangerouslySetInnerHTML={{ __html: markdown.render(previewIssue.body) }} />
+                </article> : <p className={hintClass}>{t("请先在“填写”中加载仓库模板。")}</p>}
+              </div>
+
+              <section className="mt-8 shadow-divider-t pt-8" aria-labelledby="feedback-step-submit">
+                <h2 id="feedback-step-submit" className={stepTitleClass}>{t("5. 确认并提交")}</h2>
+                <fieldset className="m-0 min-w-0 border-0 p-0" disabled={busy || readingImages}>
+                  <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-sm leading-[1.75] text-body">
+                    <input className={cx(checkClass, "mt-[5px]")} name="consent" type="checkbox" required checked={consent} onChange={event => setConsent(event.target.checked)} />
+                    <span>{t("我同意将以上文字、截图及自愿填写的联系方式公开发布到 GitHub，确认不包含密码、令牌或其他不愿公开的信息。")}</span>
+                  </label>
+                </fieldset>
+                <div className="feedback-verification mt-5 flex flex-col items-start gap-2 rounded-field outline-none" tabIndex={-1}>
+                  <div ref={widget} />
+                  <p className={cx(hintClass, "text-[13px]")} role="status">{t(status)}</p>
+                  {!token && widgetId.current !== undefined && <Button variant="ghost" size="sm" disabled={busy || readingImages} onClick={() => { if (widgetId.current !== undefined) window.turnstile?.reset(widgetId.current); }}>{t("重新验证")}</Button>}
                 </div>
-              </details>
-            </fieldset>
+                {uncertainUrl && <p className="m-0 mt-4 text-sm"><a href={uncertainUrl} target="_blank" rel="noreferrer">{t("先查看最新 Issue ↗")}</a></p>}
+                <div className="mt-5 flex flex-wrap items-center gap-3">
+                  {tab === "edit" && <Button variant="ghost" onClick={() => { selectTab("preview", true); document.getElementById("feedback-tab-preview")?.scrollIntoView({ block: "start", behavior: "smooth" }); }}>{t("先预览内容")}</Button>}
+                  <Button type="submit" disabled={busy || readingImages || templateLoading || !template || Boolean(templateError)}>{t(busy ? "正在提交…" : "提交反馈")}</Button>
+                  <span className="min-w-0 text-[13.5px] text-muted">{t(submitHint)}</span>
+                </div>
+              </section>
             </div>
-            {/* biome-ignore lint/a11y/noNoninteractiveTabindex: WAI-ARIA Tab 面板允许键盘聚焦以阅读预览正文。 */}
-            <div id="feedback-panel-preview" role="tabpanel" aria-labelledby="feedback-tab-preview" hidden={tab !== "preview"} tabIndex={0}>
-              {t(previewIssue && !templateLoading && !templateError ? <article className="feedback-issue">
-                <h2 className="feedback-issue-title">{previewIssue.title || t("尚未填写标题")}</h2>
-                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: markdown-it 禁用 HTML 透传并校验链接协议。 */}
-                <div ref={previewBody} className="feedback-issue-body" dangerouslySetInnerHTML={{ __html: markdown.render(previewIssue.body) }} />
-              </article> : <p className="feedback-hint">{t("请先在“填写”中加载仓库模板。")}</p>)}
-            </div>
-            <h2 className="feedback-section-heading">{t("4. 确认并提交")}</h2>
-            <p className="feedback-hint">{t("可以在顶部“预览”检查内容。提交成功后会获得反馈链接，方便查看处理进展。")}</p>
-            <fieldset disabled={busy || readingImages}>
-              <label className="feedback-consent"><input name="consent" type="checkbox" required checked={consent} onChange={event => setConsent(event.target.checked)} /><span>{t("我同意将以上文字、截图及自愿填写的联系方式公开发布到 GitHub，确认不包含密码、令牌或其他不愿公开的信息。")}</span></label>
-            </fieldset>
-            <div className="feedback-verification" tabIndex={-1}><div ref={widget} /><p className="feedback-hint" role="status">{t(status)}</p>
-              {t(!token && widgetId.current !== undefined && <button type="button" className="btn btn-ghost" disabled={busy || readingImages} onClick={() => { if (widgetId.current !== undefined) window.turnstile?.reset(widgetId.current); }}>{t("重新验证")}</button>)}
-            </div>
-            {t(uncertainUrl && <p><a href={uncertainUrl} target="_blank" rel="noreferrer">{t("先查看最新 Issue ↗")}</a></p>)}
-            {t(tab === "edit" && <button className="btn btn-ghost feedback-preview-action" type="button" onClick={() => { selectTab("preview", true); document.getElementById("feedback-tab-preview")?.scrollIntoView({ block: "start", behavior: "smooth" }); }}>{t("先预览内容")}</button>)}
-            <button className="btn btn-primary" type="submit" disabled={busy || readingImages || templateLoading || !template || Boolean(templateError)}>{t(busy ? "正在提交…" : "提交反馈")}</button>
           </form>
-          <aside className="card feedback-aside">
-            <p className="feedback-kicker">{t("提交到")}</p><h2>{t(targets[form.target].label)}</h2>
-            <a href={`https://github.com/metasequoiaime/${targets[form.target].repo}/issues`} target="_blank" rel="noreferrer">{t(targets[form.target].repo)} ↗</a>
-            <hr /><h3>{t("先查常见问题")}</h3><p>{t("字体方框、设置打不开或快捷键冲突？")}<a href={href("/faq/")}>{t("查看常见问题 Q&A")}</a>{t("，试试已有的排查办法。")}</p>
-            <h3>{t("描述清楚，方便排查")}</h3>
-            <p>{t("说清楚遇到的问题、目前的做法，以及你希望的结果。提交前也可以查看已有 Issue，避免重复提交。")}</p>
-            <h3>{t("提交之后")}</h3><p>{t("页面会显示 Issue 链接。维护者将在对应仓库讨论、评估并跟进；提交并不代表已经排入开发计划。")}</p>
-            <h3>{t("隐私与安全")}</h3><p>{t("表单内容会公开。安全漏洞请按")}<a href="https://github.com/metasequoiaime/.github/blob/main/SECURITY.md" target="_blank" rel="noreferrer">{t("安全策略")}</a> {t("私下报告。")}</p>
-          </aside>
-        </div>}
-      </div>
-    </main>
+          <FeedbackAside targetLabel={target.label} repo={target.repo} />
+        </Container>
+      </main>
+    </>
   );
 }

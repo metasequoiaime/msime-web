@@ -1,32 +1,44 @@
 import { PageLoadError } from "./page-load-error";
 import { isTraditional } from "../shared/locales";
 import { loadTraditional } from "../shared/translate";
-import { LocaleLink as Link } from "./locale-link";
 import { useLocale } from "./use-locale";
 import { redirect, createMemoryHistory, createRootRoute, createRoute, createRouter, lazyRouteComponent, Outlet } from "@tanstack/react-router";
 import { usePageMeta } from "./page-meta";
 import { docsSearchSchema } from "./docs-search";
 import { SiteShell } from "./site-shell";
+import { Container, Grove, LinkButton } from "./ui";
+
+/** The dawn redwood grove beside the 404 message: far row faint, near row solid, as in the home hero. */
+const NOT_FOUND_GROVE = {
+  far: [[8, 95, 0.62], [122, 81, 0.7], [224, 101, 0.58]],
+  near: [[56, 27, 1.02], [170, 44, 0.92]],
+} as const;
 
 function NotFoundPage() {
   const { t } = useLocale();
   usePageMeta();
   return (
-    <main className="content-page">
-      <div className="container">
-        <div className="card">
-          <h1>{t("页面不存在")}</h1>
-          <p>{t("这个地址下没有内容，可能是链接过期或输错了。")}</p>
-          <div className="btn-row">
-            <Link className="btn btn-primary" to="/">
+    <main>
+      <Container width="inner" className="page-enter grid items-center gap-[clamp(28px,5vw,72px)] pt-[clamp(48px,8vw,112px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
+        <div className="min-w-0">
+          <p className="m-0 font-mono text-sm font-medium tracking-[.16em] text-accent-ink">404</p>
+          <h1 className="mt-3 mb-3.5 font-heading text-[clamp(32px,4.2vw,50px)] leading-[1.25] font-bold text-ink">{t("页面不存在")}</h1>
+          <p className="m-0 text-[16.5px] leading-[1.85] text-body">{t("这个地址下没有内容，可能是链接过期或输错了。可以回到首页重新开始，或者直接查看使用指南。")}</p>
+          <div className="mt-9 flex flex-wrap gap-3">
+            <LinkButton size="lg" to="/">
               {t("回到首页")}
-            </Link>
-            <Link className="btn btn-ghost" to="/docs/$guide/" params={{ guide: "windows" }}>
+            </LinkButton>
+            <LinkButton size="lg" variant="secondary" to="/docs/$guide/" params={{ guide: "windows" }}>
               {t("查看文档")}
-            </Link>
+            </LinkButton>
           </div>
         </div>
-      </div>
+        <svg className="mx-auto hidden w-full max-w-[300px] lg:block" viewBox="0 0 300 200" aria-hidden="true">
+          <Grove trees={NOT_FOUND_GROVE.far} opacity={0.3} />
+          <Grove trees={NOT_FOUND_GROVE.near} />
+          <path d="M0 199.5H300" style={{ stroke: "var(--hair-2)" }} />
+        </svg>
+      </Container>
     </main>
   );
 }
@@ -36,7 +48,16 @@ function RootLayout() {
   return <Outlet />;
 }
 
-const rootRoute = createRootRoute({ component: RootLayout, beforeLoad: ({ location }) => isTraditional(location.pathname) ? loadTraditional() : undefined });
+/** Unmatched addresses never enter the pathless shell route, so the root renders the shell around the not-found page itself. */
+function ShellNotFound() {
+  return (
+    <SiteShell>
+      <NotFoundPage />
+    </SiteShell>
+  );
+}
+
+const rootRoute = createRootRoute({ component: RootLayout, notFoundComponent: ShellNotFound, beforeLoad: ({ location }) => isTraditional(location.pathname) ? loadTraditional() : undefined });
 
 /**
  * 无路径的布局层：顶栏、导航和页脚都挂在这里，站内换页时它们不重挂，导航胶囊才能连续地滑过去。
@@ -134,6 +155,12 @@ const wordsRoute = createRoute({
   component: lazyRouteComponent(() => import("./page-words"), "WordsPage"),
 });
 
+const releasesRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/releases",
+  component: lazyRouteComponent(() => import("./page-releases"), "ReleasesPage"),
+});
+
 const resumeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/resume",
@@ -148,6 +175,7 @@ const traditionalRoutes = [
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/faq", component: lazyRouteComponent(() => import("./page-faq"), "FaqPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/feedback", component: lazyRouteComponent(() => import("./page-feedback"), "FeedbackPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/words", component: lazyRouteComponent(() => import("./page-words"), "WordsPage") }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/releases", component: lazyRouteComponent(() => import("./page-releases"), "ReleasesPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/about", component: lazyRouteComponent(() => import("./page-about"), "AboutPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/code", component: lazyRouteComponent(() => import("./page-code"), "CodePage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/price", component: lazyRouteComponent(() => import("./page-price"), "PricePage") }),
@@ -157,7 +185,7 @@ const traditionalRoutes = [
 ];
 
 const routeTree = rootRoute.addChildren([
-  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, priceRoute, privacyRoute, feedbackRoute, wordsRoute]),
+  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, priceRoute, privacyRoute, feedbackRoute, wordsRoute, releasesRoute]),
   resumeRoute,
 ]);
 
