@@ -159,7 +159,7 @@ export function WordsPage() {
         variant="plain"
         kicker="一起完善词库"
         title="提交词条"
-        lead="输入法打不出想要的词？可以在这里提交词语和拼音，无需 GitHub 账号。提交的词条会写入词库仓库 msime-customdict 的公开 Pull Request，由维护者逐条审核；审核通过后随之后发布的词库版本在所有平台生效，不会立即出现在你的输入法里。"
+        lead="输入法打不出想要的词？可以在这里提交词语和拼音，无需 GitHub 账号。提交的词条会写入词库仓库 msime-dictionary 的公开 Pull Request，由维护者逐条审核；审核通过后随之后发布的词库版本在所有平台生效，不会立即出现在你的输入法里。"
       />
       <main className="w-full">
         <Container className="flex flex-wrap items-start gap-6 pt-8">
@@ -213,7 +213,7 @@ export function WordsPage() {
             <Card tone="muted" className="rounded-tile px-6 py-[22px]">
               <p className="m-0 text-[13px] text-muted">{t("提交到")}</p>
               <p className="m-0 mt-1.5 font-heading text-lg font-bold text-ink">{t("水杉输入法词库")}</p>
-              <a className="mt-1.5 inline-block font-mono text-[13.5px]" href={PULLS_URL} target="_blank" rel="noreferrer">msime-customdict ↗</a>
+              <a className="mt-1.5 inline-block font-mono text-[13.5px]" href={PULLS_URL} target="_blank" rel="noreferrer">msime-dictionary ↗</a>
             </Card>
             <Card className="flex flex-col gap-4 rounded-tile px-6 py-[22px]">
               <Tip title="为什么要填拼音">{t("很多字有多个读音，自动注音容易出错。请按实际读音填写，例如“行长”应填 hang'zhang。")}</Tip>

@@ -60,7 +60,7 @@ test('backend responses are parsed strictly and every documented status has a me
   assert.ok(readFileSync(new URL('../public/_headers', import.meta.url), 'utf8').match(/connect-src ([^;]+)/)[1].split(' ').includes(BACKEND_ORIGIN), 'CSP connect-src must allow the backend origin');
   assert.equal(wordsConfigSchema.safeParse({ site_key: 'k', enabled: true }).success, true);
   assert.equal(wordsConfigSchema.safeParse({ siteKey: 'k' }).success, false);
-  // msime-dictionary is the canonical name GitHub returns (ime-dictionary is only a redirect); msime-customdict stays accepted until msime-cloud deploys the switch. The first URL is the shape msime-cloud#58's tests expect.
+  // msime-dictionary is the canonical name GitHub returns (ime-dictionary is only a redirect); msime-customdict, the archived previous target, stays accepted until no deployment can still write there. The first URL is the shape msime-cloud#58's tests expect.
   for (const url of ['https://github.com/metasequoiaime/msime-dictionary/pull/12', 'https://github.com/metasequoiaime/msime-customdict/pull/12']) assert.equal(createdSchema.safeParse({ pull_request_url: url }).success, true, url);
   for (const url of [
     'https://github.com/metasequoiaime/ime-dictionary/pull/12',
