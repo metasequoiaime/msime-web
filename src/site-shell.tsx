@@ -3,28 +3,31 @@ import { LocaleLink as Link } from "./locale-link";
 import { useLocale } from "./use-locale";
 import { baseLocalePath, traditionalPages, traditionalPath, isTraditional } from "../shared/locales";
 import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
-import { BackToTop, CheckIcon, CloseIcon, GitHubIcon, LogoMark, MenuIcon, MonitorIcon, MoonIcon, SeasonBackdrop, SunIcon, ToastProvider, chipClass, copyText, cx, useToast } from "./ui";
+import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, SeasonBackdrop, SunIcon, ToastProvider, chipClass, copyText, cx, useToast } from "./ui";
 
-/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 常见问题 is reached from the docs toolbar and the footer, 价格 from the footer. */
-const NAV_ITEMS = [
+type NavItem = {
+  to: "/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
+  label: string;
+  /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
+  github?: boolean;
+};
+
+/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is the accent button at the right end of the bar instead of a tab; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). */
+const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
-  { to: "/features/", label: "功能" },
+  { to: "/feedback/", label: "Bug 与需求反馈" },
+  { to: "/words/", label: "词库缺失反馈" },
   { to: "/docs/$guide/", label: "文档" },
-  { to: "/download/", label: "下载" },
-  { to: "/releases/", label: "更新日志" },
-  { to: "/feedback/", label: "问题与建议" },
-  { to: "/words/", label: "词库共建" },
-  { to: "/code/", label: "开源代码" },
+  { to: "/code/", label: "开源代码", github: true },
   { to: "/about/", label: "关于" },
-] as const;
-
-type NavItem = (typeof NAV_ITEMS)[number];
+];
 
 const ORG_URL = "https://github.com/metasequoiaime";
-const DESKTOP_NAV_QUERY = "(min-width: 1180px)";
+// Same query Tailwind emits for the `nav:` variant (--breakpoint-nav in app.css), so JS and CSS switch layouts at the same width whatever the root font size.
+const DESKTOP_NAV_QUERY = "(width >= 73.75rem)";
 const QQ_GROUP = "829919142";
 
 /** The docs tab also covers the FAQ, which lives under the docs toolbar in the design. */
@@ -36,7 +39,7 @@ const linkParams = (item: NavItem) => (item.to === "/docs/$guide/" ? { guide: "w
 /** Round 36px header control. No display utility here: each use adds its own (`inline-flex`, or `hidden sm:inline-flex`), because two display utilities on one element resolve by stylesheet order, not class order. */
 const roundControl = "h-9 min-w-9 items-center justify-center rounded-full text-ink shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink";
 
-/** Closes a header dropdown on Escape or on a pointer press outside it. */
+/** Closes a header dropdown on Escape, on a pointer press outside it, or when keyboard focus moves out of it. */
 function useDismiss(ref: RefObject<HTMLElement | null>, isOpen: boolean, close: (restoreFocus: boolean) => void) {
   useEffect(() => {
     if (!isOpen) return;
@@ -49,22 +52,28 @@ function useDismiss(ref: RefObject<HTMLElement | null>, isOpen: boolean, close: 
         close(true);
       }
     };
+    const onFocus = (event: FocusEvent) => {
+      if (!ref.current?.contains(event.target as Node)) close(false);
+    };
     document.addEventListener("pointerdown", onPointer);
     document.addEventListener("keydown", onKey);
+    document.addEventListener("focusin", onFocus);
     return () => {
       document.removeEventListener("pointerdown", onPointer);
       document.removeEventListener("keydown", onKey);
+      document.removeEventListener("focusin", onFocus);
     };
   }, [ref, isOpen, close]);
 }
 
-/** Moves focus between menu items with the arrow keys, as the menu role promises. */
+/** Moves focus between the popover's options with the arrow keys, as the menu role promises. Left and right step too, because the options sit in rows. */
 const onMenuKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-  if (event.key !== "ArrowDown" && event.key !== "ArrowUp" && event.key !== "Home" && event.key !== "End") return;
+  const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
+  const backward = event.key === "ArrowUp" || event.key === "ArrowLeft";
+  if (!forward && !backward && event.key !== "Home" && event.key !== "End") return;
   const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitemradio"]'));
   const index = items.indexOf(document.activeElement as HTMLElement);
-  const next =
-    event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : event.key === "ArrowDown" ? (index + 1) % items.length : (index - 1 + items.length) % items.length;
+  const next = event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : forward ? (index + 1) % items.length : (index - 1 + items.length) % items.length;
   event.preventDefault();
   items[next]?.focus();
 };
@@ -74,101 +83,33 @@ const buttonCenter = (button: HTMLElement | null): RevealOrigin | undefined => {
   return box && { x: box.left + box.width / 2, y: box.top + box.height / 2 };
 };
 
-function MenuPanel({ id, label, children }: { id: string; label: string; children: ReactNode }) {
-  return (
-    <div
-      id={id}
-      role="menu"
-      aria-label={label}
-      onKeyDown={onMenuKeyDown}
-      className="absolute top-11 right-0 z-40 w-[220px] rounded-menu bg-panel p-1.5 shadow-card"
-    >
-      {children}
-    </div>
+/** One option tile in the palette popover. */
+const optionClass = (checked: boolean) =>
+  cx(
+    "flex min-w-0 flex-col items-center justify-center gap-1.5 rounded-tab px-1 py-2 text-[13px] font-semibold no-underline transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent",
+    checked ? "bg-accent-soft text-accent-ink shadow-ring-accent hover:text-accent-ink" : "text-body hover:bg-panel-2 hover:text-ink"
   );
-}
 
-function MenuItem({ checked, onSelect, children }: { checked: boolean; onSelect: () => void; children: ReactNode }) {
-  return (
-    <button
-      type="button"
-      role="menuitemradio"
-      aria-checked={checked}
-      data-checked={checked || undefined}
-      onClick={onSelect}
-      className={cx("flex w-full items-center gap-2.5 rounded-tab px-3 py-2.5 text-left transition-colors", checked ? "bg-accent-soft" : "hover:bg-panel-2")}
-    >
-      {children}
-      <span className="ml-auto flex w-4 flex-none justify-center text-accent-ink">{checked && <CheckIcon size={14} />}</span>
-    </button>
-  );
-}
-
-function SeasonSwitcher({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
+function OptionGroup({ label, columns, children }: { label: string; columns: string; children: ReactNode }) {
   const { t } = useLocale();
-  const { season, setSeason } = useTheme();
-  const rootRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const close = useCallback((restoreFocus: boolean) => {
-    setOpen(false);
-    if (restoreFocus) buttonRef.current?.focus();
-  }, [setOpen]);
-  useDismiss(rootRef, isOpen, close);
-
-  useEffect(() => {
-    if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitemradio"][aria-checked="true"]')?.focus();
-  }, [isOpen]);
-
-  const monthSeason = SEASON_NAMES[seasonForMonth(new Date().getMonth() + 1)];
-
+  const labelId = useId();
   return (
-    <div className="relative" data-season-menu ref={rootRef}>
-      <button
-        ref={buttonRef}
-        id="season-button"
-        type="button"
-        title={t("切换季节皮肤")}
-        aria-label={t("切换季节皮肤")}
-        aria-haspopup="menu"
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? "season-options" : undefined}
-        onClick={() => setOpen(!isOpen)}
-        className={cx(roundControl, "inline-flex gap-1.5 pr-3 pl-2.5 text-sm")}
-      >
-        <span className="size-2.5 flex-none rounded-full bg-accent shadow-[0_0_0_3px_var(--accent-soft)]" aria-hidden="true" />
-        {/* The label follows html[data-season] through CSS, so the static HTML and the hydrated page always agree with the colours on screen. */}
-        <span aria-hidden="true">
-          <span className="hidden spring:inline">{t(SEASON_NAMES.spring)}</span>
-          <span className="hidden summer:inline">{t(SEASON_NAMES.summer)}</span>
-          <span className="hidden autumn:inline">{t(SEASON_NAMES.autumn)}</span>
-          <span className="hidden winter:inline">{t(SEASON_NAMES.winter)}</span>
-        </span>
-      </button>
-
-      {isOpen && (
-        <MenuPanel id="season-options" label={t("季节皮肤")}>
-          {SEASON_CHOICES.map((choice) => {
-            const option = SEASON_OPTIONS[choice];
-            return (
-              <MenuItem
-                key={choice}
-                checked={season === choice}
-                onSelect={() => {
-                  close(true);
-                  setSeason(choice, buttonCenter(buttonRef.current));
-                }}
-              >
-                <span className="size-3.5 flex-none rounded-full" style={{ background: option.dot }} aria-hidden="true" />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[14.5px] font-semibold text-ink">{t(option.name)}</span>
-                  <span className="mt-px block text-xs text-muted">{t(choice === "auto" ? `${option.sub} · 当前${monthSeason}` : option.sub)}</span>
-                </span>
-              </MenuItem>
-            );
-          })}
-        </MenuPanel>
-      )}
+    <div className="not-first:mt-2 not-first:pt-2 not-first:shadow-divider-t">
+      <p id={labelId} className="m-0 px-1.5 pt-0.5 pb-1.5 text-xs font-semibold text-muted">
+        {t(label)}
+      </p>
+      <fieldset aria-labelledby={labelId} className={cx("m-0 grid min-w-0 gap-1 border-0 p-0", columns)}>
+        {children}
+      </fieldset>
     </div>
+  );
+}
+
+function OptionButton({ checked, onSelect, children }: { checked: boolean; onSelect: () => void; children: ReactNode }) {
+  return (
+    <button type="button" role="menuitemradio" aria-checked={checked} data-checked={checked || undefined} onClick={onSelect} className={optionClass(checked)}>
+      {children}
+    </button>
   );
 }
 
@@ -178,60 +119,121 @@ const THEME_ICONS: Record<ThemeChoice, ReactNode> = {
   system: <MonitorIcon />,
 };
 
-function ThemeSwitcher({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
+/** The 简/繁 pair in the palette popover. The other script is a plain link (`.header-language`, a full page load, keeping the search params once they are known); the current one only closes the popover. */
+function LanguageOptions({ onCurrent }: { onCurrent: () => void }) {
+  const languagePath = useLocation({ select: (value) => value.pathname });
+  const languageSearch = useLocation({ select: (value) => value.searchStr });
+  const searchReady = useSearchReady();
+  const tw = isTraditional(languagePath);
+  const base = baseLocalePath(languagePath);
+  const target = tw ? (base === "/docs/" ? "/docs/windows/" : base) : traditionalPath(base in traditionalPages ? base : "/");
+  const current = (
+    <OptionButton key="current" checked onSelect={onCurrent}>
+      <span lang={tw ? "zh-Hant-TW" : "zh-Hans"}>{tw ? "繁體中文" : "简体中文"}</span>
+    </OptionButton>
+  );
+  const other = (
+    <a
+      key="other"
+      role="menuitemradio"
+      aria-checked={false}
+      className={cx("header-language", optionClass(false))}
+      lang={tw ? "zh-Hans" : "zh-Hant-TW"}
+      hrefLang={tw ? "zh-Hans" : "zh-Hant-TW"}
+      href={target + (searchReady ? languageSearch : "")}
+      title={tw ? "切換到簡體中文" : "切换到繁体中文"}
+    >
+      {tw ? "简体中文" : "繁體中文"}
+    </a>
+  );
+  // Simplified always comes first, whichever page this is.
+  return tw ? [other, current] : [current, other];
+}
+
+/**
+ * The one round palette button: light/dark/system, the seasonal skin and the 简/繁 switch in a single popover.
+ *
+ * The popover stays open while options are picked, so theme and season can be tried in a row; the colour wipe still starts from the button. Escape closes it and returns focus to the button, a press outside or tabbing away closes it without moving focus.
+ */
+function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
   const { t } = useLocale();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, season, setSeason } = useTheme();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const close = useCallback((restoreFocus: boolean) => {
-    setOpen(false);
-    if (restoreFocus) buttonRef.current?.focus();
-  }, [setOpen]);
+  const close = useCallback(
+    (restoreFocus: boolean) => {
+      setOpen(false);
+      if (restoreFocus) buttonRef.current?.focus();
+    },
+    [setOpen]
+  );
   useDismiss(rootRef, isOpen, close);
 
   useEffect(() => {
     if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitemradio"][aria-checked="true"]')?.focus();
   }, [isOpen]);
 
+  const monthSeason = SEASON_NAMES[seasonForMonth(new Date().getMonth() + 1)];
+  const label = t("外观与语言");
+
   return (
     <div className="relative" id="theme-switcher" ref={rootRef}>
       <button
         ref={buttonRef}
-        className={cx(roundControl, "inline-flex w-9")}
+        className={cx(roundControl, "inline-flex w-9", isOpen && "bg-panel-2")}
         id="theme-button"
         type="button"
-        title={t("切换深浅色")}
-        aria-label={t("切换深浅色")}
+        title={label}
+        aria-label={label}
         aria-haspopup="menu"
         aria-expanded={isOpen}
         aria-controls={isOpen ? "theme-options" : undefined}
         onClick={() => setOpen(!isOpen)}
       >
-        {/* As in the design: a moon while light, a sun while dark. Chosen by CSS from html[data-theme], so it is right from the first paint. */}
-        <MoonIcon className="dark:hidden" />
-        <SunIcon className="hidden dark:block" />
+        <PaletteIcon />
       </button>
 
       {isOpen && (
-        <MenuPanel id="theme-options" label={t("主题模式")}>
-          {THEME_CHOICES.map((choice) => (
-            <MenuItem
-              key={choice}
-              checked={theme === choice}
-              onSelect={() => {
-                // 关菜单要排在换主题前面：setTheme 里的 flushSync 会把这之前排队的更新一起冲掉，菜单才不会留在擦除后的新画面里。
-                close(true);
-                // 擦除从主题按钮的中心铺开，而不是从被点的那个菜单项 —— 按钮才是这个控件在页面上的位置
-                setTheme(choice, buttonCenter(buttonRef.current));
-              }}
-            >
-              <span className="flex size-3.5 flex-none items-center justify-center text-muted" aria-hidden="true">
-                {THEME_ICONS[choice]}
-              </span>
-              <span className="text-[14.5px] font-semibold text-ink">{t(THEME_LABELS[choice])}</span>
-            </MenuItem>
-          ))}
-        </MenuPanel>
+        <div
+          id="theme-options"
+          role="menu"
+          aria-label={label}
+          onKeyDown={onMenuKeyDown}
+          // Below 560px the popover spans the bar (the header wrap's backdrop filter makes it the containing block), so it never runs off the left edge.
+          className="absolute top-11 right-0 z-40 w-[300px] rounded-menu bg-panel p-2 shadow-card max-sm:fixed max-sm:inset-x-3 max-sm:top-[62px] max-sm:w-auto"
+        >
+          <OptionGroup label="主题" columns="grid-cols-3">
+            {THEME_CHOICES.map((choice) => (
+              <OptionButton
+                key={choice}
+                checked={theme === choice}
+                // 擦除从调色盘按钮的中心铺开，而不是从被点的那个选项 —— 按钮才是这个控件在页面上的位置
+                onSelect={() => setTheme(choice, buttonCenter(buttonRef.current))}
+              >
+                <span className="flex size-4 items-center justify-center" aria-hidden="true">
+                  {THEME_ICONS[choice]}
+                </span>
+                {t(THEME_LABELS[choice])}
+              </OptionButton>
+            ))}
+          </OptionGroup>
+
+          <OptionGroup label="季节皮肤" columns="grid-cols-5">
+            {SEASON_CHOICES.map((choice) => {
+              const option = SEASON_OPTIONS[choice];
+              return (
+                <OptionButton key={choice} checked={season === choice} onSelect={() => setSeason(choice, buttonCenter(buttonRef.current))}>
+                  <span className="size-4 flex-none rounded-full shadow-hair" style={{ background: option.dot }} aria-hidden="true" />
+                  <span title={t(choice === "auto" ? `${option.sub} · 当前${monthSeason}` : option.sub)}>{t(option.name)}</span>
+                </OptionButton>
+              );
+            })}
+          </OptionGroup>
+
+          <OptionGroup label="语言" columns="grid-cols-2">
+            <LanguageOptions onCurrent={() => close(true)} />
+          </OptionGroup>
+        </div>
       )}
     </div>
   );
@@ -298,6 +300,7 @@ function DesktopNav() {
         {NAV_ITEMS.map((item) => (
           <li key={item.to}>
             <Link to={item.to} params={linkParams(item)} className="nav-link" activeOptions={{ exact: true, includeSearch: false }} activeProps={{}} aria-current={isCurrent(item, path) ? "page" : undefined}>
+              {item.github && <GitHubIcon size={15} />}
               {t(item.label)}
             </Link>
           </li>
@@ -331,17 +334,12 @@ function MobileNav({ isOpen, onNavigate }: { isOpen: boolean; onNavigate: () => 
                   current ? "bg-accent-soft font-semibold text-accent-ink hover:text-accent-ink" : "font-medium text-body hover:bg-hover hover:text-ink"
                 )}
               >
+                {item.github && <GitHubIcon size={16} className="mr-2 flex-none" />}
                 {t(item.label)}
               </Link>
             </li>
           );
         })}
-        <li className="sm:hidden">
-          <a href={ORG_URL} target="_blank" rel="noreferrer" className="flex h-[46px] items-center gap-2 rounded-field bg-panel-2 px-4 text-[15px] text-muted transition-colors hover:text-ink">
-            <GitHubIcon size={16} />
-            GitHub
-          </a>
-        </li>
       </ul>
     </nav>
   );
@@ -456,27 +454,6 @@ function useMenuFocus(isOpen: boolean, close: () => void) {
   }, [isOpen, close]);
 }
 
-function LanguageToggle() {
-  const languagePath = useLocation({ select: (value) => value.pathname });
-  const languageSearch = useLocation({ select: (value) => value.searchStr });
-  const searchReady = useSearchReady();
-  const tw = isTraditional(languagePath);
-  const base = baseLocalePath(languagePath);
-  const target = tw ? (base === "/docs/" ? "/docs/windows/" : base) : traditionalPath(base in traditionalPages ? base : "/");
-  return (
-    <a
-      className="header-language"
-      lang={tw ? "zh-Hans" : "zh-Hant-TW"}
-      hrefLang={tw ? "zh-Hans" : "zh-Hant-TW"}
-      href={target + (searchReady ? languageSearch : "")}
-      aria-label={tw ? "切換到簡體中文" : "切换到繁体中文"}
-      title={tw ? "切換到簡體中文" : "切换到繁体中文"}
-    >
-      {tw ? "简" : "繁"}
-    </a>
-  );
-}
-
 const footerLink = "w-max max-w-full text-sm text-muted no-underline transition-colors hover:text-accent-ink";
 
 function FooterColumn({ title, children }: { title: string; children: ReactNode }) {
@@ -527,16 +504,17 @@ function SiteFooter({ inert }: { inert: boolean }) {
           </div>
 
           <FooterColumn title="产品">
+            <Link className={footerLink} to="/features/">{t("功能")}</Link>
             <Link className={footerLink} to="/download/">{t("下载")}</Link>
-            <Link className={footerLink} to="/releases/">{t("更新日志")}</Link>
+            <Link className={footerLink} to="/download/" hash="releases">{t("更新日志")}</Link>
             <Link className={footerLink} to="/docs/$guide/" params={{ guide: "windows" }}>{t("使用指南")}</Link>
             <Link className={footerLink} to="/faq/">{t("常见问题")}</Link>
             <Link className={footerLink} to="/price/">{t("价格")}</Link>
           </FooterColumn>
 
           <FooterColumn title="参与">
-            <Link className={footerLink} to="/feedback/">{t("问题与建议")}</Link>
-            <Link className={footerLink} to="/words/">{t("词库共建")}</Link>
+            <Link className={footerLink} to="/feedback/">{t("Bug 与需求反馈")}</Link>
+            <Link className={footerLink} to="/words/">{t("词库缺失反馈")}</Link>
             <ExternalFooterLink href="https://github.com/metasequoiaime/.github/blob/main/RECRUITING.md">{t("招募开发者")}</ExternalFooterLink>
             <ExternalFooterLink href="https://github.com/metasequoiaime/.github/blob/main/CONTRIBUTING.md">{t("贡献指南")}</ExternalFooterLink>
             <ExternalFooterLink href="https://github.com/metasequoiaime/.github/blob/main/CODE_OF_CONDUCT.md">{t("行为准则")}</ExternalFooterLink>
@@ -579,14 +557,12 @@ export function SiteShell({ children }: { children?: ReactNode }) {
 function Shell({ children }: { children?: ReactNode }) {
   const { t } = useLocale();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState<"season" | "theme" | null>(null);
+  const [paletteIsOpen, setPaletteIsOpen] = useState(false);
   const closeMenu = useCallback(() => {
     setMenuIsOpen(false);
   }, []);
-  const setSeasonOpen = useCallback((open: boolean) => setOpenMenu(open ? "season" : null), []);
-  const setThemeOpen = useCallback((open: boolean) => setOpenMenu(open ? "theme" : null), []);
 
-  useHeaderBehaviour(menuIsOpen || openMenu !== null);
+  useHeaderBehaviour(menuIsOpen || paletteIsOpen);
   useMenuFocus(menuIsOpen, closeMenu);
 
   useEffect(() => {
@@ -607,21 +583,22 @@ function Shell({ children }: { children?: ReactNode }) {
 
       <div className="header-wrap">
         <header className="mx-auto flex h-[68px] max-w-[calc(1240px+2*clamp(16px,3.6vw,40px))] items-center gap-3 px-[clamp(16px,3.6vw,40px)] sm:gap-4">
-          <Link className="flex flex-none items-center gap-2.5 text-ink no-underline hover:text-ink" to="/" aria-label={t("水杉输入法 首页")}>
+          {/* Exact: on Traditional pages the target is /zh-TW/, which every other /zh-TW/* path would otherwise match as a prefix and mark current. */}
+          <Link className="flex flex-none items-center gap-2.5 text-ink no-underline hover:text-ink" to="/" activeOptions={{ exact: true, includeSearch: false }} aria-label={t("水杉输入法 首页")}>
             <LogoMark size={34} ring />
-            {/* Below 360px the wordmark plus the four round controls outgrow the bar, so the mark alone stands in (the link keeps its label). */}
+            {/* Below 360px the wordmark plus the palette, 下载 and menu controls outgrow the bar, so the mark alone stands in (the link keeps its label). */}
             <span className="text-[17px] font-bold tracking-[.03em] whitespace-nowrap max-[360px]:hidden">{t("水杉输入法")}</span>
           </Link>
 
           <DesktopNav />
 
           <div className="ml-auto flex flex-none items-center gap-1.5">
-            <a className={cx(roundControl, "hidden w-9 sm:inline-flex")} title="GitHub" aria-label="GitHub" href={ORG_URL} target="_blank" rel="noreferrer">
-              <GitHubIcon />
-            </a>
-            <LanguageToggle />
-            <SeasonSwitcher isOpen={openMenu === "season"} setOpen={setSeasonOpen} />
-            <ThemeSwitcher isOpen={openMenu === "theme"} setOpen={setThemeOpen} />
+            <PaletteMenu isOpen={paletteIsOpen} setOpen={setPaletteIsOpen} />
+            {/* The bar's one accent action, kept on every width (the menu panel no longer lists 下载). */}
+            <LinkButton to="/download/" size="pill">
+              <DownloadIcon size={16} />
+              {t("下载")}
+            </LinkButton>
             <button
               className={cx(roundControl, "inline-flex w-9 nav:hidden", menuIsOpen && "bg-panel-2")}
               id="btn-toggle"

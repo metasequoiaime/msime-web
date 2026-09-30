@@ -1,0 +1,142 @@
+import { useQuery } from "@tanstack/react-query";
+import { useCallback, useRef, useState } from "react";
+import { IOS_TESTFLIGHT_URL, PLATFORM_CATALOG, PLATFORM_NAMES, SITE_PLATFORMS } from "../data/platforms";
+import { platformsQuery } from "../data/queries";
+import { LocaleLink } from "../locale-link";
+import { recognizePlatform } from "../platform";
+import { useLocale } from "../use-locale";
+import { useSearchReady } from "../use-page-search";
+import { AnchorButton, Badge, Container, DownloadIcon, LinkButton, PlatformIcon, buttonClass, cx } from "../ui";
+import { HeroDemo } from "./hero-demo";
+import { type HeroFrame, LANGUAGES, SCHEMES, type SchemeId, useHeroCycle } from "./hero-cycle";
+
+/**
+ * 首屏的「下载」按钮：认出访客的系统就一步到位，按钮上换成该平台的标志。
+ *
+ * Windows 和 macOS 直接给安装包地址（platforms.json 里的第一个包），iOS 直接去 TestFlight，Linux 带着 `?platform=` 去下载页；还没发布安装包的平台（Android、HarmonyOS）退回普通的「下载」。静态 HTML 和水合前的第一次渲染都是指向 /download/ 的普通「下载」，认不出系统、清单还没到或读取失败时也退回它，所以预渲染出来的页面与水合结果一致。
+ */
+function HeroDownloadButton() {
+  const { t } = useLocale();
+  const hydrated = useSearchReady();
+  const platform = hydrated ? recognizePlatform() : null;
+  const direct = platform === "windows" || platform === "macos";
+  const manifest = useQuery({ ...platformsQuery(), enabled: direct });
+  const className = "shadow-btn";
+
+  if (platform && PLATFORM_CATALOG[platform].distribution !== "source") {
+    const label = t(`下载 ${PLATFORM_NAMES[platform]} 端`);
+    const logo = <PlatformIcon platform={platform} size={19} />;
+    const url = direct ? manifest.data?.platforms[platform]?.downloads[0]?.url : undefined;
+    if (url)
+      return (
+        <AnchorButton href={url} target="_self" size="lg" className={className}>
+          {logo}
+          {label}
+        </AnchorButton>
+      );
+    if (platform === "ios")
+      return (
+        <AnchorButton href={IOS_TESTFLIGHT_URL} size="lg" className={className}>
+          {logo}
+          {label}
+        </AnchorButton>
+      );
+    // 清单读取失败时仍按系统带上 `?platform=`；还在读取中就先保持普通的「下载」，免得按钮在两种链接之间闪一下
+    if (!(direct && manifest.isPending))
+      return (
+        <LinkButton to="/download/" search={{ platform }} size="lg" className={className}>
+          {logo}
+          {label}
+        </LinkButton>
+      );
+  }
+  return (
+    <LinkButton to="/download/" size="lg" className={className}>
+      <DownloadIcon size={17} strokeWidth={2} />
+      {t("下载")}
+    </LinkButton>
+  );
+}
+
+/**
+ * One animated slot of the headline. Every candidate word is stacked invisibly in the same grid cell through pseudo-elements, so the slot is always as wide as its longest word and typing never reflows the heading. Pseudo-element text stays out of the DOM text, so the heading's text content is only what is shown.
+ */
+function Slot({ text, caret, ghosts }: { text: string; caret: boolean; ghosts: string }) {
+  return (
+    <span className={cx("inline-grid justify-items-start whitespace-nowrap before:invisible before:[grid-area:1/1] after:invisible after:[grid-area:1/1]", ghosts)}>
+      <span className="[grid-area:1/1]">
+        {text}
+        {/* Zero net width: the negative margin cancels the caret's own width, so it never pushes the next word. */}
+        <span
+          className={cx("ml-[0.04em] mr-[-0.1em] inline-block h-[0.92em] w-[0.06em] bg-accent align-[-0.1em]", !caret && "invisible")}
+          aria-hidden="true"
+        />
+      </span>
+    </span>
+  );
+}
+
+/** Tailwind needs the ghost words spelled out literally; the zh-TW scheme names are the same two-character width. */
+const SCHEME_GHOSTS = "before:content-['全拼'] after:content-['五笔']";
+const LANGUAGE_GHOSTS = "before:content-['English'] after:content-['日本語']";
+
+function Headline({ frame }: { frame: HeroFrame }) {
+  const { t } = useLocale();
+  const schemes = (Object.keys(SCHEMES) as SchemeId[]).map((id) => t(SCHEMES[id].word)).join("、");
+  const languages = `${LANGUAGES.en}${t("与")}${LANGUAGES.ja}`;
+
+  return (
+    // Capped by the column width so the eleven-character first line always fits on one line, down to 360px.
+    <h1 className="m-0 mt-6 font-heading text-[clamp(26px,min(4.6vw,8.6cqi),60px)] leading-[1.22] font-bold tracking-[-.01em] text-ink">
+      <span className="block">{t("您的下一代多语言输入法")}</span>
+      <span className="block">
+        {t("面向")}
+        <span className="sr-only">
+          {schemes}
+          {t("，")}
+          {languages}
+        </span>
+        <span className="text-accent-ink" aria-hidden="true">
+          <Slot text={frame.schemeText} caret={frame.caret === "scheme"} ghosts={SCHEME_GHOSTS} />
+          <span className="inline-block w-[0.3em]" />
+          <Slot text={frame.languageText} caret={frame.caret === "language"} ghosts={LANGUAGE_GHOSTS} />
+        </span>
+      </span>
+    </h1>
+  );
+}
+
+const PLATFORM_LIST = SITE_PLATFORMS.map((id) => PLATFORM_NAMES[id]);
+
+export function HomeHero() {
+  const { t } = useLocale();
+  const hero = useRef<HTMLDivElement>(null);
+  const [hovering, setHovering] = useState(false);
+  const schemeWord = useCallback((id: SchemeId) => t(SCHEMES[id].word), [t]);
+  const frame = useHeroCycle(hero, schemeWord, hovering);
+
+  return (
+    <Container as="section" width="page" className="page-enter pt-[clamp(40px,6vw,80px)]">
+      <div ref={hero} className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-center gap-[clamp(28px,4vw,72px)]">
+        <div className="rise-enter @container min-w-0">
+          <Badge>{t("开源中文输入法 · GPL-3.0")}</Badge>
+          <Headline frame={frame} />
+          <p className="m-0 mt-6 text-[clamp(16px,1.4vw,18px)] leading-[1.85] text-body">
+            {t(`面向 ${PLATFORM_LIST.slice(0, -1).join("、")} 与 ${PLATFORM_LIST.at(-1)}`)}
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <HeroDownloadButton />
+            <LocaleLink to="/download/" className={buttonClass({ variant: "secondary", size: "lg" })}>
+              {t("更多平台")}
+              <span aria-hidden="true" className="-ml-0.5 text-[1.2em] leading-none">
+                ›
+              </span>
+            </LocaleLink>
+          </div>
+        </div>
+
+        <HeroDemo frame={frame} onHover={setHovering} />
+      </div>
+    </Container>
+  );
+}

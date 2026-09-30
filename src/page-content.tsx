@@ -18,7 +18,7 @@ type PageHeroProps = {
   lead?: ReactNode;
   /**
    * `band`: full-width header with a hairline below it and the larger title (download, code, about, docs, content pages).
-   * `plain`: the title opens the page column directly (releases, feedback, words).
+   * `plain`: the title opens the page column directly (feedback, words).
    */
   variant?: "band" | "plain";
   /** Column width: 1200px (`inner`) or 960px (`narrow`, FAQ and release notes). */

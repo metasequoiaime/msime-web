@@ -15,6 +15,9 @@ const SAMPLES = 120;
 /** Gridline steps; the first one that fits the maximum in at most four steps wins. */
 const STEPS = [1, 2, 5, 10, 20, 50, 100, 200, 250, 500, 1000, 2000, 5000];
 
+/** Repositories left off the per-repository chart: documentation and an early prototype, not products whose stars say anything about the input method. Their stars still count in the organisation total. */
+const HIDDEN_SERIES = new Set(["MSIME-Docs", "Google-PinyinIME-Rev"]);
+
 const VIEW_W = 1000;
 const VIEW_H = 300;
 const DAY = 86_400_000;
@@ -29,7 +32,7 @@ const utcDate = (time: number) => new Date(time).toISOString().slice(0, 10);
  */
 export function starCurves(community: Community): { curves: StarCurve[]; perRepository: boolean; end: number } {
   const end = Date.parse(community.generatedAt);
-  const series = community.starSeries?.filter((item) => item.points.length > 0);
+  const series = community.starSeries?.filter((item) => item.points.length > 0 && !HIDDEN_SERIES.has(item.repo));
   if (series?.length) {
     const curves = series.map((item) => ({
       name: item.repo,

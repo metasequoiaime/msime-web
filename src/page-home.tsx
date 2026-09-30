@@ -1,15 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
 import { CommunitySection } from "./community-section";
-import { IOS_TESTFLIGHT_URL, PLATFORM_CATALOG, PLATFORM_NAMES, SITE_PLATFORMS, type Distribution } from "./data/platforms";
-import { platformsQuery } from "./data/queries";
-import { HeroDemo } from "./home/hero-demo";
+import { PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution } from "./data/platforms";
+import { HomeHero } from "./home/hero";
 import { LocaleLink } from "./locale-link";
 import { usePageMeta } from "./page-meta";
-import { recognizePlatform } from "./platform";
 import { useLocale } from "./use-locale";
-import { useSearchReady } from "./use-page-search";
 import { useReveal } from "./use-reveal";
-import { AnchorButton, Badge, Card, Container, DownloadIcon, Grove, LinkButton, LogoMark, Pill, PlatformIcon, SectionHeading, cx, type GroveTree } from "./ui";
+import { AnchorButton, Card, Container, Grove, LinkButton, LogoMark, Pill, PlatformIcon, SectionHeading, cx, type GroveTree } from "./ui";
 
 const FEATURES = [
   {
@@ -42,54 +38,6 @@ const BANNER_NEAR: GroveTree[] = [[700, 145, 1.5], [830, 60, 2], [960, 128, 1.6]
 
 const SECTION_SPACING = "pt-[clamp(80px,10vw,128px)]";
 
-/**
- * 首屏的「下载」按钮：认出访客的系统就一步到位。
- *
- * Windows 和 macOS 直接给安装包地址（platforms.json 里的第一个包），iOS 直接去 TestFlight，其余平台带着 `?platform=` 去下载页。静态 HTML 和水合前的第一次渲染都是指向 /download/ 的普通「下载」，认不出系统、清单还没到或读取失败时也退回它，所以预渲染出来的页面与水合结果一致。
- */
-function HeroDownloadButton() {
-  const { t } = useLocale();
-  const hydrated = useSearchReady();
-  const platform = hydrated ? recognizePlatform() : null;
-  const direct = platform === "windows" || platform === "macos";
-  const manifest = useQuery({ ...platformsQuery(), enabled: direct });
-  const icon = <DownloadIcon size={17} strokeWidth={2} />;
-
-  if (direct) {
-    const url = manifest.data?.platforms[platform]?.downloads[0]?.url;
-    if (url)
-      return (
-        <AnchorButton href={url} target="_self" size="lg" className="shadow-btn">
-          {t(`下载 ${PLATFORM_NAMES[platform]} 版`)}
-          {icon}
-        </AnchorButton>
-      );
-  }
-  if (platform === "ios")
-    return (
-      <AnchorButton href={IOS_TESTFLIGHT_URL} size="lg" className="shadow-btn">
-        {t("下载 iOS 版")}
-        {icon}
-      </AnchorButton>
-    );
-  // 清单读取失败时仍按系统带上 `?platform=`；还在读取中就先保持普通的「下载」，免得按钮在两种链接之间闪一下
-  if (platform && !(direct && manifest.isPending)) {
-    const released = PLATFORM_CATALOG[platform].distribution !== "source";
-    return (
-      <LinkButton to="/download/" search={{ platform }} size="lg" className="shadow-btn">
-        {released ? t(`下载 ${PLATFORM_NAMES[platform]} 版`) : t("下载")}
-        {icon}
-      </LinkButton>
-    );
-  }
-  return (
-    <LinkButton to="/download/" size="lg" className="shadow-btn">
-      {t("下载")}
-      {icon}
-    </LinkButton>
-  );
-}
-
 export function HomePage() {
   const { t } = useLocale();
   usePageMeta();
@@ -97,27 +45,7 @@ export function HomePage() {
 
   return (
     <main className="w-full">
-      <Container as="section" width="page" className="page-enter pt-[clamp(40px,6vw,80px)]">
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-center gap-[clamp(28px,4vw,72px)]">
-          <div className="rise-enter @container min-w-0">
-            <Badge>{t("开源中文输入法 · GPL-3.0")}</Badge>
-            {/* The design's 4.4vw size, capped so the ten-character first clause always fits its column: on wide two-column layouts 4.4vw outgrows the column and would break the headline mid-word. */}
-            <h1 className="m-0 mt-6 font-heading text-[clamp(34px,min(4.4vw,9.8cqi),64px)] leading-[1.18] font-bold tracking-[-.01em] text-ink">
-              {t("改善中英文输入体验，")}
-              <span className="text-accent-ink">{t("让翻译发生在打字时")}</span>
-            </h1>
-            <p className="m-0 mt-6 text-[clamp(16px,1.4vw,18px)] leading-[1.85] text-body">{t("全拼、双拼、五笔，候选词旁直接显示译文。")}</p>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <HeroDownloadButton />
-              <LinkButton to="/docs/$guide/" params={{ guide: "windows" }} variant="secondary" size="lg">
-                {t("阅读文档")}
-              </LinkButton>
-            </div>
-          </div>
-
-          <HeroDemo />
-        </div>
-      </Container>
+      <HomeHero />
 
       <Container as="section" width="page" className={SECTION_SPACING}>
         <div data-reveal>

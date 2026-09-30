@@ -25,9 +25,13 @@ export const COMMUNITY_REFRESH_MS = 600_000;
 export const communityQuery = () =>
   queryOptions({
     queryKey: ["community"] as const,
-    queryFn: async ({ signal }): Promise<Community> => {
+    queryFn: async ({ signal, client, queryKey }): Promise<Community> => {
       const { data, stale } = await communitySource.load(signal);
-      return stale && !data.stale ? { ...data, stale: true } : data;
+      if (!stale) return data;
+      // A failed live refetch answers with the bundled snapshot (or the Function's cached copy), which can be older than what the page already shows from an earlier live read. Keep the newer copy, flagged as stale, instead of rolling the numbers back.
+      const previous = client.getQueryData<Community>(queryKey);
+      const kept = previous && Date.parse(previous.generatedAt) > Date.parse(data.generatedAt) ? previous : data;
+      return kept.stale ? kept : { ...kept, stale: true };
     },
     staleTime: 0,
     refetchOnMount: "always",

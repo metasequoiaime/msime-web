@@ -4,7 +4,7 @@ import { useLocale } from "../use-locale";
 import { cx } from "./cx";
 
 export type ButtonVariant = "primary" | "secondary" | "soft" | "ghost";
-export type ButtonSize = "lg" | "md" | "sm";
+export type ButtonSize = "lg" | "md" | "sm" | "pill";
 
 const VARIANTS: Record<ButtonVariant, string> = {
   /** Filled with the season's button colour. */
@@ -21,6 +21,8 @@ const SIZES: Record<ButtonSize, string> = {
   lg: "h-[52px] px-7 rounded-btn text-base font-semibold gap-2.5",
   md: "h-[46px] px-[22px] rounded-btn text-[15px] font-semibold gap-2",
   sm: "h-9 px-3.5 rounded-tab text-sm font-semibold gap-1.5",
+  /** The `sm` height as a full pill, with tighter padding on phones: the header's 下载 button, which shares the bar with the palette and menu controls. */
+  pill: "h-9 px-3 sm:px-4 rounded-full text-sm font-semibold gap-1.5",
 };
 
 /** Class string for any element that should look like a button (useful for `<summary>` or third-party links). */

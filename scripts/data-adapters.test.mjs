@@ -11,7 +11,7 @@ const community = read('public/community.json');
 const platforms = read('public/platforms.json');
 const manifest = read('public/update.json');
 const identity = value => value;
-const run = (options, signal = new AbortController().signal) => options.queryFn({ signal, queryKey: options.queryKey, meta: undefined });
+const run = (options, signal = new AbortController().signal, cached) => options.queryFn({ signal, queryKey: options.queryKey, meta: undefined, client: { getQueryData: () => cached } });
 
 test('adapters only accept same-origin paths, and site APIs only under /api/', () => {
   for (const url of ['https://evil.example/data.json', '//evil.example/data.json', 'data.json']) {
@@ -64,6 +64,26 @@ test('community query keeps its seeded key and falls back to the bundled snapsho
 
   t.mock.method(globalThis, 'fetch', async url => url === '/api/community' ? Response.json({ ...community, contributors: [{ ...community.contributors[0], url: 'javascript:alert(1)' }] }) : Response.json(community));
   assert.equal((await run(options)).stale, true, 'an invalid live answer falls through to the snapshot instead of rendering');
+});
+
+test('a failed community refetch never replaces newer data with the older snapshot', async t => {
+  const options = communityQuery();
+  const signal = new AbortController().signal;
+  const newer = { ...community, generatedAt: new Date(Date.parse(community.generatedAt) + 86_400_000).toISOString(), totalStars: community.totalStars + 5, stale: false };
+  const older = { ...community, generatedAt: new Date(Date.parse(community.generatedAt) - 86_400_000).toISOString(), stale: false };
+  t.mock.method(globalThis, 'fetch', async url => url === '/api/community' ? new Response(null, { status: 503 }) : Response.json(community));
+
+  const kept = await run(options, signal, newer);
+  assert.equal(kept.generatedAt, newer.generatedAt, 'the cached live read is newer than the snapshot');
+  assert.equal(kept.totalStars, newer.totalStars);
+  assert.equal(kept.stale, true, 'the kept copy is flagged, since this refresh failed');
+
+  const replaced = await run(options, signal, older);
+  assert.equal(replaced.generatedAt, community.generatedAt, 'an older cache still gives way to the snapshot');
+  assert.equal(replaced.stale, true);
+
+  t.mock.method(globalThis, 'fetch', async () => Response.json({ ...community, stale: false }));
+  assert.equal((await run(options, signal, newer)).generatedAt, community.generatedAt, 'a successful live answer always wins');
 });
 
 test('community schema accepts the optional star series and drops only a malformed one', () => {

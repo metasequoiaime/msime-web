@@ -36,7 +36,7 @@ export function FeedbackAside({ targetLabel, repo }: { targetLabel: string; repo
         </Tip>
         <Tip title="打不出来的词">
           {t("缺词请用")}
-          <LocaleLink to="/words/" target="_blank" rel="noreferrer">{t("词库共建")}</LocaleLink>
+          <LocaleLink to="/words/" target="_blank" rel="noreferrer">{t("词库缺失反馈")}</LocaleLink>
           {t("提交，词条会汇入词库仓库公开的 Pull Request。")}
         </Tip>
         <Tip title="隐私与安全">

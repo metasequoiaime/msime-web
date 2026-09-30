@@ -52,6 +52,16 @@ export const MonitorIcon = (props: IconProps) => (
   </StrokeIcon>
 );
 
+/** 调色盘: the header control that opens theme, season and language. */
+export const PaletteIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <path d="M12 3.2a8.8 8.8 0 1 0 0 17.6c1.1 0 1.8-.75 1.8-1.7 0-.46-.18-.86-.46-1.17a1.7 1.7 0 0 1-.44-1.13c0-.97.78-1.75 1.75-1.75h2.07a4.08 4.08 0 0 0 4.08-4.08C20.8 6.75 16.86 3.2 12 3.2z" />
+    <circle cx="7.6" cy="11.2" r="1.15" fill="currentColor" stroke="none" />
+    <circle cx="10.3" cy="7.3" r="1.15" fill="currentColor" stroke="none" />
+    <circle cx="14.9" cy="7.6" r="1.15" fill="currentColor" stroke="none" />
+  </StrokeIcon>
+);
+
 export const MenuIcon = (props: IconProps) => (
   <StrokeIcon strokeWidth={2} {...props}>
     <path d="M4 7h16M4 12h16M4 17h16" />

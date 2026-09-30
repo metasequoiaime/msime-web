@@ -17,7 +17,11 @@
     "/beta",
     "/beta/",
     "/zh-TW/beta",
-    "/zh-TW/beta/"
+    "/zh-TW/beta/",
+    "/releases",
+    "/releases/",
+    "/zh-TW/releases",
+    "/zh-TW/releases/"
   ],
   "exclude": []
 }

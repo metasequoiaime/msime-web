@@ -1,7 +1,6 @@
 import type { SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform } from "../platform.ts";
-import { LocaleLink } from "../locale-link";
 import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, cx, DownloadIcon, ExternalIcon, Pill, PlatformIcon } from "../ui";
 import { useLocale } from "../use-locale";
 import { groupByArch, readableSize } from "./template";
@@ -171,9 +170,9 @@ export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePl
         <h1 id="download-title" className="m-0 font-heading text-[clamp(22px,2.6vw,28px)] leading-[1.35] font-bold text-ink">
           {t("下载水杉输入法")}
         </h1>
-        <LocaleLink to="/releases/" className="text-sm text-accent-ink hover:text-ink">
+        <a href="#releases" className="text-sm text-accent-ink hover:text-ink">
           {t("更新日志")}
-        </LocaleLink>
+        </a>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-3 xl:grid-cols-4">
         {entries.map((entry) => {

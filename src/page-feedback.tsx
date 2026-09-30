@@ -26,7 +26,7 @@ type Draft = { title: string; answers: Answers; screenshots: LocalScreenshot[] }
 
 export function FeedbackPage() {
   const { t, tw } = useLocale();
-  usePageMeta("问题与建议 | 水杉输入法", "反馈问题或提出建议，提交内容将公开发布到 GitHub。");
+  usePageMeta("Bug 与需求反馈 | 水杉输入法", "反馈问题或提出建议，提交内容将公开发布到 GitHub。");
   const { get, choice, update } = usePageSearch();
   const targetResult = feedbackSchema.shape.target.safeParse(get("target"));
   const requestedTarget = targetResult.success ? targetResult.data : "windows";
@@ -181,7 +181,7 @@ export function FeedbackPage() {
       const details = element?.closest("details");
       if (details) details.open = true;
       element?.focus({ preventScroll: true });
-      element?.scrollIntoView({ block: "center", behavior: "smooth" });
+      element?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     });
   }
 
@@ -453,7 +453,7 @@ export function FeedbackPage() {
                 </div>
                 {uncertainUrl && <p className="m-0 mt-4 text-sm"><a href={uncertainUrl} target="_blank" rel="noreferrer">{t("先查看最新 Issue ↗")}</a></p>}
                 <div className="mt-5 flex flex-wrap items-center gap-3">
-                  {tab === "edit" && <Button variant="ghost" onClick={() => { selectTab("preview", true); document.getElementById("feedback-tab-preview")?.scrollIntoView({ block: "start", behavior: "smooth" }); }}>{t("先预览内容")}</Button>}
+                  {tab === "edit" && <Button variant="ghost" onClick={() => { selectTab("preview", true); document.getElementById("feedback-tab-preview")?.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }}>{t("先预览内容")}</Button>}
                   <Button type="submit" disabled={busy || readingImages || templateLoading || !template || Boolean(templateError)}>{t(busy ? "正在提交…" : "提交反馈")}</Button>
                   <span className="min-w-0 text-[13.5px] text-muted">{t(submitHint)}</span>
                 </div>

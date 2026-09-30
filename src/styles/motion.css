@@ -75,26 +75,6 @@
     }
   }
 
-  @keyframes fall {
-    0% {
-      transform: translate3d(0, -10vh, 0) rotate(0deg);
-      opacity: 0;
-    }
-
-    8% {
-      opacity: 0.85;
-    }
-
-    92% {
-      opacity: 0.85;
-    }
-
-    100% {
-      transform: translate3d(var(--dx), 110vh, 0) rotate(540deg);
-      opacity: 0;
-    }
-  }
-
   @keyframes themeReveal {
     from {
       clip-path: circle(0 at var(--theme-origin-x, 50%) var(--theme-origin-y, 0));
@@ -184,14 +164,6 @@
     filter: blur(60px);
   }
 
-  .season-leaf {
-    position: absolute;
-    top: 0;
-    border-radius: 100% 0 100% 0;
-    opacity: 0;
-    will-change: transform, opacity;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -207,10 +179,6 @@
     .has-reveal [data-reveal]:not(.is-revealed) {
       opacity: 1;
       transform: none;
-    }
-
-    .season-leaf {
-      display: none;
     }
   }
 }

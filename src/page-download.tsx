@@ -1,8 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useLocation } from "@tanstack/react-router";
 import { sitePlatforms } from "./data/platforms";
 import { usePlatformsQuery, useUpdateManifestQuery } from "./data/queries";
 import { DownloadGuide } from "./download/guide";
 import { DownloadPanel } from "./download/panel";
+import { ReleasesSection } from "./download/releases";
 import { fillTemplate, parseGuide } from "./download/template";
 import { usePageMeta } from "./page-meta";
 import { detectPlatform, PLATFORMS, type Platform } from "./platform";
@@ -10,9 +12,9 @@ import { Container } from "./ui";
 import { usePageSearch } from "./use-page-search";
 
 /**
- * 下载页（design-home §6）：六个平台的选择卡、所选平台的安装说明。没有单独的页头：选择卡自带 h1，紧贴导航栏，下载按钮不用滚动就能点到。
+ * 下载页（design-home §6）：六个平台的选择卡、所选平台的安装说明，最后是各平台的更新日志（`#releases`）。没有单独的页头：选择卡自带 h1，紧贴导航栏，下载按钮不用滚动就能点到。
  *
- * Test hooks kept from the previous layout: `.content-flow` wraps both `.download-panel` and `#download-content`; there is no `aside` in `main` and no `.doc-card` inside `.content-flow`. The static HTML renders the Windows choice with every platform's guide visible; `?platform=` applies after hydration.
+ * Test hooks kept from the previous layout: `.content-flow` wraps both `.download-panel` and `#download-content`; there is no `aside` in `main` and no `.doc-card` inside `.content-flow`. The release list sits after `.content-flow`, not inside it. The static HTML renders the Windows choice with every platform's guide visible; `?platform=` applies after hydration.
  */
 export function DownloadPage() {
   const { choice, update, get, ready } = usePageSearch();
@@ -42,6 +44,15 @@ export function DownloadPage() {
     return parseGuide(fillTemplate(manifest.data ?? {}, platforms.data?.platforms));
   }, [manifest.isPending, manifest.data, platforms.isPending, platforms.data]);
 
+  // A visit to /download/#releases (the old /releases/ redirects here) lands before hydration hides the other platforms' guides and before the guide loads in dev, both of which move the section. Scroll to it once more after the layout settles.
+  const hash = useLocation({ select: (location) => location.hash });
+  const settledHash = useRef(false);
+  useEffect(() => {
+    if (settledHash.current || !ready || !sections) return;
+    settledHash.current = true;
+    if (hash === "releases") document.getElementById("releases")?.scrollIntoView();
+  }, [ready, sections, hash]);
+
   return (
     <main className="w-full">
       <Container className="pt-[clamp(12px,2.4vw,32px)]">
@@ -55,6 +66,7 @@ export function DownloadPage() {
           />
           <DownloadGuide sections={sections} platform={platform} filter={ready} />
         </div>
+        <ReleasesSection />
       </Container>
     </main>
   );
