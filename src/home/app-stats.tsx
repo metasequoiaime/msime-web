@@ -22,10 +22,7 @@ export function AppStatsCard() {
   return (
     <Card className="mt-4 p-[clamp(20px,3vw,32px)]">
       <h3 className="m-0 text-sm font-semibold text-accent-ink">{t("App 创作社区")}</h3>
-      <p className="m-0 mt-1.5 text-sm leading-[1.8] text-muted">
-        {t("用户在水杉输入法 App 里分享的皮肤、词库和回复模板。")}
-        {data.stale && t("暂时无法更新，显示最近可用数据。")}
-      </p>
+      {data.stale && <p className="m-0 mt-1.5 text-sm leading-[1.8] text-muted">{t("暂时无法更新，显示最近可用数据。")}</p>}
       <dl className="m-0 mt-5 grid grid-cols-[repeat(auto-fill,minmax(min(100%,150px),1fr))] gap-x-5 gap-y-4">
         {ITEMS.map((item) => (
           <div key={item.key} className="flex flex-col-reverse">

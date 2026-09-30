@@ -66,12 +66,7 @@ function CommunityCards({ data, refreshFailed }: { data: Community; refreshFaile
     { value: groupThousands(contributors.length), label: "贡献者" },
   ];
 
-  const note = [
-    perRepository ? "点击图例可隐藏仓库，纵轴随之缩放" : "",
-    data.stale || refreshFailed ? "暂时无法更新，显示最近可用数据" : "",
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const note = data.stale || refreshFailed ? "暂时无法更新，显示最近可用数据" : "";
 
   return (
     <>
@@ -117,7 +112,6 @@ function CommunityCards({ data, refreshFailed }: { data: Community; refreshFaile
 
       <Card className="mt-4 p-[clamp(20px,3vw,32px)]" data-reveal>
         <h3 className="m-0 text-sm font-semibold text-accent-ink">{t("核心贡献者")}</h3>
-        <p className="m-0 mt-1.5 text-sm leading-[1.8] text-muted">{t(`按 ${data.repoCount} 个仓库的提交数合并排序，机器人账号不计入。`)}</p>
         <ul className="m-0 mt-5 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,220px),1fr))] gap-x-5 gap-y-3.5 p-0">
           {contributors.map((person) => (
             <li key={person.login} className="min-w-0">

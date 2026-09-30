@@ -15,17 +15,17 @@ const FEATURES = [
   {
     glyph: "译",
     title: "候选词翻译",
-    desc: "竖排候选窗里，每个候选旁显示中文与所选语种的互译，最多两个简短释义。优先使用本地释义，未命中时可接入腾讯云 TMT 或自建 DeepLX。",
+    desc: "每个候选旁显示互译，本地释义优先。",
   },
   {
     glyph: "拼",
     title: "全拼 · 双拼 · 五笔",
-    desc: "双拼支持小鹤 / 自然码 / 首道 / 微软；五笔 86 版。辅助码可选蓝天小雨点、自然码、首右 2.0、首右 Plus、小鹤，单码调序、双码筛选。",
+    desc: "四种双拼、五笔 86，外加五套辅助码。",
   },
   {
     glyph: "云",
     title: "本地优先，云端可选",
-    desc: "拼音转换、候选排序和词频学习都在本机完成。云候选、AI 联想、在线翻译与语音识别都能在设置中关闭；除云候选外，其余联网功能要你填好自己的凭据才会启用。",
+    desc: "转换与词频学习在本机完成，联网功能都能关。",
   },
 ] as const;
 
@@ -106,21 +106,13 @@ export function HomePage() {
               {t("改善中英文输入体验，")}
               <span className="text-accent-ink">{t("让翻译发生在打字时")}</span>
             </h1>
-            <p className="m-0 mt-6 text-[clamp(16px,1.4vw,18px)] leading-[1.85] text-body">
-              {t("面向 Windows、macOS、Linux、Android、iOS 与 HarmonyOS 开发，全拼、双拼、五笔都能用。候选词旁直接显示译文，不用切出去查。")}
-            </p>
+            <p className="m-0 mt-6 text-[clamp(16px,1.4vw,18px)] leading-[1.85] text-body">{t("全拼、双拼、五笔，候选词旁直接显示译文。")}</p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <HeroDownloadButton />
               <LinkButton to="/docs/$guide/" params={{ guide: "windows" }} variant="secondary" size="lg">
                 {t("阅读文档")}
               </LinkButton>
             </div>
-            {/* 主按钮可能已经换成了本机的安装包，这一行就是去看其他平台的入口 */}
-            <p className="m-0 mt-4 text-[13.5px]">
-              <LocaleLink to="/download/" className="text-muted no-underline hover:text-accent-ink">
-                Windows · macOS · Linux · Android · iOS · HarmonyOS
-              </LocaleLink>
-            </p>
           </div>
 
           <HeroDemo />
@@ -156,15 +148,14 @@ export function HomePage() {
             <rect y="399" width="1200" height="1" style={{ fill: "var(--deep-glow)", opacity: 0.3 }} />
           </svg>
           <div className="relative min-w-0 flex-1 p-[clamp(32px,4.8vw,64px)]">
-            <p className="m-0 text-sm font-semibold text-deep-glow">{t("100% 开源 · GPL-3.0")}</p>
             <h2
               id="home-privacy"
-              className="m-0 mt-3 font-heading text-[clamp(26px,3.2vw,40px)] leading-[1.3] font-bold text-white [word-break:keep-all] [overflow-wrap:anywhere]"
+              className="m-0 font-heading text-[clamp(26px,3.2vw,40px)] leading-[1.3] font-bold text-white [word-break:keep-all] [overflow-wrap:anywhere]"
             >
               {t("隐私边界，应该能被任何人读代码检查")}
             </h2>
             <p className="m-0 mt-4 max-w-[46em] text-base leading-[1.9] text-[#E4EEE6]">
-              {t("默认开启的联网功能只有 Windows 与 Linux 的云候选：它把正在输入的拼音发给 Google 输入工具来补一个候选，不带已上屏的文字，可随时关闭。其余联网功能都要你主动开启，代码全部公开可查。")}
+              {t("默认联网的只有云候选：只发送正在输入的拼音，可随时关闭。")}
             </p>
             <div className="mt-[26px] flex flex-wrap gap-3">
               <LocaleLink
@@ -189,7 +180,7 @@ export function HomePage() {
           <SectionHeading
             id="home-platforms"
             title={t("六个平台，原生体验")}
-            lead={t("macOS、Linux、Android、iOS 与 HarmonyOS 共用 Rust 输入引擎，Windows 版独立开发。")}
+            lead={t("五个平台共用 Rust 输入引擎，Windows 版独立开发。")}
             action={
               <LinkButton to="/download/" variant="soft">
                 {t("前往下载页 →")}
@@ -197,18 +188,17 @@ export function HomePage() {
             }
           />
         </div>
-        <ul className="m-0 mt-8 grid list-none grid-cols-1 gap-3 p-0 xs:grid-cols-2 xl:grid-cols-3" data-reveal-stagger>
+        <ul className="m-0 mt-8 grid list-none grid-cols-2 gap-3 p-0 xl:grid-cols-3" data-reveal-stagger>
           {SITE_PLATFORMS.map((id) => {
             const platform = PLATFORM_CATALOG[id];
             const status = DISTRIBUTION_LABELS[platform.distribution];
             return (
-              <Card as="li" key={id} className="min-w-0 rounded-tile p-6" data-reveal>
+              <Card as="li" key={id} className="min-w-0 rounded-tile p-4 sm:p-6" data-reveal>
                 <div className="flex items-center justify-between gap-3">
                   <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
                 </div>
-                <h3 className="m-0 mt-[22px] text-[22px] font-bold text-ink">{platform.name}</h3>
-                <p className="m-0 mt-1.5 text-sm leading-[1.7] text-muted">{t(platform.host)}</p>
+                <h3 className="m-0 mt-4 text-[17px] font-bold text-ink sm:mt-5 sm:text-[22px]">{platform.name}</h3>
               </Card>
             );
           })}
@@ -223,7 +213,6 @@ export function HomePage() {
           <h2 id="home-cta" className="m-0 mt-7 font-heading text-[clamp(28px,3.6vw,44px)] leading-[1.3] font-bold text-ink">
             {t("给打字换一种体验")}
           </h2>
-          <p className="m-0 mt-3 text-base leading-[1.8] text-muted">{t("各平台独立发布 · GPL-3.0 开源")}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <LinkButton to="/download/" size="lg" className="shadow-btn">
               {t("立即下载")}
