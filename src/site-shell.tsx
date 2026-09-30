@@ -328,7 +328,7 @@ function MobileNav({ isOpen, onNavigate }: { isOpen: boolean; onNavigate: () => 
                 onClick={onNavigate}
                 className={cx(
                   "flex h-[46px] items-center rounded-field px-4 text-[15px] transition-colors",
-                  current ? "bg-accent-soft font-semibold text-accent-ink hover:text-accent-ink" : "bg-panel-2 text-muted hover:text-ink"
+                  current ? "bg-accent-soft font-semibold text-accent-ink hover:text-accent-ink" : "font-medium text-body hover:bg-hover hover:text-ink"
                 )}
               >
                 {t(item.label)}
