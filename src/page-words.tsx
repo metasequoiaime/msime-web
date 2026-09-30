@@ -5,8 +5,7 @@ import { usePageMeta } from "./page-meta";
 import { FeedbackResponseError, readFeedbackResponse } from "./feedback-response";
 import { loadTurnstile } from "./turnstile";
 import { createdSchema, formatLine, submissionError, MAX_ENTRIES, MAX_NOTE_LENGTH, MAX_WORD_LENGTH, rejectedSchema, WORD_SUBMISSIONS_URL, WORDS_REPO_URL, wordEntrySchema, wordsConfigSchema, wordsSchema } from "../shared/words";
-import "./feedback.scss";
-import "./words.scss";
+import "./words.css";
 
 type Row = { id: string; word: string; pinyin: string };
 type RowErrors = Record<string, { word?: string; pinyin?: string }>;

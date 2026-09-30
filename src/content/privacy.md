@@ -61,7 +61,7 @@ Windows 和 Linux 的剪贴板历史默认关闭，开启后会在本机保存�
 以上内容依据各平台仓库的隐私说明整理。功能可能随版本调整，详细数据流程请查看：
 
 - [Windows 隐私说明](https://github.com/metasequoiaime/MSIME-Windows/blob/main/PRIVACY.md)
-- [macOS / iOS 仓库隐私说明](https://github.com/metasequoiaime/msime/blob/main/PRIVACY.md)
-- [Linux 隐私说明](https://github.com/metasequoiaime/MSIME-Linux/blob/main/PRIVACY.md)
+- [msime 主仓库隐私说明](https://github.com/metasequoiaime/msime/blob/develop/PRIVACY.md)（macOS、iOS、Android、Linux 与 HarmonyOS）
+- [旧版 Linux 隐私说明](https://github.com/metasequoiaime/MSIME-Linux/blob/main/PRIVACY.md)（MSIME-Linux 仓库，已归档）
 
 安全漏洞或涉及隐私的问题，请按[安全策略](https://github.com/metasequoiaime/.github/blob/main/SECURITY.md)私下报告。

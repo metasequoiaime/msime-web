@@ -1,0 +1,318 @@
+/*
+ * Typography for markdown rendered by src/markdown.ts: guides (`article.docs-content.docs-article`), content pages (`.docs-content` with `section.card.doc-card` per h2), FAQ answers (`.docs-content.faq-answer`) and the download body. Values follow the docs panel in design-home §5.2.
+ */
+@layer site {
+  .docs-content {
+    min-width: 0;
+    color: var(--body);
+    font-size: 15.5px;
+    line-height: 1.95;
+    overflow-wrap: break-word;
+  }
+
+  .docs-content :is(h1, h2, h3, h4) {
+    color: var(--ink);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.35;
+    border-top: 0;
+    padding-top: 0;
+    scroll-margin-top: 84px;
+  }
+
+  html:lang(zh-Hant-TW) .docs-content :is(h1, h2, h3, h4) {
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  }
+
+  .docs-content h1 {
+    margin: 0 0 24px;
+    font-size: clamp(30px, 3.6vw, 40px);
+  }
+
+  .docs-content h2 {
+    margin: 52px 0 14px;
+    font-size: clamp(26px, 3vw, 32px);
+  }
+
+  .docs-content h3 {
+    margin: 36px 0 10px;
+    font-size: 22px;
+  }
+
+  .docs-content h4 {
+    margin: 24px 0 8px;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .docs-content > :first-child,
+  .docs-content > div > :first-child {
+    margin-top: 0;
+  }
+
+  /* A guide body that opens directly on a section heading (Linux, macOS) still follows the intro above it, so that heading keeps the regular section spacing instead of sitting flush under the intro text. */
+  .docs-article > .docs-guide-intro + div > h2:first-child {
+    margin-top: 52px;
+  }
+
+  .docs-content :is(p, ul, ol, blockquote, pre) {
+    margin: 14px 0;
+  }
+
+  .docs-content strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .docs-content a {
+    color: var(--accent-ink);
+    text-decoration-line: underline;
+    text-decoration-color: var(--accent-ring);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition:
+      color 0.15s ease,
+      text-decoration-color 0.15s ease;
+  }
+
+  .docs-content a:hover {
+    color: var(--ink);
+    text-decoration-color: currentColor;
+  }
+
+  /* Lists: the design's short accent dash instead of a bullet. Ordered lists keep their numbers, tinted with the accent. */
+  .docs-content ul,
+  .docs-content ul li {
+    list-style: none;
+  }
+
+  .docs-content ul {
+    padding-left: 0;
+  }
+
+  .docs-content ul > li {
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .docs-content ul > li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 0.95em;
+    width: 6px;
+    height: 1.5px;
+    border-radius: 1px;
+    background: var(--accent);
+  }
+
+  .docs-content ol,
+  .docs-content ol li {
+    list-style: decimal;
+  }
+
+  .docs-content ol {
+    padding-left: 1.5em;
+  }
+
+  .docs-content li::marker {
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+
+  .docs-content li + li {
+    margin-top: 6px;
+  }
+
+  .docs-content li > :is(ul, ol) {
+    margin: 6px 0 0;
+  }
+
+  .docs-content blockquote {
+    padding: 2px 0 2px 16px;
+    color: var(--muted);
+    box-shadow: inset 2px 0 0 var(--accent-ring);
+  }
+
+  .docs-content hr {
+    margin: 32px 0;
+    border: 0;
+    height: 1px;
+    background: var(--hair);
+  }
+
+  /* ---- Code ---- */
+  .docs-content code {
+    padding: 0.12em 0.4em;
+    border-radius: 6px;
+    background: var(--panel-2);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+  }
+
+  .docs-content :not(pre) > code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .docs-content pre {
+    overflow-x: auto;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: var(--panel-2);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .docs-content pre code {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: inherit;
+  }
+
+  /* ---- Keys and glyph samples (markUpKeystrokes / markUpGlyphSamples) ---- */
+  /* A key is a keycap: framed, with a bottom edge. The `+` between keys stays outside the caps, so a chord reads as separate keys. */
+  kbd {
+    display: inline-block;
+    min-width: 1.9em;
+    padding: 0.14em 0.5em;
+    border: 0;
+    border-radius: 6px;
+    background: var(--panel-2);
+    box-shadow: inset 0 0 0 1px var(--hair-2), 0 1px 0 var(--hair-2);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    font-weight: 500;
+    line-height: 1.55;
+    text-align: center;
+    vertical-align: 0.06em;
+    white-space: nowrap;
+  }
+
+  .kbd-plus {
+    padding: 0 0.3em;
+    color: var(--muted);
+    font-size: 0.82em;
+  }
+
+  /* Typed output: no frame, a little larger, underlined in the accent so it reads as "the result", unlike a key to press. */
+  samp.glyph-sample,
+  .glyph-sample {
+    padding: 0 0.15em 0.05em;
+    border-bottom: 0;
+    box-shadow: inset 0 -2px 0 var(--accent-ring);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 1.12em;
+    font-weight: 500;
+  }
+
+  /* ---- Images ---- */
+  .docs-content img {
+    display: block;
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    margin: 20px auto;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px var(--hair);
+  }
+
+  .docs-content a:has(> img) {
+    text-decoration: none;
+  }
+
+  /* ---- Tables (wrapped in .table-scroll by wrapScrollableTables) ---- */
+  .table-scroll {
+    position: relative;
+    margin: 18px 0;
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px var(--hair);
+  }
+
+  /* The fade on the right edge is the only hint on a phone that another column is off-screen; it disappears at the end of the scroll. */
+  .table-scroll::after {
+    content: "";
+    position: sticky;
+    top: 0;
+    right: 0;
+    float: right;
+    width: 28px;
+    height: 100%;
+    margin-left: -28px;
+    background: linear-gradient(to left, var(--panel), transparent);
+    pointer-events: none;
+  }
+
+  .table-scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .docs-content table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+
+  .docs-content :is(th, td) {
+    min-width: clamp(88px, 24vw, 140px);
+    padding: 10px 14px;
+    border: 0;
+    box-shadow: inset 0 -1px 0 var(--hair);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .docs-content th {
+    background: var(--panel-2);
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .docs-content tr:last-child td {
+    box-shadow: none;
+  }
+
+  /* ---- Section cards (groupSections: one card per h2 on content pages) ---- */
+  section.card.doc-card,
+  .doc-card {
+    padding: clamp(24px, 3.4vw, 40px) clamp(20px, 3.6vw, 44px);
+    border-radius: 22px;
+    background: var(--panel);
+    background-image: none;
+    box-shadow: 0 0 0 1px var(--hair);
+  }
+
+  .doc-card + .doc-card {
+    margin-top: 16px;
+  }
+
+  .doc-card > :first-child {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .doc-card > :last-child {
+    margin-bottom: 0;
+  }
+
+  .doc-card > h2 {
+    margin-bottom: 16px;
+    font-size: clamp(22px, 2.4vw, 26px);
+  }
+}

@@ -5,6 +5,7 @@ import { acceptsScreenshot, validateAnswers } from "../../shared/feedback-templa
 import { loadFeedbackTemplates } from "../../shared/load-feedback-templates.ts";
 import { feedbackSchema, formatIssue, targets } from "../../shared/feedback.ts";
 import { githubAppConfig, installationToken } from "../../shared/github-app.ts";
+import { verifyTurnstile } from "../../shared/turnstile.ts";
 
 const configSchema = githubAppConfig.extend({
   TURNSTILE_SITE_KEY: z.string().trim().min(1),
@@ -84,16 +85,9 @@ export async function onRequest({ request, env }: { request: Request; env: Recor
     if (!extension || file.type !== `image/${extension}`) return json({ error: "截图内容与图片格式不符。" }, 400);
     images.push({ bytes, extension, type: file.type });
   }
-  try {
-    const verification = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      body: new URLSearchParams({ secret: TURNSTILE_SECRET, response: data.token }),
-      signal: AbortSignal.timeout(10_000),
-    });
-    if (!verification.ok) return json({ error: "验证服务暂时不可用，请重新验证后再试。" }, 503);
-    const result = z.object({ success: z.literal(true), action: z.literal("feedback"), hostname: z.literal(new URL(FEEDBACK_ORIGIN).hostname) }).safeParse(await verification.json());
-    if (!result.success) return json({ error: "验证已失效，请重新验证后提交。" }, 403);
-  } catch { return json({ error: "验证服务暂时不可用，请重新验证后再试。" }, 503); }
+  const verification = await verifyTurnstile(TURNSTILE_SECRET, data.token, "feedback", new URL(FEEDBACK_ORIGIN).hostname);
+  if (verification === "unavailable") return json({ error: "验证服务暂时不可用，请重新验证后再试。" }, 503);
+  if (verification === "rejected") return json({ error: "验证已失效，请重新验证后提交。" }, 403);
 
   // 客户端只提供答案与版本，字段定义、必填项、标签必须重新从权威仓库读取。
   let templates: Awaited<ReturnType<typeof loadFeedbackTemplates>>;

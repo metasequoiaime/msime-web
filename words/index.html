@@ -5,44 +5,59 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/x-icon" href="/msime.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="为水杉输入法词库提交新词，经维护者审核后随后续词库版本发布到所有平台。" />
-  <title>提交词条 | 水杉输入法</title>
+  <meta name="description" content="无需 GitHub 账号，为水杉输入法词库提交新词和拼音。词条经维护者审核后，随后续词库版本发布到所有平台。" />
+  <title>提交词条｜水杉输入法</title>
   <link rel="canonical" href="https://msime.app/words/" />
   <link rel="apple-touch-icon" href="/msime-logo.png" />
   <link rel="manifest" href="/site.webmanifest" />
-  <meta name="theme-color" content="#f3f5f7" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#202020" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#F5FAF6" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0E1712" media="(prefers-color-scheme: dark)" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="水杉输入法" />
   <meta property="og:locale" content="zh_CN" />
   <meta property="og:url" content="https://msime.app/words/" />
-  <meta property="og:title" content="提交词条 | 水杉输入法" />
-  <meta property="og:description" content="为水杉输入法词库提交新词，经维护者审核后随后续词库版本发布到所有平台。" />
+  <meta property="og:title" content="提交词条｜水杉输入法" />
+  <meta property="og:description" content="无需 GitHub 账号，为水杉输入法词库提交新词和拼音。词条经维护者审核后，随后续词库版本发布到所有平台。" />
   <meta property="og:image" content="https://msime.app/og-cover.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="水杉输入法：改善中英文输入体验，一套引擎，四个平台" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="提交词条 | 水杉输入法" />
-  <meta name="twitter:description" content="为水杉输入法词库提交新词，经维护者审核后随后续词库版本发布到所有平台。" />
+  <meta name="twitter:title" content="提交词条｜水杉输入法" />
+  <meta name="twitter:description" content="无需 GitHub 账号，为水杉输入法词库提交新词和拼音。词条经维护者审核后，随后续词库版本发布到所有平台。" />
   <meta name="twitter:image" content="https://msime.app/og-cover.png" />
 
   <script>
     (() => {
+      const root = document.documentElement;
+      let theme = "system";
+      let season = "auto";
       try {
-        const theme = localStorage.getItem("msime-theme");
-        document.documentElement.dataset.theme = ["light", "dark", "system"].includes(theme) ? theme : "system";
-      } catch {
-        document.documentElement.dataset.theme = "system";
-      }
+        const storedTheme = localStorage.getItem("msime-theme");
+        if (["light", "dark", "system"].includes(storedTheme)) theme = storedTheme;
+        const storedSeason = localStorage.getItem("msime-season");
+        if (["auto", "spring", "summer", "autumn", "winter"].includes(storedSeason)) season = storedSeason;
+      } catch {}
+      const month = new Date().getMonth() + 1;
+      root.dataset.theme = theme;
+      root.dataset.season = season !== "auto" ? season : month >= 3 && month <= 5 ? "spring" : month >= 6 && month <= 8 ? "summer" : month >= 9 && month <= 11 ? "autumn" : "winter";
     })();
   </script>
 
   <style>
-    html { background-color: #202020; color-scheme: dark; }
-    html[data-theme="light"] { background-color: #f3f5f7; color-scheme: light; }
-    @media (prefers-color-scheme: light) {
-      html[data-theme="system"] { background-color: #f3f5f7; color-scheme: light; }
+    html { background-color: #F5FAF6; color-scheme: light; }
+    html[data-season="spring"] { background-color: #F8FAF0; }
+    html[data-season="autumn"] { background-color: #FAF6F0; }
+    html[data-season="winter"] { background-color: #F4F7FA; }
+    html[data-theme="dark"] { background-color: #0E1712; color-scheme: dark; }
+    html[data-theme="dark"][data-season="spring"] { background-color: #12170C; }
+    html[data-theme="dark"][data-season="autumn"] { background-color: #1A130E; }
+    html[data-theme="dark"][data-season="winter"] { background-color: #0F151B; }
+    @media (prefers-color-scheme: dark) {
+      html[data-theme="system"] { background-color: #0E1712; color-scheme: dark; }
+      html[data-theme="system"][data-season="spring"] { background-color: #12170C; }
+      html[data-theme="system"][data-season="autumn"] { background-color: #1A130E; }
+      html[data-theme="system"][data-season="winter"] { background-color: #0F151B; }
     }
 
     body {
@@ -58,7 +73,7 @@
       max-width: 40rem;
       margin: 4rem auto;
       padding: 0 1.5rem;
-      color: #9aa4b2;
+      color: #5E7266;
       font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
       line-height: 1.8;
     }

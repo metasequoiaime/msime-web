@@ -1,0 +1,367 @@
+/*
+ * Design tokens, copied verbatim from the v4 design canvas (官网首页 v4.dc.html).
+ *
+ * Rule order and selector specificity deliberately mirror the design: base light (summer) values, then dark, then the three seasons, then dark x season. `[data-season]` and `[data-theme="dark"]` have equal specificity and seasons come later, so variables that the dark x season rules do not redefine (--deep-*, --glow, --sky, --seal) keep the season's value in dark mode, exactly as designed. `:root[data-theme="dark"]` is one step more specific, which is why the hero gradient and sun stay dark until a dark x season rule overrides them.
+ *
+ * "system" follows the OS: every dark rule is repeated for `[data-theme="system"]` inside a prefers-color-scheme media query with the same specificity. No `data-season` attribute (static HTML before the bootstrap runs, or JavaScript disabled) renders the summer defaults.
+ *
+ * Tailwind utilities read these through the `@theme inline` block in app.css, so `bg-panel`, `text-muted` and friends follow theme and season without any `dark:` variants.
+ */
+@layer site {
+  :root {
+    color-scheme: light;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  [data-theme="system"] {
+    color-scheme: light dark;
+  }
+
+  :root {
+    --bg: #F5FAF6;
+    --bg-t: rgba(245,250,246,.84);
+    --panel: #FFFFFF;
+    --panel-2: #E8F3EB;
+    --ink: #0F2419;
+    --body: #34473B;
+    --muted: #5E7266;
+    --accent: #1E8E4E;
+    --accent-ink: #17783F;
+    --accent-soft: rgba(30,142,78,.1);
+    --accent-ring: rgba(30,142,78,.28);
+    --btn: #1E8E4E;
+    --btn-fg: #FFFFFF;
+    --tree: #2C7A4B;
+    --hair: rgba(23,32,26,.1);
+    --hair-2: rgba(23,32,26,.18);
+    --shadow: 0 1px 2px rgba(23,32,26,.05),0 14px 36px rgba(23,32,26,.09);
+    --deep: #1E1F1C;
+    --deep-2: #2A2B27;
+    --glow: #7FE08E;
+    --seal: #B0482A;
+    --warn: #9A5A22;
+    --warn-soft: rgba(165,100,42,.1);
+    --hero-a: #DDF3E2;
+    --hero-b: #9FD9B0;
+    --hero-c: #3E9F63;
+    --hero-tree: #0F4A28;
+    --deep-a: #0F3A22;
+    --deep-b: #16502F;
+    --deep-c: #1E6B3E;
+    --deep-glow: #7FE08E;
+    --sky: #5CC6E0;
+    --sun: rgba(255,255,255,.95);
+  }
+
+  [data-theme="dark"] {
+    --bg: #0E1712;
+    --bg-t: rgba(14,23,18,.84);
+    --panel: #15211A;
+    --panel-2: #1C2B22;
+    --ink: #F1F0E9;
+    --body: #C8CABF;
+    --muted: #94978D;
+    --accent: #7FE08E;
+    --accent-ink: #8FE59C;
+    --accent-soft: rgba(127,224,142,.12);
+    --accent-ring: rgba(127,224,142,.3);
+    --btn: #7FE08E;
+    --btn-fg: #14200F;
+    --tree: #7FE08E;
+    --hair: rgba(255,255,255,.08);
+    --hair-2: rgba(255,255,255,.15);
+    --shadow: 0 1px 2px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.42);
+    --deep: #121310;
+    --deep-2: #1E1F1B;
+    --glow: #7FE08E;
+    --seal: #C4573A;
+    --warn: #E0A56A;
+    --warn-soft: rgba(224,165,106,.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"] {
+      --bg: #0E1712;
+      --bg-t: rgba(14,23,18,.84);
+      --panel: #15211A;
+      --panel-2: #1C2B22;
+      --ink: #F1F0E9;
+      --body: #C8CABF;
+      --muted: #94978D;
+      --accent: #7FE08E;
+      --accent-ink: #8FE59C;
+      --accent-soft: rgba(127,224,142,.12);
+      --accent-ring: rgba(127,224,142,.3);
+      --btn: #7FE08E;
+      --btn-fg: #14200F;
+      --tree: #7FE08E;
+      --hair: rgba(255,255,255,.08);
+      --hair-2: rgba(255,255,255,.15);
+      --shadow: 0 1px 2px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.42);
+      --deep: #121310;
+      --deep-2: #1E1F1B;
+      --glow: #7FE08E;
+      --seal: #C4573A;
+      --warn: #E0A56A;
+      --warn-soft: rgba(224,165,106,.12);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --sun: rgba(255,214,170,.22);
+    --hero-a: #16301F;
+    --hero-b: #1E4A2E;
+    --hero-c: #2C6E44;
+    --hero-tree: #08180E;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root[data-theme="system"] {
+      --sun: rgba(255,214,170,.22);
+      --hero-a: #16301F;
+      --hero-b: #1E4A2E;
+      --hero-c: #2C6E44;
+      --hero-tree: #08180E;
+    }
+  }
+
+  [data-season="spring"] {
+    --ink: #1C2410;
+    --body: #3E4832;
+    --muted: #687257;
+    --hair: rgba(40,52,20,.1);
+    --hair-2: rgba(40,52,20,.18);
+    --shadow: 0 1px 2px rgba(40,52,20,.05),0 14px 36px rgba(60,80,20,.1);
+    --seal: #D9657E;
+    --bg: #F8FAF0;
+    --bg-t: rgba(248,250,240,.84);
+    --panel-2: #EEF4E0;
+    --accent: #5A9A1E;
+    --accent-ink: #467A14;
+    --accent-soft: rgba(90,154,30,.11);
+    --accent-ring: rgba(90,154,30,.28);
+    --btn: #5A9A1E;
+    --tree: #5A9A1E;
+    --glow: #F4A6B8;
+    --hero-a: #F6F9E6;
+    --hero-b: #CFE7A6;
+    --hero-c: #7FB94A;
+    --hero-tree: #3C6A12;
+    --deep-a: #2A4410;
+    --deep-b: #3A5C18;
+    --deep-c: #4E7A22;
+    --deep-glow: #C9EE8C;
+    --sky: #F4A6B8;
+  }
+
+  [data-season="autumn"] {
+    --ink: #2B1A0F;
+    --body: #4E3A2C;
+    --muted: #7A6150;
+    --hair: rgba(60,32,14,.1);
+    --hair-2: rgba(60,32,14,.18);
+    --shadow: 0 1px 2px rgba(60,32,14,.05),0 14px 36px rgba(110,50,14,.11);
+    --seal: #8C2F14;
+    --bg: #FAF6F0;
+    --bg-t: rgba(250,246,240,.84);
+    --panel-2: #F3EADF;
+    --accent: #B5531F;
+    --accent-ink: #9A4318;
+    --accent-soft: rgba(181,83,31,.1);
+    --accent-ring: rgba(181,83,31,.28);
+    --btn: #B5531F;
+    --tree: #B5531F;
+    --glow: #F0A868;
+    --hero-a: #FBEEDD;
+    --hero-b: #F0C08E;
+    --hero-c: #C8672C;
+    --hero-tree: #6A2A0C;
+    --deep-a: #3E1D0C;
+    --deep-b: #5A2A12;
+    --deep-c: #7A3A18;
+    --deep-glow: #F4B07A;
+    --sky: #E8C35A;
+  }
+
+  [data-season="winter"] {
+    --ink: #14212E;
+    --body: #384858;
+    --muted: #617182;
+    --hair: rgba(20,34,48,.1);
+    --hair-2: rgba(20,34,48,.17);
+    --shadow: 0 1px 2px rgba(20,34,48,.05),0 14px 36px rgba(30,60,90,.1);
+    --seal: #B04A3A;
+    --bg: #F4F7FA;
+    --bg-t: rgba(244,247,250,.84);
+    --panel-2: #E6EDF3;
+    --accent: #3A6E92;
+    --accent-ink: #2D5A7A;
+    --accent-soft: rgba(58,110,146,.1);
+    --accent-ring: rgba(58,110,146,.26);
+    --btn: #3A6E92;
+    --tree: #5B7486;
+    --glow: #FFFFFF;
+    --hero-a: #F3F7FB;
+    --hero-b: #C9DAE8;
+    --hero-c: #7F9DB5;
+    --hero-tree: #2F4456;
+    --deep-a: #15222E;
+    --deep-b: #1E3242;
+    --deep-c: #2A4558;
+    --deep-glow: #CFE6F5;
+    --sky: #9CC7E6;
+  }
+
+  [data-theme="dark"][data-season="spring"] {
+    --ink: #F0F4E6;
+    --body: #C9D1B8;
+    --muted: #98A283;
+    --hair: rgba(255,255,255,.08);
+    --hair-2: rgba(255,255,255,.15);
+    --shadow: 0 1px 2px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.42);
+    --hero-a: #2A3A18;
+    --hero-b: #3C5420;
+    --hero-c: #5E8A2C;
+    --hero-tree: #1A2A0A;
+    --bg: #12170C;
+    --bg-t: rgba(18,23,12,.84);
+    --panel: #1A2112;
+    --panel-2: #222B18;
+    --accent: #B5E07A;
+    --accent-ink: #C2E68E;
+    --accent-soft: rgba(181,224,122,.12);
+    --accent-ring: rgba(181,224,122,.3);
+    --btn: #B5E07A;
+    --btn-fg: #18220C;
+    --tree: #B5E07A;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"][data-season="spring"] {
+      --ink: #F0F4E6;
+      --body: #C9D1B8;
+      --muted: #98A283;
+      --hair: rgba(255,255,255,.08);
+      --hair-2: rgba(255,255,255,.15);
+      --shadow: 0 1px 2px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.42);
+      --hero-a: #2A3A18;
+      --hero-b: #3C5420;
+      --hero-c: #5E8A2C;
+      --hero-tree: #1A2A0A;
+      --bg: #12170C;
+      --bg-t: rgba(18,23,12,.84);
+      --panel: #1A2112;
+      --panel-2: #222B18;
+      --accent: #B5E07A;
+      --accent-ink: #C2E68E;
+      --accent-soft: rgba(181,224,122,.12);
+      --accent-ring: rgba(181,224,122,.3);
+      --btn: #B5E07A;
+      --btn-fg: #18220C;
+      --tree: #B5E07A;
+    }
+  }
+
+  [data-theme="dark"][data-season="autumn"] {
+    --ink: #F6ECE3;
+    --body: #D6C4B5;
+    --muted: #A89080;
+    --hair: rgba(255,255,255,.08);
+    --hair-2: rgba(255,255,255,.15);
+    --shadow: 0 1px 2px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.42);
+    --hero-a: #3A2416;
+    --hero-b: #5C3218;
+    --hero-c: #8A4A20;
+    --hero-tree: #240E04;
+    --bg: #1A130E;
+    --bg-t: rgba(26,19,14,.84);
+    --panel: #231A13;
+    --panel-2: #2D2219;
+    --accent: #EDA06A;
+    --accent-ink: #F2AE7E;
+    --accent-soft: rgba(237,160,106,.13);
+    --accent-ring: rgba(237,160,106,.3);
+    --btn: #EDA06A;
+    --btn-fg: #24120A;
+    --tree: #EDA06A;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"][data-season="autumn"] {
+      --ink: #F6ECE3;
+      --body: #D6C4B5;
+      --muted: #A89080;
+      --hair: rgba(255,255,255,.08);
+      --hair-2: rgba(255,255,255,.15);
+      --shadow: 0 1px 2px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.42);
+      --hero-a: #3A2416;
+      --hero-b: #5C3218;
+      --hero-c: #8A4A20;
+      --hero-tree: #240E04;
+      --bg: #1A130E;
+      --bg-t: rgba(26,19,14,.84);
+      --panel: #231A13;
+      --panel-2: #2D2219;
+      --accent: #EDA06A;
+      --accent-ink: #F2AE7E;
+      --accent-soft: rgba(237,160,106,.13);
+      --accent-ring: rgba(237,160,106,.3);
+      --btn: #EDA06A;
+      --btn-fg: #24120A;
+      --tree: #EDA06A;
+    }
+  }
+
+  [data-theme="dark"][data-season="winter"] {
+    --ink: #EAF1F7;
+    --body: #C0CCD7;
+    --muted: #8A99A8;
+    --hair: rgba(255,255,255,.08);
+    --hair-2: rgba(255,255,255,.15);
+    --shadow: 0 1px 2px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.42);
+    --hero-a: #1E2C38;
+    --hero-b: #2C4052;
+    --hero-c: #4A6680;
+    --hero-tree: #0C1620;
+    --bg: #0F151B;
+    --bg-t: rgba(15,21,27,.84);
+    --panel: #161E26;
+    --panel-2: #1E2831;
+    --accent: #9CC7E6;
+    --accent-ink: #AED2EC;
+    --accent-soft: rgba(156,199,230,.12);
+    --accent-ring: rgba(156,199,230,.3);
+    --btn: #9CC7E6;
+    --btn-fg: #0E1A24;
+    --tree: #9CC7E6;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"][data-season="winter"] {
+      --ink: #EAF1F7;
+      --body: #C0CCD7;
+      --muted: #8A99A8;
+      --hair: rgba(255,255,255,.08);
+      --hair-2: rgba(255,255,255,.15);
+      --shadow: 0 1px 2px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.42);
+      --hero-a: #1E2C38;
+      --hero-b: #2C4052;
+      --hero-c: #4A6680;
+      --hero-tree: #0C1620;
+      --bg: #0F151B;
+      --bg-t: rgba(15,21,27,.84);
+      --panel: #161E26;
+      --panel-2: #1E2831;
+      --accent: #9CC7E6;
+      --accent-ink: #AED2EC;
+      --accent-soft: rgba(156,199,230,.12);
+      --accent-ring: rgba(156,199,230,.3);
+      --btn: #9CC7E6;
+      --btn-fg: #0E1A24;
+      --tree: #9CC7E6;
+    }
+  }
+}

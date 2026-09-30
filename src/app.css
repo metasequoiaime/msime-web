@@ -1,0 +1,131 @@
+/*
+ * Global stylesheet entry. Imported first by src/app.tsx so the layer order below is the first thing the browser sees.
+ *
+ * Layer order, lowest to highest priority:
+ * - theme / base / components / utilities: Tailwind's own layers.
+ * - site: design tokens, document-level base styles, motion, the shell hook classes, markdown prose, and the resume sheet (src/styles/resume.css, imported by its page). It outranks Tailwind's preflight but not components/utilities, so a utility class on an element always beats the shared defaults.
+ */
+@layer theme, base, site, components, utilities;
+
+@import "tailwindcss";
+@import "./styles/tokens.css";
+@import "./styles/base.css";
+@import "./styles/motion.css";
+@import "./styles/shell.css";
+@import "./styles/prose.css";
+
+/* `dark:` follows the same rule as the tokens: an explicit dark choice, or "system" while the OS is dark. A `.dark` class alone would ignore the three-way switch. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:where([data-theme="system"], [data-theme="system"] *) {
+      @slot;
+    }
+  }
+}
+
+/* Season variants for the rare markup that must differ per season (the header's season label, seasonal illustrations). Colours should come from tokens instead. No attribute means summer, so `summer:` also matches the attribute-less static HTML. */
+@custom-variant spring (&:where([data-season="spring"], [data-season="spring"] *));
+@custom-variant autumn (&:where([data-season="autumn"], [data-season="autumn"] *));
+@custom-variant winter (&:where([data-season="winter"], [data-season="winter"] *));
+@custom-variant summer (&:where(:root:not([data-season]), :root:not([data-season]) *, [data-season="summer"], [data-season="summer"] *));
+
+@theme inline {
+  /* Breakpoints follow the design's JS width checks (1180 nav, 960 docs sidebar, 900 platform/footer grid, 760 feature grid, 640 words/releases, 560 footer, 480 platforms). */
+  --breakpoint-*: initial;
+  --breakpoint-xs: 30rem;
+  --breakpoint-sm: 35rem;
+  --breakpoint-md: 40rem;
+  --breakpoint-lg: 47.5rem;
+  --breakpoint-xl: 56.25rem;
+  --breakpoint-2xl: 60rem;
+  --breakpoint-nav: 73.75rem;
+
+  /* No web fonts: the CSP only allows self-hosted fonts, and the CJK fonts are already on every target system. */
+  --font-sans: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: "Noto Sans SC", "PingFang SC", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-bg: var(--bg);
+  --color-bg-t: var(--bg-t);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ring: var(--accent-ring);
+  --color-btn: var(--btn);
+  --color-btn-fg: var(--btn-fg);
+  --color-tree: var(--tree);
+  --color-hair: var(--hair);
+  --color-hair-2: var(--hair-2);
+  --color-deep: var(--deep);
+  --color-deep-2: var(--deep-2);
+  --color-glow: var(--glow);
+  --color-seal: var(--seal);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-hero-a: var(--hero-a);
+  --color-hero-b: var(--hero-b);
+  --color-hero-c: var(--hero-c);
+  --color-hero-tree: var(--hero-tree);
+  --color-deep-a: var(--deep-a);
+  --color-deep-b: var(--deep-b);
+  --color-deep-c: var(--deep-c);
+  --color-deep-glow: var(--deep-glow);
+  --color-sky: var(--sky);
+  --color-sun: var(--sun);
+  /* The logo always sits on this near-black disc, in both themes. */
+  --color-logo: #1e1f1c;
+
+  /* Radii from the design, named by what uses them. Pills use the stock rounded-full. */
+  --radius-hero: 32px;
+  --radius-shell: 28px;
+  --radius-card: 24px;
+  --radius-panel: 22px;
+  --radius-tile: 20px;
+  --radius-group: 18px;
+  --radius-menu: 16px;
+  --radius-btn: 14px;
+  --radius-cta: 13px;
+  --radius-field: 12px;
+  --radius-tab: 10px;
+  --radius-row: 8px;
+
+  /* Outlines are box-shadows, never borders, so they do not change layout. */
+  --shadow-hair: 0 0 0 1px var(--hair);
+  --shadow-hair-2: 0 0 0 1px var(--hair-2);
+  --shadow-ring: inset 0 0 0 1px var(--hair);
+  --shadow-ring-2: inset 0 0 0 1px var(--hair-2);
+  --shadow-ring-accent: inset 0 0 0 1.5px var(--accent);
+  --shadow-ring-warn: inset 0 0 0 1.5px var(--warn);
+  --shadow-soft: var(--shadow);
+  --shadow-card: var(--shadow), 0 0 0 1px var(--hair);
+  --shadow-feature: var(--shadow), inset 0 0 0 1px var(--accent-ring);
+  --shadow-btn: 0 10px 28px var(--accent-ring);
+  --shadow-tab: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-toast: 0 12px 32px rgba(0, 0, 0, 0.2);
+  --shadow-divider-t: inset 0 1px 0 var(--hair);
+  --shadow-divider-t-2: inset 0 1px 0 var(--hair-2);
+  --shadow-divider-b: inset 0 -1px 0 var(--hair);
+  --shadow-header: inset 0 -1px 0 var(--hair), 0 8px 24px rgba(0, 0, 0, 0.04);
+  --shadow-logo: 0 0 0 1px rgba(255, 255, 255, 0.06);
+
+  /* Content widths: home 1240, inner pages 1200, FAQ / releases 960. The design's columns are content-box (max-width plus the clamp(20px, 4.4vw, 48px) side gutter every page column uses), while preflight makes ours border-box, so each width carries the gutter to keep the same text measure. Columns with a different gutter (the header bar, the footer card) set their own max-width. */
+  --container-page: calc(1240px + 2 * clamp(20px, 4.4vw, 48px));
+  --container-inner: calc(1200px + 2 * clamp(20px, 4.4vw, 48px));
+  --container-narrow: calc(960px + 2 * clamp(20px, 4.4vw, 48px));
+
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  --animate-rise-in: riseIn 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-page-in: pageIn 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-float-y: floatY 6s ease-in-out 1.2s infinite;
+  --animate-toast-in: toastIn 0.25s ease both;
+}

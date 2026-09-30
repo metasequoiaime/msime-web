@@ -2,9 +2,9 @@ import { useEffect, useMemo } from "react";
 import resumeSource from "./content/resume.md?raw";
 import { markdown } from "./markdown";
 import { usePageMeta } from "./page-meta";
-import "./resume.scss";
+import "./styles/resume.css";
 
-/** 个人简历页：不挂站点顶栏和页脚，样式全部走 `resume.scss`，入口 HTML 里带 noindex。 */
+/** 个人简历页：不挂站点顶栏和页脚，样式（含打印版式）全部在 `styles/resume.css`，入口 HTML 里带 noindex。 */
 export function ResumePage() {
   const html = useMemo(() => {
     const holder = document.createElement("div");

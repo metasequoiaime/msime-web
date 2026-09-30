@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { communitySchema } from "../src/community-data.ts";
-import { aggregateContributors, monthlyStarHistory } from "./community-aggregation.mjs";
+import { aggregateContributors, monthlyStarHistory, recentStars, repositoryStarSeries, type StarWeek } from "./community-aggregation.mjs";
 
 const repositorySchema = z.object({ name: z.string().regex(/^[\w.-]+$/), fork: z.boolean(), archived: z.boolean(), private: z.boolean(), stargazers_count: z.number().int().nonnegative() });
 const contributorSchema = z.object({ login: z.string(), type: z.string(), avatar_url: z.string(), html_url: z.string(), contributions: z.number().int().nonnegative() });
@@ -25,7 +25,8 @@ export async function loadCommunity(token: string, request: typeof fetch = fetch
   const repositories = z.array(repositorySchema).parse(await pages("orgs/metasequoiaime/repos?sort=full_name"))
     .filter(repo => !repo.fork && !repo.archived && !repo.private);
   const perRepository = [];
-  const starWeeks = [];
+  const starWeeks: StarWeek[] = [];
+  const starSeries: { repo: string; stars: number; points: { date: string; stars: number }[] }[] = [];
   // Sequential calls respect GitHub's secondary rate limit and bound open connections.
   for (const repo of repositories) {
     const base = `repos/metasequoiaime/${repo.name}`;
@@ -33,12 +34,18 @@ export async function loadCommunity(token: string, request: typeof fetch = fetch
     perRepository.push({ repo: repo.name, contributors });
     if (repo.stargazers_count) {
       // GitHub restricts individual stargazer lists; aggregate history is public.
-      starWeeks.push(...z.array(z.object({ week: z.number().int(), days: z.array(z.number().int().nonnegative()).length(7) })).parse(await pages(`${base}/stargazers/history`, 30)));
+      const weeks = z.array(z.object({ week: z.number().int(), days: z.array(z.number().int().nonnegative()).length(7) })).parse(await pages(`${base}/stargazers/history`, 30));
+      starWeeks.push(...weeks);
+      // The same weeks bucketed per repository: no extra GitHub calls, since the history endpoint is already read one repository at a time.
+      const points = repositoryStarSeries(weeks);
+      if (points.length) starSeries.push({ repo: repo.name, stars: repo.stargazers_count, points });
     }
   }
   return communitySchema.parse({ generatedAt: new Date().toISOString(), stale: false,
     totalStars: repositories.reduce((sum, repo) => sum + repo.stargazers_count, 0), repoCount: repositories.length,
     contributors: aggregateContributors(perRepository), starHistory: monthlyStarHistory(starWeeks),
+    starSeries: starSeries.sort((left, right) => right.stars - left.stars || left.repo.localeCompare(right.repo)).map(({ repo, points }) => ({ repo, points })),
+    starDelta30d: recentStars(starWeeks),
   });
 }
 

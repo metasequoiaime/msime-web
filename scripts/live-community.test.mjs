@@ -100,3 +100,22 @@ test('endless pagination is rejected per path instead of silently publishing par
   // Per path, so adding repositories or another thirty weeks of star history cannot push a healthy sweep over the edge the way one shared budget did.
   assert.equal(calls, 30);
 });
+test('live collection adds per-repository star series and the 30-day gain without extra calls', async () => {
+  const now = Math.floor(Date.now() / 1000);
+  const recentWeek = now - (now % 86400) - 6 * 86400;
+  const urls = [];
+  const request = async url => {
+    urls.push(url);
+    if (url.includes('/orgs/')) return Response.json([{ name: 'small', fork: false, private: false, archived: false, stargazers_count: 1 }, { name: 'big', fork: false, private: false, archived: false, stargazers_count: 5 }, { name: 'none', fork: false, private: false, archived: false, stargazers_count: 0 }]);
+    if (url.includes('/contributors')) return Response.json([{ login: 'human', type: 'User', avatar_url: fallback.contributors[0].avatarUrl, html_url: fallback.contributors[0].url, contributions: 1 }]);
+    if (url.includes('/big/')) return Response.json([{ week: recentWeek - 400 * 86400, days: [2, 0, 0, 0, 0, 0, 0] }, { week: recentWeek, days: [3, 0, 0, 0, 0, 0, 0] }]);
+    return Response.json([{ week: recentWeek, days: [1, 0, 0, 0, 0, 0, 0] }]);
+  };
+  const result = await loadCommunity('test', request);
+  assert.deepEqual(result.starSeries.map(series => series.repo), ['big', 'small'], 'ordered by stars, repositories without stars left out');
+  assert.equal(result.starSeries[0].points.at(-1).stars, 5);
+  assert.equal(result.starSeries[0].points.at(-1).date, new Date().toISOString().slice(0, 10), 'the last point is dated today');
+  assert.ok(result.starSeries[0].points.every((point, index, points) => index === 0 || point.date > points[index - 1].date));
+  assert.equal(result.starDelta30d, 4);
+  assert.equal(urls.length, 1 + 3 + 2, 'one organisation call, contributors per repository, history per starred repository');
+});

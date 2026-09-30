@@ -3,6 +3,10 @@
   "include": [
     "/api/community",
     "/api/community/",
+    "/api/releases",
+    "/api/releases/",
+    "/api/app-stats",
+    "/api/app-stats/",
     "/api/feedback",
     "/api/feedback/",
     "/api/feedback-images/*",

@@ -1,12 +1,12 @@
 {
   "name": "水杉输入法",
   "short_name": "水杉",
-  "description": "开源中文输入法，各平台共用同一套 C++ 引擎。",
+  "description": "开源多平台中文输入法，覆盖 Windows、macOS、Linux、Android、iOS 与 HarmonyOS。",
   "start_url": "/",
   "display": "browser",
   "lang": "zh-CN",
-  "background_color": "#f3f5f7",
-  "theme_color": "#f3f5f7",
+  "background_color": "#F5FAF6",
+  "theme_color": "#F5FAF6",
   "icons": [
     { "src": "/msime-logo.png", "sizes": "128x128", "type": "image/png" },
     { "src": "/msime.png", "sizes": "440x440", "type": "image/png" }

@@ -15,3 +15,5 @@ export interface StarWeek {
   days: number[];
 }
 export function monthlyStarHistory(weeks: StarWeek[]): { month: string; stars: number }[];
+export function repositoryStarSeries(weeks: StarWeek[], now?: Date): { date: string; stars: number }[];
+export function recentStars(weeks: StarWeek[], days?: number, now?: Date): number;

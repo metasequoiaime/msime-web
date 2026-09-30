@@ -3,8 +3,8 @@ import { writeFile } from 'node:fs/promises';
 // Optional static fallback for SSR and API outages. Live statistics use /api/community.
 const organisation = 'metasequoiaime';
 
-import { aggregateContributors, monthlyStarHistory } from '../shared/community-aggregation.mjs';
-export { aggregateContributors, monthlyStarHistory } from '../shared/community-aggregation.mjs';
+import { aggregateContributors, monthlyStarHistory, recentStars, repositoryStarSeries } from '../shared/community-aggregation.mjs';
+export { aggregateContributors, monthlyStarHistory, recentStars, repositoryStarSeries } from '../shared/community-aggregation.mjs';
 
 const headers = () => {
   const value = { Accept: 'application/vnd.github+json' };
@@ -37,6 +37,7 @@ async function main() {
     .filter(repo => !repo.fork && !repo.archived && !repo.private);
 
   const starWeeks = [];
+  const starSeries = [];
   const perRepository = [];
 
   for (const repo of repositories) {
@@ -45,7 +46,11 @@ async function main() {
 
     if (repo.stargazers_count > 0) {
       // The aggregate weekly history, not `/stargazers`: listing individual stargazers is restricted, and answers 403 to the `GITHUB_TOKEN` this job runs under. The worker reads the same endpoint, so both produce the same series.
-      starWeeks.push(...await getAllPages(`https://api.github.com/repos/${organisation}/${repo.name}/stargazers/history`, 30));
+      const weeks = await getAllPages(`https://api.github.com/repos/${organisation}/${repo.name}/stargazers/history`, 30);
+      starWeeks.push(...weeks);
+      // Per-repository curves for the home chart, from the same weeks: the same shape and order /api/community returns, so the chart looks the same whichever source answered.
+      const points = repositoryStarSeries(weeks);
+      if (points.length) starSeries.push({ repo: repo.name, stars: repo.stargazers_count, points });
     }
   }
 
@@ -54,6 +59,10 @@ async function main() {
     totalStars: repositories.reduce((sum, repo) => sum + (repo.stargazers_count ?? 0), 0),
     repoCount: repositories.length,
     starHistory: monthlyStarHistory(starWeeks),
+    starSeries: starSeries
+      .sort((left, right) => right.stars - left.stars || left.repo.localeCompare(right.repo))
+      .map(({ repo, points }) => ({ repo, points })),
+    starDelta30d: recentStars(starWeeks),
     contributors: aggregateContributors(perRepository),
   };
 

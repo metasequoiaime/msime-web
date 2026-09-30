@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { staticSnapshot } from "./data/source.ts";
 import { DESKTOP_PLATFORMS, type DesktopPlatform } from "./platform.ts";
 
 const PROJECT_RELEASES = "https://github.com/metasequoiaime/";
@@ -38,7 +39,7 @@ const releaseSchema = z.object({
 });
 
 /** 由 scripts/generate-platforms.mjs 生成：三个平台各自的正式版，另附比它更新的预览版（没有就是 null）。 */
-const platformsSchema = z.object({
+export const platformsSchema = z.object({
   generatedAt: z.string(),
   platforms: z.record(
     z.enum(DESKTOP_PLATFORMS),
@@ -69,14 +70,14 @@ const platformsSchema = z.object({
     .catch(null),
 });
 
-export const fetchPlatforms = async () => {
-  const response = await fetch("/platforms.json");
-  if (!response.ok) throw new Error(`Platform manifest returned ${response.status}`);
-  return platformsSchema.parse(await response.json());
-};
+/** The bundled manifest is the only source: the automation PR that refreshes it is the release pipeline's record, and there is no live endpoint to prefer over it. */
+const manifestSource = staticSnapshot("/platforms.json", value => platformsSchema.parse(value));
 
+// Takes no arguments on purpose: existing callers pass it straight to `useQuery({ queryFn })`, which calls it with a query context object, not a signal. New code uses `platformsQuery()` from `./data/queries.ts`.
+export const fetchPlatforms = () => manifestSource.load();
 
-export type Platforms = z.infer<typeof platformsSchema>["platforms"];
+export type PlatformsManifest = z.infer<typeof platformsSchema>;
+export type Platforms = PlatformsManifest["platforms"];
 export type PlatformRelease = NonNullable<Platforms[DesktopPlatform]>;
 export type PreviewRelease = NonNullable<PlatformRelease["preview"]>;
 export type Dictionary = NonNullable<z.infer<typeof platformsSchema>["dictionary"]>;

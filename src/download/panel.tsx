@@ -1,0 +1,269 @@
+import type { SitePlatformEntry } from "../data/platforms.ts";
+import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
+import type { Platform } from "../platform.ts";
+import { AnchorButton, CheckIcon, ChevronDownIcon, cx, DownloadIcon, ExternalIcon, Pill } from "../ui";
+import { useLocale } from "../use-locale";
+import { describePackages, groupByArch, readableSize } from "./template";
+
+/** Windows mirror on Aliyun Drive, for visitors who cannot reach GitHub quickly. */
+const ALIPAN_URL = "https://www.alipan.com/s/wKbWStNYVLZ";
+const ALIPAN_CODE = "27qi";
+
+// 系统要求是产品决策，不在产物里，只能写下来
+const PLATFORM_HINTS: Record<Platform, string> = {
+  windows: "适用于 Windows 10 与 Windows 11",
+  macos: "适用于 macOS 12 及以上",
+  linux: "开发构建，适用于使用 IBus 的桌面环境",
+  android: "开发中，尚未发布安装包",
+  ios: "适用于 iOS 15 及以上",
+  harmony: "开发中，尚未发布安装包",
+};
+
+/**
+ * The page's main action. Not `buttonClass`: that one never wraps, and a label like "下载 macOS 版 v0.50.0-build.9" is wider than the panel on a 360px phone, so this one may wrap to two lines and fills the row on narrow screens.
+ */
+const PRIMARY_ACTION =
+  "inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-btn bg-btn px-6 py-3 text-center text-base leading-snug font-semibold text-btn-fg no-underline shadow-btn transition-[transform,filter] duration-150 hover:-translate-y-px hover:text-btn-fg hover:brightness-[1.06] md:w-auto";
+
+/** What the tile's second line says: the current version, or how the platform is distributed. */
+const tileStatus = (entry: SitePlatformEntry) => {
+  if (entry.distribution === "testflight") return "TestFlight 公开测试";
+  if (entry.distribution === "source") return "开发中 · 从源码构建";
+  return entry.release ? `v${entry.release.version}` : "查看发布页";
+};
+
+function FileLine({ entry, signed }: { entry: PlatformRelease["downloads"][number]; signed: boolean | null | undefined }) {
+  const { t } = useLocale();
+  return (
+    <p className="m-0 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[13px] text-muted">
+      <code className="min-w-0 rounded-row bg-panel-2 px-2 py-0.5 font-mono text-[12.5px] text-ink [overflow-wrap:anywhere]">{entry.name}</code>
+      <Pill tone="neutral" mono>
+        {t(entry.arch)}
+      </Pill>
+      <span className="tabular-nums">{t(readableSize(entry.size))}</span>
+      {/* signed 是三态：判不出来时（比如 Linux 的文件名不带签名信息）什么都不显示，而不是猜一个 */}
+      {signed === true && <Pill>{t("已签名")}</Pill>}
+      {signed === false && <Pill tone="warn">{t("未签名")}</Pill>}
+    </p>
+  );
+}
+
+/* 主推那个之外的包，按架构分组收进折叠区。正式版和预览版各用一份。 */
+function MorePackages({ downloads }: { downloads: PlatformRelease["downloads"] }) {
+  const { t } = useLocale();
+  return (
+    <details className="group mt-4 rounded-group bg-panel-2 px-4 [&[open]]:pb-3">
+      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
+        {t("其他安装包")}
+        <ChevronDownIcon className="flex-none text-muted transition-transform group-open:rotate-180" />
+      </summary>
+      <div className="grid gap-3">
+        {groupByArch(downloads).map(([arch, entries]) => (
+          <section key={arch}>
+            <h3 className="m-0 mb-1.5 font-mono text-xs font-medium tracking-wide text-muted">{t(arch)}</h3>
+            <ul className="m-0 grid list-none gap-1 p-0">
+              {entries.map((entry) => (
+                <li key={entry.url} className="flex items-baseline justify-between gap-3 rounded-row px-2 py-1.5 hover:bg-panel">
+                  <a className="min-w-0 text-sm font-medium text-accent-ink [overflow-wrap:anywhere] hover:text-ink" href={entry.url} rel="noreferrer">
+                    {t(entry.label)}
+                  </a>
+                  <span className="flex-none text-[13px] text-muted tabular-nums">{t(readableSize(entry.size))}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </details>
+  );
+}
+
+/**
+ * 比正式版更新的预览版，和正式版并列展示。
+ *
+ * 上游每次合并都会自动发一个 Pre-release，却只把人工挑过的那个标成正式版。只展示正式版，想试最新改动的人得自己去 GitHub 翻；只展示预览版，又等于把没挑过的构建推给所有人。所以两个都给，正式版占主按钮，预览版在下面明确标出来。
+ */
+function PreviewPanel({ preview }: { preview: PreviewRelease }) {
+  const { t } = useLocale();
+  const [first] = preview.downloads;
+
+  return (
+    <section className="mt-6 rounded-tile p-[clamp(18px,2.4vw,24px)] shadow-ring-2" aria-label={t("预览版")}>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <Pill tone="warn">{t("预览版")}</Pill>
+        <a
+          className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
+          href={first.url}
+          rel="noreferrer"
+        >
+          {t(`下载预览版 v${preview.version}`)}
+        </a>
+      </div>
+      <p className="m-0 mt-3 text-sm leading-[1.8] text-muted">
+        {t("包含尚未进入正式版的改动，可能不稳定。发布于")}
+        {t(preview.publishedAt.slice(0, 10))}
+        {t("。")}{" "}
+        <a className="inline-flex items-center gap-0.5 text-accent-ink hover:text-ink" href={preview.releaseUrl} target="_blank" rel="noreferrer">
+          {t("发布说明与校验值")}
+          <ExternalIcon size={12} />
+        </a>
+      </p>
+      <div className="mt-3">
+        <FileLine entry={first} signed={preview.signed} />
+      </div>
+      {preview.downloads.length > 1 && <MorePackages downloads={preview.downloads.slice(1)} />}
+    </section>
+  );
+}
+
+/** The action strip under the tiles for the selected platform: download button, file details and release notes, or an honest status for platforms that do not ship packages yet. */
+function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
+  const { t } = useLocale();
+  const hint = <p className="m-0 text-sm leading-[1.8] text-muted">{t(PLATFORM_HINTS[entry.id])}</p>;
+
+  if (entry.distribution === "testflight") {
+    return (
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+        <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer">
+          {t("通过 TestFlight 安装 iOS 版")}
+          <ExternalIcon />
+        </a>
+        <div className="min-w-0">
+          {hint}
+          {/* 没有版本号也没有校验值可说：iOS 装的是 TestFlight 当前放出的那个构建，版本由 Apple 那边决定。 */}
+          <p className="m-0 text-sm leading-[1.8] text-muted">{t("通过 TestFlight 安装，无需开发者账号。")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (entry.distribution === "source") {
+    return (
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+        <div className="min-w-0">
+          <Pill tone="warn">{t("开发中")}</Pill>
+          <p className="m-0 mt-2.5 text-[15px] leading-[1.85] text-body">
+            {t(`${entry.name} 版还没有发布安装包。源码和构建脚本在 msime 仓库中，可以按目录说明自行构建。`)}
+          </p>
+        </div>
+        <AnchorButton variant="secondary" href={entry.sourceUrl} className="flex-none">
+          {t("查看源码与构建说明")}
+          <ExternalIcon />
+        </AnchorButton>
+      </div>
+    );
+  }
+
+  const release = entry.release;
+  const primary = release?.downloads[0];
+
+  return (
+    <div>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+        <a className={PRIMARY_ACTION} href={primary?.url ?? entry.href} rel="noreferrer" target={primary ? undefined : "_blank"}>
+          {t(primary && release ? `下载 ${entry.name} 版 v${release.version}` : `前往 ${entry.name} 发布页`)}
+          {primary ? <DownloadIcon /> : <ExternalIcon />}
+        </a>
+        <div className="grid min-w-0 gap-1.5">
+          {hint}
+          {release && <p className="m-0 text-sm leading-[1.8] text-muted">{t(describePackages(release.downloads))}</p>}
+        </div>
+      </div>
+
+      {primary && release && (
+        <div className="mt-4">
+          <FileLine entry={primary} signed={release.signed} />
+        </div>
+      )}
+
+      {release && release.downloads.length > 1 && <MorePackages downloads={release.downloads.slice(1)} />}
+
+      <p className="m-0 mt-4 text-sm leading-[1.8] text-muted">
+        {release ? (
+          <>
+            {t(entry.id === "linux" ? "开发构建，" : "公开测试版本，")}
+            {t("发布于")}
+            {t(release.publishedAt.slice(0, 10))}
+            {t("。")}{" "}
+            <a className="inline-flex items-center gap-0.5 text-accent-ink hover:text-ink" href={release.releaseUrl} target="_blank" rel="noreferrer">
+              {t("发布说明与校验值")}
+              <ExternalIcon size={12} />
+            </a>
+          </>
+        ) : (
+          t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")
+        )}
+      </p>
+
+      {release?.preview && <PreviewPanel preview={release.preview} />}
+    </div>
+  );
+}
+
+/**
+ * 页面顶部的下载入口（design-home §6「选择卡」）。
+ *
+ * 六个平台都是可选的卡片，按 UA 猜到的那个只是默认选中；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 与 HarmonyOS 如实说明还在开发、只能从源码构建。阿里云盘镜像只有 Windows 安装包，单独占一格。
+ *
+ * `.download-panel` is a test hook: the static HTML must show the Windows version inside it.
+ */
+export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePlatformEntry[]; platform: Platform; onSelect: (platform: Platform) => void }) {
+  const { t } = useLocale();
+  const selected = entries.find((entry) => entry.id === platform) ?? entries[0];
+
+  return (
+    <section
+      className="download-panel m-0 rounded-panel bg-panel p-[clamp(20px,3.4vw,40px)] shadow-feature"
+      aria-labelledby="download-choose"
+    >
+      <h2 id="download-choose" className="m-0 font-heading text-2xl leading-[1.35] font-bold text-ink">
+        {t("选择平台")}
+      </h2>
+      <div className="mt-[22px] grid grid-cols-[repeat(auto-fit,minmax(min(100%,132px),1fr))] gap-2.5 sm:grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] sm:gap-3">
+        {entries.map((entry) => {
+          const active = entry.id === platform;
+          return (
+            <button
+              key={entry.id}
+              type="button"
+              aria-pressed={active}
+              onClick={() => {
+                onSelect(entry.id);
+              }}
+              className={cx(
+                "flex min-w-0 cursor-pointer flex-col gap-1.5 rounded-menu px-4 py-3.5 text-left sm:px-5 sm:py-[18px] text-ink transition-[background-color,box-shadow] duration-150",
+                active ? "bg-accent-soft shadow-ring-accent" : "bg-panel-2 hover:bg-accent-soft"
+              )}
+            >
+              <span className="flex w-full items-center gap-2 text-base font-semibold">
+                {t(entry.name)}
+                {active && <CheckIcon className="ml-auto flex-none text-accent-ink" />}
+              </span>
+              <span className="font-mono text-[12.5px] text-accent-ink [word-break:keep-all] [overflow-wrap:anywhere]">{t(tileStatus(entry))}</span>
+              <span className="hidden text-[13px] leading-[1.6] text-muted sm:block">{t(entry.host)}</span>
+            </button>
+          );
+        })}
+        <a
+          href={ALIPAN_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="col-span-full flex min-w-0 flex-col gap-1.5 rounded-menu px-4 py-3.5 text-ink no-underline sm:col-span-1 sm:px-5 sm:py-[18px] shadow-ring-2 transition-colors duration-150 hover:bg-panel-2 hover:text-ink"
+        >
+          <span className="flex w-full items-center gap-2 text-base font-semibold">
+            {t("阿里云盘（Windows）")}
+            <ExternalIcon className="ml-auto flex-none text-accent-ink" />
+          </span>
+          <span className="font-mono text-[12.5px] text-accent-ink">
+            {t("提取码")} {ALIPAN_CODE}
+          </span>
+          <span className="text-[13px] leading-[1.6] text-muted">{t("备用镜像，下载后请与官方 SHA256 核对")}</span>
+        </a>
+      </div>
+
+      <div className="mt-7 pt-7 shadow-divider-t" aria-live="polite">
+        <PlatformAction entry={selected} />
+      </div>
+    </section>
+  );
+}
