@@ -82,7 +82,7 @@ export function WordsPage() {
   const focus = (selector: string) => requestAnimationFrame(() => {
     const element = document.querySelector<HTMLElement>(selector);
     element?.focus({ preventScroll: true });
-    element?.scrollIntoView({ block: "center", behavior: "smooth" });
+    element?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   });
   // Rows left completely empty are ignored, so an unused extra row never blocks submission.
   const filled = rows.filter(row => row.word.trim() || row.pinyin.trim());
