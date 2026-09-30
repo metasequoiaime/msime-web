@@ -4,8 +4,7 @@ import { PINYIN_SYLLABLES } from "./pinyin-syllables.ts";
 // Public origin of MSIME-Backend, which owns the submission API, Turnstile verification, rate limiting and the GitHub App. Not a secret; the CSP connect-src in public/_headers must list the same origin.
 export const BACKEND_ORIGIN = "https://api.msime.app";
 export const WORD_SUBMISSIONS_URL = `${BACKEND_ORIGIN}/v1/community/word-submissions`;
-// ime-dictionary is the single dictionary source repository; community words land in its custom/words.txt.
-export const WORDS_REPO_URL = "https://github.com/metasequoiaime/ime-dictionary";
+export const WORDS_REPO_URL = "https://github.com/metasequoiaime/msime-customdict";
 // Community entries all use one fixed weight chosen by the backend; users do not choose it. Shown only in the preview.
 export const WORD_WEIGHT = 5000;
 export const MAX_ENTRIES = 20;
@@ -63,8 +62,8 @@ export const formatLine = (entry: WordEntry) => `${entry.word}\t${entry.pinyin}\
 
 // Response shapes of the backend API.
 export const wordsConfigSchema = z.object({ site_key: z.string(), enabled: z.boolean() });
-// msime-customdict is still accepted while msime-cloud may deploy its switch to ime-dictionary later than this site. Drop it once the backend writes to ime-dictionary in production.
-export const createdSchema = z.object({ pull_request_url: z.string().regex(/^https:\/\/github\.com\/metasequoiaime\/(?:ime-dictionary|msime-customdict)\/pull\/\d+$/) });
+// Production still writes to msime-customdict, so WORDS_REPO_URL and the page copy stay on it. msime-dictionary (the canonical name GitHub returns in html_url; ime-dictionary is only a redirect) is accepted ahead of the msime-cloud switch so a created pull request is never reported as unknown. Drop msime-customdict once the backend writes to msime-dictionary in production.
+export const createdSchema = z.object({ pull_request_url: z.string().regex(/^https:\/\/github\.com\/metasequoiaime\/(?:msime-dictionary|msime-customdict)\/pull\/\d+$/) });
 export const rejectedSchema = z.object({ error: z.string().optional(), rejected: z.array(z.object({ index: z.number().int().nonnegative(), reason: z.string() })).optional() });
 
 /** User-facing message for each documented error status of the backend API. */
