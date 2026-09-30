@@ -27,7 +27,6 @@ export default defineConfig({
         price: resolve(projectRoot, "price/index.html"),
         privacy: resolve(projectRoot, "privacy/index.html"),
         resume: resolve(projectRoot, "resume/index.html"),
-        releases: resolve(projectRoot, "releases/index.html"),
       },
     },
   },

@@ -3,7 +3,7 @@ import type { ReleaseItem } from "../data/schemas";
 import { PLATFORM_NAMES } from "../data/platforms";
 import { useLocale } from "../use-locale";
 import { ExternalIcon, Pill, cx } from "../ui";
-import { noteLines, releaseDate } from "./notes";
+import { noteLines, releaseDate } from "./release-notes";
 
 /** Lines shown before the "展开全部" toggle. */
 const COLLAPSED_LINES = 5;
@@ -36,7 +36,7 @@ export function ReleaseCard({ release }: { release: ReleaseItem }) {
         </p>
       </div>
       <div className="min-w-0">
-        <h2 className="m-0 font-sans text-lg leading-normal font-bold [overflow-wrap:anywhere] text-ink">{release.title}</h2>
+        <h3 className="m-0 font-sans text-lg leading-normal font-bold [overflow-wrap:anywhere] text-ink">{release.title}</h3>
         {shown.length > 0 && (
           <ul id={notesId} className="m-0 list-none p-0">
             {shown.map((line, index) => (
