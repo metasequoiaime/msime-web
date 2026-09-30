@@ -112,14 +112,14 @@ Issue 作者为 App 的机器人账号（例如 `msime-feedback[bot]`）。后�
 
 ## 官网词条提交
 
-`/words/`（繁体 `/zh-TW/words/`）让用户无需 GitHub 账号提交词条。词条进入数据仓库 [msime-customdict](https://github.com/metasequoiaime/msime-customdict) 的 `words.txt`，以公开 Pull Request 的形式等待维护者审核，该仓库的 CI 负责格式校验和全库去重；合入后随后续词库版本发布到所有平台。页面说明了审核流程和生效时机，不收集任何联系方式或个人信息，词条和备注都会公开。
+`/words/`（繁体 `/zh-TW/words/`）让用户无需 GitHub 账号提交词条。词条进入词库源仓库 [msime-dictionary](https://github.com/metasequoiaime/msime-dictionary) 的 `custom/words.txt`，以公开 Pull Request 的形式等待维护者审核，该仓库的 CI 负责格式校验和全库去重；合入后随后续词库版本发布到所有平台。页面说明了审核流程和生效时机，不收集任何联系方式或个人信息，词条和备注都会公开。
 
 本站只提供页面，不含 Pages Function，也不保存 GitHub App 凭据或限流配置。提交接口、Turnstile 服务端校验、按 IP 限流、GitHub App 与滚动 PR 的写入逻辑都在 MSIME-Backend，部署配置和密钥见后端仓库的文档。页面直接调用公共 API（源站常量 `BACKEND_ORIGIN = https://api.msime.app`，定义在 `shared/words.ts`，不是密钥；`public/_headers` 的 CSP `connect-src` 须放行同一源站，后端须对 `https://msime.app` 开放 CORS）：
 
 | 请求 | 响应 |
 | --- | --- |
 | `GET /v1/community/word-submissions` | `{ site_key, enabled }`；未启用或请求失败时页面显示暂未开放 |
-| `POST /v1/community/word-submissions`，JSON `{ entries: [{ word, pinyin }], note, token }` | `201 { pull_request_url }`（只接受 msime-customdict 与 msime-dictionary 的 PR 链接：词库将并入 msime-dictionary 的 `custom/words.txt`，页面在 msime-cloud 切换目标仓库并在生产环境上线前仍指向 msime-customdict，而响应校验提前接受 msime-dictionary，以免切换后已创建的 PR 被误报为结果未知；`ime-dictionary` 只是重定向名，GitHub 返回的链接总是规范名 msime-dictionary）；`400 { error, rejected: [{ index, reason }] }` 标到对应行；`409` 并发更新，请用户重新验证后再提交；`429` 过于频繁；`502 { uncertain: true }` 结果不确定，引导先查看 PR 列表，避免重复提交；`503` 未开放 |
+| `POST /v1/community/word-submissions`，JSON `{ entries: [{ word, pinyin }], note, token }` | `201 { pull_request_url }`（只接受 msime-dictionary 与 msime-customdict 的 PR 链接：词条写入 msime-dictionary 的 `custom/words.txt`，页面也指向它；已归档的 msime-customdict 是之前的目标仓库，仍被接受，以免尚未重新部署的后端创建的 PR 被误报为结果未知；`ime-dictionary` 只是重定向名，GitHub 返回的链接总是规范名 msime-dictionary）；`400 { error, rejected: [{ index, reason }] }` 标到对应行；`409` 并发更新，请用户重新验证后再提交；`429` 过于频繁；`502 { uncertain: true }` 结果不确定，引导先查看 PR 列表，避免重复提交；`503` 未开放 |
 
 Turnstile 复用站点现有 widget，action 为 `words`，后端须校验该 action 与 hostname。页面不会自动重试提交；每次提交后重置验证。
 
