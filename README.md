@@ -112,18 +112,20 @@ Issue 作者为 App 的机器人账号（例如 `msime-feedback[bot]`）。后�
 
 ## 官网词条提交
 
-`/words/`（繁体 `/zh-TW/words/`）让用户无需 GitHub 账号提交词条。词条进入词库源仓库 [msime-dictionary](https://github.com/metasequoiaime/msime-dictionary) 的 `custom/words.txt`，以公开 Pull Request 的形式等待维护者审核，该仓库的 CI 负责格式校验和全库去重；合入后随后续词库版本发布到所有平台。页面说明了审核流程和生效时机，不收集任何联系方式或个人信息，词条和备注都会公开。
+`/words/`（繁体 `/zh-TW/words/`）让用户无需 GitHub 账号提交三类条目，表单顶部切换：词语（含人名，写入 `custom/words.txt`）、英文单词（`custom/english.txt`）和候选旁的翻译（`custom/translations.txt`）。条目进入词库源仓库 [msime-dictionary](https://github.com/metasequoiaime/msime-dictionary) 的同一个公开 Pull Request，等待维护者审核；该仓库的 CI 只对 `custom/words.txt` 做格式校验和全库去重。页面说明了审核流程和生效时机，不收集任何联系方式或个人信息，词条和备注都会公开。
 
 本站只提供页面，不含 Pages Function，也不保存 GitHub App 凭据或限流配置。提交接口、Turnstile 服务端校验、按 IP 限流、GitHub App 与滚动 PR 的写入逻辑都在 MSIME-Backend，部署配置和密钥见后端仓库的文档。页面直接调用公共 API（源站常量 `BACKEND_ORIGIN = https://api.msime.app`，定义在 `shared/words.ts`，不是密钥；`public/_headers` 的 CSP `connect-src` 须放行同一源站，后端须对 `https://msime.app` 开放 CORS）：
 
 | 请求 | 响应 |
 | --- | --- |
 | `GET /v1/community/word-submissions` | `{ site_key, enabled }`；未启用或请求失败时页面显示暂未开放 |
-| `POST /v1/community/word-submissions`，JSON `{ entries: [{ word, pinyin }], note, token }` | `201 { pull_request_url }`（只接受 msime-dictionary 与 msime-customdict 的 PR 链接：词条写入 msime-dictionary 的 `custom/words.txt`，页面也指向它；已归档的 msime-customdict 是之前的目标仓库，仍被接受，以免尚未重新部署的后端创建的 PR 被误报为结果未知；`ime-dictionary` 只是重定向名，GitHub 返回的链接总是规范名 msime-dictionary）；`400 { error, rejected: [{ index, reason }] }` 标到对应行；`409` 并发更新，请用户重新验证后再提交；`429` 过于频繁；`502 { uncertain: true }` 结果不确定，引导先查看 PR 列表，避免重复提交；`503` 未开放 |
+| `POST /v1/community/word-submissions`，JSON `{ kind?, entries, note, token }`：`words` 为 `[{ word, pinyin }]`，`english` 为 `[{ word, display }]`，`translations` 为 `[{ source, gloss }]`；未知字段一律 `invalid_json` | `201 { pull_request_url }`（只接受 msime-dictionary 与 msime-customdict 的 PR 链接：条目写入 msime-dictionary，页面也指向它；已归档的 msime-customdict 是之前的目标仓库，仍被接受，以免尚未重新部署的后端创建的 PR 被误报为结果未知；`ime-dictionary` 只是重定向名，GitHub 返回的链接总是规范名 msime-dictionary）；`400 { error, code }`，或 `400 { error, code: "invalid_entries", rejected: [{ index, code, reason }] }`，按 `code` 标到对应行的对应字段；`409` 并发更新，请用户重新验证后再提交；`429` 过于频繁；`502 { uncertain: true }` 结果不确定，引导先查看 PR 列表，避免重复提交；`503` 未开放 |
 
-Turnstile 复用站点现有 widget，action 为 `words`，后端须校验该 action 与 hostname。页面不会自动重试提交；每次提交后重置验证。
+页面按 `code` 显示 `shared/words.ts` 中的中文提示（`ERROR_MESSAGES` 与按类型的 `REJECTION_MESSAGES`），未知 code 才退回后端的 `error`/`reason`。`kind` 由 msime-cloud#61 引入：词语请求不带 `kind`（后端默认即 `words`），以便未部署该版本的后端照常接受；英文单词和翻译在旧后端上会因未知字段返回 `invalid_json`（新后端对未知类型返回 `invalid_kind`），页面对这两种情况提示该类型暂不支持，不会写入任何内容。
 
-前端校验（`shared/words.ts`，与后端规则一致，后端仍是权威并重复全部检查）：每次 1–20 个词条；词语 1–16 个汉字（CJK 统一表意文字及 〇，拒绝字母、数字、标点、空格和控制字符）；拼音必填，不做自动注音（多音字），音节数必须等于字数，每个音节须在 `shared/pinyin-syllables.ts` 中。该表逐字复制自 msime 的 `platforms/windows/installer/assets/tables/pinyin.txt`（402 个音节），ü 写作 v（`lv`、`nve`）。页面把大写、空格、`ü`、`lue`/`nue` 等写法规范成小写、`'` 分隔的词库写法后再提交。同一次提交内 `(词, 拼音)` 不可重复，同字不同音视为不同词条。备注可选，单行，最多 200 字。权重固定为 5000，由后端写入，用户不能选择；页面预览只是展示。
+Turnstile 复用站点现有 widget，所有类型的 action 都为 `words`，后端须校验该 action 与 hostname。页面不会自动重试提交；每次提交后重置验证。
+
+前端校验（`shared/words.ts`，与后端规则一致，后端仍是权威并重复全部检查）：每次 1–20 个词条；词语 1–16 个汉字（CJK 统一表意文字及 〇，拒绝字母、数字、标点、空格和控制字符）；拼音必填，不做自动注音（多音字），音节数必须等于字数，每个音节须在 `shared/pinyin-syllables.ts` 中。该表逐字复制自 msime 的 `platforms/windows/installer/assets/tables/pinyin.txt`（402 个音节），ü 写作 v（`lv`、`nve`）。页面把大写、空格、`ü`、`lue`/`nue` 等写法规范成小写、`'` 分隔的词库写法后再提交。同一次提交内 `(词, 拼音)` 不可重复，同字不同音视为不同词条。权重由后端按基础词库中同音节数词条的中位数确定，用户不能选择，预览中不显示。英文单词：键入编码为 1–64 个小写字母 a–z（页面先去空白并转小写），显示词形去首尾空白后最多 64 个字符，写作 `单词<TAB>显示词形<TAB>1`，`(单词, 显示词形)` 不可重复。翻译：原词去首尾空白后最多 64 个字符且不以 `#` 开头，译文最多 200 个字符，写作 `原词<TAB>译文`；原词含 U+3400 及以上的字符时为中译英，否则为英译中；同一原词的新译文覆盖旧的，只有完全相同的一对才算重复。显示词形、原词和译文都不得含制表符、换行、零宽等控制与格式字符。备注可选，单行，最多 200 字。
 
 `scripts/words.test.mjs` 覆盖上述校验、请求体字段、响应解析和各状态码提示。`pnpm dev` 下页面会直接请求生产 API；联调后端时在本地临时修改 `BACKEND_ORIGIN`，不要提交。
 
