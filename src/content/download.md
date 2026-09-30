@@ -50,7 +50,7 @@ macOS 版内置 Sparkle 自动更新，安装后可从输入法菜单中的「�
 - **只拖进了「应用程序」，没有打开 MSIME**：输入法是 MSIME 打开时才装进 `~/Library/Input Methods` 的，打开一次即可。
 - **第一次安装后没有注销**：macOS 只在登录时接纳新的输入法，注销并重新登录一次，再看菜单栏。
 - **没有添加到输入法列表**：按上面第 3 步添加；在「输入法」列表里删掉过水杉输入法的，也要重新添加。
-- **装过旧版 pkg 安装包**：旧版装在 `~/Library/Input Methods/MetasequoiaIME.app`，和新版用的是同一个输入法标识，新版不会替你删除它。在访达里按 `Command + Shift + G` 前往 `~/Library/Input Methods`，把 `MetasequoiaIME.app` 移到废纸篓，注销并重新登录后再打开一次 MSIME。更早的预览版 `水杉输入法（预览）.app` 会在打开 MSIME 时自动移除。
+- **装过旧版 pkg 安装包**：旧版装在 `~/Library/Input Methods/MetasequoiaIME.app`，和新版用的是同一个输入法标识。打开新版 MSIME 时会自动移除它，更早的预览版 `水杉输入法（预览）.app` 也一样；之后注销并重新登录一次（苹果菜单 →「退出登录」），让系统只认新版。如果旧版装在了 `/Library/Input Methods`（所有用户共用），MSIME 没有权限删除，会提示你手动处理：在访达里按 `Command + Shift + G` 前往 `/Library/Input Methods`，把 `MetasequoiaIME.app` 移到废纸篓（需要输入管理员密码），再注销并重新登录。
 {{/macosDmg}}
 
 ### 签名与校验
