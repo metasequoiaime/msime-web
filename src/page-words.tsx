@@ -175,7 +175,7 @@ export function WordsPage() {
             {t(error && <p className="sticky top-[76px] z-[2] m-0 mb-5 rounded-field bg-panel px-4 py-3 text-sm leading-[1.75] text-ink shadow-[inset_0_0_0_1.5px_var(--warn),var(--shadow)]" role="alert">{t(error)}</p>)}
             <fieldset className="m-0 min-w-0 border-0 p-0" disabled={busy}>
               <legend className={cx(stepTitleClass, "p-0")}>{t("1. 填写词条")}</legend>
-              <p className={cx(hintClass, "mt-1.5 text-sm")}>{t(`每行一个词条，最多 ${MAX_ENTRIES} 个。词语只能是汉字（最多 ${MAX_WORD_LENGTH} 个字）；拼音必须填写，每个字一个音节，音节之间用空格或 ' 分隔，ü 写作 v。`)}</p>
+              <p className={cx(hintClass, "mt-1.5 text-sm")}>{t(`每行一个词条，最多 ${MAX_ENTRIES} 个。词语只能是汉字（最多 ${MAX_WORD_LENGTH} 个字）；拼音必须填写，每个字一个音节，音节之间用空格或 ' 分隔；连写时只有一种切分方式的会自动分开，ü 写作 v。`)}</p>
               <ol className="m-0 mt-4 flex list-none flex-col gap-3 p-0">
                 {rows.map((row, index) => <li key={row.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-3 gap-y-2 rounded-field bg-panel-2/60 p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_auto]">
                   <label className={cx(fieldLabelClass, "col-span-2 md:col-span-1")}>{t(`词语 ${index + 1}`)}

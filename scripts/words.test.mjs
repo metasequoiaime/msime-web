@@ -29,10 +29,24 @@ test('words must be 1-16 Han characters', () => {
 });
 
 test('pinyin is required, made of valid syllables and matches the character count', () => {
-  for (const pinyin of ['', "wei'lai'ke", "wei'lai'ke'qi'ba", "wei'xyz'ke'qi", "wei'lai3'ke'qi", 'weilaikeqi', "wei-lai-ke-qi"]) rejects({ entries: [{ word: '未来可期', pinyin }] });
+  for (const pinyin of ['', "wei'lai'ke", "wei'lai'ke'qi'ba", "wei'xyz'ke'qi", "wei'lai3'ke'qi", 'weilaike', "wei-lai-ke-qi"]) rejects({ entries: [{ word: '未来可期', pinyin }] });
   const issue = wordsSchema.safeParse({ entries: [{ word: '未来可期', pinyin: "wei'lai'ke" }] }).error.issues[0];
   assert.deepEqual(issue.path, ['entries', 0, 'pinyin']);
   assert.match(issue.message, /4 个字，但拼音有 3 个音节/);
+});
+
+test('unseparated pinyin is split only when the character count allows one reading', () => {
+  assert.deepEqual(wordsSchema.parse({ entries: [{ word: '测试', pinyin: 'ceshi' }] }).entries[0].pinyin, "ce'shi");
+  assert.deepEqual(wordsSchema.parse({ entries: [{ word: '未来可期', pinyin: 'WeiLaiKeQi' }] }).entries[0].pinyin, "wei'lai'ke'qi");
+  // A single character keeps its one syllable; separators the user typed are never re-split.
+  assert.equal(wordsSchema.parse({ entries: [{ word: '先', pinyin: 'xian' }] }).entries[0].pinyin, 'xian');
+  assert.equal(wordsSchema.parse({ entries: [{ word: '西安', pinyin: "xi'an" }] }).entries[0].pinyin, "xi'an");
+  const ambiguous = wordsSchema.safeParse({ entries: [{ word: '方案', pinyin: 'fangan' }] }).error.issues[0];
+  assert.deepEqual(ambiguous.path, ['entries', 0, 'pinyin']);
+  assert.match(ambiguous.message, /多种切分方式/);
+  assert.match(ambiguous.message, /fang'an/);
+  assert.match(ambiguous.message, /fan'gan/);
+  assert.match(wordsSchema.safeParse({ entries: [{ word: '测试', pinyin: 'ceshx' }] }).error.issues[0].message, /不是有效的全拼音节/);
 });
 
 test('submissions hold 1-20 entries without duplicates and an optional single-line note', () => {
@@ -80,6 +94,7 @@ test('backend responses are parsed strictly and every documented status has a me
   assert.match(submissionError(429, {}), /频繁/);
   assert.match(submissionError(502, { uncertain: true }), /确认词条未写入后再提交/);
   assert.match(submissionError(503, {}), /暂未开放/);
+  assert.equal(submissionError(503, { error: '暂时无法读取词库仓库，词条尚未写入，请稍后再试。' }), '暂时无法读取词库仓库，词条尚未写入，请稍后再试。');
   assert.equal(submissionError(400, { error: '第 2 个词条拼音不正确' }), '第 2 个词条拼音不正确');
   assert.match(submissionError(400, {}), /未通过校验/);
 });

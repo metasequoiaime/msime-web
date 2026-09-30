@@ -29,6 +29,34 @@ export function normalizePinyin(value: string) {
     .join("'");
 }
 
+const MAX_SYLLABLE_LENGTH = Math.max(...[...PINYIN_SYLLABLES].map(syllable => syllable.length));
+
+/** Every way to split unseparated pinyin into exactly `count` valid syllables, stopping after `limit` results. */
+export function pinyinSplits(pinyin: string, count: number, limit = 3): string[] {
+  const results: string[] = [];
+  const walk = (rest: string, parts: string[]) => {
+    if (results.length >= limit) return;
+    if (!rest) {
+      if (parts.length === count) results.push(parts.join("'"));
+      return;
+    }
+    if (parts.length >= count) return;
+    for (let length = 1; length <= Math.min(MAX_SYLLABLE_LENGTH, rest.length); length++) {
+      const syllable = rest.slice(0, length);
+      if (PINYIN_SYLLABLES.has(syllable)) walk(rest.slice(length), [...parts, syllable]);
+    }
+  };
+  walk(pinyin, []);
+  return results;
+}
+
+// Pinyin typed without separators (ceshi for 测试) is split only when the character count allows exactly one reading; an ambiguous string such as fangan (fang'an or fan'gan) is left for the check below to reject with the candidates.
+const splitUnambiguous = (pinyin: string, count: number) => {
+  if (pinyin.includes("'") || count < 2) return pinyin;
+  const splits = pinyinSplits(pinyin, count, 2);
+  return splits.length === 1 ? splits[0] : pinyin;
+};
+
 export const wordEntrySchema = z.object({
   word: z.string().trim()
     .min(1, "请填写词语")
@@ -36,10 +64,12 @@ export const wordEntrySchema = z.object({
     .refine(value => HAN_WORD.test(value), "词语只能包含汉字，不能有字母、数字、标点或空格"),
   pinyin: z.string().max(200, "拼音过长").transform(normalizePinyin)
     .pipe(z.string().min(1, "请填写拼音").regex(QUANPIN, "拼音只能包含小写字母，音节之间用 ' 分隔，例如 wei'lai'ke'qi")),
-}).superRefine((entry, context) => {
+}).transform(entry => ({ ...entry, pinyin: splitUnambiguous(entry.pinyin, [...entry.word].length) })).superRefine((entry, context) => {
   const syllables = entry.pinyin.split("'");
   const invalid = syllables.find(syllable => !PINYIN_SYLLABLES.has(syllable));
-  if (invalid) context.addIssue({ code: "custom", path: ["pinyin"], message: `“${invalid}”不是有效的全拼音节（ü 请写作 v，如 lv、nve）` });
+  const splits = syllables.length === 1 && [...entry.word].length > 1 ? pinyinSplits(entry.pinyin, [...entry.word].length) : [];
+  if (splits.length > 1) context.addIssue({ code: "custom", path: ["pinyin"], message: `“${entry.pinyin}”有多种切分方式（${splits.join("、")}），请用空格或 ' 分隔音节` });
+  else if (invalid) context.addIssue({ code: "custom", path: ["pinyin"], message: `“${invalid}”不是有效的全拼音节（ü 请写作 v，如 lv、nve）` });
   else if (HAN_WORD.test(entry.word) && syllables.length !== [...entry.word].length) context.addIssue({ code: "custom", path: ["pinyin"], message: `“${entry.word}”有 ${[...entry.word].length} 个字，但拼音有 ${syllables.length} 个音节` });
 });
 export type WordEntry = z.infer<typeof wordEntrySchema>;
@@ -72,7 +102,8 @@ export function submissionError(status: number, data: { error?: unknown; uncerta
   if (status === 409) return "有其他人同时提交了词条，你的词条尚未写入。请重新验证后再次提交。";
   if (status === 429) return "提交过于频繁，请稍后再试。";
   if (status === 502 || data.uncertain === true) return "暂时无法确认提交结果。请先查看词库仓库中最新的 Pull Request，确认词条未写入后再提交，避免重复。";
-  if (status === 503) return "词条提交暂未开放，请稍后再试。";
+  // 503 covers several causes (disabled, verification or GitHub unavailable); the backend's message says which, and whether anything was written.
+  if (status === 503) return detail || "词条提交暂未开放，请稍后再试。";
   if (status === 400) return detail || "部分词条未通过校验，请修改后再提交。";
   return detail || "提交失败，请稍后再试。";
 }
