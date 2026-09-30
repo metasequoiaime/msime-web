@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-30T13:02:10.011Z",
-  "totalStars": 1710,
+  "generatedAt": "2026-09-30T18:26:26.708Z",
+  "totalStars": 1725,
   "repoCount": 15,
   "starHistory": [
     {
@@ -145,7 +145,7 @@
     },
     {
       "month": "2026-09",
-      "stars": 1710
+      "stars": 1725
     }
   ],
   "starSeries": [
@@ -294,7 +294,7 @@
         },
         {
           "date": "2026-09-30",
-          "stars": 1561
+          "stars": 1568
         }
       ]
     },
@@ -360,7 +360,7 @@
         },
         {
           "date": "2026-09-30",
-          "stars": 51
+          "stars": 58
         }
       ]
     },
@@ -414,7 +414,7 @@
       ]
     },
     {
-      "repo": "ime-dictionary",
+      "repo": "msime-dictionary",
       "points": [
         {
           "date": "2023-10-31",
@@ -656,15 +656,6 @@
       ]
     },
     {
-      "repo": "msime-cloud",
-      "points": [
-        {
-          "date": "2026-09-30",
-          "stars": 1
-        }
-      ]
-    },
-    {
       "repo": "msime-web",
       "points": [
         {
@@ -693,32 +684,41 @@
         },
         {
           "date": "2026-09-30",
+          "stars": 2
+        }
+      ]
+    },
+    {
+      "repo": "msime-cloud",
+      "points": [
+        {
+          "date": "2026-09-30",
           "stars": 1
         }
       ]
     }
   ],
-  "starDelta30d": 871,
+  "starDelta30d": 886,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 10587,
+      "contributions": 10783,
       "repos": 14
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1775,
+      "contributions": 1790,
       "repos": 11
     },
     {
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 70,
+      "contributions": 73,
       "repos": 2
     },
     {
