@@ -260,6 +260,30 @@ test('all old beta links redirect to the localized download option', async () =>
   }
 });
 
+test('old release-list links land on the download page release list without touching the installer picker', async () => {
+  const { onRequest: releases } = await import('../functions/releases.ts');
+  const { onRequest: traditionalReleases } = await import('../functions/zh-TW/releases.ts');
+  const routes = JSON.parse(read('_routes.json')).include;
+  assert.doesNotMatch(read('_redirects'), /^\/(zh-TW\/)?releases\/? /m, 'the Functions own these paths; a _redirects rule would bypass the param mapping');
+  for (const prefix of ['', '/zh-TW']) {
+    for (const slash of ['', '/']) {
+      const path = `${prefix}/releases${slash}`;
+      assert.ok(routes.includes(path), path);
+      for (const platform of ['macos', 'linux', '', 'all', 'unknown']) {
+        const request = new Request(`${SITE_ORIGIN}${path}?utm_source=shared${platform ? `&platform=${platform}` : ''}`);
+        const response = await (prefix ? traditionalReleases : releases)({ request });
+        assert.equal(response.status, 301);
+        const destination = new URL(response.headers.get('Location'));
+        assert.equal(destination.pathname, `${prefix}/download/`);
+        assert.equal(destination.hash, '#releases');
+        assert.equal(destination.searchParams.get('platform'), null, 'the old filter never selects an installer');
+        assert.equal(destination.searchParams.get('release'), ['macos', 'linux'].includes(platform) ? platform : null);
+        assert.equal(destination.searchParams.get('utm_source'), 'shared');
+      }
+    }
+  }
+});
+
 
 test('download actions and installation instructions share one surface without a sidebar', () => {
   for (const path of ['/download/', '/zh-TW/download/']) {

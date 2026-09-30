@@ -4,10 +4,6 @@
 /beta.md /download.md 301
 /zh-TW/beta.md /zh-TW/download.md 301
 
-# The release list moved to the end of the download page.
-/releases /download/#releases 301
-/releases/ /download/#releases 301
-/zh-TW/releases /zh-TW/download/#releases 301
-/zh-TW/releases/ /zh-TW/download/#releases 301
+# The release list moved to the end of the download page. The HTML pages redirect through functions/releases.ts, which maps the old `?platform=` filter to `?release=`.
 /releases.md /download.md 301
 /zh-TW/releases.md /zh-TW/download.md 301
