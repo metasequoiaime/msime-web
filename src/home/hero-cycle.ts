@@ -46,7 +46,11 @@ const HOLD_MS = 2600;
 const NEXT_MS = 280;
 
 type Phase = "type" | "hold" | "erase";
-type CycleState = { pair: number; keys: number; phase: Phase };
+/** `pinned` is set once a visitor picks a pair from the dots: the cycle types that pair and then holds it for good. */
+type CycleState = { pair: number; keys: number; phase: Phase; pinned: boolean };
+
+/** A complete, still frame: every key typed and the candidates up. What SSR renders and what reduced motion freezes on. */
+const STILL: CycleState = { pair: 0, keys: Number.POSITIVE_INFINITY, phase: "hold", pinned: false };
 
 /**
  * Keystrokes a pair takes to type in full: the scheme word, then the language name, while the composition code types alongside.
@@ -64,22 +68,27 @@ export type HeroFrame = {
   code: string;
   /** Which headline slot the caret sits in; null when the cycle is not animating. */
   caret: "scheme" | "language" | null;
+  /** Show this pair and stop cycling for the rest of the visit. */
   select: (pair: number) => void;
 };
 
 /**
  * 首页首屏的打字轮换：标题里的方案和语言逐字打出、停留、删掉再换下一组，右侧候选窗的编码同步敲入。
  *
- * 服务端和水合时都是第一组的完整文字，挂载后才开始动。减少动态效果、标签页在后台或首屏滚出视口时停在当前帧；`hovering` 为真（指针或焦点在演示卡片里）时停在完整的一帧上不往下切。只用一个 setTimeout 驱动，卸载时清掉。
+ * 服务端和水合时都是第一组的完整文字，挂载后才开始动。标签页在后台或首屏滚出视口时停在当前帧；开启「减少动态效果」时（包括轮换途中才打开）回到第一组的完整一帧，关掉后从那里接着轮换；`hovering` 为真（指针或焦点在演示区里）时打完当前这组就停住不往下切；点过圆点（`select`）后打出所选的一组并一直停在那里。只用一个 setTimeout 驱动，卸载时清掉。
  */
 export function useHeroCycle(target: RefObject<HTMLElement | null>, schemeWord: (id: SchemeId) => string, hovering: boolean): HeroFrame {
-  const [state, setState] = useState<CycleState>({ pair: 0, keys: Number.POSITIVE_INFINITY, phase: "hold" });
+  const [state, setState] = useState<CycleState>(STILL);
   const [motion, setMotion] = useState(false);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setMotion(!query.matches);
+    const sync = () => {
+      setMotion(!query.matches);
+      // Freezing wherever the cycle happened to be could leave a half-typed headline ("五笔Englis") on screen for good. A pair the visitor picked stays, shown in full.
+      if (query.matches) setState((current) => (current.pinned ? { ...current, keys: Number.POSITIVE_INFINITY, phase: "hold" } : STILL));
+    };
     sync();
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
@@ -89,8 +98,9 @@ export function useHeroCycle(target: RefObject<HTMLElement | null>, schemeWord: 
     const element = target.current;
     let onScreen = true;
     const sync = () => setVisible(onScreen && document.visibilityState === "visible");
-    const observer = new IntersectionObserver(([entry]) => {
-      onScreen = entry.isIntersecting;
+    // Entries arrive in order and several can be batched into one callback; the last one is the current state.
+    const observer = new IntersectionObserver((entries) => {
+      onScreen = entries[entries.length - 1].isIntersecting;
       sync();
     });
     if (element) observer.observe(element);
@@ -114,8 +124,8 @@ export function useHeroCycle(target: RefObject<HTMLElement | null>, schemeWord: 
     if (!running) return;
     const next = (): [number, CycleState] | null => {
       if (state.phase === "type") return keys < total ? [TYPE_MS, { ...state, keys: keys + 1 }] : [0, { ...state, keys, phase: "hold" }];
-      if (state.phase === "hold") return hovering ? null : [HOLD_MS, { ...state, keys, phase: "erase" }];
-      return keys > 0 ? [ERASE_MS, { ...state, keys: keys - 1 }] : [NEXT_MS, { pair: (state.pair + 1) % PAIRS.length, keys: 0, phase: "type" }];
+      if (state.phase === "hold") return hovering || state.pinned ? null : [HOLD_MS, { ...state, keys, phase: "erase" }];
+      return keys > 0 ? [ERASE_MS, { ...state, keys: keys - 1 }] : [NEXT_MS, { ...state, pair: (state.pair + 1) % PAIRS.length, keys: 0, phase: "type" }];
     };
     const step = next();
     if (!step) return;
@@ -123,7 +133,10 @@ export function useHeroCycle(target: RefObject<HTMLElement | null>, schemeWord: 
     return () => window.clearTimeout(timer);
   }, [running, hovering, state, keys, total]);
 
-  const select = useCallback((pair: number) => setState({ pair, keys: running ? 0 : Number.POSITIVE_INFINITY, phase: running ? "type" : "hold" }), [running]);
+  const select = useCallback(
+    (pair: number) => setState({ pair, keys: running ? 0 : Number.POSITIVE_INFINITY, phase: running ? "type" : "hold", pinned: true }),
+    [running]
+  );
 
   const schemeLength = [...schemeText].length;
   const typedScheme = Math.min(keys, schemeLength);
