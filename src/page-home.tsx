@@ -1,11 +1,15 @@
+import { useQuery } from "@tanstack/react-query";
 import { CommunitySection } from "./community-section";
-import { PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution } from "./data/platforms";
+import { IOS_TESTFLIGHT_URL, PLATFORM_CATALOG, PLATFORM_NAMES, SITE_PLATFORMS, type Distribution } from "./data/platforms";
+import { platformsQuery } from "./data/queries";
 import { HeroDemo } from "./home/hero-demo";
 import { LocaleLink } from "./locale-link";
 import { usePageMeta } from "./page-meta";
+import { recognizePlatform } from "./platform";
 import { useLocale } from "./use-locale";
+import { useSearchReady } from "./use-page-search";
 import { useReveal } from "./use-reveal";
-import { AnchorButton, Badge, Card, Container, DownloadIcon, Grove, LinkButton, LogoMark, Pill, SectionHeading, cx, type GroveTree } from "./ui";
+import { AnchorButton, Badge, Card, Container, DownloadIcon, Grove, LinkButton, LogoMark, Pill, PlatformIcon, SectionHeading, cx, type GroveTree } from "./ui";
 
 const FEATURES = [
   {
@@ -38,6 +42,54 @@ const BANNER_NEAR: GroveTree[] = [[700, 145, 1.5], [830, 60, 2], [960, 128, 1.6]
 
 const SECTION_SPACING = "pt-[clamp(80px,10vw,128px)]";
 
+/**
+ * 首屏的「下载」按钮：认出访客的系统就一步到位。
+ *
+ * Windows 和 macOS 直接给安装包地址（platforms.json 里的第一个包），iOS 直接去 TestFlight，其余平台带着 `?platform=` 去下载页。静态 HTML 和水合前的第一次渲染都是指向 /download/ 的普通「下载」，认不出系统、清单还没到或读取失败时也退回它，所以预渲染出来的页面与水合结果一致。
+ */
+function HeroDownloadButton() {
+  const { t } = useLocale();
+  const hydrated = useSearchReady();
+  const platform = hydrated ? recognizePlatform() : null;
+  const direct = platform === "windows" || platform === "macos";
+  const manifest = useQuery({ ...platformsQuery(), enabled: direct });
+  const icon = <DownloadIcon size={17} strokeWidth={2} />;
+
+  if (direct) {
+    const url = manifest.data?.platforms[platform]?.downloads[0]?.url;
+    if (url)
+      return (
+        <AnchorButton href={url} target="_self" size="lg" className="shadow-btn">
+          {t(`下载 ${PLATFORM_NAMES[platform]} 版`)}
+          {icon}
+        </AnchorButton>
+      );
+  }
+  if (platform === "ios")
+    return (
+      <AnchorButton href={IOS_TESTFLIGHT_URL} size="lg" className="shadow-btn">
+        {t("下载 iOS 版")}
+        {icon}
+      </AnchorButton>
+    );
+  // 清单读取失败时仍按系统带上 `?platform=`；还在读取中就先保持普通的「下载」，免得按钮在两种链接之间闪一下
+  if (platform && !(direct && manifest.isPending)) {
+    const released = PLATFORM_CATALOG[platform].distribution !== "source";
+    return (
+      <LinkButton to="/download/" search={{ platform }} size="lg" className="shadow-btn">
+        {released ? t(`下载 ${PLATFORM_NAMES[platform]} 版`) : t("下载")}
+        {icon}
+      </LinkButton>
+    );
+  }
+  return (
+    <LinkButton to="/download/" size="lg" className="shadow-btn">
+      {t("下载")}
+      {icon}
+    </LinkButton>
+  );
+}
+
 export function HomePage() {
   const { t } = useLocale();
   usePageMeta();
@@ -58,15 +110,17 @@ export function HomePage() {
               {t("面向 Windows、macOS、Linux、Android、iOS 与 HarmonyOS 开发，全拼、双拼、五笔都能用。候选词旁直接显示译文，不用切出去查。")}
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <LinkButton to="/download/" size="lg" className="shadow-btn">
-                {t("下载")}
-                <DownloadIcon size={17} strokeWidth={2} />
-              </LinkButton>
+              <HeroDownloadButton />
               <LinkButton to="/docs/$guide/" params={{ guide: "windows" }} variant="secondary" size="lg">
                 {t("阅读文档")}
               </LinkButton>
             </div>
-            <p className="m-0 mt-4 text-[13.5px] text-muted">Windows · macOS · Linux · Android · iOS · HarmonyOS</p>
+            {/* 主按钮可能已经换成了本机的安装包，这一行就是去看其他平台的入口 */}
+            <p className="m-0 mt-4 text-[13.5px]">
+              <LocaleLink to="/download/" className="text-muted no-underline hover:text-accent-ink">
+                Windows · macOS · Linux · Android · iOS · HarmonyOS
+              </LocaleLink>
+            </p>
           </div>
 
           <HeroDemo />
@@ -150,7 +204,7 @@ export function HomePage() {
             return (
               <Card as="li" key={id} className="min-w-0 rounded-tile p-6" data-reveal>
                 <div className="flex items-center justify-between gap-3">
-                  <span className="font-mono text-xs text-accent-ink">{id}</span>
+                  <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
                 </div>
                 <h3 className="m-0 mt-[22px] text-[22px] font-bold text-ink">{platform.name}</h3>
