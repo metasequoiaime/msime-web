@@ -79,9 +79,9 @@ export function CodePage() {
             </p>
             <p className="m-0 mt-2 max-w-[72ch] text-[15.5px] leading-[1.95] text-body">
               {t("不写代码也能参与：遇到问题或有功能建议，可以在")}
-              <LocaleLink to="/feedback/">{t("问题与建议")}</LocaleLink>
+              <LocaleLink to="/feedback/">{t("Bug 与需求反馈")}</LocaleLink>
               {t("提交，无需 GitHub 账号；想补充常用词，可以在")}
-              <LocaleLink to="/words/">{t("词库共建")}</LocaleLink>
+              <LocaleLink to="/words/">{t("词库缺失反馈")}</LocaleLink>
               {t("提交词条。")}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">

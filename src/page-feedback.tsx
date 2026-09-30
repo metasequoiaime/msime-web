@@ -26,7 +26,7 @@ type Draft = { title: string; answers: Answers; screenshots: LocalScreenshot[] }
 
 export function FeedbackPage() {
   const { t, tw } = useLocale();
-  usePageMeta("问题与建议 | 水杉输入法", "反馈问题或提出建议，提交内容将公开发布到 GitHub。");
+  usePageMeta("Bug 与需求反馈 | 水杉输入法", "反馈问题或提出建议，提交内容将公开发布到 GitHub。");
   const { get, choice, update } = usePageSearch();
   const targetResult = feedbackSchema.shape.target.safeParse(get("target"));
   const requestedTarget = targetResult.success ? targetResult.data : "windows";

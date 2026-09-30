@@ -35,7 +35,7 @@ export const REPOSITORY_GROUPS: readonly RepositoryGroup[] = [
     title: "词库、模型与数据",
     repositories: [
       { name: "chinese-ime-lm", description: "面向中文输入法的语言模型：语料、n-gram 统计、字级神经模型与评测集" },
-      { name: "msime-customdict", description: "自造词、人名、英文词条与候选窗翻译补丁；官网“词库共建”的提交会汇总到这里的 Pull Request" },
+      { name: "msime-customdict", description: "自造词、人名、英文词条与候选窗翻译补丁；官网“词库缺失反馈”的提交会汇总到这里的 Pull Request" },
       { name: "ime-dictionary", description: "早期词库源数据与构建脚本，现行词库已并入主仓库，这里保留历史与已有 Release" },
     ],
   },

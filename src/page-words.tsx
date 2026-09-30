@@ -219,7 +219,7 @@ export function WordsPage() {
               <Tip title="为什么要填拼音">{t("很多字有多个读音，自动注音容易出错。请按实际读音填写，例如“行长”应填 hang'zhang。")}</Tip>
               <Tip title="审核与生效">{t("维护者会检查用词、拼音和是否含敏感内容，词库仓库的自动检查会校验格式并与现有词库去重。合入后随下一个词库版本发布到所有平台。")}</Tip>
               <Tip title="隐私">{t("表单不收集联系方式。词条和备注会公开显示在 GitHub 上。")}</Tip>
-              <Tip title="其他问题">{t("词语出现错误或想反馈其他问题，请使用")}<LocaleLink to="/feedback/">{t("问题与建议")}</LocaleLink>{t("。")}</Tip>
+              <Tip title="其他问题">{t("词语出现错误或想反馈其他问题，请使用")}<LocaleLink to="/feedback/">{t("Bug 与需求反馈")}</LocaleLink>{t("。")}</Tip>
             </Card>
           </aside>
         </Container>

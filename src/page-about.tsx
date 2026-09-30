@@ -112,7 +112,7 @@ export function AboutPage() {
               </div>
               <p className="m-0 mt-3.5 text-sm leading-[1.85] text-muted">
                 {t("发现问题或有功能建议，可以在官网“")}
-                <LocaleLink to="/feedback/">{t("问题与建议")}</LocaleLink>
+                <LocaleLink to="/feedback/">{t("Bug 与需求反馈")}</LocaleLink>
                 {t("”提交，无需 GitHub 账号。提交前请确认不含 API Key 等敏感信息。")}
               </p>
             </Card>

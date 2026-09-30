@@ -60,7 +60,7 @@ Android 版正在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/de
 
 ### 从源码构建
 
-源码、APK 构建脚本和验证方法都在 msime 仓库的 `platforms/android` 目录，构建前请先阅读该目录的 README。开发中的构建不保证稳定，遇到问题欢迎到[问题与建议](/feedback/)反馈。
+源码、APK 构建脚本和验证方法都在 msime 仓库的 `platforms/android` 目录，构建前请先阅读该目录的 README。开发中的构建不保证稳定，遇到问题欢迎到[Bug 与需求反馈](/feedback/)反馈。
 
 ## iOS
 
@@ -90,7 +90,7 @@ HarmonyOS 版正在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/
 
 ### 从源码构建
 
-源码和构建脚本都在 msime 仓库的 `platforms/harmony` 目录。构建需要 DevEco Studio 提供的 OpenHarmony NDK 与 `hvigorw`，步骤见该目录 README 的「本地构建」一节。开发中的构建不保证稳定，遇到问题欢迎到[问题与建议](/feedback/)反馈。
+源码和构建脚本都在 msime 仓库的 `platforms/harmony` 目录。构建需要 DevEco Studio 提供的 OpenHarmony NDK 与 `hvigorw`，步骤见该目录 README 的「本地构建」一节。开发中的构建不保证稳定，遇到问题欢迎到[Bug 与需求反馈](/feedback/)反馈。
 
 ## 隐私
 
