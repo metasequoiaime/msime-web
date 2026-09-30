@@ -26,7 +26,8 @@ const NAV_ITEMS: readonly NavItem[] = [
 ];
 
 const ORG_URL = "https://github.com/metasequoiaime";
-const DESKTOP_NAV_QUERY = "(min-width: 1180px)";
+// Same query Tailwind emits for the `nav:` variant (--breakpoint-nav in app.css), so JS and CSS switch layouts at the same width whatever the root font size.
+const DESKTOP_NAV_QUERY = "(width >= 73.75rem)";
 const QQ_GROUP = "829919142";
 
 /** The docs tab also covers the FAQ, which lives under the docs toolbar in the design. */
@@ -582,7 +583,8 @@ function Shell({ children }: { children?: ReactNode }) {
 
       <div className="header-wrap">
         <header className="mx-auto flex h-[68px] max-w-[calc(1240px+2*clamp(16px,3.6vw,40px))] items-center gap-3 px-[clamp(16px,3.6vw,40px)] sm:gap-4">
-          <Link className="flex flex-none items-center gap-2.5 text-ink no-underline hover:text-ink" to="/" aria-label={t("水杉输入法 首页")}>
+          {/* Exact: on Traditional pages the target is /zh-TW/, which every other /zh-TW/* path would otherwise match as a prefix and mark current. */}
+          <Link className="flex flex-none items-center gap-2.5 text-ink no-underline hover:text-ink" to="/" activeOptions={{ exact: true, includeSearch: false }} aria-label={t("水杉输入法 首页")}>
             <LogoMark size={34} ring />
             {/* Below 360px the wordmark plus the palette, 下载 and menu controls outgrow the bar, so the mark alone stands in (the link keeps its label). */}
             <span className="text-[17px] font-bold tracking-[.03em] whitespace-nowrap max-[360px]:hidden">{t("水杉输入法")}</span>
@@ -593,7 +595,7 @@ function Shell({ children }: { children?: ReactNode }) {
           <div className="ml-auto flex flex-none items-center gap-1.5">
             <PaletteMenu isOpen={paletteIsOpen} setOpen={setPaletteIsOpen} />
             {/* The bar's one accent action, kept on every width (the menu panel no longer lists 下载). */}
-            <LinkButton to="/download/" size="sm" className="rounded-full px-3 sm:px-4">
+            <LinkButton to="/download/" size="pill">
               <DownloadIcon size={16} />
               {t("下载")}
             </LinkButton>

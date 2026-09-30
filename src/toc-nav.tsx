@@ -22,8 +22,8 @@ export function TocNav({ entries, activeId, tocRef, onSelect, onNavigateNarrow }
           aria-current={entry.id === activeId ? "location" : undefined}
           onClick={() => {
             onSelect(entry.id);
-            // Below 960px the index is a disclosure above the content (styles/shell.css); close it once a section is picked.
-            if (window.matchMedia("(max-width: 959.98px)").matches) onNavigateNarrow?.();
+            // Below --breakpoint-2xl (60rem) the index is a disclosure above the content (styles/shell.css); close it once a section is picked.
+            if (window.matchMedia("(width < 60rem)").matches) onNavigateNarrow?.();
           }}
         >
           {t(entry.text)}
