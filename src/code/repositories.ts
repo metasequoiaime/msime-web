@@ -18,7 +18,7 @@ export type RepositoryGroup = {
 /**
  * The organisation's product repositories, grouped as on the design's code page.
  *
- * The design lists the first two groups; the third adds the skin and distribution repositories it leaves out. Organisation files and early prototypes are deliberately not listed. Descriptions follow each repository's own GitHub description and README.
+ * The design lists the first two groups; the third adds the Homebrew tap it leaves out. The skin repositories, organisation files and early prototypes are deliberately not listed. Descriptions follow each repository's own GitHub description and README.
  */
 export const REPOSITORY_GROUPS: readonly RepositoryGroup[] = [
   {
@@ -40,10 +40,8 @@ export const REPOSITORY_GROUPS: readonly RepositoryGroup[] = [
     ],
   },
   {
-    title: "皮肤与分发",
+    title: "分发",
     repositories: [
-      { name: "msime-skins", description: "Windows 版外部皮肤合集，支持横排、竖排布局与深浅色主题" },
-      { name: "msime-skin-example", description: "候选窗皮肤的最小示例：skin.toml 声明配色与装饰几何，附预览页和安装脚本" },
       { name: "homebrew-tap", description: "macOS 版的 Homebrew 安装源，每次发布后自动更新" },
     ],
   },
