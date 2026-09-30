@@ -28,7 +28,10 @@ const isNoise = name =>
 const RULES = {
   windows: [[/^MetasequoiaIME_Setup_v[\w.-]+\.exe$/i, '安装程序', 'x64']],
   // iOS 的 ipa 也在这个仓库里发，但站点把 iOS 标为开发中，把一个能下的包摆在 macOS 名下只会让人误解。
+  // 现行打包是 platforms/macos/package-release.sh 产出的 msime-macos-<版本>-<架构>.dmg（release-macos.yml 以 macos-v<版本> 发布），每个架构一个 DMG，架构写在文件名里；Apple 芯片排在前面做主推。pkg / zip 是此前的打包形状，只在还没有 DMG 发布时展示（见 selectRelease）。
   macos: [
+    [/^msime-macos-\d+\.\d+\.\d+-arm64\.dmg$/i, 'Apple 芯片 · dmg', 'arm64'],
+    [/^msime-macos-\d+\.\d+\.\d+-x86_64\.dmg$/i, 'Intel · dmg', 'x86_64'],
     [/-macos-universal[\w-]*\.pkg$/i, '安装包 · pkg', 'Universal'],
     [/-macos-universal[\w-]*\.zip$/i, '压缩包 · zip', 'Universal'],
   ],
@@ -108,16 +111,20 @@ export function classifyAssets(platform, assets) {
 /*
  * 签名状态：true / false / null（不知道）。
  *
- * 文件名里带 unsigned 一定是没签名，这条对哪个平台都成立。反过来不成立：只有 Windows 和 macOS 的发布流水线用「没签名就把 unsigned 写进文件名」这个约定，所以名字里没有 unsigned 才能推出已签名。Linux 包不走这个约定，名字里本来就不会有 unsigned，据此判成「已签名」是在页面上说假话 —— 站点自己的下载说明写的是 Linux 未经签名。
+ * 文件名里带 unsigned 一定是没签名，这条对哪个平台都成立。反过来不成立：只有 Windows 安装包和 macOS 旧的 pkg / zip 发布流水线用「没签名就把 unsigned 写进文件名」这个约定，所以名字里没有 unsigned 才能推出已签名。Linux 包不走这个约定，名字里本来就不会有 unsigned，据此判成「已签名」是在页面上说假话 —— 站点自己的下载说明写的是 Linux 未经签名。macOS 的 DMG 也不走：缺少 Developer ID 时 package-release.sh 照样产出同名的 ad-hoc 签名 DMG。
  *
  * 判不出来就返回 null，页面对这种情况什么都不说，而不是猜一个。
  */
-const NAMES_DECLARE_SIGNING = new Set(['windows', 'macos']);
+const NAME_DECLARES_SIGNING = {
+  windows: () => true,
+  macos: name => /-macos-universal/i.test(name),
+};
 
 export const signingState = (platform, downloads) => {
   if (!downloads.length) return null;
   if (downloads.some(entry => /unsigned/i.test(entry.name))) return false;
-  return NAMES_DECLARE_SIGNING.has(platform) ? true : null;
+  const declares = NAME_DECLARES_SIGNING[platform];
+  return declares && downloads.every(entry => declares(entry.name)) ? true : null;
 };
 
 const toRelease = (platform, release) => {
@@ -144,10 +151,18 @@ const toRelease = (platform, release) => {
  * 正式版是最高的非 Pre-release；预览版是比正式版更高的 Pre-release —— 比正式版还旧的预览版没有理由再摆出来。macOS 仓库每次合并都自动发一个 Pre-release，却只把人工挑过的那个标成正式版，只给其中一个，要么让来下载的人拿不到最新改动，要么把没挑过的构建当成正式版推给所有人。
  *
  * 一个正式版都没有的平台（上游只发过 Pre-release）用最高的预览版顶上主位，preview 留空：平台不能从清单里消失。
+ *
+ * 换了打包形状的平台，一旦出现新形状的发布，旧形状的发布就不再参与挑选：macOS 从 pkg / zip 换成 DMG 后，安装步骤完全不同（DMG 要拖进「应用程序」再打开 MSIME），页面按清单里的格式切换说明，主按钮和预览版若一个是 DMG、一个是 pkg，说明只能对上其中一个。还没有 DMG 发布时照旧展示 pkg / zip。
  */
+const SUPERSEDING_FORMAT = { macos: /\.dmg$/i };
+
 export function selectRelease(platform, releases) {
-  const eligible = releases.map(release => toRelease(platform, release)).filter(Boolean)
+  let eligible = releases.map(release => toRelease(platform, release)).filter(Boolean)
     .sort((left, right) => versionOrder(left.version, right.version));
+  const superseding = SUPERSEDING_FORMAT[platform];
+  if (superseding && eligible.some(release => release.downloads.some(entry => superseding.test(entry.name)))) {
+    eligible = eligible.filter(release => release.downloads.some(entry => superseding.test(entry.name)));
+  }
   const stable = eligible.find(release => !release.prerelease);
   if (!stable) return eligible[0] ? { ...eligible[0], preview: null } : null;
   const newer = eligible.find(release => release.prerelease && versionOrder(release.version, stable.version) < 0);

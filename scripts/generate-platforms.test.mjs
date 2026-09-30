@@ -164,3 +164,45 @@ test('the highest version wins, not the most recently published', () => {
   assert.equal(chosen.version, '0.9.1');
   assert.equal(selectRelease('linux', [at('v0.10.0', '2026-09-01T00:00:00Z'), at('v0.9.9', '2026-09-02T00:00:00Z')]).version, '0.10.0');
 });
+
+const macosAsset = (tag, name) => asset(name, { browser_download_url: `https://github.com/metasequoiaime/msime/releases/download/${tag}/${name}` });
+const macosRelease = (tag, names, prerelease = false) => ({
+  tag_name: tag, draft: false, prerelease, published_at: '2026-10-01T00:00:00Z',
+  html_url: `https://github.com/metasequoiaime/msime/releases/tag/${tag}`, assets: names.map(name => macosAsset(tag, name)),
+});
+const legacyMacos = tag => macosRelease(tag, [`MetasequoiaIME-${tag}-macos-universal.pkg`, `MetasequoiaIME-${tag}-macos-universal.zip`, 'appcast.xml']);
+
+// release-macos.yml 发布的形状：macos-v<版本> 下只有 msime-macos-<版本>-<架构>.dmg 和 SHA256SUMS
+test('macOS DMGs are listed per architecture, Apple silicon first, without the checksum list', () => {
+  const downloads = classifyAssets('macos', ['SHA256SUMS', 'msime-macos-0.50.0-x86_64.dmg', 'msime-macos-0.50.0-arm64.dmg']
+    .map(name => macosAsset('macos-v0.50.0', name)));
+  assert.deepEqual(downloads.map(d => `${d.label} ${d.arch}`), ['Apple 芯片 · dmg arm64', 'Intel · dmg x86_64']);
+});
+
+test('once a DMG release exists the pkg era releases are no longer offered', () => {
+  const chosen = selectRelease('macos', [
+    legacyMacos('v0.50.0-build.11'), legacyMacos('v0.50.0-build.9'),
+    macosRelease('macos-v0.50.0', ['msime-macos-0.50.0-arm64.dmg', 'SHA256SUMS']),
+  ]);
+  assert.equal(chosen.version, '0.50.0');
+  assert.deepEqual(chosen.downloads.map(d => d.name), ['msime-macos-0.50.0-arm64.dmg']);
+  assert.equal(chosen.preview, null);
+
+  // 只有预览版 DMG 时，它顶上主位，而不是让 pkg 占主按钮、DMG 屈居预览版
+  const previewOnly = selectRelease('macos', [legacyMacos('v0.50.0-build.9'), macosRelease('macos-v0.50.1', ['msime-macos-0.50.1-arm64.dmg'], true)]);
+  assert.equal(previewOnly.version, '0.50.1');
+  assert.equal(previewOnly.downloads[0].name, 'msime-macos-0.50.1-arm64.dmg');
+});
+
+test('without any DMG release the pkg and zip stay on the page', () => {
+  const chosen = selectRelease('macos', [legacyMacos('v0.50.0-build.9')]);
+  assert.equal(chosen.version, '0.50.0-build.9');
+  assert.deepEqual(chosen.downloads.map(d => d.label), ['安装包 · pkg', '压缩包 · zip']);
+  assert.equal(chosen.signed, true);
+});
+
+test('a DMG name says nothing about its signature', () => {
+  // 没有 Developer ID 时 package-release.sh 产出同名的 ad-hoc DMG，所以名字里没有 unsigned 推不出已签名
+  assert.equal(signingState('macos', [{ name: 'msime-macos-0.50.0-arm64.dmg' }]), null);
+  assert.equal(signingState('macos', [{ name: 'MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg' }]), true);
+});

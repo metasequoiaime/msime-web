@@ -51,10 +51,10 @@ const PLATFORM_SIGNING: Record<"macos" | "linux", Record<"signed" | "unsigned" |
   macos: {
     // 文件名去掉 `unsigned` 只说明它没被标成未签名，不代表过了 Apple 公证 —— 公证与否决定首次打开会不会被 Gatekeeper 拦，这是文件名承载不了的信息。写「不会被拦截」是拿一个约定去担保另一件事，用户真被拦了就是页面在撒谎。
     signed:
-      "发布清单将当前构建标记为已签名；Apple 公证状态请以发布说明为准。首次打开如遇系统提示，请先核对来源、校验值和该版本的安装说明。每个版本仍附带 `.sha256` 校验文件，可用 `shasum -a 256` 核对下载完整性。",
+      "发布清单将当前构建标记为已签名；Apple 公证状态请以发布说明为准。首次打开如遇系统提示，请先核对来源、校验值和该版本的安装说明。每个版本仍附带校验文件（`.sha256` 或 `SHA256SUMS`），可用 `shasum -a 256` 核对下载完整性。",
     unsigned:
-      "当前构建标记为**未签名**。签名与 Apple 公证是不同的验证步骤，公证状态请以发布说明为准。首次打开可能出现系统警告，请先核对来源与安装说明。每个版本都附带 `.sha256` 校验文件，可用 `shasum -a 256` 核对下载完整性。",
-    unknown: "公证状态请以发布页说明为准。每个版本都附带 `.sha256` 校验文件，可用 `shasum -a 256` 核对下载完整性。",
+      "当前构建标记为**未签名**。签名与 Apple 公证是不同的验证步骤，公证状态请以发布说明为准。首次打开可能出现系统警告，请先核对来源与安装说明。每个版本都附带校验文件（`.sha256` 或 `SHA256SUMS`），可用 `shasum -a 256` 核对下载完整性。",
+    unknown: "公证状态请以发布页说明为准。每个版本都附带校验文件（`.sha256` 或 `SHA256SUMS`），可用 `shasum -a 256` 核对下载完整性。",
   },
   linux: {
     signed: "当前包带有签名。Release 页面每个资产旁都显示 GitHub 计算的 SHA256，下载后可用 `sha256sum <文件名>` 核对。",
@@ -66,9 +66,22 @@ const PLATFORM_SIGNING: Record<"macos" | "linux", Record<"signed" | "unsigned" |
 
 const signingKey = (signed: boolean | null | undefined) => (signed === true ? "signed" : signed === false ? "unsigned" : "unknown");
 
+/*
+ * macOS 的安装说明跟着清单里的包走。
+ *
+ * 现行的 DMG 要拖进「应用程序」再打开 MSIME，由它把输入法装进 `~/Library/Input Methods`；此前的 pkg / zip 直接装输入法本体。两套步骤互不适用，给 pkg 的下载按钮配 DMG 的步骤，照着做的人会找不到 MSIME。`{{#macosDmg}}…{{/macosDmg}}` 与 `{{#macosLegacy}}…{{/macosLegacy}}` 只保留与主按钮一致的那段。清单读不到时按现行的 DMG 写。
+ */
+const keepBlock = (source: string, name: string, keep: boolean) =>
+  source.replace(new RegExp(`\\{\\{#${name}\\}\\}\\n([^]*?)\\{\\{/${name}\\}\\}\\n`, "g"), keep ? "$1" : "");
+
+const macosInstallBlocks = (source: string, macos: PlatformRelease | undefined) => {
+  const dmg = !macos || macos.downloads.some((entry) => /\.dmg$/i.test(entry.name));
+  return keepBlock(keepBlock(source, "macosDmg", dmg), "macosLegacy", !dmg);
+};
+
 /** Fills the placeholders in `content/download.md`. A manifest that failed to load is passed as `{}`, which makes every derived statement fall back to "check the release page" rather than guess. */
 export const fillTemplate = (manifest: Partial<UpdateManifest>, platforms: Partial<Platforms> | undefined) =>
-  downloadSource
+  macosInstallBlocks(downloadSource, platforms?.macos)
     .replaceAll("{{securityNote}}", securityNote(manifest))
     .replaceAll("{{installerName}}", manifest.installerName ?? FALLBACK_INSTALLER_NAME)
     .replaceAll("{{macosSigning}}", PLATFORM_SIGNING.macos[signingKey(platforms?.macos?.signed)])

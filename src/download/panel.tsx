@@ -19,6 +19,18 @@ const PLATFORM_HINTS: Record<Platform, string> = {
   harmony: "开发中，尚未发布安装包",
 };
 
+/*
+ * DMG 的系统要求与此前的 universal pkg 不同：package-release.sh 以 macOS 13 为最低版本、只为构建机的架构出包，架构写在文件名里。按清单里实际有的 DMG 说，不写死「Apple 芯片」——哪天多发一个 Intel 包，这句话就不该再把 Intel 用户挡在外面。
+ */
+const platformHint = (entry: SitePlatformEntry) => {
+  const dmgs = entry.id === "macos" ? (entry.release?.downloads.filter((download) => /\.dmg$/i.test(download.name)) ?? []) : [];
+  if (!dmgs.length) return PLATFORM_HINTS[entry.id];
+  const arm = dmgs.some((download) => download.arch === "arm64");
+  const intel = dmgs.some((download) => download.arch === "x86_64");
+  const machines = arm && intel ? "Apple 芯片与 Intel 芯片的 Mac" : arm ? "Apple 芯片的 Mac" : intel ? "Intel 芯片的 Mac" : "Mac";
+  return `适用于 macOS 13 及以上、${machines}`;
+};
+
 /**
  * The page's main action. Not `buttonClass`: that one never wraps, and a label like "下载 macOS 版 v0.50.0-build.9" is wider than the panel on a 360px phone, so this one may wrap to two lines and fills the row on narrow screens.
  */
@@ -102,7 +114,7 @@ function PreviewPanel({ preview }: { preview: PreviewRelease }) {
  */
 function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
   const { t } = useLocale();
-  const hint = <p className="m-0 text-sm leading-[1.8] text-muted">{t(PLATFORM_HINTS[entry.id])}</p>;
+  const hint = <p className="m-0 text-sm leading-[1.8] text-muted">{t(platformHint(entry))}</p>;
 
   if (entry.distribution === "testflight") {
     return (
