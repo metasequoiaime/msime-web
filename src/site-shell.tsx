@@ -322,6 +322,7 @@ function SiteFooter({ inert }: { inert: boolean }) {
             <div className="site-footer-col-title">{t("参与")}</div>
             <div className="site-footer-links">
               <Link to="/feedback/">{t("问题与建议")}</Link>
+              <Link to="/words/">{t("提交词条")}</Link>
               <a href="https://github.com/metasequoiaime/.github/blob/main/RECRUITING.md" target="_blank" rel="noreferrer">{t("招募开源开发者")}</a>
               <a href="https://github.com/metasequoiaime/.github/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferrer">{t("贡献指南")}</a>
               <a href="https://github.com/metasequoiaime/.github/blob/main/CODE_OF_CONDUCT.md" target="_blank" rel="noreferrer">{t("行为准则")}</a>

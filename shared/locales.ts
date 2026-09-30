@@ -5,6 +5,7 @@ export const traditionalPages = {
   '/download/': { title: '下載與安裝｜水杉輸入法', description: '下載水杉輸入法 Windows、macOS 公開測試版本，或透過 TestFlight 安裝 iOS 版。Linux 正在開發中，提供開發構建與安裝說明。' },
   '/faq/': { title: '常見問題與疑難排解｜水杉輸入法', description: '水杉輸入法常見問題：字型方框、安裝與啟動、快捷鍵、候選字和連線功能的排查方式。' },
   '/feedback/': { title: '回報問題與提出建議｜水杉輸入法', description: '了解如何回報水杉輸入法問題或提出功能建議。可使用繁體中文描述，提交內容會公開刊登於 GitHub。' },
+  '/words/': { title: '提交詞條｜水杉輸入法', description: '無需 GitHub 帳號，為水杉輸入法詞庫提交新詞與拼音。詞條經維護者審核後，隨後續詞庫版本發布到所有平台。' },
   '/about/': { title: '關於專案與開發者｜水杉輸入法', description: '認識水杉輸入法的理念、開源授權、開發者與參與方式。' },
   '/code/': { title: '原始碼與參與開發｜水杉輸入法', description: '瀏覽各平台、共用引擎、詞庫及文件的原始碼，了解如何參與開發。' },
   '/price/': { title: '價格與付費計畫｜水杉輸入法', description: '水杉輸入法目前可免費使用，查看後續自願付費支持計畫與第三方服務費用說明。' },

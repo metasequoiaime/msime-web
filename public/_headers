@@ -1,6 +1,6 @@
 # Cloudflare Pages 静态页面策略；额外放行 GitHub 头像和需求表单的 Turnstile。
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://avatars.githubusercontent.com; media-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://avatars.githubusercontent.com; media-src 'self'; font-src 'self'; connect-src 'self' https://api.msime.app; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

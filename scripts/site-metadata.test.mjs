@@ -75,9 +75,9 @@ test('the response headers lock the page down and keep hashed assets cacheable',
   for (const directive of ["default-src 'self'", "frame-ancestors 'none'", "object-src 'none'", "base-uri 'none'"]) {
     assert.ok(csp.includes(directive), `CSP 缺 ${directive}`);
   }
-  // 只放行头像和 Turnstile 的脚本、验证框。
+  // 只放行头像、Turnstile 的脚本与验证框，以及词条提交所用的公共 API。
   const externals = [...csp.matchAll(/https:\/\/[^\s;]+/g)].map(m => m[0]);
-  assert.deepEqual(externals, ['https://challenges.cloudflare.com', 'https://avatars.githubusercontent.com', 'https://challenges.cloudflare.com']);
+  assert.deepEqual(externals, ['https://challenges.cloudflare.com', 'https://avatars.githubusercontent.com', 'https://api.msime.app', 'https://challenges.cloudflare.com']);
   assert.match(headers, /\/assets\/\*\n\s+Cache-Control: public, max-age=31536000, immutable/);
 });
 
