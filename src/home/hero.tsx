@@ -83,23 +83,24 @@ const LANGUAGE_GHOSTS = "before:content-['English'] after:content-['日本語']"
 function Headline({ frame }: { frame: HeroFrame }) {
   const { t } = useLocale();
   const schemes = (Object.keys(SCHEMES) as SchemeId[]).map((id) => t(SCHEMES[id].word)).join("、");
-  const languages = `${LANGUAGES.en}${t("与")}${LANGUAGES.ja}`;
+  const languages = `${LANGUAGES.en}${t("或")}${LANGUAGES.ja}`;
 
   return (
-    // Capped by the column width so the eleven-character first line always fits on one line, down to 360px.
-    <h1 className="m-0 mt-6 font-heading text-[clamp(26px,min(4.6vw,8.6cqi),60px)] leading-[1.22] font-bold tracking-[-.01em] text-ink">
+    // Capped by the column width so both lines (the second is about 11.3em with "English") stay on one line each, down to 320px.
+    <h1 className="m-0 mt-6 font-heading text-[clamp(22px,min(7vw,8.1cqi),60px)] leading-[1.22] font-bold tracking-[-.01em] text-ink">
       <span className="block">{t("您的下一代多语言输入法")}</span>
       <span className="block">
-        {t("面向")}
-        <span className="sr-only">
-          {schemes}
-          {t("，")}
-          {languages}
-        </span>
-        <span className="text-accent-ink" aria-hidden="true">
-          <Slot text={frame.schemeText} caret={frame.caret === "scheme"} ghosts={SCHEME_GHOSTS} />
-          <span className="inline-block w-[0.3em]" />
-          <Slot text={frame.languageText} caret={frame.caret === "language"} ghosts={LANGUAGE_GHOSTS} />
+        {/* "用全拼输入，译成 English": the scheme you type with, then the language the candidates are glossed in. Screen readers get the whole set once instead of the rotating words. */}
+        <span className="sr-only">{t(`用${schemes}输入，译成${languages}`)}</span>
+        <span aria-hidden="true">
+          <span className="text-accent-ink">
+            <Slot text={frame.schemeText} caret={frame.caret === "scheme"} ghosts={SCHEME_GHOSTS} />
+          </span>
+          {t("输入，译成")}
+          {/* A thin gap between the Chinese and the language name, the usual spacing between CJK and Latin text. */}
+          <span className="ml-[0.18em] text-accent-ink">
+            <Slot text={frame.languageText} caret={frame.caret === "language"} ghosts={LANGUAGE_GHOSTS} />
+          </span>
         </span>
       </span>
     </h1>
