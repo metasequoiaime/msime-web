@@ -13,6 +13,7 @@ export const seoPages: Record<string, { title: string; description: string; noin
   "/price/": { title: "价格与付费计划｜水杉输入法", description: "水杉输入法当前可免费使用。查看后续自愿付费支持计划，以及第三方联网服务的费用说明。" },
   "/privacy/": { title: "隐私与联网功能说明｜水杉输入法", description: "了解水杉输入法哪些功能会联网、默认状态、数据用途，以及如何关闭联网功能。" },
   "/feedback/": { title: "问题反馈与功能建议｜水杉输入法", description: "无需 GitHub 账号，选择平台反馈问题或提出建议，支持截图与预览。提交内容将公开发布到 GitHub。" },
+  "/words/": { title: "提交词条｜水杉输入法", description: "无需 GitHub 账号，为水杉输入法词库提交新词和拼音。词条经维护者审核后，随后续词库版本发布到所有平台。" },
   "/resume/": { title: "陆凡 | 软件工程师 / 独立开发者", description: "陆凡的软件工程师个人简历", noindex: true },
 };
 // Written out per guide rather than generated from the platform name. The template these replaced titled the voice guide "macOS 语音 安装与使用指南", a page with no installation section in it, and gave four pages one description that differed only by a platform name. The Traditional titles in locales.ts have always been written by hand; these mirror them.

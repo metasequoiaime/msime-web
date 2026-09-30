@@ -1,0 +1,13 @@
+.words-page {
+  .words-rows { display: grid; gap: .25rem; }
+  .words-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 0 .75rem; align-items: end; }
+  .words-row > .btn { margin-bottom: .1rem; }
+  .words-row-error { grid-column: 1 / -1; margin: .4rem 0 0; color: #c64b50; font-size: .85rem; }
+  .words-row input[aria-invalid=true] { border-color: #c64b50; }
+  .words-add { margin-top: 1rem; }
+  .words-preview { margin: .5rem 0 1rem; padding: .8rem 1rem; overflow-x: auto; background: var(--card-2); border-radius: 8px; font-size: .85rem; line-height: 1.7; tab-size: 12; }
+  @media (max-width: 550px) {
+    .words-row { grid-template-columns: minmax(0, 1fr) auto; }
+    .words-row > label:first-child { grid-column: 1 / -1; }
+  }
+}
