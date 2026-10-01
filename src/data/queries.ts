@@ -1,7 +1,8 @@
 import { infiniteQueryOptions, queryOptions, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import type { PlatformsManifest } from "../platforms-data.ts";
 import type { ReleaseFilter } from "./platforms.ts";
-import type { AppStats, CandidateSkins, Community, DownloadMirrors, KeyboardSkins, Notices, Releases, UpdateManifest } from "./schemas.ts";
+import type { CommunityPluginKind } from "./pack-kinds.ts";
+import type { AppStats, CandidateSkins, Community, CommunityDictionaries, CommunityPlugins, DownloadMirrors, KeyboardSkins, Notices, OfficialDictionaries, OfficialPlugins, Releases, UpdateManifest } from "./schemas.ts";
 import type { CandidateSkinCategory } from "./skin-categories.ts";
 import { siteApi, staticSnapshot, withFallback } from "./source.ts";
 
@@ -172,3 +173,54 @@ export const skinsQuery = <K extends SkinKind>(kind: K, q: string, category?: Ca
   });
 
 export const useSkinsQuery = <K extends SkinKind>(kind: K, q: string, category?: CandidateSkinCategory) => useInfiniteQuery(skinsQuery(kind, q, category));
+
+// ---- plugins and dictionaries ----
+
+export type PackList = "plugins" | "dictionaries";
+type OfficialPages = { plugins: OfficialPlugins; dictionaries: OfficialDictionaries };
+type CommunityPages = { plugins: CommunityPlugins; dictionaries: CommunityDictionaries };
+
+/** The longest community search the Function accepts, in UTF-8 bytes (`MAX_PACK_QUERY_BYTES` in shared/community-packs.ts); the search box stops there. */
+export const MAX_PACK_QUERY_BYTES = 128;
+
+/** The packs the project ships in msime-plugins or msime-dictionary. The Function sweeps GitHub at most once an hour, so the page does not ask again within one visit. */
+export const officialPacksQuery = <L extends PackList>(list: L) =>
+  queryOptions({
+    queryKey: ["official-packs", list] as const,
+    queryFn: ({ signal }) =>
+      siteApi<OfficialPages[L]>(`/api/${list}/official`, async value => {
+        const loaded = await schemas();
+        return (list === "plugins" ? loaded.officialPluginsSchema : loaded.officialDictionariesSchema).parse(value) as OfficialPages[L];
+      }).load(signal),
+    staleTime: Infinity,
+    retry: 1,
+  });
+
+export const useOfficialPacksQuery = <L extends PackList>(list: L) => useQuery(officialPacksQuery(list));
+
+/** The same-origin path of one page of a community list. `q` is trimmed, as the Function does, so both agree on the cached copy; `kind` narrows plugins and is dropped for dictionaries, which have none. */
+export const communityPackPath = (list: PackList, offset: number, q: string, kind?: CommunityPluginKind) => {
+  const search = new URLSearchParams();
+  if (offset) search.set("offset", String(offset));
+  if (q.trim()) search.set("q", q.trim());
+  if (list === "plugins" && kind) search.set("kind", kind);
+  const text = search.toString();
+  return `/api/${list}/community${text ? `?${text}` : ""}`;
+};
+
+/** Pages of public community plugins or dictionaries, 20 at a time, newest first. The Function caches each page for 60 s, so the list never refetches sooner; `nextOffset` drives 加载更多. */
+export const communityPacksQuery = <L extends PackList>(list: L, q: string, kind?: CommunityPluginKind) =>
+  infiniteQueryOptions({
+    queryKey: ["community-packs", list, q.trim(), (list === "plugins" && kind) || ""] as const,
+    queryFn: ({ signal, pageParam }) =>
+      siteApi<CommunityPages[L]>(communityPackPath(list, pageParam, q, kind), async value => {
+        const loaded = await schemas();
+        return (list === "plugins" ? loaded.communityPluginsSchema : loaded.communityDictionariesSchema).parse(value) as CommunityPages[L];
+      }).load(signal),
+    initialPageParam: 0,
+    getNextPageParam: (page: CommunityPages[L]) => page.nextOffset ?? undefined,
+    staleTime: 60_000,
+    retry: 1,
+  });
+
+export const useCommunityPacksQuery = <L extends PackList>(list: L, q: string, kind?: CommunityPluginKind) => useInfiniteQuery(communityPacksQuery(list, q, kind));

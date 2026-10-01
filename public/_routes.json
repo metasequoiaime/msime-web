@@ -12,6 +12,8 @@
     "/api/notices",
     "/api/notices/",
     "/api/skins/*",
+    "/api/plugins/*",
+    "/api/dictionaries/*",
     "/api/feedback",
     "/api/feedback/",
     "/api/feedback-images/*",

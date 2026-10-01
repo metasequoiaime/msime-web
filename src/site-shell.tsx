@@ -5,6 +5,7 @@ import { baseLocalePath, traditionalPages, traditionalPath, isTraditional } from
 import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { NoticeBanner } from "./notice-banner";
+import { COMMUNITY_SECTIONS } from "./community/sections";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, chipClass, copyText, cx, useToast } from "./ui";
@@ -16,11 +17,11 @@ type NavItem = {
   github?: boolean;
 };
 
-/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). */
+/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). 社区 opens the skins page and stands for all three community pages (皮肤, 词库, 插件), which link to each other under their leads: as separate tabs the Traditional bar left 12px spare at 1180px, and 词库 would sit next to 词库缺失反馈. */
 const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
   { to: "/download/", label: "下载" },
-  { to: "/skins/", label: "社区皮肤" },
+  { to: "/skins/", label: "社区" },
   { to: "/feedback/", label: "Bug 与需求反馈" },
   { to: "/words/", label: "词库缺失反馈" },
   { to: "/docs/$guide/", label: "文档" },
@@ -33,9 +34,9 @@ const ORG_URL = "https://github.com/metasequoiaime";
 const DESKTOP_NAV_QUERY = "(width >= 73.75rem)";
 const QQ_GROUP = "829919142";
 
-/** The docs tab also covers the FAQ, which lives under the docs toolbar in the design. */
+/** The docs tab also covers the FAQ, which lives under the docs toolbar in the design; the 社区 tab covers every community page. */
 const isCurrent = (item: NavItem, path: string) =>
-  item.to === "/" ? path === "/" : item.to === "/docs/$guide/" ? path.startsWith("/docs/") || path === "/faq/" : path.startsWith(item.to);
+  item.to === "/" ? path === "/" : item.to === "/docs/$guide/" ? path.startsWith("/docs/") || path === "/faq/" : item.to === "/skins/" ? COMMUNITY_SECTIONS.some(section => path.startsWith(section.to)) : path.startsWith(item.to);
 
 const linkParams = (item: NavItem) => (item.to === "/docs/$guide/" ? { guide: "windows" } : {});
 
@@ -513,6 +514,8 @@ function SiteFooter({ inert }: { inert: boolean }) {
           <FooterColumn title="产品">
             <Link className={footerLink} to="/features/">{t("功能")}</Link>
             <Link className={footerLink} to="/skins/">{t("社区皮肤")}</Link>
+            <Link className={footerLink} to="/dictionaries/">{t("词库")}</Link>
+            <Link className={footerLink} to="/plugins/">{t("插件")}</Link>
             <Link className={footerLink} to="/download/">{t("下载")}</Link>
             <Link className={footerLink} to="/download/" hash="releases">{t("更新日志")}</Link>
             <Link className={footerLink} to="/docs/$guide/" params={{ guide: "windows" }}>{t("使用指南")}</Link>

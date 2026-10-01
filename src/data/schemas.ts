@@ -8,6 +8,7 @@ export { communitySchema, type Community } from "../community-data.ts";
 export { platformsSchema, type PlatformsManifest } from "../platforms-data.ts";
 import { SITE_PLATFORMS } from "./platforms.ts";
 import { CANDIDATE_SKIN_CATEGORIES } from "./skin-categories.ts";
+import { COMMUNITY_PLUGIN_KINDS, PLUGIN_KINDS } from "./pack-kinds.ts";
 
 export const PROJECT_ORIGIN = "https://github.com/metasequoiaime/";
 
@@ -189,3 +190,92 @@ export const keyboardSkinsSchema = skinPage(keyboardSkinSchema);
 export type KeyboardSkins = z.infer<typeof keyboardSkinsSchema>;
 export const candidateSkinsSchema = skinPage(candidateSkinSchema);
 export type CandidateSkins = z.infer<typeof candidateSkinsSchema>;
+
+// ---- plugins and dictionaries (/api/plugins/*, /api/dictionaries/*) ----
+
+/** A file in one of the project's repositories as raw.githubusercontent.com serves it, so a visitor can save it and import it. */
+const rawProjectUrl = z
+  .string()
+  .url()
+  .refine(value => value.startsWith("https://raw.githubusercontent.com/metasequoiaime/"), { message: "地址必须指向本项目仓库中的文件" });
+
+/** A pack from the `packs/` directory of msime-plugins, read from its plugin.toml. `download` is the pack's .zip on the repository's `packs` release, absent while that release has no zip for this id and version. */
+export const officialPluginSchema = z.object({
+  id: z.string().min(1),
+  kind: z.enum(PLUGIN_KINDS),
+  name: z.string().min(1),
+  description: z.string(),
+  author: z.string(),
+  version: z.string(),
+  license: z.string(),
+  /** `sequence` for a sound pack that plays a tune (the App's 按键旋律), `keys` for key sounds. Only sound packs have a mode. */
+  mode: z.enum(["keys", "sequence"]).optional(),
+  /** How many `/` commands a command table holds. */
+  commands: count.optional(),
+  /** Bytes of the .zip. */
+  size: count.optional(),
+  download: projectUrl.optional(),
+  source: projectUrl,
+});
+export type OfficialPlugin = z.infer<typeof officialPluginSchema>;
+
+export const officialPluginsSchema = z.object({ items: z.array(officialPluginSchema), stale: z.boolean() });
+export type OfficialPlugins = z.infer<typeof officialPluginsSchema>;
+
+/** One text file of a dictionary pack. `entries` counts its non-empty lines other than `#` comments, absent for a file too large to count at the edge. */
+export const dictionaryFileSchema = z.object({
+  name: z.string().min(1),
+  size: count,
+  entries: count.optional(),
+  url: rawProjectUrl,
+});
+export type DictionaryFile = z.infer<typeof dictionaryFileSchema>;
+
+/** A pack from the `packs/` directory of msime-dictionary: a professional word list users import themselves, outside the default dictionary. Name and description come from the pack's README. */
+export const officialDictionarySchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string(),
+  license: z.string(),
+  files: z.array(dictionaryFileSchema),
+  source: projectUrl,
+});
+export type OfficialDictionary = z.infer<typeof officialDictionarySchema>;
+
+export const officialDictionariesSchema = z.object({ items: z.array(officialDictionarySchema), stale: z.boolean() });
+export type OfficialDictionaries = z.infer<typeof officialDictionariesSchema>;
+
+/** A public community plugin pack (`CommunityPlugin` in msime-backend internal/account/community_plugins.go), re-keyed to camelCase. */
+export const communityPluginSchema = z.object({
+  id: communitySkinIdSchema,
+  kind: z.enum(COMMUNITY_PLUGIN_KINDS),
+  name: z.string().min(1),
+  description: z.string(),
+  author: z.string(),
+  version: z.string().max(64),
+  license: z.string(),
+  size: count,
+  downloads: count,
+  ratingCount: count,
+  ratingAverage,
+  createdAt: z.iso.datetime({ offset: true }),
+});
+export type CommunityPlugin = z.infer<typeof communityPluginSchema>;
+export const communityPluginsSchema = skinPage(communityPluginSchema);
+export type CommunityPlugins = z.infer<typeof communityPluginsSchema>;
+
+/** A public shared dictionary (`CommunityResource` of kind `dictionary` in msime-backend internal/account/community_resources.go). The Function keeps the entry counts per kind and the first few words for the card, not all up to 128 entries. */
+export const communityDictionarySchema = z.object({
+  id: communitySkinIdSchema,
+  name: z.string().min(1),
+  description: z.string(),
+  author: z.string(),
+  counts: z.object({ pinyin: count, wubi: count, english: count, quick: count }),
+  sample: z.array(z.string()).max(8),
+  saves: count,
+  ratingCount: count,
+  ratingAverage,
+});
+export type CommunityDictionary = z.infer<typeof communityDictionarySchema>;
+export const communityDictionariesSchema = skinPage(communityDictionarySchema);
+export type CommunityDictionaries = z.infer<typeof communityDictionariesSchema>;

@@ -142,16 +142,16 @@ export async function loadCandidatePreview(origin: string, id: string, request: 
 
 export type SkinContext = { request: Request; env: Record<string, unknown>; waitUntil: (task: Promise<unknown>) => void; params?: Record<string, string | string[]> };
 
-const jsonHeaders = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
+export const jsonHeaders = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
 const imageHeaders = { "X-Content-Type-Options": "nosniff", "Content-Security-Policy": "default-src 'none'; sandbox", "Content-Disposition": "inline" };
 
-const apiOrigin = (env: Record<string, unknown>) => {
+export const apiOrigin = (env: Record<string, unknown>) => {
   const origin = apiOriginSchema.safeParse(env.MSIME_API_ORIGIN ?? DEFAULT_API_ORIGIN);
   if (!origin.success) console.warn("MSIME_API_ORIGIN is not a bare https origin");
   return origin.success ? origin.data : undefined;
 };
 
-const edgeCache = () => (caches as CacheStorage & { default: Cache }).default;
+export const edgeCache = () => (caches as CacheStorage & { default: Cache }).default;
 
 /** GET /api/skins/<kind>?offset=&q= (and `&category=` for candidate skins) → `keyboardSkinsSchema` / `candidateSkinsSchema` (src/data/schemas.ts). Each page, search and category is asked of the backend at most once a minute per edge location; 503 `{ error }` when the backend has never answered it. */
 export async function serveSkinList(kind: SkinKind, { request, env, waitUntil }: SkinContext): Promise<Response> {

@@ -1,5 +1,6 @@
 import { useAppStatsQuery } from "../data/queries";
 import type { AppStats } from "../data/schemas";
+import { COMMUNITY_SECTIONS } from "../community/sections";
 import { LocaleLink } from "../locale-link";
 import { useLocale } from "../use-locale";
 import { Card } from "../ui";
@@ -24,7 +25,15 @@ export function AppStatsCard() {
     <Card className="mt-4 p-[clamp(20px,3vw,32px)]">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h3 className="m-0 text-sm font-semibold text-accent-ink">{t("App 创作社区")}</h3>
-        <LocaleLink className="text-sm font-semibold text-accent-ink no-underline hover:text-ink" to="/skins/">{t("浏览社区皮肤 →")}</LocaleLink>
+        <p className="m-0 flex flex-wrap items-baseline gap-x-2 text-sm text-muted">
+          {t("浏览")}
+          {COMMUNITY_SECTIONS.map((section, index) => (
+            <span key={section.to} className="inline-flex items-baseline gap-x-2">
+              {index > 0 && <span aria-hidden="true">·</span>}
+              <LocaleLink className="font-semibold text-accent-ink no-underline hover:text-ink" to={section.to}>{t(section.label)}</LocaleLink>
+            </span>
+          ))}
+        </p>
       </div>
       {data.stale && <p className="m-0 mt-1.5 text-sm leading-[1.8] text-muted">{t("暂时无法更新，显示最近可用数据。")}</p>}
       <dl className="m-0 mt-5 grid grid-cols-[repeat(auto-fill,minmax(min(100%,150px),1fr))] gap-x-5 gap-y-4">

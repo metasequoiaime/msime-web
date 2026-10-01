@@ -69,6 +69,14 @@ export const KeyboardIcon = (props: IconProps) => (
   </StrokeIcon>
 );
 
+/** 社区: two people, for what users publish (community tabs). */
+export const UsersIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <circle cx="9" cy="8" r="3.2" />
+    <path d="M3.2 19.5c.5-3.2 2.8-5 5.8-5s5.3 1.8 5.8 5M15.6 4.9a3.2 3.2 0 0 1 0 6.2M17.6 14.7c1.8.6 2.9 2.2 3.2 4.8" />
+  </StrokeIcon>
+);
+
 /** 调色盘: the header control that opens theme, season and language. */
 export const PaletteIcon = (props: IconProps) => (
   <StrokeIcon {...props}>
