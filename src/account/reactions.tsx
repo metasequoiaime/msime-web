@@ -16,6 +16,8 @@ export type ReactionProps = {
   saved?: boolean;
   /** Shown next to the heart only when the list reported it. */
   saves?: number;
+  /** Shown before the rating, so a gallery card needs no separate downloads line. */
+  downloads?: number;
 };
 
 const ERRORS: Record<number, string> = {
@@ -30,7 +32,7 @@ export const ratingText = (count: number, average: number) => (count === 0 ? "�
 /**
  * Favourite and 1–5 star rating for a community card, in one compact row: the average on the left, the viewer's stars and the heart on the right. Signed-out visitors see the same controls; pressing one opens the sign-in dialog. The viewer's own works cannot be rated, which the backend enforces too.
  */
-export function Reactions({ kind, id, ratingCount, ratingAverage, myRating = 0, owned = false, saved = false, saves }: ReactionProps) {
+export function Reactions({ kind, id, ratingCount, ratingAverage, myRating = 0, owned = false, saved = false, saves, downloads }: ReactionProps) {
   const { t } = useLocale();
   const { show } = useToast();
   const { status, openLogin } = useAccount();
@@ -87,7 +89,15 @@ export function Reactions({ kind, id, ratingCount, ratingAverage, myRating = 0, 
   return (
     <div className="mt-3 flex items-center gap-2 text-[13px] text-muted tabular-nums">
       <span className="min-w-0 truncate">
-        {t(ratingText(state.count, state.average))}
+        {downloads !== undefined && (
+          <>
+            <span aria-hidden="true">↓ {downloads.toLocaleString("en-US")}{state.count > 0 && " · "}</span>
+            <span className="sr-only">{t(`下载 ${downloads.toLocaleString("en-US")} 次，`)}</span>
+          </>
+        )}
+        {/* Beside a download count, an unrated item just shows no score: the empty stars already say so. */}
+        {downloads === undefined ? t(ratingText(state.count, state.average)) : state.count > 0 && <span aria-hidden="true">{state.average.toFixed(1)}</span>}
+        {downloads !== undefined && <span className="sr-only">{t(ratingText(state.count, state.average))}</span>}
         {state.count > 0 && <span className="sr-only">{t(`，${state.count} 人评价`)}</span>}
       </span>
       <div className="ml-auto flex flex-none items-center gap-0.5">
@@ -97,7 +107,7 @@ export function Reactions({ kind, id, ratingCount, ratingAverage, myRating = 0, 
             <button
               key={stars}
               type="button"
-              className={cx("inline-flex size-6 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 transition-colors disabled:cursor-default disabled:opacity-45 pointer-coarse:size-8", stars <= shown ? "text-accent" : "text-muted hover:text-ink")}
+              className={cx("inline-flex size-[22px] cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 transition-colors disabled:cursor-default disabled:opacity-45 pointer-coarse:size-8", stars <= shown ? "text-accent" : "text-muted hover:text-ink")}
               aria-label={t(`评 ${stars} 星`)}
               aria-pressed={state.myRating === stars}
               disabled={rateDisabled}

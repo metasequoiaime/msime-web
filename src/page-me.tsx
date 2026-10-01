@@ -165,7 +165,7 @@ const emptyDraft: Draft = { code: "", word: "", weight: String(DEFAULT_WEIGHT) }
 function EntryFields({ kind, draft, onChange }: { kind: DictionaryKind; draft: Draft; onChange: (draft: Draft) => void }) {
   const { t } = useLocale();
   const fields = FIELDS[kind];
-  const field = cx(inputClass, "mt-0 h-10 bg-panel");
+  const field = cx(inputClass, "mt-0 h-10");
   return (
     <>
       <label className="min-w-0">
@@ -225,7 +225,7 @@ function DictionaryEditor({ kind }: { kind: DictionaryKind }) {
         <p className={cx(hintClass, "max-w-[640px]")}>{t(fields.hint)}</p>
         <SearchBox label={`搜索${fields.noun}`} maxBytes={MAX_DATA_QUERY_BYTES} search={search} />
       </div>
-      <form className="mt-5 rounded-tile bg-panel-2 p-3" onSubmit={add} aria-label={t(`添加${fields.noun}`)}>
+      <form className="mt-5 rounded-tile bg-panel p-3 shadow-card" onSubmit={add} aria-label={t(`添加${fields.noun}`)}>
         <div className={rowGrid}>
           <EntryFields kind={kind} draft={draft} onChange={setDraft} />
           <Button type="submit" size="sm" className="h-10" disabled={busy}>{t("添加")}</Button>
@@ -253,7 +253,7 @@ function EntryRow({ kind, entry, busy, write }: { kind: DictionaryKind; entry: D
 
   if (editing)
     return (
-      <li className="rounded-field bg-panel-2 p-2 not-first:mt-1">
+      <li className="rounded-field p-2 shadow-ring-accent not-first:mt-1">
         <form
           className={rowGrid}
           onSubmit={async event => {

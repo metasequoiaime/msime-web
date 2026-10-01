@@ -4,7 +4,6 @@ import { Reactions } from "../account/reactions";
 import { candidatePreviewQuery } from "../data/account";
 import type { CandidateSkin, KeyboardSkin, V1CandidateSkin, V1KeyboardSkin } from "../data/schemas";
 import { CANDIDATE_SKIN_CATEGORY_LABELS } from "../data/skin-categories";
-import { Downloads } from "../community/parts";
 import { Card, Pill } from "../ui";
 import { useLocale } from "../use-locale";
 import { mayHavePhoto } from "./keyboard-art";
@@ -42,8 +41,8 @@ export const fromV1Candidate = (row: V1CandidateSkin): CandidateCardSkin => ({
   visibility: row.visibility,
 });
 
-/** Shared card body: preview, name, author, description, downloads and the footer. */
-export function SkinCard({ preview, name, author, details, description, downloads, footer }: { preview: ReactNode; name: string; author: string; details?: string; description: string; downloads: number; footer: ReactNode }) {
+/** Shared card body: preview, name, author, description and the footer (which carries the downloads). */
+export function SkinCard({ preview, name, author, details, description, footer }: { preview: ReactNode; name: string; author: string; details?: string; description: string; footer: ReactNode }) {
   return (
     <Card as="li" tone="raised" className="flex min-w-0 flex-col overflow-hidden rounded-tile">
       {preview}
@@ -54,7 +53,6 @@ export function SkinCard({ preview, name, author, details, description, download
           {details && ` · ${details}`}
         </p>
         {description && <p className="m-0 mt-2 line-clamp-2 text-[13.5px] leading-[1.7] text-body [overflow-wrap:anywhere]">{description}</p>}
-        <Downloads downloads={downloads} />
         <div className="mt-auto">{footer}</div>
       </div>
     </Card>
@@ -76,8 +74,8 @@ function StatusPills({ skin }: { skin: Viewer }) {
 /** The gallery footer, or with `own` the 我的 footer: the rating summary only, since nobody rates their own work. */
 function Footer({ kind, skin, own }: { kind: "keyboard" | "candidate"; skin: (KeyboardSkin | CandidateSkin) & Viewer; own: boolean }) {
   const { t } = useLocale();
-  if (own) return <p className="m-0 mt-3 text-[13px] text-muted tabular-nums">{t(skin.ratingCount === 0 ? "暂无评分" : `${skin.ratingAverage.toFixed(1)} 分 · ${skin.ratingCount} 人评价`)}</p>;
-  return <Reactions kind={kind} id={skin.id} ratingCount={skin.ratingCount} ratingAverage={skin.ratingAverage} myRating={skin.myRating} owned={skin.owned} saved={skin.saved} saves={skin.saves} />;
+  if (own) return <p className="m-0 mt-3 text-[13px] text-muted tabular-nums">{t(`↓ ${skin.downloads.toLocaleString("en-US")} · ${skin.ratingCount === 0 ? "暂无评分" : `${skin.ratingAverage.toFixed(1)} 分 · ${skin.ratingCount} 人评价`}`)}</p>;
+  return <Reactions kind={kind} id={skin.id} ratingCount={skin.ratingCount} ratingAverage={skin.ratingAverage} myRating={skin.myRating} owned={skin.owned} saved={skin.saved} saves={skin.saves} downloads={skin.downloads} />;
 }
 
 export function KeyboardSkinCard({ skin, own = false }: { skin: KeyboardCardSkin; own?: boolean }) {
@@ -92,7 +90,6 @@ export function KeyboardSkinCard({ skin, own = false }: { skin: KeyboardCardSkin
       name={skin.name}
       author={skin.author}
       description={skin.description}
-      downloads={skin.downloads}
       footer={<Footer kind="keyboard" skin={skin} own={own} />}
     />
   );
@@ -129,7 +126,6 @@ export function CandidateSkinCard({ skin, own = false }: { skin: CandidateCardSk
       author={skin.author}
       details={[skin.version && `v${skin.version}`, skin.license].filter(Boolean).join(" · ")}
       description={skin.description}
-      downloads={skin.downloads}
       footer={<Footer kind="candidate" skin={skin} own={own} />}
     />
   );

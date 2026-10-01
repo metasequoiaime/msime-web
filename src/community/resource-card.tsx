@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Reactions } from "../account/reactions";
-import { Downloads } from "./parts";
 import type { Plugin, PluginKind, Resource } from "../data/schemas";
 import { Card, Pill } from "../ui";
 import { useLocale } from "../use-locale";
@@ -58,12 +57,7 @@ export function PluginCard({ item }: { item: Plugin }) {
       meta={meta}
       description={item.description}
       pill={item.moderation === "removed" ? "已下架" : PLUGIN_KIND_LABELS[item.kind]}
-      footer={
-        <>
-          <Downloads downloads={item.downloads} />
-          <Reactions kind="plugin" id={item.id} ratingCount={item.rating_count} ratingAverage={item.rating_average} myRating={item.my_rating} owned={item.owned} saved={item.saved} saves={item.saves} />
-        </>
-      }
+      footer={<Reactions kind="plugin" id={item.id} ratingCount={item.rating_count} ratingAverage={item.rating_average} myRating={item.my_rating} owned={item.owned} saved={item.saved} saves={item.saves} downloads={item.downloads} />}
     />
   );
 }

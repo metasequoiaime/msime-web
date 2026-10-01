@@ -180,13 +180,3 @@ export function PagedList<T>({ query, noun, empty, compact = false, children }: 
     </>
   );
 }
-
-export function Downloads({ downloads }: { downloads: number }) {
-  const { t } = useLocale();
-  return (
-    <p className="m-0 mt-2 text-[13px] text-muted tabular-nums">
-      <span aria-hidden="true">↓ {downloads.toLocaleString("en-US")}</span>
-      <span className="sr-only">{t(`下载 ${downloads.toLocaleString("en-US")} 次`)}</span>
-    </p>
-  );
-}
