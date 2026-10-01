@@ -8,7 +8,17 @@ import { useLocale } from "../use-locale";
  * Cards for the community items that have no picture: word packs, reply templates and plugins. Same surface, padding and footer as the skin cards, with a short text sample where the skin cards have their preview.
  */
 
-export const PLUGIN_KIND_LABELS: Record<PluginKind, string> = { sound: "按键音", music: "背景音乐", command_table: "命令表", effect: "打字特效" };
+// The kind names the App uses, so a pack is called the same thing here, in the App and in the admin console.
+export const PLUGIN_KIND_LABELS: Record<PluginKind, string> = {
+  sound: "音效包",
+  music: "音乐包",
+  command_table: "指令表",
+  effect: "特效包",
+  helpcode: "辅助码表",
+  symbol_set: "符号集",
+  phrase_table: "短语表",
+  wordbook: "单词本",
+};
 
 /** How many words of a word pack the card shows. */
 const SAMPLE_WORDS = 6;

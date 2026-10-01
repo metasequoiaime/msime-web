@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PLUGIN_KINDS, pluginSchema, RESOURCE_KINDS, resourceSchema, type Plugin, type PluginKind, type Resource, type ResourceKind } from "../src/data/schemas.ts";
+import { DECLARED_PLUGIN_KINDS, PLUGIN_KINDS, pluginSchema, RESOURCE_KINDS, resourceSchema, type Plugin, type PluginKind, type Resource, type ResourceKind } from "../src/data/schemas.ts";
 import { MAX_SKIN_OFFSET, MAX_SKIN_QUERY_BYTES, type SkinContext } from "./community-skins.ts";
 import { cachedJson, UpstreamUnavailable } from "./edge-cache.ts";
 import { apiOrigin } from "./site-session.ts";
@@ -47,7 +47,10 @@ export type CatalogPage<T> = { items: T[]; nextOffset: number | null; stale: boo
 
 /** Fetches one backend page anonymously and keeps the rows the site can draw. A row that fails validation is left out with a warning; `nextOffset` still counts it, so the following page starts where the backend's does. */
 export async function loadCatalogPage(origin: string, collection: CatalogCollection, params: CatalogListParams, request: typeof fetch = fetch): Promise<CatalogPage<Plugin | Resource>> {
-  const response = await request(`${origin}/v1/community/${collection}${catalogListQuery(collection, params)}`, { headers: { Accept: "application/json", "User-Agent": `MSIME-Web-${collection}` }, signal: AbortSignal.timeout(8_000) });
+  // The backend only lists the newer plugin kinds to callers that declare them; the edge cache key stays the page's own query.
+  const query = catalogListQuery(collection, params);
+  const declared = collection === "plugins" ? `${query ? "&" : "?"}kinds=${DECLARED_PLUGIN_KINDS}` : "";
+  const response = await request(`${origin}/v1/community/${collection}${query}${declared}`, { headers: { Accept: "application/json", "User-Agent": `MSIME-Web-${collection}` }, signal: AbortSignal.timeout(8_000) });
   if (!response.ok) throw new Error(`Community ${collection} unavailable: HTTP ${response.status}`);
   const body = await response.json();
   const page = collection === "plugins" ? backendPageSchemas.plugins.parse(body) : backendPageSchemas.resources.parse(body);

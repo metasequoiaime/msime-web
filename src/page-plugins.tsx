@@ -33,7 +33,7 @@ export function PluginsPage() {
         variant="plain"
         kicker="App 创作社区"
         title="社区插件"
-        lead="这里展示水杉输入法用户发布的插件：按键音、背景音乐、命令表和打字特效，按发布时间从新到旧排列。登录后可以收藏和评分；插件需要在水杉输入法的「社区」页下载安装。"
+        lead="这里展示水杉输入法用户发布的插件：音效包、音乐包、指令表、特效包、辅助码表、符号集、短语表和单词本，按发布时间从新到旧排列。登录后可以收藏和评分；插件需要在水杉输入法的「社区」页下载安装。"
       >
         <div className="mt-7 flex flex-wrap gap-3">
           <LinkButton to="/download/">{t("下载水杉输入法")}</LinkButton>
@@ -53,7 +53,7 @@ export function PluginsPage() {
             <ol className="m-0 mt-2 list-decimal pl-5 text-sm leading-[1.85] text-body">
               <li>{t("安装水杉输入法并登录账号。")}<LocaleLink to="/download/">{t("前往下载页")}</LocaleLink></li>
               <li>{t("打开水杉输入法的「社区」页，选择插件，搜索在这里看到的名称。")}</li>
-              <li>{t("按 App 中的提示下载安装。插件只包含音频、命令表和特效参数，不含可执行代码。")}</li>
+              <li>{t("按 App 中的提示下载安装。插件只包含音频、指令、短语、符号、码表和词表等数据，不含可执行代码。")}</li>
             </ol>
           </Card>
         </Container>

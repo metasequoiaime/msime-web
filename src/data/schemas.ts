@@ -277,8 +277,9 @@ export const v1CandidateSkinsSchema = z.object({ skins: lenientRows(v1CandidateS
 /** `GET /v1/community/candidate-skins/{id}/preview`: the re-encoded preview, base64. Private skins answer only their author, so `/me/` reads it through the proxy instead of the public edge-cached image route. */
 export const candidatePreviewSchema = z.object({ content_type: z.enum(["image/png", "image/jpeg"]), data: z.string().regex(/^[A-Za-z0-9+/]*={0,2}$/) });
 
-export const PLUGIN_KINDS = ["sound", "music", "command_table", "effect"] as const;
-export type PluginKind = (typeof PLUGIN_KINDS)[number];
+import { PLUGIN_KINDS } from "./plugin-kinds.ts";
+
+export { DECLARED_PLUGIN_KINDS, PLUGIN_KINDS, type PluginKind } from "./plugin-kinds.ts";
 
 /** `GET /v1/community/plugins` (docs/plugin-community.md). The zip itself is only ever downloaded by the App. */
 export const pluginSchema = z.object({

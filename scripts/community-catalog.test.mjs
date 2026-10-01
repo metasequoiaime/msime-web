@@ -38,7 +38,7 @@ test('the page asks for the same path the Function caches under', () => {
 test('a catalog page keeps the rows the site can draw without shifting the next page', async () => {
   const urls = [];
   const page = await loadCatalogPage(ORIGIN, 'plugins', { offset: 20, q: '猫', kind: 'sound' }, async url => { urls.push(url); return Response.json({ plugins: [backendPlugin(), { ...backendPlugin('0b1a87bc-99d9-56ea-a8ef-c6382b14eaf5'), kind: 'binary' }], has_more: true }); });
-  assert.deepEqual(urls, [`${ORIGIN}/v1/community/plugins?offset=20&q=%E7%8C%AB&kind=sound`]);
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/plugins?offset=20&q=%E7%8C%AB&kind=sound&kinds=helpcode,symbol_set,phrase_table,wordbook`]);
   assert.deepEqual(page.items.map(item => item.id), [PLUGIN_ID]);
   assert.equal(page.nextOffset, 22, 'the skipped row still counts towards the offset');
   const resources = await loadCatalogPage(ORIGIN, 'resources', { offset: 0, q: '', kind: 'dictionary' }, async url => { urls.push(url); return Response.json({ items: [backendResource()], has_more: false }); });
@@ -65,7 +65,7 @@ test('GET /api/plugins and /api/resources ask the backend at most once a minute 
   const resources = await (await call(resourceList, '/api/resources?kind=dictionary&offset=20')).json();
   assert.equal(resources.nextOffset, 21);
   await call(resourceList, '/api/resources?offset=20&kind=dictionary');
-  assert.deepEqual(calls.map(entry => entry.url), [`${ORIGIN}/v1/community/plugins?q=%E7%8C%AB&kind=sound`, `${ORIGIN}/v1/community/resources?kind=dictionary&offset=20`]);
+  assert.deepEqual(calls.map(entry => entry.url), [`${ORIGIN}/v1/community/plugins?q=%E7%8C%AB&kind=sound&kinds=helpcode,symbol_set,phrase_table,wordbook`, `${ORIGIN}/v1/community/resources?kind=dictionary&offset=20`]);
   assert.ok(calls.every(entry => entry.auth === null), 'the cached lists are always anonymous');
   assert.deepEqual([...cache.stored.keys()], ['https://msime.app/api/plugins?q=%E7%8C%AB&kind=sound', 'https://msime.app/api/resources?kind=dictionary&offset=20']);
   assert.equal((await call(resourceList, '/api/resources')).status, 400);
@@ -95,7 +95,7 @@ test('anonymous gallery reads go to the cached lists and signed-in reads to the 
   assert.equal(mine.items[0].my_rating, 4);
   const saved = await read(resourcesQuery('dictionary', '', 'saved', true));
   assert.equal(saved.items[0].saved, true);
-  assert.deepEqual(urls, ['/api/plugins?q=%E7%8C%AB&kind=sound', '/api/resources?kind=reply&offset=20', '/api/v1/community/plugins?fields=saved', '/api/v1/community/resources?kind=dictionary&scope=saved']);
+  assert.deepEqual(urls, ['/api/plugins?q=%E7%8C%AB&kind=sound', '/api/resources?kind=reply&offset=20', '/api/v1/community/plugins?fields=saved&kinds=helpcode%2Csymbol_set%2Cphrase_table%2Cwordbook', '/api/v1/community/resources?kind=dictionary&scope=saved']);
 });
 
 test('Pages routes the cached catalog lists to their Functions', () => {
