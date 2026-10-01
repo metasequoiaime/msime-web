@@ -13,7 +13,7 @@ export function ReleaseCard({ release }: { release: ReleaseItem }) {
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const notesId = useId();
-  const lines = useMemo(() => noteLines(release.body), [release.body]);
+  const lines = useMemo(() => noteLines(release.body, release.version), [release.body, release.version]);
   const collapsible = lines.length > COLLAPSED_LINES;
   const shown = useMemo(() => {
     if (open || !collapsible) return lines;
@@ -41,9 +41,10 @@ export function ReleaseCard({ release }: { release: ReleaseItem }) {
           <ul id={notesId} className="m-0 list-none p-0">
             {shown.map((line, index) => (
               // biome-ignore lint/suspicious/noArrayIndexKey: note lines have no identity of their own and the list only grows or shrinks at the end
-              <li key={index} className="mt-2 flex gap-2.5 text-[14.5px] leading-[1.8] text-body">
-                <span className={cx("mt-[11px] size-[5px] flex-none rounded-full", line.heading ? "bg-transparent" : "bg-accent")} aria-hidden="true" />
-                <span className={cx("min-w-0 [overflow-wrap:anywhere]", line.heading && "font-semibold text-ink")}>{line.text}</span>
+              <li key={index} className={cx("flex gap-2.5 text-[14.5px] leading-[1.8]", line.heading ? "mt-3 font-semibold text-ink first:mt-2" : "mt-2 text-body")}>
+                {/* Headings start at the bullets' edge, not at the text after them, so they read as section titles rather than indented items. */}
+                {!line.heading && <span className="mt-[11px] size-[5px] flex-none rounded-full bg-accent" aria-hidden="true" />}
+                <span className="min-w-0 [overflow-wrap:anywhere]">{line.text}</span>
               </li>
             ))}
           </ul>

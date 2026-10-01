@@ -169,3 +169,16 @@ test('GET /api/releases filters one cached sweep, validates input and answers 50
   assert.equal(unconfigured.status, 503);
   assert.ok((await unconfigured.json()).error);
 });
+
+test('notes drop headings that repeat the card title and keep the sections under them', async () => {
+  const { noteLines } = await import('../src/download/release-notes.ts');
+  const body = ['# 水杉输入法 v0.9.2', '', '## 更新内容', '', '### ⚠️ 重要修复', '', '- **卸载时不再删除**其他文件', '', '**皮肤**', '- 背景图'].join('\n');
+  assert.deepEqual(noteLines(body, '0.9.2'), [
+    { heading: true, text: '⚠️ 重要修复' },
+    { heading: false, text: '卸载时不再删除其他文件' },
+    { heading: true, text: '皮肤' },
+    { heading: false, text: '背景图' },
+  ]);
+  assert.deepEqual(noteLines("## What's Changed\n* Fix by @a in #1", '1.0.0'), [{ heading: false, text: 'Fix by @a in #1' }]);
+  assert.deepEqual(noteLines('## v1.0.0 亮点\n- 一项', '1.0.0'), [{ heading: false, text: '一项' }]);
+});
