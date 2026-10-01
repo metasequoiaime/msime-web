@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-01T01:35:16.686Z",
-  "totalStars": 1730,
-  "repoCount": 15,
+  "generatedAt": "2026-10-01T07:47:51.316Z",
+  "totalStars": 1759,
+  "repoCount": 16,
   "starHistory": [
     {
       "month": "2023-10",
@@ -145,11 +145,11 @@
     },
     {
       "month": "2026-09",
-      "stars": 1730
+      "stars": 1756
     },
     {
       "month": "2026-10",
-      "stars": 1730
+      "stars": 1759
     }
   ],
   "starSeries": [
@@ -298,16 +298,33 @@
         },
         {
           "date": "2026-09-30",
-          "stars": 1572
+          "stars": 1578
         },
         {
           "date": "2026-10-01",
-          "stars": 1572
+          "stars": 1579
         }
       ]
     },
     {
-      "repo": "MSIME-Docs",
+      "repo": "msime",
+      "points": [
+        {
+          "date": "2026-08-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-09-30",
+          "stars": 78
+        },
+        {
+          "date": "2026-10-01",
+          "stars": 80
+        }
+      ]
+    },
+    {
+      "repo": "msime-docs",
       "points": [
         {
           "date": "2025-10-31",
@@ -355,28 +372,11 @@
         },
         {
           "date": "2026-09-30",
-          "stars": 60
+          "stars": 61
         },
         {
           "date": "2026-10-01",
-          "stars": 60
-        }
-      ]
-    },
-    {
-      "repo": "msime",
-      "points": [
-        {
-          "date": "2026-08-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-09-30",
-          "stars": 59
-        },
-        {
-          "date": "2026-10-01",
-          "stars": 59
+          "stars": 61
         }
       ]
     },
@@ -734,20 +734,20 @@
       ]
     }
   ],
-  "starDelta30d": 857,
+  "starDelta30d": 886,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 10991,
-      "repos": 14
+      "contributions": 11254,
+      "repos": 15
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1792,
+      "contributions": 1794,
       "repos": 11
     },
     {
