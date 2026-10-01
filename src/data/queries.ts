@@ -2,6 +2,7 @@ import { infiniteQueryOptions, queryOptions, useInfiniteQuery, useQuery } from "
 import type { PlatformsManifest } from "../platforms-data.ts";
 import type { ReleaseFilter } from "./platforms.ts";
 import type { AppStats, CandidateSkins, Community, DownloadMirrors, KeyboardSkins, Notices, Releases, UpdateManifest } from "./schemas.ts";
+import type { CandidateSkinCategory } from "./skin-categories.ts";
 import { siteApi, staticSnapshot, withFallback } from "./source.ts";
 
 /*
@@ -145,21 +146,22 @@ type SkinPages = { keyboard: KeyboardSkins; candidate: CandidateSkins };
 /** The longest search the backend accepts, in UTF-8 bytes (`invalid_search` in msime-backend); the search box stops there. */
 export const MAX_SKIN_QUERY_BYTES = 128;
 
-/** The same-origin path of one page of a skin list. `q` is trimmed, as the Function does, so both agree on the cached copy. */
-export const skinListPath = (kind: SkinKind, offset: number, q: string) => {
+/** The same-origin path of one page of a skin list. `q` is trimmed, as the Function does, so both agree on the cached copy. `category` narrows a candidate list; keyboard skins have no categories, so it is dropped for them. */
+export const skinListPath = (kind: SkinKind, offset: number, q: string, category?: CandidateSkinCategory) => {
   const search = new URLSearchParams();
   if (offset) search.set("offset", String(offset));
   if (q.trim()) search.set("q", q.trim());
+  if (kind === "candidate" && category) search.set("category", category);
   const text = search.toString();
   return `/api/skins/${kind}${text ? `?${text}` : ""}`;
 };
 
 /** Pages of public community skins, 20 at a time, newest first. The Function caches each page for 60 s, so the list never refetches sooner; `nextOffset` drives 加载更多. */
-export const skinsQuery = <K extends SkinKind>(kind: K, q: string) =>
+export const skinsQuery = <K extends SkinKind>(kind: K, q: string, category?: CandidateSkinCategory) =>
   infiniteQueryOptions({
-    queryKey: ["skins", kind, q.trim()] as const,
+    queryKey: ["skins", kind, q.trim(), (kind === "candidate" && category) || ""] as const,
     queryFn: ({ signal, pageParam }) =>
-      siteApi<SkinPages[K]>(skinListPath(kind, pageParam, q), async value => {
+      siteApi<SkinPages[K]>(skinListPath(kind, pageParam, q, category), async value => {
         const schemas = await import("./schemas.ts");
         return (kind === "keyboard" ? schemas.keyboardSkinsSchema : schemas.candidateSkinsSchema).parse(value) as SkinPages[K];
       }).load(signal),
@@ -169,4 +171,4 @@ export const skinsQuery = <K extends SkinKind>(kind: K, q: string) =>
     retry: 1,
   });
 
-export const useSkinsQuery = <K extends SkinKind>(kind: K, q: string) => useInfiniteQuery(skinsQuery(kind, q));
+export const useSkinsQuery = <K extends SkinKind>(kind: K, q: string, category?: CandidateSkinCategory) => useInfiniteQuery(skinsQuery(kind, q, category));

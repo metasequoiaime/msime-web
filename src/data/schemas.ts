@@ -7,6 +7,7 @@ import { z } from "zod";
 export { communitySchema, type Community } from "../community-data.ts";
 export { platformsSchema, type PlatformsManifest } from "../platforms-data.ts";
 import { SITE_PLATFORMS } from "./platforms.ts";
+import { CANDIDATE_SKIN_CATEGORIES } from "./skin-categories.ts";
 
 export const PROJECT_ORIGIN = "https://github.com/metasequoiaime/";
 
@@ -177,6 +178,8 @@ export const candidateSkinSchema = z.object({
   ratingCount: count,
   ratingAverage,
   createdAt: z.iso.datetime({ offset: true }),
+  /** The gallery category. The Function reads a category it does not know as `other`, as the App does; absent only in a copy cached before the Function asked for categories. */
+  category: z.enum(CANDIDATE_SKIN_CATEGORIES).optional(),
 });
 export type CandidateSkin = z.infer<typeof candidateSkinSchema>;
 

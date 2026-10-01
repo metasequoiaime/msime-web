@@ -1,11 +1,12 @@
 import { z } from "zod";
 import { candidateSkinSchema, communitySkinIdSchema, keyboardSkinSchema, type CandidateSkins, type KeyboardSkins } from "../src/data/schemas.ts";
+import { isCandidateSkinCategory, type CandidateSkinCategory } from "../src/data/skin-categories.ts";
 import { apiOriginSchema, DEFAULT_API_ORIGIN } from "./app-stats.ts";
 import { cachedJson, UpstreamUnavailable } from "./edge-cache.ts";
 import { imageExtension } from "./feedback-images.ts";
 
 /*
- * The community skin catalog of msime-backend, read without an account: `GET /v1/community/skins` (keyboard skins) and `GET /v1/community/candidate-skins` (candidate-window skins) in internal/account/community.go and community_candidate.go, 20 per page, newest first, `q` matching the name. Downloading needs a signed-in session, so the website only browses and sends visitors to the App.
+ * The community skin catalog of msime-backend, read without an account: `GET /v1/community/skins` (keyboard skins) and `GET /v1/community/candidate-skins` (candidate-window skins) in internal/account/community.go and community_candidate.go, 20 per page, newest first, `q` matching the name. Candidate skins also filter by `category` and return each item's category when asked with `include=category`; keyboard skins have no categories. Downloading needs a signed-in session, so the website only browses and sends visitors to the App.
  */
 
 export const SKIN_KINDS = ["keyboard", "candidate"] as const;
@@ -15,22 +16,28 @@ export type SkinKind = (typeof SKIN_KINDS)[number];
 export const MAX_SKIN_OFFSET = 100_000;
 export const MAX_SKIN_QUERY_BYTES = 128;
 
-export type SkinListParams = { offset: number; q: string };
+/** `category` is set only for a candidate list narrowed to one category. */
+export type SkinListParams = { offset: number; q: string; category?: CandidateSkinCategory };
 
-/** Reads `offset` and `q` from a list request. The search is trimmed, so " 月 " and "月" share one cached copy. `undefined` when either is outside what the backend accepts. */
-export function skinListParams(url: URL): SkinListParams | undefined {
+/** Reads `offset`, `q` and, for candidate skins, `category` from a list request. The search is trimmed, so " 月 " and "月" share one cached copy. `undefined` when any of them is outside what the backend accepts: an unknown category is `invalid_category` there, and an empty one lists every category. The keyboard catalog has no categories and its backend ignores the parameter, so the keyboard list ignores it too. */
+export function skinListParams(url: URL, kind: SkinKind): SkinListParams | undefined {
   const rawOffset = url.searchParams.get("offset") ?? "0";
   if (!/^\d{1,6}$/.test(rawOffset)) return undefined;
   const offset = Number(rawOffset);
   const q = (url.searchParams.get("q") ?? "").trim();
   if (offset > MAX_SKIN_OFFSET || new TextEncoder().encode(q).length > MAX_SKIN_QUERY_BYTES) return undefined;
-  return { offset, q };
+  const category = kind === "candidate" ? url.searchParams.get("category") ?? "" : "";
+  if (category === "") return { offset, q };
+  return isCandidateSkinCategory(category) ? { offset, q, category } : undefined;
 }
 
-const listQuery = ({ offset, q }: SkinListParams) => {
+/** The query string of a list page, in the order `skinListPath` (src/data/queries.ts) writes it, so the edge cache key and the page's request agree. `include` is only ever added for the backend. */
+const listQuery = ({ offset, q, category }: SkinListParams, include?: string) => {
   const search = new URLSearchParams();
   if (offset) search.set("offset", String(offset));
   if (q) search.set("q", q);
+  if (category) search.set("category", category);
+  if (include) search.set("include", include);
   const text = search.toString();
   return text ? `?${text}` : "";
 };
@@ -60,6 +67,7 @@ const backendCandidateSkinSchema = z.object({
   rating_count: z.number(),
   rating_average: z.number(),
   created_at: z.string(),
+  category: z.string().optional(),
 });
 
 const headers = (agent: string) => ({ Accept: "application/json", "User-Agent": `MSIME-Web-${agent}` });
@@ -88,12 +96,14 @@ export function loadKeyboardSkins(origin: string, params: SkinListParams, reques
   }, request);
 }
 
+/** Always asks for `include=category`, so every card can name its category. A category added on the backend before the site knows it reads as `other`, as the App does. */
 export function loadCandidateSkins(origin: string, params: SkinListParams, request: typeof fetch = fetch): Promise<CandidateSkins> {
-  return loadPage(`${origin}/v1/community/candidate-skins${listQuery(params)}`, params.offset, "skins", row => {
+  return loadPage(`${origin}/v1/community/candidate-skins${listQuery(params, "category")}`, params.offset, "skins", row => {
     const parsed = backendCandidateSkinSchema.safeParse(row);
     if (!parsed.success) return undefined;
     const skin = parsed.data;
-    const item = candidateSkinSchema.safeParse({ id: skin.id, name: skin.name, description: skin.description, author: skin.author, version: skin.version, license: skin.license.assets, size: skin.size, downloads: skin.downloads, ratingCount: skin.rating_count, ratingAverage: skin.rating_average, createdAt: skin.created_at });
+    const category = skin.category === undefined ? {} : { category: isCandidateSkinCategory(skin.category) ? skin.category : "other" };
+    const item = candidateSkinSchema.safeParse({ id: skin.id, name: skin.name, description: skin.description, author: skin.author, version: skin.version, license: skin.license.assets, size: skin.size, downloads: skin.downloads, ratingCount: skin.rating_count, ratingAverage: skin.rating_average, createdAt: skin.created_at, ...category });
     return item.success ? item.data : undefined;
   }, request);
 }
@@ -143,11 +153,11 @@ const apiOrigin = (env: Record<string, unknown>) => {
 
 const edgeCache = () => (caches as CacheStorage & { default: Cache }).default;
 
-/** GET /api/skins/<kind>?offset=&q= → `keyboardSkinsSchema` / `candidateSkinsSchema` (src/data/schemas.ts). Each page and search is asked of the backend at most once a minute per edge location; 503 `{ error }` when the backend has never answered it. */
+/** GET /api/skins/<kind>?offset=&q= (and `&category=` for candidate skins) → `keyboardSkinsSchema` / `candidateSkinsSchema` (src/data/schemas.ts). Each page, search and category is asked of the backend at most once a minute per edge location; 503 `{ error }` when the backend has never answered it. */
 export async function serveSkinList(kind: SkinKind, { request, env, waitUntil }: SkinContext): Promise<Response> {
   if (request.method !== "GET") return Response.json({ error: "不支持此请求方式" }, { status: 405, headers: { ...jsonHeaders, Allow: "GET" } });
-  const params = skinListParams(new URL(request.url));
-  if (!params) return Response.json({ error: "搜索内容过长或页码无效。" }, { status: 400, headers: jsonHeaders });
+  const params = skinListParams(new URL(request.url), kind);
+  if (!params) return Response.json({ error: "搜索内容过长，或页码、分类无效。" }, { status: 400, headers: jsonHeaders });
   const origin = apiOrigin(env);
   if (!origin) return Response.json({ error: "社区皮肤暂不可用。" }, { status: 503, headers: jsonHeaders });
   const key = new Request(new URL(`/api/skins/${kind}${listQuery(params)}`, request.url));
