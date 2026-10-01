@@ -6,7 +6,8 @@ import { LocaleLink } from "../locale-link";
 import { recognizePlatform } from "../platform";
 import { useLocale } from "../use-locale";
 import { useSearchReady } from "../use-page-search";
-import { AnchorButton, Badge, Container, DownloadIcon, LinkButton, PlatformIcon, buttonClass, cx } from "../ui";
+import { AnchorButton, Container, DownloadIcon, LinkButton, PlatformIcon, buttonClass, cx } from "../ui";
+import { CommunityLinks } from "./community-links";
 import { HeroDemo } from "./hero-demo";
 import { type HeroFrame, LANGUAGES, SCHEMES, type SchemeId, useHeroCycle } from "./hero-cycle";
 
@@ -120,7 +121,7 @@ export function HomeHero() {
     <Container as="section" width="page" className="page-enter pt-[clamp(40px,6vw,80px)]">
       <div ref={hero} className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-center gap-[clamp(28px,4vw,72px)]">
         <div className="rise-enter @container min-w-0">
-          <Badge>{t("开源中文输入法 · GPL-3.0")}</Badge>
+          <CommunityLinks />
           <Headline frame={frame} />
           <p className="m-0 mt-6 text-[clamp(16px,1.4vw,18px)] leading-[1.85] text-body">
             {t(`面向 ${PLATFORM_LIST.slice(0, -1).join("、")} 与 ${PLATFORM_LIST.at(-1)}`)}
