@@ -1,7 +1,7 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { PlatformsManifest } from "../platforms-data.ts";
 import type { ReleaseFilter } from "./platforms.ts";
-import type { AppStats, Community, Releases, UpdateManifest } from "./schemas.ts";
+import type { AppStats, Community, DownloadMirrors, Releases, UpdateManifest } from "./schemas.ts";
 import { siteApi, staticSnapshot, withFallback } from "./source.ts";
 
 /*
@@ -106,3 +106,18 @@ export const appStatsQuery = () =>
   });
 
 export const useAppStatsQuery = () => useQuery(appStatsQuery());
+
+// ---- download-mirrors ----
+
+export const downloadMirrorsSource = siteApi<DownloadMirrors>("/api/download-mirrors", async value => (await schemas()).downloadMirrorsSchema.parse(value));
+
+/** The Lanzou link for the Windows installer. The Function answers 503 when the backend has never answered; the panel then simply leaves the mirror out. */
+export const downloadMirrorsQuery = () =>
+  queryOptions({
+    queryKey: ["download-mirrors"] as const,
+    queryFn: ({ signal }) => downloadMirrorsSource.load(signal),
+    staleTime: COMMUNITY_REFRESH_MS,
+    retry: false,
+  });
+
+export const useDownloadMirrorsQuery = () => useQuery(downloadMirrorsQuery());
