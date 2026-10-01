@@ -17,6 +17,8 @@ import { PageHero } from "./page-content";
 import { LocaleLink } from "./locale-link";
 import { AppleIcon, Button, Container, LinuxIcon, Pill, WindowsIcon, cx } from "./ui";
 import { FeedbackAside } from "./feedback/feedback-aside";
+import { FEEDBACK_SECTIONS } from "./feedback/sections";
+import { SectionNav } from "./section-nav";
 import { FeedbackSuccess } from "./feedback/feedback-success";
 import { alertClass, checkClass, fieldLabelClass, hintClass, inputClass, markdownClass, previewImageButtonClass, stepTitleClass } from "./feedback/styles";
 
@@ -308,6 +310,7 @@ export function FeedbackPage() {
         title="反馈问题或提出建议"
         lead="遇到故障或希望改进功能，都可以在这里反馈。提交后会在 GitHub 对应仓库创建公开的 Issue（反馈记录），无需 GitHub 账号。"
       />
+      <SectionNav group={FEEDBACK_SECTIONS} current="/feedback/" />
       <main className="w-full">
         <ScreenshotViewer images={screenshots} selected={selectedScreenshot} onClose={() => setSelectedScreenshot(null)} />
         <Container className="flex flex-wrap items-start gap-6 pt-8">

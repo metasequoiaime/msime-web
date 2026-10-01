@@ -160,6 +160,46 @@ test('the header has one 社区 entry for the three community pages, which switc
   }
 });
 
+test('the header has one 反馈 entry for the two feedback forms, which switch between each other under their heroes', () => {
+  const sections = ['/feedback/', '/words/'];
+  for (const [prefix, entry, area, labels] of [['', '反馈', '反馈栏目', ['Bug 与需求', '词库缺失']], ['/zh-TW', '回報', '回報欄目', ['Bug 與需求', '詞庫缺失']]]) {
+    for (const base of [...sections, '/']) {
+      const doc = document(`${prefix}${base}`);
+      for (const menu of ['.nav-list', '#nav-menu']) {
+        const links = [...doc.querySelectorAll(`${menu} a`)];
+        assert.equal(links.filter(link => sections.some(section => link.getAttribute('href') === `${prefix}${section}`)).length, 1, `${prefix}${base} ${menu}: one feedback entry`);
+        const feedback = links.find(link => link.getAttribute('href') === `${prefix}/feedback/`);
+        assert.equal(feedback.textContent.trim(), entry);
+        assert.equal(feedback.getAttribute('aria-current'), base === '/' ? null : 'page', `${prefix}${base} ${menu}`);
+      }
+      const switcher = doc.querySelector(`nav[aria-label="${area}"]`);
+      if (base === '/') { assert.equal(switcher, null); continue; }
+      assert.deepEqual([...switcher.querySelectorAll('a')].map(link => [link.getAttribute('href'), link.textContent.trim()]), sections.map((section, index) => [`${prefix}${section}`, labels[index]]));
+      assert.deepEqual([...switcher.querySelectorAll('a[aria-current="page"]')].map(link => link.getAttribute('href')), [`${prefix}${base}`]);
+      assert.ok(doc.querySelector('.page-hero').compareDocumentPosition(switcher) & 4, `${prefix}${base}: the switcher follows the hero`);
+    }
+  }
+});
+
+test('the header lists 首页 下载 社区 文档 反馈 关于, and 开源代码 is a GitHub button there and the last item of the menu panel', () => {
+  for (const [prefix, labels, code] of [['', ['首页', '下载', '社区', '文档', '反馈', '关于'], '开源代码'], ['/zh-TW', ['首頁', '下載', '社群', '文件', '回報', '關於'], '開源程式碼']]) {
+    for (const base of ['/', '/code/', '/download/']) {
+      const doc = document(`${prefix}${base}`);
+      assert.deepEqual([...doc.querySelectorAll('.nav-list a')].map(link => link.textContent.trim()), labels, `${prefix}${base}`);
+      assert.deepEqual([...doc.querySelectorAll('#nav-menu a')].map(link => link.textContent.trim()), [...labels, code], `${prefix}${base}`);
+      assert.equal(doc.querySelector('#nav-menu li:last-child a').getAttribute('href'), `${prefix}/code/`);
+      const buttons = [...doc.querySelectorAll('header a')].filter(link => link.getAttribute('href') === `${prefix}/code/`);
+      assert.equal(buttons.length, 1, `${prefix}${base}: one GitHub button in the header bar`);
+      const [button] = buttons;
+      assert.equal(button.getAttribute('aria-label'), code);
+      assert.equal(button.getAttribute('title'), code);
+      assert.ok(button.querySelector('svg'), `${prefix}${base}: the button shows the GitHub mark`);
+      assert.equal(button.getAttribute('aria-current'), base === '/code/' ? 'page' : null, `${prefix}${base}`);
+      assert.ok(doc.querySelector(`.site-footer a[href="${prefix}/code/"]`), `${prefix}${base}: the footer still links 开源代码`);
+    }
+  }
+});
+
 test('the retired installer screenshot is not rendered anywhere', () => {
   for (const path of ['/docs/windows/', '/zh-TW/docs/windows/', '/download/', '/features/']) {
     assert.equal(document(path).querySelector('img[src*="install-finish"], img[srcset*="install-finish"]'), null, path);
