@@ -71,7 +71,7 @@ function InstallShot() {
     loading="lazy"
     decoding="async"
     className="block h-auto w-full rounded-btn shadow-[var(--shadow),0_0_0_1px_var(--hair)]"
-    alt={t("水杉输入法安装程序的完成页，勾选着启动 Server 与 Watchdog 两项")}
+    alt={t("水杉输入法安装程序的完成页")}
   />
   );
 }

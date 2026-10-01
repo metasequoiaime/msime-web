@@ -28,4 +28,4 @@ export {
   SearchIcon,
   ChevronDownIcon,
 } from "./icons";
-export { PlatformIcon, WindowsIcon, AppleIcon, LinuxIcon, AndroidIcon, HarmonyOSIcon, QQIcon, CloudDownloadIcon } from "./platform-icons";
+export { PlatformIcon, WindowsIcon, AppleIcon, LinuxIcon, AndroidIcon, HarmonyOSIcon, CloudDownloadIcon } from "./platform-icons";
