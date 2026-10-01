@@ -11,7 +11,6 @@ export { BackToTop } from "./back-to-top";
 export { SeasonBackdrop } from "./season-backdrop";
 export {
   GitHubIcon,
-  QQIcon,
   TelegramIcon,
   SunIcon,
   MoonIcon,
