@@ -129,6 +129,24 @@ Turnstile 复用站点现有 widget，所有类型的 action 都为 `words`，�
 
 `scripts/words.test.mjs` 覆盖上述校验、请求体字段、响应解析和各状态码提示。`pnpm dev` 下页面会直接请求生产 API；联调后端时在本地临时修改 `BACKEND_ORIGIN`，不要提交。
 
+## 官网账号与社区
+
+页头的「登录」用 Google 登录，与 App 走同一套 msime-backend `/v1/auth` 流程（challenge 的 nonce 交给 Google Identity Services，再把 ID token 提交给后端），登录的是同一个账号。登录后：`/skins/`、`/dictionaries/`（词库与回复模板）、`/plugins/` 的卡片可以收藏和 1–5 星评分；`/me/`（noindex，不进站点地图）管理自己的皮肤、拼音/五笔/英文词条和快捷短语、云剪贴板、收藏和昵称。
+
+会话由 Pages Functions 持有（`shared/site-session.ts`），令牌只放在 `__Host-msime_at`（Max-Age 900）和 `__Host-msime_rt`（30 天）两个 `HttpOnly; Secure; SameSite=Lax; Path=/` cookie 里，浏览器脚本拿不到。浏览器只调同源接口：`/api/auth/config`、`/api/auth/challenge`、`/api/auth/login`、`/api/auth/logout`、`/api/me`，以及只放行 `/v1/users/me` 和 `/v1/community/` 的 `/api/v1/*` 代理（cookie 换成 `Authorization: Bearer`）。access 过期或后端 401 时用 refresh 换新并重试一次；轮换成功后即使后端随后失败（503）也会带上新 cookie，因为旧 refresh token 已经作废，留在浏览器里再被使用会让后端撤销整个会话。后端返回 409 `refresh_superseded`（另一个请求刚轮换过）时向页面返回 401 `{"error":"session_retry"}` 且不动 cookie，页面按 0.5、1、2、4 秒退避重试（共 7.5 秒，远在后端 30 秒宽限期内），仍是 `session_retry` 也不当作退出登录；refresh 被拒则清 cookie 返回 401。退出登录时 access 缺失或被后端 401 拒绝会先 refresh 一次再调用后端 logout，确保后端会话真正结束，cookie 总会清除（refresh 遇到 `session_retry` 时除外，页面会带着新 cookie 重试）。代理转发的请求体逐块读取，超过 64 KiB 立即中止。未登录访客浏览 `/plugins/` 和 `/dictionaries/` 时读取边缘缓存一分钟的 `/api/plugins`、`/api/resources`（`shared/community-catalog.ts`，与 `/api/skins/*` 同一模式），登录后才走 `/api/v1/*` 以显示自己的评分和收藏。所有 POST/PUT/PATCH/DELETE 要求 `Origin` 等于站点自身 origin。页面用 localStorage 的 `msime-account` 记一下「这个浏览器登录过」，没登录过的访客不会每页都请求 `/api/me`；它只是提示，会话以 cookie 为准。
+
+Pages 运行时变量（生产环境）：
+
+| 变量 | 用途 |
+| --- | --- |
+| `MSIME_API_ORIGIN` | 已有：后端源站，默认 `https://api.msime.app` |
+| `GOOGLE_WEB_CLIENT_ID` | Google Cloud 中「Web 应用」类型的 Client ID（公开值，`*.apps.googleusercontent.com`），必须同时列在后端的 `auth.google.client_ids` 里，授权的 JavaScript 来源加上 `https://msime.app`。未配置时登录框提示暂未开放 |
+| `SITE_PROXY_SECRET` | **生产环境必填**，Secret，与后端 `site_proxy_secret` 同值。配置后每个发往后端的请求带 `X-MSIME-Site-Proxy` 和 `X-MSIME-Client-IP`（取 `CF-Connecting-IP`），后端按访客地址而不是 Cloudflare 出口限流；未配置时两个头都不发，所有访客共用 Pages 出口地址的同一份后端限流额度（每分钟 120 次），少量访客就会让所有人的登录和账号操作收到 429 |
+
+CSP 为 Google 登录放行 `https://accounts.google.com/gsi/client`（script-src）、`/gsi/style`（style-src）、`/gsi/`（frame-src、connect-src），为头像放行 `https://*.googleusercontent.com` 和 `https://media.msime.app`（img-src），与后端 `avatar_url` 的两个来源一致。`scripts/site-session.test.mjs` 覆盖 cookie 属性、Origin 校验、路径白名单、refresh 与重试、`session_retry` 和代理头。
+
+收藏（皮肤、候选窗皮肤、插件的 `PUT .../save`、`scope=saved`、`fields=saved`）和放宽后的评分依赖后端同期改动，先发布后端再发布本站。`pnpm dev` 不执行 Functions，联调用 `wrangler pages dev dist`，在 `.dev.vars` 里配本地专用的 `GOOGLE_WEB_CLIENT_ID` 和 `MSIME_API_ORIGIN`。
+
 ## 常见问题 Q&A
 
 `/faq/` 提供按分类筛选、全文搜索、折叠展开及问题锚点。正文唯一来源为 MSIME-Docs 的 `guides/faq.md`：一级标题和首段用于页头，二级标题作为分类，三级标题作为问答，正文使用现有安全 Markdown 渲染器。导航、页脚、文档页及需求表单提供入口。

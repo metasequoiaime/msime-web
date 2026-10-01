@@ -18,8 +18,8 @@ const pageDirectories = () =>
     .filter(entry => existsSync(new URL(`${entry.name}/index.html`, root)))
     .map(entry => `/${entry.name}/`);
 
-// 简历页是个人页面，入口里带 noindex，不进站点地图。
-const NOINDEX = ['/resume/'];
+// 简历页是个人页面，「我的」只对登录用户有内容，入口里都带 noindex，不进站点地图。
+const NOINDEX = ['/resume/', '/me/'];
 
 test('the SEO registry includes every entry page', () => {
   for (const path of ['/', ...pageDirectories()]) assert.ok(seoPages[path], path);
@@ -75,9 +75,9 @@ test('the response headers lock the page down and keep hashed assets cacheable',
   for (const directive of ["default-src 'self'", "frame-ancestors 'none'", "object-src 'none'", "base-uri 'none'"]) {
     assert.ok(csp.includes(directive), `CSP 缺 ${directive}`);
   }
-  // 只放行头像、Turnstile 的脚本与验证框，以及词条提交所用的公共 API。
+  // 只放行头像、Turnstile 的脚本与验证框、词条提交所用的公共 API，以及 Google 登录（GIS）和账号头像。
   const externals = [...csp.matchAll(/https:\/\/[^\s;]+/g)].map(m => m[0]);
-  assert.deepEqual(externals, ['https://challenges.cloudflare.com', 'https://avatars.githubusercontent.com', 'https://api.msime.app', 'https://challenges.cloudflare.com']);
+  assert.deepEqual(externals, ['https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/client', 'https://accounts.google.com/gsi/style', 'https://avatars.githubusercontent.com', 'https://*.googleusercontent.com', 'https://media.msime.app', 'https://api.msime.app', 'https://accounts.google.com/gsi/', 'https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/']);
   assert.match(headers, /\/assets\/\*\n\s+Cache-Control: public, max-age=31536000, immutable/);
 });
 

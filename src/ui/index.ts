@@ -27,5 +27,8 @@ export {
   CopyIcon,
   SearchIcon,
   ChevronDownIcon,
+  UserIcon,
+  HeartIcon,
+  StarIcon,
 } from "./icons";
 export { PlatformIcon, WindowsIcon, AppleIcon, LinuxIcon, AndroidIcon, HarmonyOSIcon, QQIcon, CloudDownloadIcon } from "./platform-icons";
