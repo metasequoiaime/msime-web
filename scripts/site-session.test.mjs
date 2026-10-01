@@ -372,7 +372,9 @@ test('refresh and login calls carry the proxy headers too', async t => {
 // ---- config and challenge ----
 
 test('the Google client ID is public configuration, null when unset or malformed', async t => {
-  assert.deepEqual(await (await authConfig({ request: browser('/api/auth/config'), env: ENV })).json(), { google_client_id: CLIENT_ID });
+  const configured = authConfig({ request: browser('/api/auth/config'), env: ENV });
+  assert.deepEqual(await configured.json(), { google_client_id: CLIENT_ID });
+  assert.equal(configured.headers.get('Cache-Control'), 'public, max-age=300', 'every signed-out page view asks, so the browser keeps it');
   for (const value of [undefined, '', 'not-a-client-id', `${CLIENT_ID}<script>`]) assert.deepEqual(await (await authConfig({ request: browser('/api/auth/config'), env: { GOOGLE_WEB_CLIENT_ID: value } })).json(), { google_client_id: null });
   const { response } = await run(t, challenge, browser('/api/auth/challenge', { method: 'POST' }), {}, { MSIME_API_ORIGIN: API });
   assert.equal(response.status, 503, 'no challenge without a Google client');

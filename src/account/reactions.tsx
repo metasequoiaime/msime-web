@@ -32,12 +32,12 @@ export const ratingText = (count: number, average: number) => (count === 0 ? "�
 const STARS = [1, 2, 3, 4, 5] as const;
 
 /**
- * Favourite and 1–5 star rating for a community card, in one compact row: downloads and the rating summary ("★ 4.6 · 12", or 暂无评分) on the left, the heart on the right. The summary is a button that swaps itself for a five-star picker in place; picking a star rates and closes it, Escape or leaving it closes it, and focus goes back to the summary either way. Signed-out visitors see the same controls; pressing one opens the sign-in dialog. The viewer's own works cannot be rated, which the backend enforces too, so for them the summary is plain text.
+ * Favourite and 1–5 star rating for a community card, in one compact row: downloads and the rating summary ("★ 4.6 · 12", or 暂无评分) on the left, the heart on the right. The summary is a button that swaps itself for a five-star picker in place; picking a star rates and closes it, Escape or leaving it closes it, and focus goes back to the summary either way. Signed-out visitors see the same controls; pressing one opens the sign-in dialog, or, where the site offers no web sign-in, says that signing in happens in the App. The viewer's own works cannot be rated, which the backend enforces too, so for them the summary is plain text.
  */
 export function Reactions({ kind, id, ratingCount, ratingAverage, myRating = 0, owned = false, saved = false, saves, downloads }: ReactionProps) {
   const { t } = useLocale();
   const { show } = useToast();
-  const { status, openLogin } = useAccount();
+  const { status, openLogin, loginAvailable } = useAccount();
   const queryClient = useQueryClient();
   const [state, setState] = useState({ saved, saves, myRating, count: ratingCount, average: ratingAverage });
   const [busy, setBusy] = useState(false);
@@ -87,13 +87,20 @@ export function Reactions({ kind, id, ratingCount, ratingAverage, myRating = 0, 
     };
   }, [picking]);
 
+  /** A control that needs an account, pressed while signed out. Still unknown, the dialog opens and answers for itself. */
+  const needAccount = () => {
+    if (status !== "signed-out") return;
+    if (loginAvailable === false) show(t("请在水杉输入法 App 中登录后收藏和评分"));
+    else openLogin();
+  };
+
   const fail = (error: unknown) => {
     if (error instanceof ApiError && error.status === 401) return;
     show(t(error instanceof ApiError ? ERRORS[error.status] ?? "操作失败，请稍后再试。" : "网络连接失败，请稍后再试。"));
   };
 
   const toggleSave = async () => {
-    if (status !== "signed-in") return status === "signed-out" ? openLogin() : undefined;
+    if (status !== "signed-in") return needAccount();
     setBusy(true);
     try {
       const result = await saveItem(kind, id, !state.saved);
@@ -129,7 +136,7 @@ export function Reactions({ kind, id, ratingCount, ratingAverage, myRating = 0, 
 
   const openPicker = () => {
     if (busy) return;
-    if (status !== "signed-in") return status === "signed-out" ? openLogin() : undefined;
+    if (status !== "signed-in") return needAccount();
     setPicking(true);
   };
 

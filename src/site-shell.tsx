@@ -249,11 +249,11 @@ function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boo
 /**
  * 顶栏的账号入口：未登录时是「登录」，已登录时是头像，展开后是「我的」和「退出登录」。
  *
- * 会话状态未知时（静态页面接管前，或曾登录过的浏览器还在等 `/api/me`）只占位，不先画出「登录」再换成头像。
+ * 会话状态未知时（静态页面接管前，或曾登录过的浏览器还在等 `/api/me`）只占位，不先画出「登录」再换成头像。未登录时同样先占位，等 `/api/auth/config` 说明网页是否开放登录：开放才画「登录」，未开放则整个入口都不画，免得点开只看到一句「请在 App 中登录」。
  */
 function AccountMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
   const { t } = useLocale();
-  const { status, me, openLogin, signOut } = useAccount();
+  const { status, me, loginAvailable, openLogin, signOut } = useAccount();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const close = useCallback(
@@ -269,9 +269,9 @@ function AccountMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boo
     if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
   }, [isOpen]);
 
-  if (status === "unknown") return <span className="inline-flex size-9 flex-none" aria-hidden="true" />;
+  if (status === "unknown" || (status === "signed-out" && loginAvailable === undefined)) return <span className="inline-flex size-9 flex-none" aria-hidden="true" />;
   if (status === "signed-out" || !me)
-    return (
+    return loginAvailable === false ? null : (
       <button type="button" className={cx(roundControl, "inline-flex w-9 gap-1.5 text-sm font-semibold sm:w-auto sm:px-3.5")} title={t("登录")} onClick={openLogin}>
         <UserIcon size={17} className="sm:hidden" />
         <span className="max-sm:sr-only">{t("登录")}</span>
