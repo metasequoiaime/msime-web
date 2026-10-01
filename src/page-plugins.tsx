@@ -33,7 +33,7 @@ export function PluginsPage() {
         variant="plain"
         kicker="App 创作社区"
         title="社区插件"
-        lead="这里展示水杉输入法用户发布的插件：音效包、音乐包、指令表、特效包、辅助码表、符号集、短语表和单词本，按发布时间从新到旧排列。登录后可以收藏和评分；插件需要在水杉输入法的「社区」页下载安装。"
+        lead="这里展示水杉输入法用户发布的插件：音效包、音乐包、指令表和特效包，按发布时间从新到旧排列。登录后可以收藏和评分；插件需要在水杉输入法的「社区」页下载安装。"
       >
         <div className="mt-7 flex flex-wrap gap-3">
           <LinkButton to="/download/">{t("下载水杉输入法")}</LinkButton>
