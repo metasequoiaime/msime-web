@@ -511,6 +511,7 @@ function SiteFooter({ inert }: { inert: boolean }) {
 
           <FooterColumn title="产品">
             <Link className={footerLink} to="/features/">{t("功能")}</Link>
+            <Link className={footerLink} to="/skins/">{t("社区皮肤")}</Link>
             <Link className={footerLink} to="/download/">{t("下载")}</Link>
             <Link className={footerLink} to="/download/" hash="releases">{t("更新日志")}</Link>
             <Link className={footerLink} to="/docs/$guide/" params={{ guide: "windows" }}>{t("使用指南")}</Link>

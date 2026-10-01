@@ -1,7 +1,7 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import type { PlatformsManifest } from "../platforms-data.ts";
 import type { ReleaseFilter } from "./platforms.ts";
-import type { AppStats, Community, DownloadMirrors, Notices, Releases, UpdateManifest } from "./schemas.ts";
+import type { AppStats, CandidateSkins, Community, DownloadMirrors, KeyboardSkins, Notices, Releases, UpdateManifest } from "./schemas.ts";
 import { siteApi, staticSnapshot, withFallback } from "./source.ts";
 
 /*
@@ -136,3 +136,37 @@ export const noticesQuery = () =>
   });
 
 export const useNoticesQuery = () => useQuery(noticesQuery());
+
+// ---- community skins ----
+
+export type SkinKind = "keyboard" | "candidate";
+type SkinPages = { keyboard: KeyboardSkins; candidate: CandidateSkins };
+
+/** The longest search the backend accepts, in UTF-8 bytes (`invalid_search` in msime-backend); the search box stops there. */
+export const MAX_SKIN_QUERY_BYTES = 128;
+
+/** The same-origin path of one page of a skin list. `q` is trimmed, as the Function does, so both agree on the cached copy. */
+export const skinListPath = (kind: SkinKind, offset: number, q: string) => {
+  const search = new URLSearchParams();
+  if (offset) search.set("offset", String(offset));
+  if (q.trim()) search.set("q", q.trim());
+  const text = search.toString();
+  return `/api/skins/${kind}${text ? `?${text}` : ""}`;
+};
+
+/** Pages of public community skins, 20 at a time, newest first. The Function caches each page for 60 s, so the list never refetches sooner; `nextOffset` drives 加载更多. */
+export const skinsQuery = <K extends SkinKind>(kind: K, q: string) =>
+  infiniteQueryOptions({
+    queryKey: ["skins", kind, q.trim()] as const,
+    queryFn: ({ signal, pageParam }) =>
+      siteApi<SkinPages[K]>(skinListPath(kind, pageParam, q), async value => {
+        const schemas = await import("./schemas.ts");
+        return (kind === "keyboard" ? schemas.keyboardSkinsSchema : schemas.candidateSkinsSchema).parse(value) as SkinPages[K];
+      }).load(signal),
+    initialPageParam: 0,
+    getNextPageParam: (page: SkinPages[K]) => page.nextOffset ?? undefined,
+    staleTime: 60_000,
+    retry: 1,
+  });
+
+export const useSkinsQuery = <K extends SkinKind>(kind: K, q: string) => useInfiniteQuery(skinsQuery(kind, q));

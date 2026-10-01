@@ -22,6 +22,7 @@ export default defineConfig({
         code: resolve(projectRoot, "code/index.html"),
         feedback: resolve(projectRoot, "feedback/index.html"),
         words: resolve(projectRoot, "words/index.html"),
+        skins: resolve(projectRoot, "skins/index.html"),
         about: resolve(projectRoot, "about/index.html"),
         download: resolve(projectRoot, "download/index.html"),
         price: resolve(projectRoot, "price/index.html"),

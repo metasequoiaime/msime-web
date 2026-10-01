@@ -155,6 +155,12 @@ const wordsRoute = createRoute({
   component: lazyRouteComponent(() => import("./page-words"), "WordsPage"),
 });
 
+const skinsRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/skins",
+  component: lazyRouteComponent(() => import("./page-skins"), "SkinsPage"),
+});
+
 const resumeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/resume",
@@ -169,6 +175,7 @@ const traditionalRoutes = [
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/faq", component: lazyRouteComponent(() => import("./page-faq"), "FaqPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/feedback", component: lazyRouteComponent(() => import("./page-feedback"), "FeedbackPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/words", component: lazyRouteComponent(() => import("./page-words"), "WordsPage") }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/skins", component: lazyRouteComponent(() => import("./page-skins"), "SkinsPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/about", component: lazyRouteComponent(() => import("./page-about"), "AboutPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/code", component: lazyRouteComponent(() => import("./page-code"), "CodePage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/price", component: lazyRouteComponent(() => import("./page-price"), "PricePage") }),
@@ -178,7 +185,7 @@ const traditionalRoutes = [
 ];
 
 const routeTree = rootRoute.addChildren([
-  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, priceRoute, privacyRoute, feedbackRoute, wordsRoute]),
+  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, priceRoute, privacyRoute, feedbackRoute, wordsRoute, skinsRoute]),
   resumeRoute,
 ]);
 
