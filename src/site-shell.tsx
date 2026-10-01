@@ -5,9 +5,11 @@ import { baseLocalePath, traditionalPages, traditionalPath, isTraditional } from
 import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { NoticeBanner } from "./notice-banner";
+import { AccountProvider, useAccount } from "./account/session";
+import { Avatar } from "./account/avatar";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
-import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, chipClass, copyText, cx, useToast } from "./ui";
+import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
   to: "/" | "/download/" | "/skins/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
@@ -236,6 +238,90 @@ function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boo
           <OptionGroup label="语言" columns="grid-cols-2">
             <LanguageOptions onCurrent={() => close(true)} />
           </OptionGroup>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * 顶栏的账号入口：未登录时是「登录」，已登录时是头像，展开后是「我的」和「退出登录」。
+ *
+ * 会话状态未知时（静态页面接管前，或曾登录过的浏览器还在等 `/api/me`）只占位，不先画出「登录」再换成头像。
+ */
+function AccountMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
+  const { t } = useLocale();
+  const { status, me, openLogin, signOut } = useAccount();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const close = useCallback(
+    (restoreFocus: boolean) => {
+      setOpen(false);
+      if (restoreFocus) buttonRef.current?.focus();
+    },
+    [setOpen]
+  );
+  useDismiss(rootRef, isOpen, close);
+
+  useEffect(() => {
+    if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+  }, [isOpen]);
+
+  if (status === "unknown") return <span className="inline-flex size-9 flex-none" aria-hidden="true" />;
+  if (status === "signed-out" || !me)
+    return (
+      <button type="button" className={cx(roundControl, "inline-flex w-9 gap-1.5 text-sm font-semibold sm:w-auto sm:px-3.5")} title={t("登录")} onClick={openLogin}>
+        <UserIcon size={17} className="sm:hidden" />
+        <span className="max-sm:sr-only">{t("登录")}</span>
+      </button>
+    );
+
+  const label = t(`账号：${me.user.display_name}`);
+  const itemClass = "flex h-10 w-full cursor-pointer items-center rounded-tab border-0 bg-transparent px-3 text-left text-sm font-medium text-body no-underline hover:bg-panel-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent";
+  return (
+    <div className="relative" ref={rootRef}>
+      <button
+        ref={buttonRef}
+        className={cx("inline-flex size-9 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 shadow-ring-2 transition-shadow hover:shadow-ring-accent", isOpen && "shadow-ring-accent")}
+        type="button"
+        title={label}
+        aria-label={label}
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
+        aria-controls={isOpen ? "account-menu" : undefined}
+        onClick={() => setOpen(!isOpen)}
+      >
+        <Avatar user={me.user} size={32} />
+      </button>
+      {isOpen && (
+        <div
+          id="account-menu"
+          role="menu"
+          aria-label={label}
+          className="absolute top-11 right-0 z-40 w-[232px] rounded-menu bg-panel p-2 shadow-card max-sm:fixed max-sm:inset-x-3 max-sm:top-[62px] max-sm:w-auto"
+          onKeyDown={event => {
+            if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+            event.preventDefault();
+            const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]'));
+            const index = items.indexOf(document.activeElement as HTMLElement);
+            items[(index + (event.key === "ArrowDown" ? 1 : items.length - 1)) % items.length]?.focus();
+          }}
+        >
+          <div className="flex min-w-0 items-center gap-2.5 px-2 pt-1 pb-2.5 shadow-divider-b">
+            <Avatar user={me.user} size={34} />
+            <div className="min-w-0">
+              <p className="m-0 truncate text-sm font-semibold text-ink">{me.user.display_name}</p>
+              {me.user.email && <p className="m-0 truncate text-xs text-muted">{me.user.email}</p>}
+            </div>
+          </div>
+          <div className="mt-1.5 grid gap-0.5">
+            <Link role="menuitem" className={itemClass} to="/me/" onClick={() => close(false)}>
+              {t("我的")}
+            </Link>
+            <button role="menuitem" type="button" className={itemClass} onClick={() => { close(true); void signOut(); }}>
+              {t("退出登录")}
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -557,7 +643,9 @@ function SiteFooter({ inert }: { inert: boolean }) {
 export function SiteShell({ children }: { children?: ReactNode }) {
   return (
     <ToastProvider>
-      <Shell>{children}</Shell>
+      <AccountProvider>
+        <Shell>{children}</Shell>
+      </AccountProvider>
     </ToastProvider>
   );
 }
@@ -566,11 +654,12 @@ function Shell({ children }: { children?: ReactNode }) {
   const { t } = useLocale();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [paletteIsOpen, setPaletteIsOpen] = useState(false);
+  const [accountIsOpen, setAccountIsOpen] = useState(false);
   const closeMenu = useCallback(() => {
     setMenuIsOpen(false);
   }, []);
 
-  useHeaderBehaviour(menuIsOpen || paletteIsOpen);
+  useHeaderBehaviour(menuIsOpen || paletteIsOpen || accountIsOpen);
   useMenuFocus(menuIsOpen, closeMenu);
 
   useEffect(() => {
@@ -602,6 +691,7 @@ function Shell({ children }: { children?: ReactNode }) {
 
           <div className="ml-auto flex flex-none items-center gap-1.5">
             <PaletteMenu isOpen={paletteIsOpen} setOpen={setPaletteIsOpen} />
+            <AccountMenu isOpen={accountIsOpen} setOpen={setAccountIsOpen} />
             {/* The bar's one accent action, kept on every width (the menu panel no longer lists 下载). */}
             <LinkButton to="/download/" size="pill">
               <DownloadIcon size={16} />

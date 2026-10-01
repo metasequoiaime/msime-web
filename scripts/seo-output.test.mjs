@@ -76,6 +76,11 @@ test('noindex pages and Markdown duplicates do not pollute canonical indexing', 
   assert.equal(notFound.querySelector('link[rel=canonical]'), null);
   assert.match(document('/resume/').querySelector('meta[name=robots]').content, /noindex/);
   assert.doesNotMatch(read('robots.txt'), /Disallow: \/resume/);
+  for (const path of ['/me/', '/zh-TW/me/']) {
+    assert.match(document(path).querySelector('meta[name=robots]').content, /noindex/, path);
+    assert.doesNotMatch(read('sitemap.xml'), new RegExp(`${path}<`), path);
+    assert.ok(!read('llms.txt').includes(`${SITE_ORIGIN}${markdownPath(path)}`), path);
+  }
   for (const [path] of publicPages) assert.ok(read('_headers').includes(`${markdownPath(path)}\n  Content-Type: text/markdown; charset=utf-8\n  Link: <${pageSeo(path).canonical}>; rel="canonical"\n  X-Robots-Tag: noindex`));
   assert.ok(Math.max(...read('_headers').split('\n').map(line => line.length)) < 2000, 'Pages header line limit');
 });

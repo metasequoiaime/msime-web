@@ -141,3 +141,24 @@ export const ChevronDownIcon = (props: IconProps) => (
     <path d="m6 9 6 6 6-6" />
   </StrokeIcon>
 );
+
+export const UserIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <circle cx="12" cy="8.5" r="3.8" />
+    <path d="M4.8 20c.9-3.6 3.7-5.6 7.2-5.6s6.3 2 7.2 5.6" />
+  </StrokeIcon>
+);
+
+/** Favourite. `filled` paints the heart for an item already in the favourites. */
+export const HeartIcon = ({ filled = false, ...props }: IconProps & { filled?: boolean }) => (
+  <StrokeIcon size={16} fill={filled ? "currentColor" : "none"} {...props}>
+    <path d="M12 20s-7.5-4.4-7.5-10.1A4.2 4.2 0 0 1 12 7.4a4.2 4.2 0 0 1 7.5 2.5C19.5 15.6 12 20 12 20z" />
+  </StrokeIcon>
+);
+
+/** One rating star; `filled` for the stars up to the rating. */
+export const StarIcon = ({ filled = false, ...props }: IconProps & { filled?: boolean }) => (
+  <StrokeIcon size={16} strokeWidth={1.6} fill={filled ? "currentColor" : "none"} {...props}>
+    <path d="m12 3.8 2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z" />
+  </StrokeIcon>
+);
