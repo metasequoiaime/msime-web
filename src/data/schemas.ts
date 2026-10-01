@@ -279,7 +279,7 @@ export const candidatePreviewSchema = z.object({ content_type: z.enum(["image/pn
 
 import { PLUGIN_KINDS } from "./plugin-kinds.ts";
 
-export { DECLARED_PLUGIN_KINDS, PLUGIN_KINDS, type PluginKind } from "./plugin-kinds.ts";
+export { DECLARED_PLUGIN_KINDS, LIVE_PLUGIN_KINDS, PLUGIN_KINDS, type PluginKind } from "./plugin-kinds.ts";
 
 /** `GET /v1/community/plugins` (docs/plugin-community.md). The zip itself is only ever downloaded by the App. */
 export const pluginSchema = z.object({

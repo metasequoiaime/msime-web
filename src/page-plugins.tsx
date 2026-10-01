@@ -5,7 +5,7 @@ import { cardGridClass, Chips, PagedList, SearchBox, StatusCard, useSearch } fro
 import { PLUGIN_KIND_LABELS, PluginCard } from "./community/resource-card";
 import { pluginsQuery } from "./data/account";
 import { MAX_SKIN_QUERY_BYTES } from "./data/queries";
-import { PLUGIN_KINDS, type PluginKind } from "./data/schemas";
+import { LIVE_PLUGIN_KINDS, PLUGIN_KINDS, type PluginKind } from "./data/schemas";
 import { LocaleLink } from "./locale-link";
 import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";
@@ -42,7 +42,7 @@ export function PluginsPage() {
       <main className="w-full">
         <Container className="pt-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <Chips legend="插件类型" values={PLUGIN_KINDS} labels={PLUGIN_KIND_LABELS} value={kind} onChange={value => update({ kind: value }, true)} />
+            <Chips legend="插件类型" values={LIVE_PLUGIN_KINDS} labels={PLUGIN_KIND_LABELS} value={kind} onChange={value => update({ kind: value }, true)} />
             <SearchBox label="搜索插件名称" maxBytes={MAX_SKIN_QUERY_BYTES} search={search} />
           </div>
           <section className="mt-6" aria-label={t("插件列表")}>

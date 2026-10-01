@@ -162,3 +162,66 @@ export const StarIcon = ({ filled = false, ...props }: IconProps & { filled?: bo
     <path d="m12 3.8 2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z" />
   </StrokeIcon>
 );
+
+// ---- plugin kinds: one glyph per kind for the tile beside a plugin's name ----
+
+/** 音效包: a waveform. */
+export const WaveformIcon = (props: IconProps) => (
+  <StrokeIcon strokeWidth={2} {...props}>
+    <path d="M4 10.5v3M8 7v10M12 4v16M16 8v8M20 10.5v3" />
+  </StrokeIcon>
+);
+
+/** 音乐包: a beamed pair of notes. */
+export const MusicIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <path d="M9 17.5V5.5l10-2v12" />
+    <circle cx="6.5" cy="17.5" r="2.5" />
+    <circle cx="16.5" cy="15.5" r="2.5" />
+  </StrokeIcon>
+);
+
+/** 指令表: the "/" that starts a command. */
+export const SlashIcon = (props: IconProps) => (
+  <StrokeIcon strokeWidth={2.2} {...props}>
+    <path d="M15.5 4 8.5 20" />
+  </StrokeIcon>
+);
+
+/** 特效包: a large and a small sparkle. */
+export const SparkleIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <path d="M10 4.5c.6 3.4 2 4.8 5.5 5.5-3.5.7-4.9 2.1-5.5 5.5-.6-3.4-2-4.8-5.5-5.5 3.5-.7 4.9-2.1 5.5-5.5z" />
+    <path d="M17.5 14.5c.3 1.6.9 2.2 2.5 2.5-1.6.3-2.2.9-2.5 2.5-.3-1.6-.9-2.2-2.5-2.5 1.6-.3 2.2-.9 2.5-2.5z" />
+  </StrokeIcon>
+);
+
+/** 辅助码表: a code table. */
+export const TableIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+    <path d="M3.5 9.5h17M3.5 14.5h17M10 4.5v15" />
+  </StrokeIcon>
+);
+
+/** 符号集: an omega, standing for special symbols. */
+export const OmegaIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <path d="M4.5 19.5h4.5v-2.4a6.5 6.5 0 1 1 6 0v2.4h4.5" />
+  </StrokeIcon>
+);
+
+/** 短语表: a speech bubble with lines of text. */
+export const PhraseIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <path d="M5.5 4.5h13a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2H11l-4.5 3.5V17h-1a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2z" />
+    <path d="M8 9h8M8 12.5h5" />
+  </StrokeIcon>
+);
+
+/** 单词本: an open book. */
+export const BookIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <path d="M12 6.5C10.3 5 7.8 4.5 3.5 4.8v13c4.3-.3 6.8.2 8.5 1.7 1.7-1.5 4.2-2 8.5-1.7v-13c-4.3-.3-6.8.2-8.5 1.7zM12 6.5v13" />
+  </StrokeIcon>
+);

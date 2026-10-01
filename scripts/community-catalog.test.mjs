@@ -5,6 +5,7 @@ import { catalogListParams, catalogListQuery, loadCatalogPage } from '../shared/
 import { onRequest as pluginList } from '../functions/api/plugins.ts';
 import { onRequest as resourceList } from '../functions/api/resources.ts';
 import { pluginsQuery, publicCatalogPath, resourcesQuery } from '../src/data/account.ts';
+import { DECLARED_PLUGIN_KINDS, LIVE_PLUGIN_KINDS, PLUGIN_KINDS } from '../src/data/plugin-kinds.ts';
 
 const ORIGIN = 'https://api.msime.app';
 const PLUGIN_ID = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
@@ -101,4 +102,10 @@ test('anonymous gallery reads go to the cached lists and signed-in reads to the 
 test('Pages routes the cached catalog lists to their Functions', () => {
   const routes = JSON.parse(readFileSync(new URL('../public/_routes.json', import.meta.url), 'utf8')).include;
   for (const path of ['/api/plugins', '/api/plugins/', '/api/resources', '/api/resources/']) assert.ok(routes.includes(path), path);
+});
+
+test('the filter chips list only known plugin kinds, and every kind is live or declared to the backend', () => {
+  const declared = DECLARED_PLUGIN_KINDS.split(',');
+  for (const kind of LIVE_PLUGIN_KINDS) assert.ok(PLUGIN_KINDS.includes(kind), kind);
+  for (const kind of PLUGIN_KINDS) assert.ok(LIVE_PLUGIN_KINDS.includes(kind) || declared.includes(kind), kind);
 });

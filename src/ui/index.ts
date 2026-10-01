@@ -30,5 +30,13 @@ export {
   UserIcon,
   HeartIcon,
   StarIcon,
+  WaveformIcon,
+  MusicIcon,
+  SlashIcon,
+  SparkleIcon,
+  TableIcon,
+  OmegaIcon,
+  PhraseIcon,
+  BookIcon,
 } from "./icons";
 export { PlatformIcon, WindowsIcon, AppleIcon, LinuxIcon, AndroidIcon, HarmonyOSIcon, QQIcon, CloudDownloadIcon } from "./platform-icons";
