@@ -34,7 +34,7 @@ for (const path of pages) {
   const { html: body, bootstrap } = await render(path === '/404/' ? '/__not-found__/' : path, data);
   if (!body.includes('<h1') || body.includes('data-msg=') || body.includes('data-stck=')) throw new Error(`Static render failed for ${path}: ${body.slice(body.indexOf('data-msg='), body.indexOf('data-msg=') + 500)}`);
   document.getElementById('root').innerHTML = body;
-  const bootstrapCode = [...bootstrap.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(match => match[1]).join('\n');
+  const bootstrapCode = bootstrap.join('\n');
   const bootstrapFile = `/assets/router-state-${createHash('sha256').update(bootstrapCode).digest('hex').slice(0, 16)}.js`;
   write(`${dist}${bootstrapFile}`, bootstrapCode);
   const stateScript = document.createElement('script'); stateScript.src = bootstrapFile; stateScript.setAttribute('defer', ''); stateScript.setAttribute('data-router-state', ''); document.body.append(stateScript);
