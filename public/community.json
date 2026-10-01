@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-01T07:47:51.316Z",
-  "totalStars": 1759,
+  "generatedAt": "2026-10-01T15:26:41.022Z",
+  "totalStars": 1792,
   "repoCount": 16,
   "starHistory": [
     {
@@ -89,67 +89,67 @@
     },
     {
       "month": "2025-07",
-      "stars": 52
+      "stars": 51
     },
     {
       "month": "2025-08",
-      "stars": 54
+      "stars": 53
     },
     {
       "month": "2025-09",
-      "stars": 61
+      "stars": 60
     },
     {
       "month": "2025-10",
-      "stars": 64
+      "stars": 63
     },
     {
       "month": "2025-11",
-      "stars": 112
+      "stars": 111
     },
     {
       "month": "2025-12",
-      "stars": 116
+      "stars": 115
     },
     {
       "month": "2026-01",
-      "stars": 118
+      "stars": 117
     },
     {
       "month": "2026-02",
-      "stars": 118
+      "stars": 117
     },
     {
       "month": "2026-03",
-      "stars": 120
+      "stars": 119
     },
     {
       "month": "2026-04",
-      "stars": 125
+      "stars": 124
     },
     {
       "month": "2026-05",
-      "stars": 126
+      "stars": 125
     },
     {
       "month": "2026-06",
-      "stars": 127
+      "stars": 126
     },
     {
       "month": "2026-07",
-      "stars": 171
+      "stars": 170
     },
     {
       "month": "2026-08",
-      "stars": 839
+      "stars": 838
     },
     {
       "month": "2026-09",
-      "stars": 1756
+      "stars": 1755
     },
     {
       "month": "2026-10",
-      "stars": 1759
+      "stars": 1792
     }
   ],
   "starSeries": [
@@ -242,67 +242,67 @@
         },
         {
           "date": "2025-07-31",
-          "stars": 51
+          "stars": 50
         },
         {
           "date": "2025-08-31",
-          "stars": 53
+          "stars": 52
         },
         {
           "date": "2025-09-30",
-          "stars": 59
+          "stars": 58
         },
         {
           "date": "2025-10-31",
-          "stars": 60
+          "stars": 59
         },
         {
           "date": "2025-11-30",
-          "stars": 89
+          "stars": 88
         },
         {
           "date": "2025-12-31",
-          "stars": 93
+          "stars": 92
         },
         {
           "date": "2026-01-31",
-          "stars": 94
+          "stars": 93
         },
         {
           "date": "2026-02-28",
-          "stars": 94
+          "stars": 93
         },
         {
           "date": "2026-03-31",
-          "stars": 95
+          "stars": 94
         },
         {
           "date": "2026-04-30",
-          "stars": 99
+          "stars": 98
         },
         {
           "date": "2026-05-31",
-          "stars": 100
+          "stars": 99
         },
         {
           "date": "2026-06-30",
-          "stars": 101
+          "stars": 100
         },
         {
           "date": "2026-07-31",
-          "stars": 140
+          "stars": 139
         },
         {
           "date": "2026-08-31",
-          "stars": 794
+          "stars": 793
         },
         {
           "date": "2026-09-30",
-          "stars": 1578
+          "stars": 1577
         },
         {
           "date": "2026-10-01",
-          "stars": 1579
+          "stars": 1588
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-01",
-          "stars": 80
+          "stars": 104
         }
       ]
     },
@@ -734,27 +734,27 @@
       ]
     }
   ],
-  "starDelta30d": 886,
+  "starDelta30d": 920,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 11254,
+      "contributions": 11525,
       "repos": 15
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1794,
+      "contributions": 1796,
       "repos": 11
     },
     {
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 73,
+      "contributions": 75,
       "repos": 2
     },
     {
@@ -768,7 +768,7 @@
       "login": "Neptrue-Lin",
       "avatarUrl": "https://avatars.githubusercontent.com/u/29837162?v=4",
       "url": "https://github.com/Neptrue-Lin",
-      "contributions": 22,
+      "contributions": 23,
       "repos": 1
     },
     {
