@@ -7,15 +7,16 @@ import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";
 import { KeyboardSkinPreview } from "./skins/keyboard-preview";
 import { mayHavePhoto } from "./skins/keyboard-art";
-import { Button, Card, Container, LinkButton, Pill, SearchIcon, cx } from "./ui";
+import { Button, Card, Container, KeyboardIcon, LinkButton, MonitorIcon, Pill, SearchIcon, cx } from "./ui";
 import { usePageSearch } from "./use-page-search";
 import { useLocale } from "./use-locale";
 
 const KINDS: readonly SkinKind[] = ["keyboard", "candidate"];
 
-const KIND_UI: Record<SkinKind, { tab: string; hint: string; noun: string }> = {
-  keyboard: { tab: "键盘皮肤", hint: "改变屏幕键盘的配色、按键形状和材质。预览按皮肤的设计数据绘制，与 App 中看到的一致。", noun: "键盘皮肤" },
-  candidate: { tab: "候选窗皮肤", hint: "改变候选窗的背景、文字和装饰图片。预览图由作者随皮肤包一起发布。", noun: "候选窗皮肤" },
+// `caption` names where each kind shows up, because the obvious 手机/电脑 split is wrong: keyboard skins also dress the desktop screen keyboard, and candidate skins also colour the mobile candidate bar when 使用桌面候选皮肤 is on.
+const KIND_UI: Record<SkinKind, { tab: string; caption: string; icon: typeof KeyboardIcon; hint: string; noun: string }> = {
+  keyboard: { tab: "键盘皮肤", caption: "手机键盘、屏幕键盘", icon: KeyboardIcon, hint: "改变屏幕键盘的配色、按键形状和材质。预览按皮肤的设计数据绘制，与 App 中看到的一致。", noun: "键盘皮肤" },
+  candidate: { tab: "候选窗皮肤", caption: "电脑打字时的候选框", icon: MonitorIcon, hint: "改变候选窗的背景、文字和装饰图片。预览图由作者随皮肤包一起发布。", noun: "候选窗皮肤" },
 };
 
 /** The FAQ page's category chips: a filled chip for the selected one, outlined chips for the rest. */
@@ -80,8 +81,10 @@ export function SkinsPage() {
       <main className="w-full">
         <Container className="pt-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="inline-flex max-w-full flex-wrap gap-1 rounded-field bg-panel-2 p-1" role="tablist" aria-label={t("皮肤类型")}>
-              {KINDS.map(value => (
+            <div className="grid w-full grid-cols-2 gap-1 rounded-field bg-panel-2 p-1 sm:inline-flex sm:w-auto sm:max-w-full sm:flex-wrap" role="tablist" aria-label={t("皮肤类型")}>
+              {KINDS.map(value => {
+                const Icon = KIND_UI[value].icon;
+                return (
                 <button
                   key={value}
                   id={tabId(value)}
@@ -89,8 +92,10 @@ export function SkinsPage() {
                   role="tab"
                   aria-selected={kind === value}
                   aria-controls={panelId}
+                  aria-labelledby={`${tabId(value)}-label`}
+                  aria-describedby={`${tabId(value)}-caption`}
                   tabIndex={kind === value ? 0 : -1}
-                  className={cx("inline-flex min-h-[38px] cursor-pointer items-center rounded-[9px] border-0 px-[18px] py-1.5 text-[14.5px] font-semibold transition-[background-color,color,box-shadow] duration-150", kind === value ? "bg-panel text-ink shadow-tab" : "bg-transparent text-muted hover:text-ink")}
+                  className={cx("flex min-h-[38px] min-w-0 cursor-pointer flex-col items-start justify-center rounded-[9px] border-0 px-3 py-1.5 text-left transition-[background-color,color,box-shadow] duration-150 sm:px-[18px]", kind === value ? "bg-panel text-ink shadow-tab" : "bg-transparent text-muted hover:text-ink")}
                   onClick={() => select(value)}
                   onKeyDown={event => {
                     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
@@ -100,9 +105,15 @@ export function SkinsPage() {
                     document.getElementById(tabId(next))?.focus();
                   }}
                 >
-                  {t(KIND_UI[value].tab)}
+                  {/* The icon sits on the title row so the caption below gets the tab's full width and stays on one line at 360px. */}
+                  <span className="flex items-start gap-1.5">
+                    <Icon size={16} className="mt-0.5 shrink-0" />
+                    <span id={`${tabId(value)}-label`} className="text-[14.5px] font-semibold leading-snug">{t(KIND_UI[value].tab)}</span>
+                  </span>
+                  <span id={`${tabId(value)}-caption`} className="text-xs leading-snug text-muted">{t(KIND_UI[value].caption)}</span>
                 </button>
-              ))}
+                );
+              })}
             </div>
             <form className="relative w-full sm:w-[320px]" onSubmit={event => { event.preventDefault(); setQuery(input.trim()); }}>
               <label className="sr-only" htmlFor={`${baseId}-search`}>{t("搜索皮肤名称")}</label>

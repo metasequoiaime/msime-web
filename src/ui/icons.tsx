@@ -61,6 +61,14 @@ export const MonitorIcon = (props: IconProps) => (
   </StrokeIcon>
 );
 
+/** 键盘皮肤: a keyboard with a row of keys and a space bar. */
+export const KeyboardIcon = (props: IconProps) => (
+  <StrokeIcon {...props}>
+    <rect x="2.5" y="6" width="19" height="12" rx="2" />
+    <path d="M6.5 10h.01M10 10h.01M14 10h.01M17.5 10h.01M8 14.5h8" />
+  </StrokeIcon>
+);
+
 /** 调色盘: the header control that opens theme, season and language. */
 export const PaletteIcon = (props: IconProps) => (
   <StrokeIcon {...props}>
