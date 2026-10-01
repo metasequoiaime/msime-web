@@ -324,9 +324,9 @@ export function FeedbackPage() {
               <div id="feedback-panel-edit" role="tabpanel" aria-labelledby="feedback-tab-edit" hidden={tab !== "edit"}>
                 <fieldset className="m-0 min-w-0 border-0 p-0" disabled={busy || readingImages}>
                   <section aria-labelledby="feedback-step-target">
-                    <h2 id="feedback-step-target" className={stepTitleClass}>{t("1. 选择反馈对象")}</h2>
+                    <h2 id="feedback-step-target" className="sr-only">{t("选择反馈对象")}</h2>
                     {/* 180px rather than the design's 150px: "macOS / iOS 输入法" plus its icon would otherwise break mid-word. */}
-                    <div className="mt-3.5 grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]" role="radiogroup" aria-labelledby="feedback-step-target">
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]" role="radiogroup" aria-labelledby="feedback-step-target">
                       {Object.entries(targets).map(([key, item]) => { const Icon = targetIcons[key as keyof typeof targets]; return <label key={key} className="flex min-h-11 gap-2 cursor-pointer items-center rounded-field bg-panel-2 px-3 py-2 text-sm leading-normal text-ink transition-[background-color,box-shadow] duration-150 [word-break:keep-all] [overflow-wrap:anywhere] hover:bg-accent-soft has-[:checked]:bg-accent-soft has-[:checked]:font-semibold has-[:checked]:text-accent-ink has-[:checked]:shadow-ring-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
                         <input className="sr-only" type="radio" name="target" value={key} checked={form.target === key} onChange={() => update({ target: key, template: undefined, tab: "edit" })} />
                         <Icon size={18} className="flex-none" />
@@ -351,8 +351,8 @@ export function FeedbackPage() {
                   </div>}
                   {template && !templateLoading && !templateError && <>
                     <section className="mt-8" aria-labelledby="feedback-step-template">
-                      <h2 id="feedback-step-template" className={stepTitleClass}>{t("2. 反馈类型")}</h2>
-                      <div className="mt-3 inline-flex max-w-full flex-wrap gap-1 rounded-field bg-panel-2 p-1" role="radiogroup" aria-labelledby="feedback-step-template" aria-describedby={template.description ? "feedback-template-description" : undefined}>
+                      <h2 id="feedback-step-template" className="sr-only">{t("反馈类型")}</h2>
+                      <div className="inline-flex max-w-full flex-wrap gap-1 rounded-field bg-panel-2 p-1" role="radiogroup" aria-labelledby="feedback-step-template" aria-describedby={template.description ? "feedback-template-description" : undefined}>
                         {catalog.templates.map(item => <label key={item.id} className="inline-flex min-h-[38px] cursor-pointer items-center rounded-[9px] px-[18px] py-1.5 text-[14.5px] font-semibold text-muted transition-[background-color,color,box-shadow] duration-150 [overflow-wrap:anywhere] hover:text-ink has-[:checked]:bg-panel has-[:checked]:text-ink has-[:checked]:shadow-tab has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
                           <input className="sr-only" type="radio" name="issue-template" value={item.id} checked={template.id === item.id} onChange={() => update({ template: item.id })} />
                           <span>{t(item.name)}</span>
@@ -362,8 +362,8 @@ export function FeedbackPage() {
                     </section>
 
                     <section className="mt-8" aria-labelledby="feedback-step-describe">
-                      <h2 id="feedback-step-describe" className={stepTitleClass}>{t("3. 描述")}</h2>
-                      <label className={cx(fieldLabelClass, "mt-3")}>
+                      <h2 id="feedback-step-describe" className="sr-only">{t("描述")}</h2>
+                      <label className={fieldLabelClass}>
                         {t("标题")}<span className="ml-1 text-warn" aria-hidden="true">*</span><span className="sr-only">{t("（必填）")}</span>
                         <input className={inputClass} name="title" value={form.title} minLength={5} maxLength={100} required placeholder={t("例如：候选字显示为方框，或希望能调整字号")} onChange={event => setForm({ ...form, title: event.target.value })} />
                       </label>
@@ -404,7 +404,7 @@ export function FeedbackPage() {
 
                   <section className="mt-8" aria-labelledby="feedback-step-contacts">
                     <h2 id="feedback-step-contacts" className={stepTitleClass}>
-                      {t("4. 留下联系方式（可选）")}
+                      {t("留下联系方式（可选）")}
                       {contactFields.some(field => form[field.name].trim()) && <span className="ml-2 text-[13px] font-normal text-muted">{t("· 已填写")}</span>}
                     </h2>
                     <div className="mt-3 grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-x-2.5 gap-y-3">
@@ -430,7 +430,7 @@ export function FeedbackPage() {
               </div>
 
               <section className="mt-8 shadow-divider-t pt-8" aria-labelledby="feedback-step-submit">
-                <h2 id="feedback-step-submit" className={stepTitleClass}>{t("5. 确认并提交")}</h2>
+                <h2 id="feedback-step-submit" className={stepTitleClass}>{t("确认并提交")}</h2>
                 <fieldset className="m-0 min-w-0 border-0 p-0" disabled={busy || readingImages}>
                   <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-sm leading-[1.75] text-body">
                     <input className={cx(checkClass, "mt-[5px]")} name="consent" type="checkbox" required checked={consent} onChange={event => setConsent(event.target.checked)} />

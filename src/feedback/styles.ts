@@ -1,6 +1,6 @@
 /** Tailwind class strings shared by the feedback form, its template fields and the issue preview (design-home §8). Kept in one module so the page and the field renderer stay visually identical. */
 
-/** Numbered step title ("1. 选择反馈对象"). */
+/** Step title ("确认并提交"). */
 export const stepTitleClass = "m-0 font-heading text-base font-bold text-ink";
 
 /** Muted explanatory text under a step title or a field. */

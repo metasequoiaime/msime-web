@@ -1,7 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import { useCallback, useRef, useState } from "react";
 import { IOS_TESTFLIGHT_URL, PLATFORM_CATALOG, PLATFORM_NAMES, SITE_PLATFORMS } from "../data/platforms";
-import { platformsQuery } from "../data/queries";
 import { LocaleLink } from "../locale-link";
 import { recognizePlatform } from "../platform";
 import { useLocale } from "../use-locale";
@@ -12,29 +10,17 @@ import { HeroDemo } from "./hero-demo";
 import { type HeroFrame, LANGUAGES, SCHEMES, type SchemeId, useHeroCycle } from "./hero-cycle";
 
 /**
- * 首屏的「下载」按钮：认出访客的系统就一步到位，按钮上换成该平台的标志。
- *
- * Windows 和 macOS 直接给安装包地址（platforms.json 里的第一个包），iOS 直接去 TestFlight，Linux 带着 `?platform=` 去下载页；还没发布安装包的平台（Android、HarmonyOS）退回普通的「下载」。静态 HTML 和水合前的第一次渲染都是指向 /download/ 的普通「下载」，认不出系统、清单还没到或读取失败时也退回它，所以预渲染出来的页面与水合结果一致。
+ * 首屏的「下载」按钮：认出访客的系统就换成该平台的标志，带着 `?platform=` 去下载页的对应平台，那里列着 GitHub 之外的各个下载途径；iOS 没有安装包，直接去 TestFlight。还没发布安装包的平台（Android、HarmonyOS）退回普通的「下载」。静态 HTML 和水合前的第一次渲染都是指向 /download/ 的普通「下载」，认不出系统时也退回它，所以预渲染出来的页面与水合结果一致。
  */
 function HeroDownloadButton() {
   const { t } = useLocale();
   const hydrated = useSearchReady();
   const platform = hydrated ? recognizePlatform() : null;
-  const direct = platform === "windows" || platform === "macos";
-  const manifest = useQuery({ ...platformsQuery(), enabled: direct });
   const className = "shadow-btn";
 
   if (platform && PLATFORM_CATALOG[platform].distribution !== "source") {
     const label = t(`下载 ${PLATFORM_NAMES[platform]} 端`);
     const logo = <PlatformIcon platform={platform} size={19} />;
-    const url = direct ? manifest.data?.platforms[platform]?.downloads[0]?.url : undefined;
-    if (url)
-      return (
-        <AnchorButton href={url} target="_self" size="lg" className={className}>
-          {logo}
-          {label}
-        </AnchorButton>
-      );
     if (platform === "ios")
       return (
         <AnchorButton href={IOS_TESTFLIGHT_URL} size="lg" className={className}>
@@ -42,14 +28,12 @@ function HeroDownloadButton() {
           {label}
         </AnchorButton>
       );
-    // 清单读取失败时仍按系统带上 `?platform=`；还在读取中就先保持普通的「下载」，免得按钮在两种链接之间闪一下
-    if (!(direct && manifest.isPending))
-      return (
-        <LinkButton to="/download/" search={{ platform }} size="lg" className={className}>
-          {logo}
-          {label}
-        </LinkButton>
-      );
+    return (
+      <LinkButton to="/download/" search={{ platform }} size="lg" className={className}>
+        {logo}
+        {label}
+      </LinkButton>
+    );
   }
   return (
     <LinkButton to="/download/" size="lg" className={className}>
