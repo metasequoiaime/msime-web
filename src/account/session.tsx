@@ -57,7 +57,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener(SIGNED_OUT_EVENT, signedOut);
   }, [signedOut]);
 
-  // `/api/me` said 401: the cookies expired or were cleared elsewhere, so stop asking on every page.
+  // `/api/me` said the session is gone (a 401 other than `session_retry`, which `meQuery` reports as an error instead of `null`): the cookies expired or were cleared elsewhere, so stop asking on every page.
   useEffect(() => {
     if (me.data === null && hinted) setSessionHint(false);
   }, [me.data, hinted]);

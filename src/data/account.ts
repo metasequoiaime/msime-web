@@ -25,8 +25,11 @@ export class ApiError extends Error {
 /** Fired on `window` when a call learns the session is gone, so the header and every account view switch to signed out together. */
 export const SIGNED_OUT_EVENT = "msime:signed-out";
 
-/** How long to wait before repeating a request that lost a refresh race: long enough for the winning response to have set the new cookies. */
-const SESSION_RETRY_MS = 700;
+/** The waits before each repeat of a request that lost a refresh race (401 `session_retry`), growing in case the winning response is slow to set the new cookies. 7.5 s in all, well inside the 30 seconds the backend keeps answering the old refresh token with `refresh_superseded` before it treats a replay as theft. */
+export const SESSION_RETRY_DELAYS_MS = [500, 1000, 2000, 4000] as const;
+
+/** Whether an answer means the session is gone. A 401 `session_retry` never does: the session is intact and only this request lost a race, so it must not sign the page out or clear the hint. */
+export const isSignedOut = (status: number, code: string) => status === 401 && code !== "session_retry";
 
 const sleep = (ms: number, signal?: AbortSignal) =>
   new Promise<void>((resolve, reject) => {
@@ -45,22 +48,20 @@ const codeOf = (body: unknown) => {
 type CallOptions = { method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"; body?: unknown; signal?: AbortSignal };
 
 /**
- * One same-origin JSON call. A 401 `session_retry` (two requests refreshed the session at once and this one lost) is repeated once after a short wait. Any other 401 means signed out: `SIGNED_OUT_EVENT` fires and the call rejects. A 204 resolves to `undefined`.
+ * One same-origin JSON call. A 401 `session_retry` (two requests refreshed the session at once and this one lost) is repeated after each of `SESSION_RETRY_DELAYS_MS`; if it still answers that, the call rejects with code `session_retry` and the page stays signed in. Any other 401 means signed out: `SIGNED_OUT_EVENT` fires and the call rejects. A 204 resolves to `undefined`.
  */
 export async function accountCall<T = unknown>(path: string, parse: (value: unknown) => T | Promise<T>, { method = "GET", body, signal }: CallOptions = {}): Promise<T> {
   if (!path.startsWith("/api/") || path.startsWith("//")) throw new Error(`Account calls stay on the site's own /api/: ${path}`);
   const init: RequestInit = { method, signal, credentials: "same-origin", headers: body === undefined ? { Accept: "application/json" } : { Accept: "application/json", "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) };
   let response = await fetch(path, init);
-  if (response.status === 401) {
-    const code = codeOf(await response.clone().json().catch(() => undefined));
-    if (code === "session_retry") {
-      await sleep(SESSION_RETRY_MS, signal);
-      response = await fetch(path, init);
-    }
+  for (const delay of SESSION_RETRY_DELAYS_MS) {
+    if (response.status !== 401 || codeOf(await response.clone().json().catch(() => undefined)) !== "session_retry") break;
+    await sleep(delay, signal);
+    response = await fetch(path, init);
   }
   if (!response.ok) {
     const code = codeOf(await response.json().catch(() => undefined));
-    if (response.status === 401 && code !== "session_retry" && typeof window !== "undefined") window.dispatchEvent(new Event(SIGNED_OUT_EVENT));
+    if (isSignedOut(response.status, code) && typeof window !== "undefined") window.dispatchEvent(new Event(SIGNED_OUT_EVENT));
     throw new ApiError(response.status, code);
   }
   if (response.status === 204) return parse(undefined);
@@ -84,7 +85,7 @@ export const setSessionHint = (signedIn: boolean) => {
   } catch { /* Storage can be off; the session then lasts for this page only. */ }
 };
 
-/** The signed-in user, or `null` when signed out. */
+/** The signed-in user, or `null` when signed out. A `session_retry` that outlasted every repeat is an error, not `null`: the session is still there, so the page must not forget it. */
 export const meQuery = () =>
   queryOptions({
     queryKey: ["account", "me"] as const,
@@ -92,7 +93,7 @@ export const meQuery = () =>
       try {
         return await accountCall("/api/me", async value => (await schemas()).meSchema.parse(value), { signal });
       } catch (error) {
-        if (error instanceof ApiError && error.status === 401) return null;
+        if (error instanceof ApiError && isSignedOut(error.status, error.code)) return null;
         throw error;
       }
     },
