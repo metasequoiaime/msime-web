@@ -17,10 +17,16 @@ const inlineText = (line: string) =>
 
 const TABLE_DIVIDER = /^\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?$/;
 
+/** Section titles that only wrap the whole body ("## 更新内容"); the card already says what the notes are. */
+const WRAPPER_HEADINGS = new Set(["更新内容", "更新日志", "更新说明", "what's changed", "changelog", "release notes"]);
+
+/** A heading the card already shows: one naming this version ("# 水杉输入法 v0.9.3") or a wrapper around the whole body. */
+const repeatsCard = (text: string, version: string) => text.includes(version) || WRAPPER_HEADINGS.has(text.toLowerCase());
+
 /**
- * Release notes as short lines (design-home §7): fenced code, rules, table dividers and images are dropped; list markers, quote markers and inline markup are stripped; table rows become "cell · cell". The body comes from `/api/releases`, which already removed HTML comments and capped it at 8 KiB.
+ * Release notes as short lines (design-home §7): fenced code, rules, table dividers and images are dropped; list markers, quote markers and inline markup are stripped; table rows become "cell · cell". A line that is bold and nothing else ("**皮肤**") is a heading, and headings that repeat the card's title for `version` are dropped. The body comes from `/api/releases`, which already removed HTML comments and capped it at 8 KiB.
  */
-export function noteLines(body: string): NoteLine[] {
+export function noteLines(body: string, version: string): NoteLine[] {
   const lines: NoteLine[] = [];
   let fence: string | null = null;
   for (const raw of body.split(/\r?\n/)) {
@@ -32,11 +38,11 @@ export function noteLines(body: string): NoteLine[] {
     }
     if (fence !== null || !line) continue;
     if (/^([-=*_])(?:\s*\1){2,}$/.test(line) || TABLE_DIVIDER.test(line)) continue;
-    const heading = /^#{1,6}\s/.test(line);
+    const heading = /^#{1,6}\s/.test(line) || /^(\*\*|__)[^*_]+\1$/.test(line);
     let content = line.replace(/^#{1,6}\s+/, "").replace(/^(?:>\s?)+/, "").replace(/^(?:[-*+]|\d+[.)])\s+/, "").replace(/^\[[ xX]\]\s+/, "");
     if (content.startsWith("|")) content = content.replace(/^\||\|$/g, "").split("|").map(cell => cell.trim()).filter(Boolean).join(" · ");
     const text = inlineText(content.replace(/\s#+$/, ""));
-    if (text) lines.push({ heading, text });
+    if (text && !(heading && repeatsCard(text, version))) lines.push({ heading, text });
   }
   return lines;
 }
