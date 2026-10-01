@@ -117,6 +117,31 @@ test('logout with an expired access cookie refreshes first, so the backend sessi
   assert.equal(calls[1].headers.get('Authorization'), `Bearer ${AT2}`);
 });
 
+test('logout whose access token the backend rejects refreshes once and ends the session with the new token', async t => {
+  const { response, calls, cookies } = await run(t, logout, browser('/api/auth/logout', { method: 'POST', session: { access: AT, refresh: RT } }), {
+    'POST /v1/auth/refresh': tokens(),
+    'POST /v1/auth/logout': call => call.headers.get('Authorization') === `Bearer ${AT2}` ? new Response(null, { status: 204 }) : backendError(401, 'invalid_credentials'),
+  });
+  assert.equal(response.status, 204);
+  assert.deepEqual(calls.map(call => `${call.path} ${call.headers.get('Authorization') ?? ''}`), [`/v1/auth/logout Bearer ${AT}`, '/v1/auth/refresh ', `/v1/auth/logout Bearer ${AT2}`]);
+  assert.deepEqual(cookies.map(cookie => parseCookie(cookie).attributes[0]), ['Max-Age=0', 'Max-Age=0']);
+  // A session the backend no longer knows: the refresh is refused, nothing is retried, and the cookies are still cleared.
+  const gone = await run(t, logout, browser('/api/auth/logout', { method: 'POST', session: { access: AT, refresh: RT } }), { 'POST /v1/auth/refresh': backendError(401, 'invalid_credentials'), 'POST /v1/auth/logout': backendError(401, 'invalid_credentials') });
+  assert.equal(gone.response.status, 204);
+  assert.deepEqual(gone.calls.map(call => call.path), ['/v1/auth/logout', '/v1/auth/refresh']);
+  assert.equal(gone.cookies.length, 2);
+});
+
+test('logout whose refresh lost a race answers session_retry and keeps the cookies, so the page repeats it with the new ones', async t => {
+  for (const session of [{ refresh: RT }, { access: AT, refresh: RT }]) {
+    const { response, calls, cookies } = await run(t, logout, browser('/api/auth/logout', { method: 'POST', session }), { 'POST /v1/auth/refresh': backendError(409, 'refresh_superseded'), 'POST /v1/auth/logout': backendError(401, 'invalid_credentials') });
+    assert.equal(response.status, 401);
+    assert.deepEqual(await response.json(), { error: 'session_retry' });
+    assert.deepEqual(cookies, []);
+    assert.equal(calls.at(-1).path, '/v1/auth/refresh');
+  }
+});
+
 test('only token-shaped values are read from the cookies', () => {
   const request = new Request(SITE, { headers: { Cookie: `${ACCESS_COOKIE}=bad value; ${REFRESH_COOKIE}=${RT}; other=${AT}` } });
   assert.deepEqual(readSession(request), { refresh: RT });
@@ -195,6 +220,33 @@ test('unsupported methods and oversized bodies are refused', async t => {
   assert.equal(calls.length, 0);
 });
 
+test('a body without Content-Length is read only until it passes the limit', async t => {
+  let pulled = 0;
+  let cancelled = false;
+  // 1 KiB chunks for up to 1 MiB, produced only as they are read.
+  const stream = new ReadableStream({
+    pull(controller) {
+      pulled += 1;
+      if (pulled > 1024) controller.close();
+      else controller.enqueue(new Uint8Array(1024).fill(0x20));
+    },
+    cancel() { cancelled = true; },
+  }, { highWaterMark: 0 });
+  const chunked = new Request(`${SITE}/api/v1/users/me/clipboard`, { method: 'POST', headers: { Origin: SITE, 'Content-Type': 'application/json' }, body: stream, duplex: 'half' });
+  assert.equal(chunked.headers.get('Content-Length'), null);
+  const { response, calls } = await run(t, proxy, chunked, {});
+  assert.equal(response.status, 413);
+  assert.equal(calls.length, 0);
+  assert.ok(pulled <= 66, `stopped after ${pulled} KiB`);
+  assert.ok(cancelled, 'the rest of the stream is abandoned');
+  // A chunked body within the limit is forwarded whole.
+  const text = JSON.stringify({ text: 'x'.repeat(5000) });
+  const small = new Request(`${SITE}/api/v1/users/me/clipboard`, { method: 'POST', headers: { Origin: SITE, 'Content-Type': 'application/json' }, body: new Blob([text]).stream(), duplex: 'half' });
+  const forwarded = await run(t, proxy, small, { 'POST /v1/users/me/clipboard': Response.json({ ok: true }) });
+  assert.equal(forwarded.response.status, 200);
+  assert.deepEqual(forwarded.calls[0].body, JSON.parse(text));
+});
+
 // ---- refresh ----
 
 test('an expired access cookie is refreshed before the call, and both cookies are rewritten', async t => {
@@ -242,6 +294,21 @@ test('a refused refresh clears the cookies and answers 401', async t => {
     assert.equal(response.status, 401);
     assert.deepEqual(await response.json(), { error: 'session_expired' });
     assert.deepEqual(cookies.map(cookie => parseCookie(cookie).attributes[0]), ['Max-Age=0', 'Max-Age=0']);
+  }
+});
+
+test('a backend outage after a successful rotation still hands the browser the rotated cookies', async t => {
+  // The backend has retired RT the moment it answered the refresh; a browser left with it would replay it and lose the session.
+  const unreachable = async () => { throw new TypeError('network'); };
+  for (const [session, routes] of [
+    [{ refresh: RT }, { 'POST /v1/auth/refresh': tokens(), 'GET /v1/users/me': unreachable }],
+    [{ access: AT, refresh: RT }, { 'POST /v1/auth/refresh': tokens(), 'GET /v1/users/me': call => call.headers.get('Authorization') === `Bearer ${AT}` ? backendError(401, 'invalid_credentials') : unreachable() }],
+    [{ refresh: RT }, { 'POST /v1/auth/refresh': tokens(), 'GET /v1/users/me': () => new Response(new ReadableStream({ start(controller) { controller.error(new TypeError('reset')); } }), { headers: { 'Content-Type': 'application/json' } }) }],
+  ]) {
+    const { response, cookies } = await run(t, me, browser('/api/me', { session }), routes);
+    assert.equal(response.status, 503);
+    assert.deepEqual(await response.json(), { error: 'auth_unavailable' });
+    assert.deepEqual(cookies.map(cookie => parseCookie(cookie).value), [AT2, RT2]);
   }
 });
 

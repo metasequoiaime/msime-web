@@ -173,14 +173,15 @@ async function relay(response: Response): Promise<Response> {
   const retry = response.headers.get("Retry-After");
   if (retry) headers.set("Retry-After", retry);
   if (response.status >= 300 && response.status < 400) return failure("unexpected_redirect", 502);
-  const body = response.status === 204 || response.status === 304 ? null : await response.arrayBuffer();
+  // A body cut off mid-stream is the backend failing, answered like any other outage (and, in `withSession`, still with the rotated cookies).
+  const body = response.status === 204 || response.status === 304 ? null : await response.arrayBuffer().catch(() => { throw new BackendUnavailable(); });
   return new Response(body, { status: response.status, headers });
 }
 
 /**
  * Calls the backend on the visitor's behalf with the session in their cookies.
  *
- * No access cookie but a refresh cookie (the access token's 15 minutes ran out) refreshes first. A 401 from the backend to a call that carried a token refreshes and repeats the call once. Every successful rotation rewrites both cookies on the response. A refresh that lost a race answers 401 `session_retry` and keeps the cookies; a refresh the backend refused clears them and answers 401 `session_expired`. Without any session cookie the call goes out anonymously, which the public community routes answer as they would for anyone.
+ * No access cookie but a refresh cookie (the access token's 15 minutes ran out) refreshes first. A 401 from the backend to a call that carried a token refreshes and repeats the call once. Every successful rotation rewrites both cookies on the response, including a 503 when the backend fails after the rotation: the backend has already retired the old refresh token, and a browser left holding it would replay it later and have the whole session revoked. A refresh that lost a race answers 401 `session_retry` and keeps the cookies; a refresh the backend refused clears them and answers 401 `session_expired`. Without any session cookie the call goes out anonymously, which the public community routes answer as they would for anyone.
  */
 export async function withSession(env: SessionEnv, request: Request, call: Omit<BackendCall, "access">, fetcher: typeof fetch = fetch): Promise<Response> {
   let { access, refresh } = readSession(request);
@@ -208,7 +209,7 @@ export async function withSession(env: SessionEnv, request: Request, call: Omit<
     return withCookies(await relay(response), cookies);
   } catch (error) {
     if (!(error instanceof BackendUnavailable)) throw error;
-    return failure("auth_unavailable", 503);
+    return withCookies(failure("auth_unavailable", 503), cookies);
   }
 }
 
@@ -224,13 +225,31 @@ export const allowedBackendPath = (path: string) => ALLOWED_PATH.test(path) && !
 
 const PROXY_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 
-/** Reads a request body up to `MAX_FORWARD_BODY`, or `undefined` when it is larger. Read once so a refreshed retry can send it again. */
+/** Reads a request body up to `MAX_FORWARD_BODY`, or `undefined` when it is larger. Read once so a refreshed retry can send it again. The stream is read chunk by chunk and abandoned as soon as it passes the limit, so a body sent without `Content-Length` (chunked) is never buffered beyond it. */
 async function boundedBody(request: Request): Promise<ArrayBuffer | undefined | null> {
   if (!request.body) return null;
   const declared = Number(request.headers.get("Content-Length") ?? "0");
   if (declared > MAX_FORWARD_BODY) return undefined;
-  const body = await request.arrayBuffer();
-  return body.byteLength > MAX_FORWARD_BODY ? undefined : body;
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > MAX_FORWARD_BODY) {
+      await reader.cancel();
+      return undefined;
+    }
+    chunks.push(value);
+  }
+  const body = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return body.buffer;
 }
 
 /** `/api/v1/<path>` → the backend's `/v1/<path>` with the same query, method and JSON body. */
@@ -297,18 +316,33 @@ export async function serveLogin({ request, env }: SessionContext, fetcher: type
   }
 }
 
-/** POST /api/auth/logout → 204 with both cookies cleared, whatever the backend answers. An expired access token is refreshed first so the backend session really ends instead of lingering until its 30 days are up. */
+/**
+ * POST /api/auth/logout → 204 with both cookies cleared, whatever the backend answers. The backend session must really end instead of lingering until its 30 days are up, so an access token that is missing (expired) or that the backend rejects with 401 is refreshed once and the logout sent with the new one.
+ *
+ * The one exception is a refresh that lost a race (`superseded`): the browser is about to receive the cookies of the request that won it, and only those can end the session. That answers 401 `session_retry` and keeps the cookies, like every other call, so the page repeats the logout with the new cookies a moment later.
+ */
 export async function serveLogout({ request, env }: SessionContext, fetcher: typeof fetch = fetch): Promise<Response> {
   if (request.method !== "POST") return failure("method_not_allowed", 405, { Allow: "POST" });
   if (!sameOrigin(request)) return failure("forbidden_origin", 403);
-  let { access } = readSession(request);
-  const { refresh } = readSession(request);
+  const session = readSession(request);
+  let refresh = session.refresh;
+  const logout = (access: string) => backend(env, request, { method: "POST", path: "/v1/auth/logout", body: JSON.stringify({ all: false }), contentType: "application/json", access }, fetcher);
+  /** A fresh access token, `superseded` when another request rotated the session first, or `undefined` when there is no session left to end. Refreshes at most once. */
+  const rotate = async (): Promise<string | "superseded" | undefined> => {
+    if (!refresh) return undefined;
+    const result = await refreshSession(env, request, refresh, fetcher);
+    refresh = undefined;
+    if (result.kind === "superseded") return "superseded";
+    return result.kind === "ok" ? result.tokens.access : undefined;
+  };
   try {
-    if (!access && refresh) {
-      const result = await refreshSession(env, request, refresh, fetcher);
-      if (result.kind === "ok") access = result.tokens.access;
+    let access = session.access ?? await rotate();
+    if (access === "superseded") return sessionRetry();
+    if (access && (await logout(access)).status === 401) {
+      access = await rotate();
+      if (access === "superseded") return sessionRetry();
+      if (access) await logout(access);
     }
-    if (access) await backend(env, request, { method: "POST", path: "/v1/auth/logout", body: JSON.stringify({ all: false }), contentType: "application/json", access }, fetcher);
   } catch (error) {
     if (!(error instanceof BackendUnavailable)) throw error;
   }
