@@ -9,15 +9,16 @@ import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
-  to: "/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
+  to: "/" | "/download/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
   label: string;
   /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
   github?: boolean;
 };
 
-/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is the accent button at the right end of the bar instead of a tab; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). */
+/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). */
 const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
+  { to: "/download/", label: "下载" },
   { to: "/feedback/", label: "Bug 与需求反馈" },
   { to: "/words/", label: "词库缺失反馈" },
   { to: "/docs/$guide/", label: "文档" },
