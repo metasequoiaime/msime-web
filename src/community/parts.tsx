@@ -1,11 +1,40 @@
 import type { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 import { useEffect, useId, useState, type ComponentType, type ReactNode } from "react";
+import { LocaleLink } from "../locale-link";
 import { Button, Card, SearchIcon, cx } from "../ui";
 import { useLocale } from "../use-locale";
+import { COMMUNITY_SECTIONS, type CommunitySection } from "./sections";
 
 /*
  * The building blocks the community galleries (社区皮肤, 词库, 插件) and the 我的 page share, so every list on the site has the same tabs, search box, status card, grid and 加载更多.
  */
+
+/** Switches between the three community pages, under each page's hero. The header has a single 社区 entry for all three, so this is where a visitor moves between them. It is an underlined strip across the content width rather than another segmented control, so it reads as page navigation and not as one more filter above the gallery's own tabs. The segments are ordinary links in the tab order, and the current one carries `aria-current="page"`. */
+export function CommunitySectionNav({ current }: { current: CommunitySection }) {
+  const { t } = useLocale();
+  return (
+    <div className="mx-auto w-full max-w-inner px-[clamp(20px,4.4vw,48px)] pt-8">
+      <nav aria-label={t("社区栏目")} className="flex gap-7 shadow-divider-b">
+        {COMMUNITY_SECTIONS.map(section => {
+          const selected = section.to === current;
+          return (
+            <LocaleLink
+              key={section.to}
+              to={section.to}
+              aria-current={selected ? "page" : undefined}
+              className={cx(
+                "inline-flex h-11 items-center text-[15.5px] leading-none whitespace-nowrap no-underline transition-[color,box-shadow] duration-150",
+                selected ? "font-bold text-ink shadow-[inset_0_-2px_0_var(--accent)] hover:text-ink" : "font-semibold text-muted hover:text-ink"
+              )}
+            >
+              {t(section.label)}
+            </LocaleLink>
+          );
+        })}
+      </nav>
+    </div>
+  );
+}
 
 /** The FAQ page's category chips: a filled chip for the selected one, outlined chips for the rest. */
 export const chipClass = (selected: boolean) =>

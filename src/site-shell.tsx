@@ -5,6 +5,7 @@ import { baseLocalePath, traditionalPages, traditionalPath, isTraditional } from
 import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { NoticeBanner } from "./notice-banner";
+import { isCommunityPath } from "./community/sections";
 import { AccountProvider, useAccount } from "./account/session";
 import { Avatar } from "./account/avatar";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
@@ -12,19 +13,17 @@ import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
-  to: "/" | "/download/" | "/skins/" | "/dictionaries/" | "/plugins/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
+  to: "/" | "/download/" | "/skins/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
   label: string;
   /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
   github?: boolean;
 };
 
-/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). */
+/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). 社区 stands for the three community pages (皮肤, 词库, 插件) and opens 皮肤, the address the tab had as 社区皮肤, so the entry still lands where it always did; the pages switch between each other with the sub-navigation under their heroes, and the footer and home page still link to each one. */
 const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
   { to: "/download/", label: "下载" },
-  { to: "/skins/", label: "社区皮肤" },
-  { to: "/dictionaries/", label: "词库" },
-  { to: "/plugins/", label: "插件" },
+  { to: "/skins/", label: "社区" },
   { to: "/feedback/", label: "Bug 与需求反馈" },
   { to: "/words/", label: "词库缺失反馈" },
   { to: "/docs/$guide/", label: "文档" },
@@ -37,9 +36,9 @@ const ORG_URL = "https://github.com/metasequoiaime";
 const DESKTOP_NAV_QUERY = "(width >= 73.75rem)";
 const QQ_GROUP = "829919142";
 
-/** The docs tab also covers the FAQ, which lives under the docs toolbar in the design. */
+/** The docs tab also covers the FAQ, which lives under the docs toolbar in the design; the 社区 tab covers all three community pages. */
 const isCurrent = (item: NavItem, path: string) =>
-  item.to === "/" ? path === "/" : item.to === "/docs/$guide/" ? path.startsWith("/docs/") || path === "/faq/" : path.startsWith(item.to);
+  item.to === "/" ? path === "/" : item.to === "/docs/$guide/" ? path.startsWith("/docs/") || path === "/faq/" : item.to === "/skins/" ? isCommunityPath(path) : path.startsWith(item.to);
 
 const linkParams = (item: NavItem) => (item.to === "/docs/$guide/" ? { guide: "windows" } : {});
 
