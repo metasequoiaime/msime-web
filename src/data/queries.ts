@@ -1,7 +1,7 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { PlatformsManifest } from "../platforms-data.ts";
 import type { ReleaseFilter } from "./platforms.ts";
-import type { AppStats, Community, DownloadMirrors, Releases, UpdateManifest } from "./schemas.ts";
+import type { AppStats, Community, DownloadMirrors, Notices, Releases, UpdateManifest } from "./schemas.ts";
 import { siteApi, staticSnapshot, withFallback } from "./source.ts";
 
 /*
@@ -121,3 +121,18 @@ export const downloadMirrorsQuery = () =>
   });
 
 export const useDownloadMirrorsQuery = () => useQuery(downloadMirrorsQuery());
+
+// ---- notices ----
+
+export const noticesSource = siteApi<Notices>("/api/notices", async value => (await schemas()).noticesSchema.parse(value));
+
+/** Notices for the website banner. The Function caches the backend's feed for 60 s, so this never refetches sooner; a 503 means no banner. */
+export const noticesQuery = () =>
+  queryOptions({
+    queryKey: ["notices"] as const,
+    queryFn: ({ signal }) => noticesSource.load(signal),
+    staleTime: 60_000,
+    retry: false,
+  });
+
+export const useNoticesQuery = () => useQuery(noticesQuery());

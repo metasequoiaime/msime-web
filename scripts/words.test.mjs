@@ -102,6 +102,12 @@ test('backend responses are parsed strictly and every documented status has a me
   assert.equal(submissionError(403, { error: 'x', code: 'verification_failed' }), ERROR_MESSAGES.verification_failed);
   assert.equal(submissionError(503, { error: 'x', code: 'github_unavailable' }), ERROR_MESSAGES.github_unavailable);
   assert.match(submissionError(502, { code: 'outcome_unknown', uncertain: true }), /确认词条未写入后再提交/);
+  // Sensitive word screening: a blocked note asks for an edit, an unavailable screen says nothing was written; neither claims the service is down for good.
+  assert.equal(submissionError(400, { error: '备注包含不允许提交的内容，请修改后再提交。', code: 'blocked_word' }), ERROR_MESSAGES.blocked_word);
+  assert.match(submissionError(400, { code: 'blocked_word' }), /备注.*请修改后再提交/);
+  assert.match(submissionError(422, { code: 'blocked_content' }), /不允许发布的词语，请修改后再提交/);
+  assert.match(submissionError(503, { error: '词条提交暂时不可用，请稍后再试。', code: 'screening_unavailable' }), /审核服务暂时不可用，词条尚未写入/);
+  assert.equal(rejectionMessage('translations', { index: 0, code: 'blocked_word', reason: '包含不允许提交的内容' }).field, 'source');
 });
 
 const english = { entries: [{ word: 'iphone', display: 'iPhone' }, { word: ' GitHub ', display: ' GitHub ' }], note: '' };
@@ -188,9 +194,9 @@ test('the new kinds say they are unavailable while the backend rejects them', ()
 
 test('every backend rejection code maps to a field of its kind and a Chinese message', () => {
   const codes = {
-    words: ['word_required', 'invalid_word', 'word_too_long', 'pinyin_required', 'invalid_pinyin', 'invalid_syllable', 'syllable_count_mismatch', 'duplicate_entry', 'already_listed'],
-    english: ['word_required', 'invalid_word', 'word_too_long', 'display_required', 'invalid_display', 'display_too_long', 'duplicate_entry', 'already_listed'],
-    translations: ['source_required', 'invalid_source', 'source_too_long', 'gloss_required', 'invalid_gloss', 'gloss_too_long', 'duplicate_entry', 'already_listed'],
+    words: ['word_required', 'invalid_word', 'word_too_long', 'pinyin_required', 'invalid_pinyin', 'invalid_syllable', 'syllable_count_mismatch', 'duplicate_entry', 'already_listed', 'blocked_word'],
+    english: ['word_required', 'invalid_word', 'word_too_long', 'display_required', 'invalid_display', 'display_too_long', 'duplicate_entry', 'already_listed', 'blocked_word'],
+    translations: ['source_required', 'invalid_source', 'source_too_long', 'gloss_required', 'invalid_gloss', 'gloss_too_long', 'duplicate_entry', 'already_listed', 'blocked_word'],
   };
   const entries = { words: { word: '未来', pinyin: "wei'lai" }, english: { word: 'iphone', display: 'iPhone' }, translations: { source: 'bank', gloss: '银行' } };
   for (const kind of SUBMISSION_KINDS) {
@@ -207,5 +213,5 @@ test('every backend rejection code maps to a field of its kind and a Chinese mes
   // An unknown code falls back to the backend's reason on the first field.
   assert.deepEqual(rejectionMessage('english', { index: 0, code: 'new_code', reason: '新的原因' }), { field: 'word', message: '新的原因' });
   assert.deepEqual(rejectedSchema.parse({ error: 'x', code: 'invalid_entries', rejected: [{ index: 0, code: 'gloss_required', reason: '请填写译文' }] }).rejected[0].code, 'gloss_required');
-  for (const code of ['invalid_json', 'invalid_kind', 'invalid_entry_count', 'invalid_note', 'invalid_entries', 'token_required', 'json_required', 'request_too_large', 'origin_required', 'verification_failed', 'rate_limit_exceeded', 'concurrent_update', 'outcome_unknown', 'word_submissions_disabled', 'word_submissions_misconfigured', 'verification_unavailable', 'rate_limit_unavailable', 'github_unavailable']) assert.match(ERROR_MESSAGES[code] ?? '', /\p{Script=Han}/u, code);
+  for (const code of ['invalid_json', 'invalid_kind', 'invalid_entry_count', 'invalid_note', 'invalid_entries', 'token_required', 'json_required', 'request_too_large', 'origin_required', 'verification_failed', 'rate_limit_exceeded', 'concurrent_update', 'outcome_unknown', 'word_submissions_disabled', 'word_submissions_misconfigured', 'verification_unavailable', 'rate_limit_unavailable', 'github_unavailable', 'blocked_word', 'blocked_content', 'screening_unavailable']) assert.match(ERROR_MESSAGES[code] ?? '', /\p{Script=Han}/u, code);
 });

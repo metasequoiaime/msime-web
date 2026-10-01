@@ -9,6 +9,8 @@
     "/api/app-stats/",
     "/api/download-mirrors",
     "/api/download-mirrors/",
+    "/api/notices",
+    "/api/notices/",
     "/api/feedback",
     "/api/feedback/",
     "/api/feedback-images/*",

@@ -177,6 +177,8 @@ export type Rejection = NonNullable<z.infer<typeof rejectedSchema>["rejected"]>[
 
 // Per-entry rejection codes of the backend, by kind: the field the problem belongs to and the message shown next to it. Messages are written here rather than taken from the backend's reason so the page words every problem the same way its own checks do; the reason is only a fallback for a code this table does not know yet.
 type RejectionMessage = { field: string; message: string | ((entry: Record<string, string>) => string) };
+// The backend matches every column of an entry against the sensitive word list but does not say which column matched, so blocked_word is shown on the entry's first field and worded for the whole entry.
+const BLOCKED_ENTRY_MESSAGE = "这个词条包含不允许提交的词语，请修改后再提交";
 const listed = (field: string, message: string): RejectionMessage => ({ field, message: `${message}，无需重复提交` });
 export const REJECTION_MESSAGES: Record<SubmissionKind, Record<string, RejectionMessage>> = {
   words: {
@@ -189,6 +191,7 @@ export const REJECTION_MESSAGES: Record<SubmissionKind, Record<string, Rejection
     syllable_count_mismatch: { field: "pinyin", message: entry => `“${entry.word}”的字数与拼音音节数不一致` },
     duplicate_entry: { field: "word", message: entry => `“${entry.word}”重复填写了` },
     already_listed: listed("word", "词库或待审核的提交中已有这个词条"),
+    blocked_word: { field: "word", message: BLOCKED_ENTRY_MESSAGE },
   },
   english: {
     word_required: { field: "word", message: "请填写英文单词" },
@@ -199,6 +202,7 @@ export const REJECTION_MESSAGES: Record<SubmissionKind, Record<string, Rejection
     display_too_long: { field: "display", message: `显示词形最多 ${MAX_DISPLAY_LENGTH} 个字符` },
     duplicate_entry: { field: "display", message: entry => `“${entry.display}”重复填写了` },
     already_listed: listed("display", "英文词库或待审核的提交中已有这个单词和显示词形"),
+    blocked_word: { field: "word", message: BLOCKED_ENTRY_MESSAGE },
   },
   translations: {
     source_required: { field: "source", message: "请填写原词" },
@@ -209,6 +213,7 @@ export const REJECTION_MESSAGES: Record<SubmissionKind, Record<string, Rejection
     gloss_too_long: { field: "gloss", message: `译文最多 ${MAX_GLOSS_LENGTH} 个字符` },
     duplicate_entry: { field: "gloss", message: entry => `“${entry.source}”的这条翻译重复填写了` },
     already_listed: listed("gloss", "翻译表或待审核的提交中已有完全相同的翻译"),
+    blocked_word: { field: "source", message: BLOCKED_ENTRY_MESSAGE },
   },
 };
 
@@ -241,6 +246,10 @@ export const ERROR_MESSAGES: Record<string, string> = {
   verification_unavailable: "验证服务暂时不可用，词条尚未写入，请重新验证后再试。",
   rate_limit_unavailable: "提交服务暂时不可用，词条尚未写入，请稍后再试。",
   github_unavailable: "暂时无法读取词库仓库，词条尚未写入，请稍后再试。",
+  // Sensitive word screening. A top-level blocked_word means the note matched; matching entries come back per entry instead (REJECTION_MESSAGES). blocked_content is what the community upload endpoints answer for the same check; word submissions do not send it today, but it gets the same wording rather than a generic failure if they ever do. None of these mean the service is down.
+  blocked_word: "备注包含不允许提交的词语，请修改后再提交。",
+  blocked_content: "内容包含不允许发布的词语，请修改后再提交。",
+  screening_unavailable: "审核服务暂时不可用，词条尚未写入，请稍后重试。",
 };
 
 /** User-facing message for each documented error of the backend API: by code when the backend sends one, otherwise by status. */

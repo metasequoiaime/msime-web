@@ -97,3 +97,21 @@ export const downloadMirrorsSchema = z.object({
   stale: z.boolean(),
 });
 export type DownloadMirrors = z.infer<typeof downloadMirrorsSchema>;
+
+// ---- notices (/api/notices) ----
+
+/** Notices published to the website channel in the admin console, re-keyed to camelCase by the `/api/notices` Function, newest first. `body` is simple Markdown, rendered with raw HTML disabled. `targets` is `["all"]` or the platforms the notice is meant for. */
+export const noticesSchema = z.object({
+  items: z.array(
+    z.object({
+      id: z.string().min(1).max(64),
+      title: z.string().min(1),
+      body: z.string(),
+      targets: z.array(z.string()),
+      publishedAt: z.iso.datetime({ offset: true }),
+    })
+  ),
+  stale: z.boolean(),
+});
+export type Notices = z.infer<typeof noticesSchema>;
+export type Notice = Notices["items"][number];
