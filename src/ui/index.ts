@@ -15,6 +15,7 @@ export {
   SunIcon,
   MoonIcon,
   MonitorIcon,
+  KeyboardIcon,
   PaletteIcon,
   MenuIcon,
   CloseIcon,
