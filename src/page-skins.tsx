@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAccount } from "./account/session";
-import { cardGridClass, Chips, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch } from "./community/parts";
+import { cardGridClass, Chips, CommunitySectionNav, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch } from "./community/parts";
 import { v1CandidateSkinsQuery, v1KeyboardSkinsQuery } from "./data/account";
 import { MAX_SKIN_QUERY_BYTES, useSkinsQuery, type SkinKind } from "./data/queries";
 import type { CandidateSkin, KeyboardSkin } from "./data/schemas";
@@ -56,6 +56,7 @@ export function SkinsPage() {
           <LinkButton to="/download/">{t("下载水杉输入法")}</LinkButton>
         </div>
       </PageHero>
+      <CommunitySectionNav current="/skins/" />
       <main className="w-full">
         <Container className="pt-8">
           <div className="flex flex-wrap items-center justify-between gap-4">

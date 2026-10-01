@@ -139,6 +139,27 @@ test('internal navigation and breadcrumbs use canonical pages without duplicate 
   }
 });
 
+test('the header has one 社区 entry for the three community pages, which switch between each other under their heroes', () => {
+  const sections = ['/skins/', '/dictionaries/', '/plugins/'];
+  for (const [prefix, entry, area] of [['', '社区', '社区栏目'], ['/zh-TW', '社群', '社群欄目']]) {
+    for (const base of [...sections, '/']) {
+      const doc = document(`${prefix}${base}`);
+      for (const menu of ['.nav-list', '#nav-menu']) {
+        const links = [...doc.querySelectorAll(`${menu} a`)];
+        assert.equal(links.filter(link => sections.some(section => link.getAttribute('href') === `${prefix}${section}`)).length, 1, `${prefix}${base} ${menu}: one community entry`);
+        const community = links.find(link => link.getAttribute('href') === `${prefix}/skins/`);
+        assert.equal(community.textContent.trim(), entry);
+        assert.equal(community.getAttribute('aria-current'), base === '/' ? null : 'page', `${prefix}${base} ${menu}`);
+      }
+      const switcher = doc.querySelector(`nav[aria-label="${area}"]`);
+      if (base === '/') { assert.equal(switcher, null); continue; }
+      assert.deepEqual([...switcher.querySelectorAll('a')].map(link => link.getAttribute('href')), sections.map(section => `${prefix}${section}`));
+      assert.deepEqual([...switcher.querySelectorAll('a[aria-current="page"]')].map(link => link.getAttribute('href')), [`${prefix}${base}`]);
+      assert.ok(doc.querySelector('.page-hero').compareDocumentPosition(switcher) & 4, `${prefix}${base}: the switcher follows the hero`);
+    }
+  }
+});
+
 test('the retired installer screenshot is not rendered anywhere', () => {
   for (const path of ['/docs/windows/', '/zh-TW/docs/windows/', '/download/', '/features/']) {
     assert.equal(document(path).querySelector('img[src*="install-finish"], img[srcset*="install-finish"]'), null, path);

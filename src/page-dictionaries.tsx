@@ -2,7 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useId } from "react";
 import { useAccount } from "./account/session";
 import { OFFICIAL_DICTIONARIES_HINT, OfficialDictionariesHowTo, OfficialDictionaryList } from "./community/official-packs";
-import { cardGridClass, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch } from "./community/parts";
+import { cardGridClass, CommunitySectionNav, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch } from "./community/parts";
 import { ResourceCard } from "./community/resource-card";
 import { resourcesQuery } from "./data/account";
 import { MAX_SKIN_QUERY_BYTES } from "./data/queries";
@@ -49,6 +49,7 @@ export function DictionariesPage() {
           <LinkButton to="/download/">{t("下载水杉输入法")}</LinkButton>
         </div>
       </PageHero>
+      <CommunitySectionNav current="/dictionaries/" />
       <main className="w-full">
         <Container className="pt-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
