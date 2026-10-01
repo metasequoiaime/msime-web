@@ -1,12 +1,13 @@
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { MAX_SKIN_QUERY_BYTES, useSkinsQuery, type SkinKind } from "./data/queries";
 import type { CandidateSkin, KeyboardSkin } from "./data/schemas";
+import { CANDIDATE_SKIN_CATEGORIES, CANDIDATE_SKIN_CATEGORY_LABELS, isCandidateSkinCategory, type CandidateSkinCategory } from "./data/skin-categories";
 import { LocaleLink } from "./locale-link";
 import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";
 import { KeyboardSkinPreview } from "./skins/keyboard-preview";
 import { mayHavePhoto } from "./skins/keyboard-art";
-import { Button, Card, Container, LinkButton, SearchIcon, cx } from "./ui";
+import { Button, Card, Container, LinkButton, Pill, SearchIcon, cx } from "./ui";
 import { usePageSearch } from "./use-page-search";
 import { useLocale } from "./use-locale";
 
@@ -16,6 +17,13 @@ const KIND_UI: Record<SkinKind, { tab: string; hint: string; noun: string }> = {
   keyboard: { tab: "键盘皮肤", hint: "改变屏幕键盘的配色、按键形状和材质。预览按皮肤的设计数据绘制，与 App 中看到的一致。", noun: "键盘皮肤" },
   candidate: { tab: "候选窗皮肤", hint: "改变候选窗的背景、文字和装饰图片。预览图由作者随皮肤包一起发布。", noun: "候选窗皮肤" },
 };
+
+/** The FAQ page's category chips: a filled chip for the selected one, outlined chips for the rest. */
+const chipClass = (selected: boolean) =>
+  cx(
+    "inline-flex h-8 cursor-pointer items-center rounded-full border-0 px-3 text-[13.5px] leading-none whitespace-nowrap transition-colors duration-150 pointer-coarse:h-10",
+    selected ? "bg-btn text-btn-fg" : "bg-transparent text-body shadow-ring-2 hover:bg-panel-2 hover:text-ink"
+  );
 
 /** Waits this long after the last keystroke before searching, so typing a name sends one request instead of one per character. */
 const SEARCH_DELAY_MS = 300;
@@ -38,8 +46,11 @@ const fitQuery = (value: string) => {
 export function SkinsPage() {
   const { t } = useLocale();
   usePageMeta();
-  const { choice, update } = usePageSearch();
+  const { choice, get, update } = usePageSearch();
   const kind = choice("kind", KINDS, "keyboard");
+  // Only candidate skins have categories. An unknown value in a shared URL shows every category rather than an error.
+  const rawCategory = get("category");
+  const category = kind === "candidate" && isCandidateSkinCategory(rawCategory) ? rawCategory : undefined;
   const [input, setInput] = useState("");
   const [query, setQuery] = useState("");
   const baseId = useId();
@@ -51,7 +62,8 @@ export function SkinsPage() {
     return () => clearTimeout(timer);
   }, [input]);
 
-  const select = (value: SkinKind) => update({ kind: value === "keyboard" ? undefined : value }, true);
+  const select = (value: SkinKind) => update({ kind: value === "keyboard" ? undefined : value, category: undefined }, true);
+  const selectCategory = (value: CandidateSkinCategory | undefined) => update({ category: value }, true);
 
   return (
     <>
@@ -108,9 +120,19 @@ export function SkinsPage() {
             </form>
           </div>
           <p className="m-0 mt-4 text-sm leading-[1.75] text-muted">{t(KIND_UI[kind].hint)}</p>
+          {kind === "candidate" && (
+            <fieldset className="m-0 mt-4 flex min-w-0 flex-wrap gap-1.5 border-0 p-0">
+              <legend className="sr-only">{t("候选窗皮肤分类")}</legend>
+              {[undefined, ...CANDIDATE_SKIN_CATEGORIES].map(value => (
+                <button key={value ?? "all"} type="button" className={chipClass(category === value)} aria-pressed={category === value} onClick={() => selectCategory(value)}>
+                  {t(value ? CANDIDATE_SKIN_CATEGORY_LABELS[value] : "全部")}
+                </button>
+              ))}
+            </fieldset>
+          )}
           <section id={panelId} role="tabpanel" aria-labelledby={tabId(kind)} className="mt-6">
             <h2 className="sr-only">{t(KIND_UI[kind].tab)}</h2>
-            {kind === "keyboard" ? <SkinList kind="keyboard" query={query} /> : <SkinList kind="candidate" query={query} />}
+            {kind === "keyboard" ? <SkinList kind="keyboard" query={query} /> : <SkinList kind="candidate" query={query} category={category} />}
           </section>
           <Card tone="muted" as="section" className="mt-12 rounded-tile px-6 py-[22px]" aria-labelledby={`${baseId}-how`}>
             <h2 id={`${baseId}-how`} className="m-0 font-heading text-[15.5px] font-bold text-ink">{t("如何使用社区皮肤")}</h2>
@@ -134,9 +156,16 @@ function StatusCard({ children, busy = false }: { children: ReactNode; busy?: bo
   );
 }
 
-function SkinList({ kind, query }: { kind: SkinKind; query: string }) {
+/** The empty-list message for the current search and category. */
+const emptyText = (noun: string, query: string, category: CandidateSkinCategory | undefined) => {
+  const where = category ? `「${CANDIDATE_SKIN_CATEGORY_LABELS[category]}」分类中` : "";
+  if (query) return `${where}没有名称包含「${query}」的${noun}。`;
+  return where ? `${where}还没有公开的${noun}。` : `还没有公开的${noun}。`;
+};
+
+function SkinList({ kind, query, category }: { kind: SkinKind; query: string; category?: CandidateSkinCategory }) {
   const { t } = useLocale();
-  const skins = useSkinsQuery(kind, query);
+  const skins = useSkinsQuery(kind, query, category);
   const noun = KIND_UI[kind].noun;
 
   if (skins.isPending) return <StatusCard busy>{t(`正在读取${noun}…`)}</StatusCard>;
@@ -150,7 +179,7 @@ function SkinList({ kind, query }: { kind: SkinKind; query: string }) {
 
   const items = skins.data.pages.flatMap(page => page.items as (KeyboardSkin | CandidateSkin)[]);
   const stale = skins.data.pages.some(page => page.stale);
-  if (items.length === 0) return <StatusCard>{t(query ? `没有名称包含「${query}」的${noun}。` : `还没有公开的${noun}。`)}</StatusCard>;
+  if (items.length === 0) return <StatusCard>{t(emptyText(noun, query, category))}</StatusCard>;
 
   return (
     <>
@@ -229,7 +258,8 @@ function CandidateSkinCard({ skin }: { skin: CandidateSkin }) {
   return (
     <SkinCard
       preview={
-        <div className="grid aspect-[390/232] place-items-center bg-panel-2 p-4">
+        <div className="relative grid aspect-[390/232] place-items-center bg-panel-2 p-4">
+          {skin.category && <Pill className="absolute top-3 left-3 shadow-ring-2">{t(CANDIDATE_SKIN_CATEGORY_LABELS[skin.category])}</Pill>}
           {failed ? (
             <span className="text-[13px] text-muted">{t("暂无预览")}</span>
           ) : (

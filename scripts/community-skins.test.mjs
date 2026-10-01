@@ -7,7 +7,8 @@ import { onRequest as candidateList } from '../functions/api/skins/candidate/ind
 import { onRequest as keyboardPhoto } from '../functions/api/skins/keyboard/[id]/photo.ts';
 import { onRequest as candidatePreview } from '../functions/api/skins/candidate/[id]/preview.ts';
 import { MAX_SKIN_QUERY_BYTES, skinListPath, skinsQuery } from '../src/data/queries.ts';
-import { keyboardSkinDesignSchema } from '../src/data/schemas.ts';
+import { candidateSkinSchema, keyboardSkinDesignSchema } from '../src/data/schemas.ts';
+import { CANDIDATE_SKIN_CATEGORIES, CANDIDATE_SKIN_CATEGORY_LABELS } from '../src/data/skin-categories.ts';
 import { ART_HEIGHT, ART_WIDTH, keyboardArt, keyboardKeyPath, mayHavePhoto, MONOSPACED_FONT, readableSkinText, skinColor } from '../src/skins/keyboard-art.ts';
 
 const ORIGIN = 'https://api.msime.app';
@@ -23,7 +24,7 @@ const plainDesign = { accent: 0x185c47, shadow: 0, pattern: 0, background: 0xe8f
 const photoDesign = { accent: 7062968, shadow: 0.3, pattern: 0, keyShape: 'ticket', background: 1714746, keyOpacity: 0.92, monospaced: false, photoShade: 0.08, borderWidth: 1, gradientEnd: 3809360, keyMaterial: 'raised', cornerRadius: 4, keyBackground: 2965589, keyForeground: 15267064, photoPosition: 0.5, actionBackground: 15243868, gradientHorizontal: true };
 
 const backendKeyboard = (id = KEYBOARD_ID, design = photoDesign) => ({ id, name: '极光雪山小屋', description: '', author: '水杉小莫', design, downloads: 3, rating_count: 2, rating_average: 4.5, owned: false, my_rating: 0 });
-const backendCandidate = (id = CANDIDATE_ID) => ({ id, package_id: 'orange-cat', name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: { code: '', assets: 'CC-BY-4.0', source: '' }, size: 13645, file_count: 3, downloads: 0, rating_count: 0, rating_average: 0, owned: false, my_rating: 0, created_at: '2026-10-01T06:47:24.764127Z' });
+const backendCandidate = (id = CANDIDATE_ID, category = 'other') => ({ id, category, package_id: 'orange-cat', name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: { code: '', assets: 'CC-BY-4.0', source: '' }, size: 13645, file_count: 3, downloads: 0, rating_count: 0, rating_average: 0, owned: false, my_rating: 0, created_at: '2026-10-01T06:47:24.764127Z' });
 
 const memoryCache = () => {
   const stored = new Map();
@@ -34,12 +35,30 @@ const call = (handler, path, { env = {}, method = 'GET', params } = {}) => handl
 // ---- loaders ----
 
 test('list parameters follow the backend limits and normalise the search', () => {
-  const params = path => skinListParams(new URL(path, 'https://msime.app'));
+  const params = path => skinListParams(new URL(path, 'https://msime.app'), 'keyboard');
   assert.deepEqual(params('/api/skins/keyboard'), { offset: 0, q: '' });
   assert.deepEqual(params('/api/skins/keyboard?offset=20&q=%20月%20'), { offset: 20, q: '月' });
   for (const bad of ['?offset=-1', '?offset=1.5', '?offset=abc', '?offset=100001', `?q=${'月'.repeat(43)}`]) assert.equal(params(`/api/skins/keyboard${bad}`), undefined, bad);
   assert.deepEqual(params(`/api/skins/keyboard?q=${'月'.repeat(42)}`), { offset: 0, q: '月'.repeat(42) }, '42 three-byte characters are 126 bytes');
   assert.equal(MAX_SKIN_QUERY_BYTES, SERVER_MAX_QUERY, 'the search box and the Function agree on the limit');
+});
+
+test('candidate lists take one of the backend categories, and keyboard lists ignore the parameter as their backend does', () => {
+  const params = (path, kind = 'candidate') => skinListParams(new URL(path, 'https://msime.app'), kind);
+  assert.deepEqual(params('/api/skins/candidate?category=nature&q=猫&offset=20'), { offset: 20, q: '猫', category: 'nature' });
+  assert.deepEqual(params('/api/skins/candidate?category='), { offset: 0, q: '' }, 'an empty category lists every category, as on the backend');
+  for (const bad of ['bogus', 'Nature', ' nature', 'all']) assert.equal(params(`/api/skins/candidate?category=${encodeURIComponent(bad)}`), undefined, bad);
+  assert.deepEqual(params('/api/skins/keyboard?category=bogus', 'keyboard'), { offset: 0, q: '' });
+});
+
+test('the categories match the backend and the App, in the App\'s order', () => {
+  // candidateSkinCategories in msime-backend internal/account/community_candidate.go; labels from the App's filter row.
+  assert.deepEqual(CANDIDATE_SKIN_CATEGORIES, ['nature', 'guofeng', 'acg', 'cute', 'food', 'tech', 'minimal', 'other']);
+  assert.deepEqual(Object.values(CANDIDATE_SKIN_CATEGORY_LABELS), ['自然', '国风', '二次元', '可爱', '美食', '科技夜色', '简约', '其他']);
+  assert.deepEqual(Object.keys(CANDIDATE_SKIN_CATEGORY_LABELS), [...CANDIDATE_SKIN_CATEGORIES]);
+  const item = { id: CANDIDATE_ID, name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: 'CC-BY-4.0', size: 1, downloads: 0, ratingCount: 0, ratingAverage: 0, createdAt: '2026-10-01T06:47:24.764127Z' };
+  assert.equal(candidateSkinSchema.parse(item).category, undefined, 'a copy cached before categories still parses');
+  assert.equal(candidateSkinSchema.safeParse({ ...item, category: 'bogus' }).success, false);
 });
 
 test('keyboard skins are re-keyed, and a row the site cannot draw is left out without shifting the next page', async () => {
@@ -65,11 +84,22 @@ test('an optional design field the page cannot use degrades instead of dropping 
   assert.equal(keyboardSkinDesignSchema.safeParse({ ...plainDesign, pattern: 4 }).success, false);
 });
 
-test('candidate skins are re-keyed with their asset licence', async () => {
+test('candidate skins are re-keyed with their asset licence and category', async () => {
   const urls = [];
   const page = await loadCandidateSkins(ORIGIN, { offset: 0, q: '猫' }, async url => { urls.push(url); return Response.json({ skins: [backendCandidate()], has_more: false }); });
-  assert.deepEqual(urls, [`${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB`]);
-  assert.deepEqual(page, { items: [{ id: CANDIDATE_ID, name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: 'CC-BY-4.0', size: 13645, downloads: 0, ratingCount: 0, ratingAverage: 0, createdAt: '2026-10-01T06:47:24.764127Z' }], nextOffset: null, stale: false });
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB&include=category`], 'the category is always asked for');
+  assert.deepEqual(page, { items: [{ id: CANDIDATE_ID, name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: 'CC-BY-4.0', size: 13645, downloads: 0, ratingCount: 0, ratingAverage: 0, createdAt: '2026-10-01T06:47:24.764127Z', category: 'other' }], nextOffset: null, stale: false });
+});
+
+test('a candidate category filter is forwarded, and a category the site does not know yet reads as other', async () => {
+  const urls = [];
+  const second = '0b1a87bc-99d9-56ea-a8ef-c6382b14eaf5';
+  const third = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
+  const { category: _, ...legacy } = backendCandidate(third);
+  const page = await loadCandidateSkins(ORIGIN, { offset: 20, q: '', category: 'nature' }, async url => { urls.push(url); return Response.json({ skins: [backendCandidate(CANDIDATE_ID, 'nature'), backendCandidate(second, 'space'), legacy], has_more: false }); });
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/candidate-skins?offset=20&category=nature&include=category`]);
+  assert.deepEqual(page.items.map(item => item.category), ['nature', 'other', undefined]);
+  assert.equal('category' in page.items[2], false, 'an item without a category has no category key');
 });
 
 test('images are served only when their bytes are PNG, JPEG or WebP', async () => {
@@ -112,13 +142,37 @@ test('GET /api/skins/candidate reads the candidate catalog and answers 503 when 
   const urls = [];
   t.mock.method(globalThis, 'fetch', async url => { urls.push(url); return Response.json({ skins: [backendCandidate()], has_more: true }); });
   const body = await (await call(candidateList, '/api/skins/candidate?offset=20')).json();
-  assert.deepEqual(urls, [`${ORIGIN}/v1/community/candidate-skins?offset=20`]);
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/candidate-skins?offset=20&include=category`]);
   assert.equal(body.nextOffset, 21);
+  assert.equal(body.items[0].category, 'other');
   globalThis.caches = { default: memoryCache() };
   t.mock.method(globalThis, 'fetch', async () => { throw new TypeError('network'); });
   assert.equal((await call(candidateList, '/api/skins/candidate')).status, 503);
   globalThis.caches = { default: memoryCache() };
   assert.equal((await call(candidateList, '/api/skins/candidate', { env: { MSIME_API_ORIGIN: 'https://evil.example/path' } })).status, 503);
+});
+
+test('GET /api/skins/candidate caches each category separately and rejects one the backend would', async t => {
+  const cache = memoryCache();
+  globalThis.caches = { default: cache };
+  const urls = [];
+  t.mock.method(globalThis, 'fetch', async url => { urls.push(url); return Response.json({ skins: [backendCandidate(CANDIDATE_ID, 'nature')], has_more: false }); });
+  assert.equal((await call(candidateList, '/api/skins/candidate?category=nature&q=%20猫')).status, 200);
+  await call(candidateList, '/api/skins/candidate?q=猫&category=nature');
+  await call(candidateList, '/api/skins/candidate?q=猫&category=food');
+  await call(candidateList, '/api/skins/candidate?q=猫&category=');
+  assert.deepEqual(urls, [
+    `${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB&category=nature&include=category`,
+    `${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB&category=food&include=category`,
+    `${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB&include=category`,
+  ]);
+  assert.deepEqual([...cache.stored.keys()], ['https://msime.app/api/skins/candidate?q=%E7%8C%AB&category=nature', 'https://msime.app/api/skins/candidate?q=%E7%8C%AB&category=food', 'https://msime.app/api/skins/candidate?q=%E7%8C%AB'], 'the edge cache key is the path the page requests');
+  const rejected = await call(candidateList, '/api/skins/candidate?category=bogus');
+  assert.equal(rejected.status, 400);
+  assert.equal(rejected.headers.get('Cache-Control'), 'no-store');
+  assert.equal(urls.length, 3, 'an unknown category never reaches the backend');
+  await call(keyboardList, '/api/skins/keyboard?category=nature');
+  assert.equal(urls.at(-1), `${ORIGIN}/v1/community/skins`, 'keyboard skins have no categories to forward');
 });
 
 test('the image Functions serve decoded bytes with long caching and reject anything but a skin id', async t => {
@@ -162,8 +216,12 @@ test('Pages routes /api/skins/* to its Functions instead of the static fallback'
 test('the skins query reads the same-origin Function with the same path the Function caches under', () => {
   assert.equal(skinListPath('keyboard', 0, ''), '/api/skins/keyboard');
   assert.equal(skinListPath('candidate', 40, ' 猫 '), '/api/skins/candidate?offset=40&q=%E7%8C%AB');
-  const options = skinsQuery('keyboard', ' 雪 ');
-  assert.deepEqual(options.queryKey, ['skins', 'keyboard', '雪']);
+  assert.equal(skinListPath('candidate', 40, ' 猫 ', 'guofeng'), '/api/skins/candidate?offset=40&q=%E7%8C%AB&category=guofeng', 'the order the Function caches under');
+  assert.equal(skinListPath('keyboard', 0, '', 'guofeng'), '/api/skins/keyboard');
+  assert.deepEqual(skinsQuery('candidate', '猫', 'acg').queryKey, ['skins', 'candidate', '猫', 'acg']);
+  assert.deepEqual(skinsQuery('candidate', '猫').queryKey, ['skins', 'candidate', '猫', '']);
+  const options = skinsQuery('keyboard', ' 雪 ', 'acg');
+  assert.deepEqual(options.queryKey, ['skins', 'keyboard', '雪', '']);
   assert.ok(options.staleTime >= 60_000);
   assert.equal(options.initialPageParam, 0);
   assert.equal(options.getNextPageParam({ items: [], nextOffset: 20, stale: false }), 20);
