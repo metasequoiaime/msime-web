@@ -44,7 +44,7 @@ export function SegmentedTabs<T extends string>({ label, values, labels, caption
   return (
     <div className={captioned ? "grid w-full grid-cols-2 gap-1 rounded-field bg-panel-2 p-1 sm:inline-flex sm:w-auto sm:max-w-full sm:flex-wrap" : "inline-flex max-w-full flex-wrap gap-1 rounded-field bg-panel-2 p-1"} role="tablist" aria-label={t(label)}>
       {values.map(item => {
-        const Icon = icons?.[item];
+        const Icon: TabIcon | undefined = icons?.[item];
         const id = tabId(panelId, item);
         return (
         <button
