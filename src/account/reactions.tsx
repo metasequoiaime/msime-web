@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ApiError, rateItem, saveItem, type CommunityItemKind } from "../data/account";
+import { ApiError, patchCommunityItem, rateItem, saveItem, type CommunityItemKind } from "../data/account";
 import { HeartIcon, StarIcon, cx, useToast } from "../ui";
 import { useLocale } from "../use-locale";
 import { useAccount } from "./session";
@@ -56,7 +56,9 @@ export function Reactions({ kind, id, ratingCount, ratingAverage, myRating = 0, 
     try {
       const result = await saveItem(kind, id, !state.saved);
       setState(current => ({ ...current, saved: result.saved, saves: result.saves ?? current.saves }));
+      patchCommunityItem(queryClient, kind, id, result.saves === undefined ? { saved: result.saved } : { saved: result.saved, saves: result.saves });
       show(t(result.saved ? "已收藏" : "已取消收藏"));
+      // The favourites lists gain or lose the item itself, which only a new read can place.
       void queryClient.invalidateQueries({ queryKey: ["account"], predicate: query => query.queryKey.includes("saved") });
     } catch (error) {
       fail(error);
@@ -70,12 +72,11 @@ export function Reactions({ kind, id, ratingCount, ratingAverage, myRating = 0, 
     setBusy(true);
     try {
       const result = await rateItem(kind, id, stars);
-      // The new average is worked out locally; the next list read brings the backend's own.
-      setState(current => {
-        const count = current.myRating ? current.count : current.count + 1;
-        const total = current.average * current.count - current.myRating + result.stars;
-        return { ...current, myRating: result.stars, count, average: count ? total / count : 0 };
-      });
+      // The new average is worked out locally; the next list read brings the backend's own. `busy` keeps a second rating from starting before this one lands, so `state` is current here.
+      const count = state.myRating ? state.count : state.count + 1;
+      const average = count ? (state.average * state.count - state.myRating + result.stars) / count : 0;
+      setState(current => ({ ...current, myRating: result.stars, count, average }));
+      patchCommunityItem(queryClient, kind, id, { my_rating: result.stars, rating_count: count, rating_average: average });
       show(t(`已评 ${result.stars} 星`));
     } catch (error) {
       fail(error);

@@ -1,4 +1,4 @@
-import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions, type InfiniteData, type QueryClient } from "@tanstack/react-query";
 import type { CandidateSkinCategory } from "./skin-categories.ts";
 import type { DictionaryKind, Plugin, PluginKind, Resource, ResourceKind } from "./schemas.ts";
 import { siteApi } from "./source.ts";
@@ -246,6 +246,27 @@ export type CommunityItemKind = keyof typeof COMMUNITY_COLLECTIONS;
 
 export const saveItem = async (kind: CommunityItemKind, id: string, saved: boolean) =>
   accountCall(`/api/v1/community/${COMMUNITY_COLLECTIONS[kind]}/${id}/save`, async value => (await schemas()).saveResultSchema.parse(value), { method: "PUT", body: { saved } });
+
+/** What a reaction changes on a community row, in the backend's field names that every account list keeps. */
+export type ItemPatch = { saved?: boolean; saves?: number; my_rating?: number; rating_count?: number; rating_average?: number };
+
+/** The query keys of every cached list a kind of item can appear in: the galleries, `scope=saved` (the /me/ favourites) and `scope=mine`. */
+const LIST_KEYS: Record<CommunityItemKind, readonly string[]> = {
+  keyboard: ["account", "skins", "keyboard"],
+  candidate: ["account", "skins", "candidate"],
+  plugin: ["account", "plugins"],
+  resource: ["account", "resources"],
+};
+
+/**
+ * Writes a reaction into every cached list row of the item, so a card that remounts (another tab of the page, a search cleared, /me/ and back) shows the new heart and stars instead of the copy read before. The anonymous plugin and resource lists (`signedIn` false, the last key part) are left alone: they describe nobody's reactions.
+ */
+export function patchCommunityItem(client: QueryClient, kind: CommunityItemKind, id: string, patch: ItemPatch) {
+  client.setQueriesData<InfiniteData<Page<{ id: string }>>>({ queryKey: LIST_KEYS[kind], predicate: query => query.queryKey.at(-1) !== false }, data => {
+    if (!data?.pages.some(page => page.items.some(item => item.id === id))) return data;
+    return { ...data, pages: data.pages.map(page => ({ ...page, items: page.items.map(item => (item.id === id ? { ...item, ...patch } : item)) })) };
+  });
+}
 
 export const rateItem = async (kind: CommunityItemKind, id: string, stars: number) =>
   accountCall(`/api/v1/community/${COMMUNITY_COLLECTIONS[kind]}/${id}/rating`, async value => (await schemas()).ratingResultSchema.parse(value), { method: "PUT", body: { stars } });
