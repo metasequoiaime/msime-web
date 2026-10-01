@@ -15,8 +15,10 @@ export async function render(url: string, data: Record<string, unknown>) {
   await router.load();
   await ssr.dehydrate();
   const html = renderToString(<QueryClientProvider client={client}><ThemeProvider><RouterProvider router={router} /></ThemeProvider></QueryClientProvider>);
+  // The router hands its hydration state over as script tags meant for its own `<Scripts>` component, which this static build does not render. Only the script sources are needed: build-seo.mjs moves them into an external file. The stream boundary tag is left out because nothing is streamed after the initial take.
+  const bootstrap = ssr.takeInitialHydrationScriptTags()?.before.map((tag) => tag.children ?? "") ?? [];
+  if (!bootstrap.length) throw new Error("Router produced no hydration state");
   ssr.setRenderFinished();
-  const bootstrap = ssr.takeBufferedHtml();
   ssr.cleanup();
   client.clear();
   return { html, bootstrap };
