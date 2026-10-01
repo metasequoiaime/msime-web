@@ -4,6 +4,7 @@ import type { Platform } from "../platform.ts";
 import { useDownloadMirrorsQuery } from "../data/queries";
 import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, copyText, cx, ExternalIcon, GitHubIcon, Pill, PlatformIcon, QQIcon, useToast } from "../ui";
 import { useLocale } from "../use-locale";
+import { reportMirrorDownload } from "../../shared/download-events";
 import { groupByArch, readableSize } from "./template";
 
 /** The Windows installer is also uploaded to this QQ group's files, for visitors who cannot reach GitHub quickly; joining the group also puts them where feedback is answered. */
@@ -127,8 +128,10 @@ function PreviewPanel({ preview }: { preview: PreviewRelease }) {
 
 /**
  * Windows-only mirrors beside the GitHub button. The QQ group number is copied rather than linked: QQ has no web link that opens a group's files. The Lanzou link is set by admins in msime-backend and left out until one is configured or while the backend cannot be reached.
+ *
+ * A click on the Lanzou link is reported as an anonymous download count (shared/download-events.ts) with the release's installer name and version; without a release manifest there is nothing accurate to report, so the click goes uncounted.
  */
-function WindowsMirrors() {
+function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
   const { t } = useLocale();
   const { show } = useToast();
   const lanzouUrl = useDownloadMirrorsQuery().data?.lanzouUrl;
@@ -150,7 +153,16 @@ function WindowsMirrors() {
         </span>
       </button>
       {lanzouUrl && (
-        <a className={MIRROR_ACTION} href={lanzouUrl} target="_blank" rel="noreferrer">
+        <a
+          className={MIRROR_ACTION}
+          href={lanzouUrl}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => {
+            const installer = release?.downloads[0];
+            if (release && installer) reportMirrorDownload({ version: release.version, artifact: installer.name });
+          }}
+        >
           <CloudDownloadIcon size={20} className="flex-none" />
           {t("蓝奏云盘")}
           <ExternalIcon className="flex-none text-accent-ink" />
@@ -216,7 +228,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           {t(primary ? "GitHub 下载" : "GitHub 发布页")}
           {!primary && <ExternalIcon />}
         </a>
-        {entry.id === "windows" && <WindowsMirrors />}
+        {entry.id === "windows" && <WindowsMirrors release={release} />}
         {release ? hint : <p className="m-0 text-sm leading-[1.8] text-muted">{t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")}</p>}
       </div>
 
