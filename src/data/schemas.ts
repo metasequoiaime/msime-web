@@ -88,3 +88,12 @@ export const appStatsSchema = z.object({
   stale: z.boolean(),
 });
 export type AppStats = z.infer<typeof appStatsSchema>;
+
+// ---- download-mirrors (/api/download-mirrors) ----
+
+/** Cloud-drive mirrors of the Windows installer, set by admins in msime-backend. Only https links get through: the value is rendered as an `href`. An empty string means none is configured. */
+export const downloadMirrorsSchema = z.object({
+  lanzouUrl: z.union([z.literal(""), z.url({ protocol: /^https$/, hostname: z.regexes.domain })]),
+  stale: z.boolean(),
+});
+export type DownloadMirrors = z.infer<typeof downloadMirrorsSchema>;

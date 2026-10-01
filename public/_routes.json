@@ -7,6 +7,8 @@
     "/api/releases/",
     "/api/app-stats",
     "/api/app-stats/",
+    "/api/download-mirrors",
+    "/api/download-mirrors/",
     "/api/feedback",
     "/api/feedback/",
     "/api/feedback-images/*",

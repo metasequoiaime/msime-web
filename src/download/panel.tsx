@@ -1,13 +1,13 @@
 import type { SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform } from "../platform.ts";
-import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, cx, DownloadIcon, ExternalIcon, Pill, PlatformIcon } from "../ui";
+import { useDownloadMirrorsQuery } from "../data/queries";
+import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, copyText, cx, ExternalIcon, GitHubIcon, Pill, PlatformIcon, QQIcon, useToast } from "../ui";
 import { useLocale } from "../use-locale";
 import { groupByArch, readableSize } from "./template";
 
-/** Windows mirror on Aliyun Drive, for visitors who cannot reach GitHub quickly. */
-const ALIPAN_URL = "https://www.alipan.com/s/wKbWStNYVLZ";
-const ALIPAN_CODE = "27qi";
+/** The Windows installer is also uploaded to this QQ group's files, for visitors who cannot reach GitHub quickly; joining the group also puts them where feedback is answered. */
+const QQ_GROUP = "829919142";
 
 // 系统要求是产品决策，不在产物里，只能写下来
 const PLATFORM_HINTS: Record<Platform, string> = {
@@ -17,6 +17,17 @@ const PLATFORM_HINTS: Record<Platform, string> = {
   android: "开发中，尚未发布安装包",
   ios: "适用于 iOS 15 及以上",
   harmony: "开发中，尚未发布安装包",
+};
+
+/** macOS 的最低版本跟着安装包格式走，理由见下面 `platformHint`。 */
+const macosMinimum = (entry: SitePlatformEntry) => (entry.release?.downloads.some((download) => /\.dmg$/i.test(download.name)) ? 13 : 12);
+
+/** 选择卡上的平台名带上系统要求，免得在下面的提示里再找一遍 */
+const tileName = (entry: SitePlatformEntry) => {
+  if (entry.id === "windows") return "Windows 10/11";
+  if (entry.id === "macos") return `macOS ${macosMinimum(entry)}+`;
+  if (entry.id === "ios") return "iOS 15+";
+  return entry.name;
 };
 
 /*
@@ -32,23 +43,31 @@ const platformHint = (entry: SitePlatformEntry) => {
 };
 
 /**
- * The page's main action. Not `buttonClass`: that one never wraps, and a label like "下载 macOS 版 v0.50.0-build.9" is wider than the panel on a 360px phone, so this one may wrap to two lines and fills the row on narrow screens.
+ * The page's main action. Not `buttonClass`: that one never wraps, and a label like "通过 TestFlight 安装 iOS 版" is wider than half the panel on a 360px phone, so this one may wrap to two lines and fills the row on narrow screens.
  */
 const PRIMARY_ACTION =
   "inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-btn bg-btn px-6 py-3 text-center text-base leading-snug font-semibold text-btn-fg no-underline shadow-btn transition-[transform,filter] duration-150 hover:-translate-y-px hover:text-btn-fg hover:brightness-[1.06] md:w-auto";
 
-/** What the tile's second line says: the current version, or, kept to a word, how the platform is distributed. The details sit in the action strip and the guide below. */
+/** A cloud-drive or QQ mirror next to the GitHub button: same height, quieter surface. */
+const MIRROR_ACTION =
+  "inline-flex min-h-[52px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-btn bg-panel px-3 py-2 text-left text-[15px] leading-snug font-semibold whitespace-nowrap text-ink no-underline sm:gap-2.5 sm:px-5 shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink md:flex-none";
+
+/** What the tile's status says: the current version, or, kept to a word, how the platform is distributed. The details sit in the action strip and the guide below. */
 const tileStatus = (entry: SitePlatformEntry) => {
   if (entry.distribution === "testflight") return "TestFlight";
   if (entry.distribution === "source") return "开发中";
   return entry.release ? `v${entry.release.version}` : "查看发布页";
 };
 
-/** Shared by the six platform tiles and the Aliyun Drive tile: a mark on the left, name and one status line on the right, compact enough that two columns fit a 320px phone. */
+/**
+ * The six platform tiles, three to a row: desktop on the first row, mobile on the second. On a phone a third of the panel is too narrow for mark, name and status side by side, so the tile stacks them centred; from `sm` up the mark sits on the left and the status follows the name on the same line, wrapping under it only when the column is too narrow.
+ *
+ * The status uses the body font, not `font-mono`: JetBrains Mono is not bundled, and where it is missing the monospace fallback on Windows is a serif face.
+ */
 const TILE =
-  "flex min-w-0 items-center gap-2.5 rounded-menu px-3 py-2.5 text-left text-ink transition-[background-color,box-shadow] duration-150 sm:gap-3 sm:px-4 sm:py-3.5";
-const TILE_NAME = "block text-[15px] leading-snug font-semibold [overflow-wrap:anywhere]";
-const TILE_STATUS = "block font-mono text-[12.5px] leading-snug text-accent-ink [overflow-wrap:anywhere]";
+  "flex min-w-0 flex-col items-center gap-1.5 rounded-menu px-1.5 py-3 text-center text-ink transition-[background-color,box-shadow] duration-150 sm:flex-row sm:gap-3 sm:px-4 sm:py-3.5 sm:text-left";
+const TILE_NAME = "text-sm leading-snug font-semibold [overflow-wrap:break-word] sm:text-lg lg:text-[20px]";
+const TILE_STATUS = "text-[12.5px] leading-snug font-medium text-accent-ink tabular-nums [overflow-wrap:anywhere] sm:text-sm";
 
 /* 主推那个之外的包，按架构分组收进折叠区。正式版和预览版各用一份。 */
 function MorePackages({ downloads }: { downloads: PlatformRelease["downloads"] }) {
@@ -108,7 +127,42 @@ function PreviewPanel({ preview }: { preview: PreviewRelease }) {
 }
 
 /**
- * The action strip under the tiles for the selected platform: the download button with one compatibility line, or an honest status for platforms that do not ship packages yet.
+ * Windows-only mirrors beside the GitHub button. The QQ group number is copied rather than linked: QQ has no web link that opens a group's files. The Lanzou link is set by admins in msime-backend and left out until one is configured or while the backend cannot be reached.
+ */
+function WindowsMirrors() {
+  const { t } = useLocale();
+  const { show } = useToast();
+  const lanzouUrl = useDownloadMirrorsQuery().data?.lanzouUrl;
+
+  return (
+    <div className="flex flex-wrap gap-3">
+      <button
+        type="button"
+        className={MIRROR_ACTION}
+        title={t("点击复制群号")}
+        onClick={async () => {
+          show(t((await copyText(QQ_GROUP)) ? `已复制 QQ 群号 ${QQ_GROUP}，入群后在群文件中下载` : `QQ 群号：${QQ_GROUP}，入群后在群文件中下载`));
+        }}
+      >
+        <QQIcon size={20} className="flex-none" />
+        <span>
+          <span className="block">{t("QQ 群文件")}</span>
+          <span className="block text-[13px] font-medium text-muted tabular-nums">{QQ_GROUP}</span>
+        </span>
+      </button>
+      {lanzouUrl && (
+        <a className={MIRROR_ACTION} href={lanzouUrl} target="_blank" rel="noreferrer">
+          <CloudDownloadIcon size={20} className="flex-none" />
+          {t("蓝奏云盘")}
+          <ExternalIcon className="flex-none text-accent-ink" />
+        </a>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The action strip under the tiles for the selected platform: the download button (plus the Windows mirrors) with one compatibility line, or an honest status for platforms that do not ship packages yet.
  *
  * File name, architecture, size, signature and checksums are deliberately not repeated here: they live in the release notes and the install guide below, and listing them next to the button only pushed it out of view.
  */
@@ -150,11 +204,19 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 
   return (
     <div>
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
-        <a className={PRIMARY_ACTION} href={primary?.url ?? entry.href} rel="noreferrer" target={primary ? undefined : "_blank"}>
-          {t(primary && release ? `下载 ${entry.name} 版 v${release.version}` : `前往 ${entry.name} 发布页`)}
-          {primary ? <DownloadIcon /> : <ExternalIcon />}
+      <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-3">
+        <a
+          className={PRIMARY_ACTION}
+          href={primary?.url ?? entry.href}
+          rel="noreferrer"
+          target={primary ? undefined : "_blank"}
+          aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name} 版 v${release.version}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
+        >
+          <GitHubIcon size={18} />
+          {t(primary ? "GitHub 下载" : "GitHub 发布页")}
+          {!primary && <ExternalIcon />}
         </a>
+        {entry.id === "windows" && <WindowsMirrors />}
         {release ? hint : <p className="m-0 text-sm leading-[1.8] text-muted">{t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")}</p>}
       </div>
 
@@ -168,7 +230,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 /**
  * 页面顶部的下载入口（design-home §6「选择卡」），也是整页的标题区：页面不再有单独的页头，h1 就在这里，平台卡片和下载按钮在首屏内。
  *
- * 六个平台都是可选的卡片，按 UA 猜到的那个只是默认选中；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 与 HarmonyOS 如实说明还在开发、只能从源码构建。阿里云盘镜像只有 Windows 安装包，单独占一格。
+ * 六个平台都是可选的卡片，按 UA 猜到的那个只是默认选中；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 与 HarmonyOS 如实说明还在开发、只能从源码构建。QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的下载按钮旁边。
  *
  * `.download-panel` is a test hook: the static HTML must show the Windows version inside it.
  */
@@ -186,7 +248,7 @@ export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePl
           {t("更新日志")}
         </a>
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-3 xl:grid-cols-4">
+      <div className="mt-4 grid grid-cols-3 gap-2 sm:mt-5 sm:gap-3">
         {entries.map((entry) => {
           const active = entry.id === platform;
           return (
@@ -200,28 +262,13 @@ export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePl
               className={cx(TILE, "cursor-pointer", active ? "bg-accent-soft shadow-ring-accent" : "bg-panel-2 hover:bg-accent-soft")}
             >
               <PlatformIcon platform={entry.id} className="flex-none" />
-              <span className="min-w-0">
-                <span className={TILE_NAME}>{t(entry.name)}</span>
+              <span className="flex min-w-0 flex-col items-center gap-x-2.5 sm:flex-row sm:flex-wrap sm:items-baseline">
+                <span className={TILE_NAME}>{t(tileName(entry))}</span>
                 <span className={TILE_STATUS}>{t(tileStatus(entry))}</span>
               </span>
             </button>
           );
         })}
-        <a
-          href={ALIPAN_URL}
-          target="_blank"
-          rel="noreferrer"
-          className={cx(TILE, "col-span-full no-underline shadow-ring-2 hover:bg-panel-2 hover:text-ink xl:col-span-1")}
-        >
-          <CloudDownloadIcon className="flex-none" />
-          <span className="min-w-0">
-            <span className={TILE_NAME}>{t("阿里云盘（Windows）")}</span>
-            <span className={TILE_STATUS}>
-              {t("提取码")} {ALIPAN_CODE}
-            </span>
-          </span>
-          <ExternalIcon className="ml-auto flex-none self-start text-accent-ink" />
-        </a>
       </div>
 
       <div className="mt-5 pt-5 shadow-divider-t sm:mt-7 sm:pt-7" aria-live="polite">

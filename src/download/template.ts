@@ -36,7 +36,7 @@ const securityNote = (manifest: Partial<UpdateManifest>): string => {
     lines.push("");
     lines.push(`应得到：\`${manifest.installerSha256}\``);
     lines.push("");
-    lines.push("请将计算结果与这里的官方校验值逐字核对。从阿里云盘镜像下载时也应核对。");
+    lines.push("请将计算结果与这里的官方校验值逐字核对。从蓝奏云盘或 QQ 群文件下载时也应核对。");
   }
 
   return lines.join("\n");

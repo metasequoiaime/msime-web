@@ -8,7 +8,7 @@
 
 ### 必备运行环境
 
-Server 与设置程序均为 64 位程序，需要安装最新的 **Microsoft Visual C++ 2015–2022 Redistributable（x64）**，对应安装文件为 `vc_redist.x64.exe`。请前往[微软官方下载页面](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)，在最新支持版本中选择 x64 架构。
+Server 与设置程序均为 64 位程序，需要安装最新的 **Microsoft Visual C++ 2015–2022 Redistributable（x64）**，可直接从微软官方地址[下载 `vc_redist.x64.exe`](https://aka.ms/vc14/vc_redist.x64.exe)。
 
 注意：`vc_redist.x86.exe` 与 x64 是两套独立的运行库，已经装了 x86 也不能代替。若安装后无法切换、Server 反复退出或设置窗口闪退，请优先安装或修复 x64 运行库并重新启动 Windows。更多症状和排查方法见[安装后无法使用或设置窗口闪退](/docs/windows/#安装后无法使用或设置窗口闪退)。
 
