@@ -6,7 +6,7 @@ import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
-import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, SeasonBackdrop, SunIcon, ToastProvider, chipClass, copyText, cx, useToast } from "./ui";
+import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
   to: "/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
@@ -488,16 +488,20 @@ function SiteFooter({ inert }: { inert: boolean }) {
             </div>
             <p className="m-0 mt-3.5 text-sm leading-[1.85] text-muted">{t("开源多平台中文输入法，覆盖 Windows、macOS、Linux、Android、iOS 与 HarmonyOS，各平台原生实现。")}</p>
             <div className="mt-[18px] flex flex-wrap gap-2">
-              <a className={chipClass()} href="https://t.me/msimegroup" target="_blank" rel="noreferrer">Telegram</a>
+              <a className={chipClass()} href="https://t.me/msimegroup" target="_blank" rel="noreferrer" title="Telegram" aria-label="Telegram">
+                <TelegramIcon size={16} />
+              </a>
               <button
                 type="button"
-                className={chipClass()}
+                className={chipClass("gap-1.5")}
                 title={t("点击复制群号")}
+                aria-label={t(`QQ 群 ${QQ_GROUP}`)}
                 onClick={async () => {
                   show(t((await copyText(QQ_GROUP)) ? `已复制 QQ 群号 ${QQ_GROUP}` : `QQ 群号：${QQ_GROUP}`));
                 }}
               >
-                {t(`QQ 群 ${QQ_GROUP}`)}
+                <QQIcon size={15} className="flex-none" />
+                {QQ_GROUP}
               </button>
               <a className={chipClass()} href="mailto:metasequoiaime@gmail.com">{t("邮箱")}</a>
             </div>
