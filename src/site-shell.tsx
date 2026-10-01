@@ -10,7 +10,7 @@ import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
-  to: "/" | "/download/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
+  to: "/" | "/download/" | "/skins/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
   label: string;
   /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
   github?: boolean;
@@ -20,6 +20,7 @@ type NavItem = {
 const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
   { to: "/download/", label: "下载" },
+  { to: "/skins/", label: "社区皮肤" },
   { to: "/feedback/", label: "Bug 与需求反馈" },
   { to: "/words/", label: "词库缺失反馈" },
   { to: "/docs/$guide/", label: "文档" },
