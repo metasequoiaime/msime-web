@@ -59,23 +59,6 @@ const Prose = memo(function Prose({ html, className }: { html: string; className
   );
 });
 
-function InstallShot() {
-  const { t } = useLocale();
-  return (
-  <img
-    src="/screenshots/install-finish-840w.webp"
-    srcSet="/screenshots/install-finish-480.webp 480w, /screenshots/install-finish-840w.webp 840w, /screenshots/install-finish.webp 998w"
-    sizes="(max-width: 900px) 92vw, 560px"
-    width="998"
-    height="767"
-    loading="lazy"
-    decoding="async"
-    className="block h-auto w-full rounded-btn shadow-[var(--shadow),0_0_0_1px_var(--hair)]"
-    alt={t("水杉输入法安装程序的完成页")}
-  />
-  );
-}
-
 function Callout({ block, html }: { block: GuideBlock; html: string }) {
   const { t } = useLocale();
   const tone = TONES[block.title] ?? "note";
@@ -97,19 +80,15 @@ function PlatformSection({ section, hidden, name }: { section: RenderedSection; 
   const [main, ...callouts] = section.blocks;
   const [mainHtml, ...calloutHtml] = section.blockHtml;
   const heading = t(main ? `${main.title}（${name}）` : name);
-  const withShot = section.platform === "windows";
 
   return (
     <section id={`download-${section.platform}`} hidden={hidden} aria-labelledby={`download-${section.platform}-title`} className="scroll-mt-[84px]">
-      <div className={cx("grid items-start gap-[clamp(24px,4vw,48px)]", withShot && "grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))]")}>
-        <div className="min-w-0">
-          <h2 id={`download-${section.platform}-title`} className="m-0 font-heading text-2xl leading-[1.4] font-bold text-ink">
-            {heading}
-          </h2>
-          {section.introHtml && <Prose html={section.introHtml} className="mt-3.5" />}
-          {mainHtml && <Prose html={mainHtml} className="mt-3.5" />}
-        </div>
-        {withShot && <InstallShot />}
+      <div className="min-w-0">
+        <h2 id={`download-${section.platform}-title`} className="m-0 font-heading text-2xl leading-[1.4] font-bold text-ink">
+          {heading}
+        </h2>
+        {section.introHtml && <Prose html={section.introHtml} className="mt-3.5" />}
+        {mainHtml && <Prose html={mainHtml} className="mt-3.5" />}
       </div>
       {callouts.length > 0 && (
         <div className="mt-[clamp(28px,4vw,48px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-4">

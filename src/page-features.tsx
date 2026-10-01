@@ -29,13 +29,6 @@ const SHOTS = [
     body: "终端里输入 fuvuma，候选按辅助码分开：辅助码 iU、辅助 iQ、附注 eD 各自可辨，便于进一步筛选。",
     alt: "Windows Terminal 中的深色候选窗，逐项标注辅助码",
   },
-  {
-    src: "/screenshots/install-finish-840w.webp",
-    srcSet: "/screenshots/install-finish-840w.webp 840w",
-    title: "安装后切换使用",
-    body: "安装程序结束后按提示切换输入法即可，不需要注册、不需要登录。",
-    alt: "水杉输入法安装程序的完成页",
-  },
 ] as const;
 
 /*
