@@ -34,7 +34,7 @@ const SHOTS = [
     srcSet: "/screenshots/install-finish-840w.webp 840w",
     title: "安装后切换使用",
     body: "安装程序结束后按提示切换输入法即可，不需要注册、不需要登录。",
-    alt: "水杉输入法安装程序的完成页，勾选着启动 Server 与 Watchdog 两项",
+    alt: "水杉输入法安装程序的完成页",
   },
 ] as const;
 

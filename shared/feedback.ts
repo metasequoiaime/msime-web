@@ -4,23 +4,15 @@ import type { IssueTemplate, Screenshot } from "./feedback-templates.ts";
 
 export const targets = {
   windows: { label: "Windows 输入法", repo: "MSIME-Windows" },
-  // MSIME-Apple 改名为 msime 并成为多平台仓库；MSIME-Linux 与 MSIME-Engine 已归档并关闭 Issues，Linux 前端和公共引擎的开发与反馈都并入 msime。
+  // MSIME-Apple 改名为 msime 并成为多平台仓库；MSIME-Linux 与 MSIME-Engine 已归档并关闭 Issues，Linux 前端和公共引擎的开发与反馈都并入 msime。官网面向普通用户，只按输入法平台分流，引擎、API、文档和官网的问题留给贡献者直接去 GitHub 提。
   apple: { label: "macOS / iOS 输入法", repo: "msime" },
   linux: { label: "Linux 输入法", repo: "msime" },
-  engine: { label: "公共引擎、输入方案与词库", repo: "msime" },
-  backend: { label: "公共 API", repo: "MSIME-Backend" },
-  docs: { label: "使用文档", repo: "MSIME-Docs" },
-  web: { label: "官网", repo: "MSIME-Web" },
 } as const;
-export const targetSchema = z.enum(["windows", "apple", "linux", "engine", "backend", "docs", "web"]);
+export const targetSchema = z.enum(["windows", "apple", "linux"]);
 export const contactFields = [
-  { name: "qq", label: "QQ 号码", placeholder: "QQ 号码", type: "text", max: 100 },
-  { name: "qqNickname", label: "QQ 昵称", placeholder: "QQ 显示昵称", type: "text", max: 100 },
-  { name: "wechat", label: "微信", placeholder: "微信号", type: "text", max: 100 },
   { name: "github", label: "GitHub 用户名", placeholder: "例如 octocat，无需 @ 或链接", type: "text", max: 39 },
   { name: "email", label: "Email", placeholder: "name@example.com", type: "email", max: 254 },
 ] as const;
-const contactText = (max: number) => z.string().trim().max(max, `联系方式最多 ${max} 个字`).refine(value => !/[\r\n]/.test(value), "联系方式不能换行").default("");
 export const feedbackSchema = z.object({
   locale: z.enum(["zh-CN", "zh-TW"]).optional(),
   target: targetSchema,
@@ -29,9 +21,6 @@ export const feedbackSchema = z.object({
   templateRevision: z.string().regex(/^[a-f0-9]{40}$/),
   answers: z.record(z.string().max(100), z.union([z.string().max(6000), z.array(z.string().max(2000)).max(100)])).refine(value => Object.keys(value).length <= 50, "表单字段过多"),
   screenshotFields: z.array(z.string().max(100)).max(3).default([]),
-  qq: contactText(100),
-  qqNickname: contactText(100),
-  wechat: contactText(100),
   github: z.string().trim().max(39, "GitHub 用户名最多 39 个字符").refine(value => value === "" || /^[a-z\d]+(?:-[a-z\d]+)*$/i.test(value), "请填写 GitHub 用户名，无需 @ 或个人主页链接").default(""),
   email: z.string().trim().max(254, "Email 最多 254 个字符").refine(value => value === "" || z.email().safeParse(value).success, "请填写有效的 Email 地址").default(""),
   consent: z.literal(true, { error: "请确认内容将公开发布到 GitHub" }),
@@ -58,12 +47,10 @@ export function formatIssue(data: Feedback, template: IssueTemplate, screenshots
     const attached = screenshots.filter(image => image.field === field.id).map((image, i) => `![${label("截图")} ${i + 1}](${image.url})`);
     return [`### ${content(label(field.label))}`, [answer, ...attached].filter(Boolean).join("\n\n") || "_No response_"];
   });
-  const contacts = contactFields.filter(field => field.name !== "qq" && field.name !== "qqNickname").flatMap(field => {
+  const contacts = contactFields.flatMap(field => {
     const value = data[field.name]?.trim();
     return value ? [`| ${label(field.label)} | ${contactLiteral(value)} |`] : [];
   });
-  const qq = [data.qq?.trim(), data.qqNickname?.trim()].filter((value): value is string => Boolean(value)).map(contactLiteral);
-  if (qq.length) contacts.unshift(`| QQ | ${qq.join(" · ")} |`);
   return {
     title: data.title.replaceAll("@", "@\u200b"),
     labels: template.labels,

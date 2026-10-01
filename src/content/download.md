@@ -2,7 +2,7 @@
 
 ### 安装说明
 
-下载并运行安装程序，按页面提示完成安装。安装完成后请确认 Metasequoia IME Server 与 Metasequoia IME Watchdog 已经启动，再用 `Win + Space` 切换到水杉输入法。
+下载并运行安装程序，按页面提示完成安装，再用 `Win + Space` 切换到水杉输入法。
 
 升级现有版本前，请先阅读该版本的 GitHub Release 说明，确认是否有额外操作要求。
 

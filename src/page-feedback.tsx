@@ -15,14 +15,15 @@ import { FeedbackResponseError, readFeedbackResponse } from "./feedback-response
 import { loadTurnstile } from "./turnstile";
 import { PageHero } from "./page-content";
 import { LocaleLink } from "./locale-link";
-import { Button, Container, Pill, cx } from "./ui";
+import { AppleIcon, Button, Container, LinuxIcon, Pill, WindowsIcon, cx } from "./ui";
 import { FeedbackAside } from "./feedback/feedback-aside";
 import { FeedbackSuccess } from "./feedback/feedback-success";
 import { alertClass, checkClass, fieldLabelClass, hintClass, inputClass, markdownClass, previewImageButtonClass, stepTitleClass } from "./feedback/styles";
 
-const emptyForm: Feedback = { target: "windows", title: "", templateId: "", templateRevision: "", answers: {}, screenshotFields: [], qq: "", qqNickname: "", wechat: "", github: "", email: "", consent: true };
+const emptyForm: Feedback = { target: "windows", title: "", templateId: "", templateRevision: "", answers: {}, screenshotFields: [], github: "", email: "", consent: true };
 type LocalScreenshot = { id: string; field: string; file: File; url: string };
 type Draft = { title: string; answers: Answers; screenshots: LocalScreenshot[] };
+const targetIcons = { windows: WindowsIcon, apple: AppleIcon, linux: LinuxIcon } as const;
 
 export function FeedbackPage() {
   const { t, tw } = useLocale();
@@ -324,13 +325,13 @@ export function FeedbackPage() {
                 <fieldset className="m-0 min-w-0 border-0 p-0" disabled={busy || readingImages}>
                   <section aria-labelledby="feedback-step-target">
                     <h2 id="feedback-step-target" className={stepTitleClass}>{t("1. 选择反馈对象")}</h2>
-                    <p id="feedback-target-hint" className={cx(hintClass, "mt-1.5 text-sm")}>{t("先选你正在使用的平台。不确定该选哪一项，选输入法平台即可，我们会协助分类。")}</p>
-                    {/* 180px rather than the design's 150px: the real target labels ("macOS / iOS 输入法", "公共引擎、输入方案与词库") are longer and would otherwise break mid-word. */}
-                    <div className="mt-3.5 grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]" role="radiogroup" aria-labelledby="feedback-step-target" aria-describedby="feedback-target-hint">
-                      {Object.entries(targets).map(([key, item]) => <label key={key} className="flex min-h-11 cursor-pointer items-center rounded-field bg-panel-2 px-3 py-2 text-sm leading-normal text-ink transition-[background-color,box-shadow] duration-150 [word-break:keep-all] [overflow-wrap:anywhere] hover:bg-accent-soft has-[:checked]:bg-accent-soft has-[:checked]:font-semibold has-[:checked]:text-accent-ink has-[:checked]:shadow-ring-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
+                    {/* 180px rather than the design's 150px: "macOS / iOS 输入法" plus its icon would otherwise break mid-word. */}
+                    <div className="mt-3.5 grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]" role="radiogroup" aria-labelledby="feedback-step-target">
+                      {Object.entries(targets).map(([key, item]) => { const Icon = targetIcons[key as keyof typeof targets]; return <label key={key} className="flex min-h-11 gap-2 cursor-pointer items-center rounded-field bg-panel-2 px-3 py-2 text-sm leading-normal text-ink transition-[background-color,box-shadow] duration-150 [word-break:keep-all] [overflow-wrap:anywhere] hover:bg-accent-soft has-[:checked]:bg-accent-soft has-[:checked]:font-semibold has-[:checked]:text-accent-ink has-[:checked]:shadow-ring-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
                         <input className="sr-only" type="radio" name="target" value={key} checked={form.target === key} onChange={() => update({ target: key, template: undefined, tab: "edit" })} />
+                        <Icon size={18} className="flex-none" />
                         <span>{t(item.label)}</span>
-                      </label>)}
+                      </label>; })}
                     </div>
                     <p className={cx(hintClass, "mt-3")}>
                       {t("遇到使用问题？先看看")}
@@ -351,30 +352,21 @@ export function FeedbackPage() {
                   {template && !templateLoading && !templateError && <>
                     <section className="mt-8" aria-labelledby="feedback-step-template">
                       <h2 id="feedback-step-template" className={stepTitleClass}>{t("2. 反馈类型")}</h2>
-                      <div className="mt-3 inline-flex max-w-full flex-wrap gap-1 rounded-field bg-panel-2 p-1" role="radiogroup" aria-labelledby="feedback-step-template" aria-describedby="feedback-template-description">
+                      <div className="mt-3 inline-flex max-w-full flex-wrap gap-1 rounded-field bg-panel-2 p-1" role="radiogroup" aria-labelledby="feedback-step-template" aria-describedby={template.description ? "feedback-template-description" : undefined}>
                         {catalog.templates.map(item => <label key={item.id} className="inline-flex min-h-[38px] cursor-pointer items-center rounded-[9px] px-[18px] py-1.5 text-[14.5px] font-semibold text-muted transition-[background-color,color,box-shadow] duration-150 [overflow-wrap:anywhere] hover:text-ink has-[:checked]:bg-panel has-[:checked]:text-ink has-[:checked]:shadow-tab has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
                           <input className="sr-only" type="radio" name="issue-template" value={item.id} checked={template.id === item.id} onChange={() => update({ template: item.id })} />
                           <span>{t(item.name)}</span>
                         </label>)}
                       </div>
-                      <div id="feedback-template-description" className={cx(hintClass, "mt-2.5")}>
-                        {template.description && <p className="m-0">{t(template.description)}</p>}
-                        <p className="m-0">{t("切换类型会保留当前页面中的草稿，刷新或关闭页面后不会保留。")}</p>
-                      </div>
+                      {template.description && <p id="feedback-template-description" className={cx(hintClass, "mt-2.5")}>{t(template.description)}</p>}
                     </section>
 
                     <section className="mt-8" aria-labelledby="feedback-step-describe">
                       <h2 id="feedback-step-describe" className={stepTitleClass}>{t("3. 描述")}</h2>
-                      <p className={cx(hintClass, "mt-1.5 text-sm")}>{t("带 * 的项目必须填写，其余可以跳过。按自己的话描述即可，不用考虑技术术语。")}</p>
-                      <div className="mt-3 flex items-center gap-3 text-[13px] text-muted">
-                        <span className="flex-none">{t(`必填 ${completedFields + Number(titleComplete)} / ${requiredFields.length + 1}`)}</span>
-                        <progress className="h-1.5 min-w-0 flex-1 appearance-none overflow-hidden rounded-full border-0 bg-panel-2 accent-accent [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-accent [&::-webkit-progress-bar]:bg-panel-2 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-accent" aria-label={t("必填内容完成进度")} value={completedFields + Number(titleComplete)} max={requiredFields.length + 1} />
-                      </div>
-                      <label className={cx(fieldLabelClass, "mt-4")}>
+                      <label className={cx(fieldLabelClass, "mt-3")}>
                         {t("标题")}<span className="ml-1 text-warn" aria-hidden="true">*</span><span className="sr-only">{t("（必填）")}</span>
-                        <input className={inputClass} name="title" value={form.title} minLength={5} maxLength={100} required aria-describedby="feedback-title-hint" placeholder={t("例如：候选字显示为方框，或希望能调整字号")} onChange={event => setForm({ ...form, title: event.target.value })} />
+                        <input className={inputClass} name="title" value={form.title} minLength={5} maxLength={100} required placeholder={t("例如：候选字显示为方框，或希望能调整字号")} onChange={event => setForm({ ...form, title: event.target.value })} />
                       </label>
-                      <p id="feedback-title-hint" className={cx(hintClass, "mt-1.5 text-[13px]")}>{t("用一句话写清楚哪里出了问题，或希望增加什么，5–100 个字符。")}</p>
                       <FeedbackFields template={template} answers={form.answers} onChange={(id, value) => setForm(previous => ({ ...previous, answers: { ...previous.answers, [id]: value } }))} upload={renderUpload} />
                     </section>
                   </>}
@@ -415,7 +407,6 @@ export function FeedbackPage() {
                       {t("4. 留下联系方式（可选）")}
                       {contactFields.some(field => form[field.name].trim()) && <span className="ml-2 text-[13px] font-normal text-muted">{t("· 已填写")}</span>}
                     </h2>
-                    <p className={cx(hintClass, "mt-1.5 text-sm")}>{t("方便维护者进一步了解情况，可填写任意一项或全部留空。联系方式会随 Issue 公开，请只提供愿意公开的账号。")}</p>
                     <div className="mt-3 grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-x-2.5 gap-y-3">
                       {contactFields.map(field => <label key={field.name} className="block min-w-0 text-[13px] text-muted">{t(field.label)}
                         <input className={cx(inputClass, "mt-1.5 text-[14.5px]")} name={field.name} type={field.type} value={form[field.name]} maxLength={field.max} placeholder={t(field.placeholder)} autoCapitalize="none" spellCheck={false} onChange={event => setForm({ ...form, [field.name]: event.target.value })} />

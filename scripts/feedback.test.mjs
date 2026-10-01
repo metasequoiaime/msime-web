@@ -30,7 +30,7 @@ function validForm(target = 'windows', template = templateFor(target)) {
 }
 const form = validForm();
 const request = (data = form, headers = {}) => new Request('https://msime.app/api/feedback', { method: 'POST', headers: { Origin: env.FEEDBACK_ORIGIN, 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(data) });
-function mockFetch(t, { verification = { success: true, action: 'feedback', hostname: 'msime.app' }, issue = () => Response.json({ number: 42 }, { status: 201 }), sourceOverride, templateStatus } = {}) {
+function mockFetch(t, { verification = { success: true, action: 'feedback', hostname: 'msime.app' }, issue = () => Response.json({ number: 42 }, { status: 201 }), sourceOverride, templateStatus, templateRepos = ['MSIME-Windows','msime','.github'] } = {}) {
   const calls = [];
   t.mock.method(globalThis, 'fetch', async (url, options) => {
     calls.push({ url, options });
@@ -39,7 +39,7 @@ function mockFetch(t, { verification = { success: true, action: 'feedback', host
     if (url.includes('/contents/')) {
       if (templateStatus) return new Response(null,{status:templateStatus});
       const repo = url.split('/')[5];
-      if (!['MSIME-Windows','msime','.github'].includes(repo)) return new Response(null,{status:404});
+      if (!templateRepos.includes(repo)) return new Response(null,{status:404});
       const source = sourceOverride ?? (repo === 'MSIME-Windows' ? sources.windows : repo === 'msime' ? sources.linux : sources.common);
       return Response.json([{name:'feature_request.yml',path:'.github/ISSUE_TEMPLATE/feature_request.yml',sha:sha(source),type:'file'}]);
     }
@@ -73,7 +73,7 @@ test('all targets read their templates, validate answers and create issues using
 
 test('schema, origin, content type and body limits reject invalid requests before external calls', async t => {
   const calls = mockFetch(t);
-  for (const change of [{target:'__proto__'},{consent:false},{title:'     '},{title:'hello\nworld'},{templateRevision:'bad'},{answers:{problem:'x'.repeat(6001)}},{token:''},{email:'bad'},{github:'@user'},{wechat:'line\nbreak'}]) assert.equal((await onRequest({request:request({...form,...change}),env})).status,400);
+  for (const change of [{target:'__proto__'},{consent:false},{title:'     '},{title:'hello\nworld'},{templateRevision:'bad'},{answers:{problem:'x'.repeat(6001)}},{token:''},{email:'bad'},{github:'@user'},{email:'a@b.co\nx'}]) assert.equal((await onRequest({request:request({...form,...change}),env})).status,400);
   assert.equal((await onRequest({request:request(form,{'Content-Type':'text/plain'}),env})).status,415);
   assert.equal((await onRequest({request:request(form,{Origin:'https://evil.example'}),env})).status,403);
   assert.equal((await onRequest({request:request({...form,oversized:'字'.repeat(64_000)}),env})).status,400);
@@ -126,10 +126,10 @@ test('template service failures and App auth failures do not create issues or le
 });
 
 test('Markdown, contacts and labels follow the template without active user mentions', () => {
-  const data=feedbackSchema.parse({...form,answers:{...form.answers,proposal:'**说明**\n\n- @team'},qq:'123456789',qqNickname:'测试昵称',email:'example@example.com'});
+  const data=feedbackSchema.parse({...form,answers:{...form.answers,proposal:'**说明**\n\n- @team'},github:'octo-cat',email:'example@example.com'});
   const issue=formatIssue(data,templateFor());
   assert.ok(issue.body.includes('**说明**\n\n- @\u200bteam'));
-  assert.ok(issue.body.includes('| QQ | ` 123456789 ` · ` 测试昵称 ` |'));
+  assert.ok(issue.body.includes('| GitHub 用户名 | ` octo-cat ` |'));
   assert.ok(issue.body.includes('` example@example.com `'));
   assert.deepEqual(issue.labels,['enhancement']);
   assert.equal(issue.type,'Feature');
@@ -187,16 +187,16 @@ test('failed storage or explicit rejection cleans up; ambiguous Issue writes ret
 });
 
 test('template endpoint inherits only on directory 404, rejects arbitrary targets and returns no credentials', async t => {
-  const calls=mockFetch(t);
-  const response=await templateEndpoint({request:new Request('https://msime.app/api/feedback-templates?target=web')});
+  const calls=mockFetch(t,{templateRepos:['.github']});
+  const response=await templateEndpoint({request:new Request('https://msime.app/api/feedback-templates?target=linux')});
   assert.equal(response.status,200);
   assert.equal((await response.json()).templates[0].id,'.github/feature_request.yml');
-  assert.ok(calls.some(call=>call.url.includes('/MSIME-Web/contents/')));
+  assert.ok(calls.some(call=>call.url.includes('/msime/contents/')));
   assert.ok(calls.some(call=>call.url.includes('/.github/contents/')));
   assert.equal((await templateEndpoint({request:new Request('https://msime.app/api/feedback-templates?target=evil')})).status,400);
   t.mock.restoreAll();
   const failed=mockFetch(t,{templateStatus:403});
-  await assert.rejects(loadFeedbackTemplates('web'));
+  await assert.rejects(loadFeedbackTemplates('linux'));
   assert.equal(failed.length,1);
 });
 
