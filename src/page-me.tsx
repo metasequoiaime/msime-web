@@ -7,6 +7,7 @@ import { PluginCard, ResourceCard } from "./community/resource-card";
 import { accountCall, ApiError, clipboardQuery, dictionaryQuery, ignoreBody, MAX_DATA_QUERY_BYTES, pluginsQuery, resourcesQuery, v1CandidateSkinsQuery, v1KeyboardSkinsQuery } from "./data/account";
 import type { DictionaryEntry, DictionaryKind, Me } from "./data/schemas";
 import { inputClass } from "./feedback/styles";
+import { LocaleLink } from "./locale-link";
 import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";
 import { CandidateSkinCard, fromV1Candidate, fromV1Keyboard, KeyboardSkinCard } from "./skins/skin-cards";
@@ -393,8 +394,10 @@ function CloudClipboard() {
 const SAVED_KINDS = ["keyboard", "candidate", "plugin", "dictionary", "reply"] as const;
 type SavedKind = (typeof SAVED_KINDS)[number];
 const SAVED_LABELS: Record<SavedKind, string> = { keyboard: "键盘皮肤", candidate: "候选窗皮肤", plugin: "插件", dictionary: "词库", reply: "回复模板" };
+const GALLERIES = { keyboard: "/skins/", candidate: "/skins/", plugin: "/plugins/", dictionary: "/dictionaries/", reply: "/dictionaries/" } as const;
 
 function Saved() {
+  const { t } = useLocale();
   const [kind, setKind] = useState<SavedKind>("keyboard");
   const panelId = `${useId()}-saved`;
   return (
@@ -405,6 +408,10 @@ function Saved() {
         {kind === "candidate" && <SavedCandidate />}
         {kind === "plugin" && <SavedPlugins />}
         {(kind === "dictionary" || kind === "reply") && <SavedResources key={kind} kind={kind} />}
+        <p className={cx(hintClass, "mt-5")}>
+          {t(`在${SAVED_LABELS[kind]}广场收藏更多作品：`)}
+          <LocaleLink to={GALLERIES[kind]}>{t("前往浏览")}</LocaleLink>
+        </p>
       </div>
     </>
   );

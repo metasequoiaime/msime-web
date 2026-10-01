@@ -12,7 +12,7 @@ import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
-  to: "/" | "/download/" | "/skins/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
+  to: "/" | "/download/" | "/skins/" | "/dictionaries/" | "/plugins/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
   label: string;
   /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
   github?: boolean;
@@ -23,6 +23,8 @@ const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
   { to: "/download/", label: "下载" },
   { to: "/skins/", label: "社区皮肤" },
+  { to: "/dictionaries/", label: "词库" },
+  { to: "/plugins/", label: "插件" },
   { to: "/feedback/", label: "Bug 与需求反馈" },
   { to: "/words/", label: "词库缺失反馈" },
   { to: "/docs/$guide/", label: "文档" },
@@ -599,6 +601,8 @@ function SiteFooter({ inert }: { inert: boolean }) {
           <FooterColumn title="产品">
             <Link className={footerLink} to="/features/">{t("功能")}</Link>
             <Link className={footerLink} to="/skins/">{t("社区皮肤")}</Link>
+            <Link className={footerLink} to="/dictionaries/">{t("社区词库")}</Link>
+            <Link className={footerLink} to="/plugins/">{t("社区插件")}</Link>
             <Link className={footerLink} to="/download/">{t("下载")}</Link>
             <Link className={footerLink} to="/download/" hash="releases">{t("更新日志")}</Link>
             <Link className={footerLink} to="/docs/$guide/" params={{ guide: "windows" }}>{t("使用指南")}</Link>

@@ -1,5 +1,5 @@
 import type { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
-import { useEffect, useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ComponentType, type ReactNode } from "react";
 import { Button, Card, SearchIcon, cx } from "../ui";
 import { useLocale } from "../use-locale";
 
@@ -33,23 +33,34 @@ export function Chips<T extends string>({ legend, values, labels, value, onChang
 /** The id of one tab of a `SegmentedTabs`, for the panel's `aria-labelledby`. */
 export const tabId = (panelId: string, value: string) => `${panelId}-tab-${value}`;
 
+/** An icon component from ../ui, drawn before a captioned tab's title. */
+type TabIcon = ComponentType<{ size?: number; className?: string }>;
+
 /** The segmented control at the top of a gallery (键盘皮肤 / 候选窗皮肤), with the arrow keys moving between tabs. `panelId` is the `tabpanel` it controls, which should be labelled by `tabId(panelId, value)`. */
-export function SegmentedTabs<T extends string>({ label, values, labels, value, onChange, panelId, size = "md" }: { label: string; values: readonly T[]; labels: Record<T, string>; value: T; onChange: (value: T) => void; panelId: string; size?: "md" | "sm" }) {
+export function SegmentedTabs<T extends string>({ label, values, labels, captions, icons, value, onChange, panelId, size = "md" }: { label: string; values: readonly T[]; labels: Record<T, string>; captions?: Record<T, string>; icons?: Record<T, TabIcon>; value: T; onChange: (value: T) => void; panelId: string; size?: "md" | "sm" }) {
   const { t } = useLocale();
+  // A caption says where each kind shows up (社区皮肤: 手机键盘、屏幕键盘 / 电脑打字时的候选框). Captioned tabs fill the width in two columns on a phone so the caption stays on one line at 360px.
+  const captioned = captions !== undefined;
   return (
-    <div className="inline-flex max-w-full flex-wrap gap-1 rounded-field bg-panel-2 p-1" role="tablist" aria-label={t(label)}>
-      {values.map(item => (
+    <div className={captioned ? "grid w-full grid-cols-2 gap-1 rounded-field bg-panel-2 p-1 sm:inline-flex sm:w-auto sm:max-w-full sm:flex-wrap" : "inline-flex max-w-full flex-wrap gap-1 rounded-field bg-panel-2 p-1"} role="tablist" aria-label={t(label)}>
+      {values.map(item => {
+        const Icon = icons?.[item];
+        const id = tabId(panelId, item);
+        return (
         <button
           key={item}
-          id={tabId(panelId, item)}
+          id={id}
           type="button"
           role="tab"
           aria-selected={value === item}
           aria-controls={panelId}
+          aria-labelledby={captioned ? `${id}-label` : undefined}
+          aria-describedby={captioned ? `${id}-caption` : undefined}
           tabIndex={value === item ? 0 : -1}
           className={cx(
-            "inline-flex cursor-pointer items-center rounded-[9px] border-0 font-semibold transition-[background-color,color,box-shadow] duration-150",
-            size === "md" ? "min-h-[38px] px-[18px] py-1.5 text-[14.5px]" : "min-h-8 px-3.5 py-1 text-[13.5px]",
+            "cursor-pointer rounded-[9px] border-0 transition-[background-color,color,box-shadow] duration-150",
+            captioned ? "flex min-h-[38px] min-w-0 flex-col items-start justify-center px-3 py-1.5 text-left sm:px-[18px]" : "inline-flex items-center font-semibold",
+            captioned ? "" : size === "md" ? "min-h-[38px] px-[18px] py-1.5 text-[14.5px]" : "min-h-8 px-3.5 py-1 text-[13.5px]",
             value === item ? "bg-panel text-ink shadow-tab" : "bg-transparent text-muted hover:text-ink"
           )}
           onClick={() => onChange(item)}
@@ -62,9 +73,21 @@ export function SegmentedTabs<T extends string>({ label, values, labels, value, 
             document.getElementById(tabId(panelId, next))?.focus();
           }}
         >
-          {t(labels[item])}
+          {captioned ? (
+            <>
+              {/* The icon sits on the title row so the caption below gets the tab's full width. */}
+              <span className="flex items-start gap-1.5">
+                {Icon && <Icon size={16} className="mt-0.5 shrink-0" />}
+                <span id={`${id}-label`} className="text-[14.5px] font-semibold leading-snug">{t(labels[item])}</span>
+              </span>
+              <span id={`${id}-caption`} className="text-xs leading-snug text-muted">{t(captions[item])}</span>
+            </>
+          ) : (
+            t(labels[item])
+          )}
         </button>
-      ))}
+        );
+      })}
     </div>
   );
 }
