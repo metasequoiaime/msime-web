@@ -4,6 +4,7 @@ import { useLocale } from "./use-locale";
 import { baseLocalePath, traditionalPages, traditionalPath, isTraditional } from "../shared/locales";
 import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import { NoticeBanner } from "./notice-banner";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, chipClass, copyText, cx, useToast } from "./ui";
@@ -625,6 +626,8 @@ function Shell({ children }: { children?: ReactNode }) {
       </div>
 
       <RouteProgress />
+
+      <NoticeBanner inert={menuIsOpen} />
 
       <div id="site-content" className="focus:outline-none" tabIndex={-1} inert={menuIsOpen}>
         {children ?? <Outlet />}
