@@ -5,7 +5,9 @@ import { baseLocalePath, traditionalPages, traditionalPath, isTraditional } from
 import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { NoticeBanner } from "./notice-banner";
-import { isCommunityPath } from "./community/sections";
+import { COMMUNITY_SECTIONS } from "./community/sections";
+import { FEEDBACK_SECTIONS } from "./feedback/sections";
+import { inSectionGroup } from "./section-nav";
 import { AccountProvider, useAccount } from "./account/session";
 import { Avatar } from "./account/avatar";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
@@ -13,32 +15,41 @@ import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
-  to: "/" | "/download/" | "/skins/" | "/feedback/" | "/words/" | "/docs/$guide/" | "/code/" | "/about/";
+  to: "/" | "/download/" | "/skins/" | "/docs/$guide/" | "/feedback/" | "/about/" | "/code/";
   label: string;
   /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
   github?: boolean;
 };
 
-/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). 社区 stands for the three community pages (皮肤, 词库, 插件) and opens 皮肤, the address the tab had as 社区皮肤, so the entry still lands where it always did; the pages switch between each other with the sub-navigation under their heroes, and the footer and home page still link to each one. */
+/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). 社区 stands for the three community pages (皮肤, 词库, 插件) and opens 皮肤, the address the tab had as 社区皮肤, so the entry still lands where it always did; 反馈 likewise stands for the two feedback forms (Bug 与需求, 词库缺失) and opens the first. Each group's pages switch between each other with the sub-navigation under their heroes, and the footer still links to each one. */
 const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
   { to: "/download/", label: "下载" },
   { to: "/skins/", label: "社区" },
-  { to: "/feedback/", label: "Bug 与需求反馈" },
-  { to: "/words/", label: "词库缺失反馈" },
   { to: "/docs/$guide/", label: "文档" },
-  { to: "/code/", label: "开源代码", github: true },
+  { to: "/feedback/", label: "反馈" },
   { to: "/about/", label: "关于" },
 ];
+
+/** On wide screens 开源代码 is the round GitHub button among the header controls; the menu panel has no room for that button, so it lists the page as its last item instead. */
+const CODE_ITEM: NavItem = { to: "/code/", label: "开源代码", github: true };
 
 const ORG_URL = "https://github.com/metasequoiaime";
 // Same query Tailwind emits for the `nav:` variant (--breakpoint-nav in app.css), so JS and CSS switch layouts at the same width whatever the root font size.
 const DESKTOP_NAV_QUERY = "(width >= 73.75rem)";
 const QQ_GROUP = "829919142";
 
-/** The docs tab also covers the FAQ, which lives under the docs toolbar in the design; the 社区 tab covers all three community pages. */
+/** The docs tab also covers the FAQ, which lives under the docs toolbar in the design; the 社区 tab covers all three community pages and the 反馈 tab both feedback forms. */
 const isCurrent = (item: NavItem, path: string) =>
-  item.to === "/" ? path === "/" : item.to === "/docs/$guide/" ? path.startsWith("/docs/") || path === "/faq/" : item.to === "/skins/" ? isCommunityPath(path) : path.startsWith(item.to);
+  item.to === "/"
+    ? path === "/"
+    : item.to === "/docs/$guide/"
+      ? path.startsWith("/docs/") || path === "/faq/"
+      : item.to === "/skins/"
+        ? inSectionGroup(COMMUNITY_SECTIONS, path)
+        : item.to === "/feedback/"
+          ? inSectionGroup(FEEDBACK_SECTIONS, path)
+          : path.startsWith(item.to);
 
 const linkParams = (item: NavItem) => (item.to === "/docs/$guide/" ? { guide: "windows" } : {});
 
@@ -390,13 +401,32 @@ function DesktopNav() {
         {NAV_ITEMS.map((item) => (
           <li key={item.to}>
             <Link to={item.to} params={linkParams(item)} className="nav-link" activeOptions={{ exact: true, includeSearch: false }} activeProps={{}} aria-current={isCurrent(item, path) ? "page" : undefined}>
-              {item.github && <GitHubIcon size={15} />}
               {t(item.label)}
             </Link>
           </li>
         ))}
       </ul>
     </nav>
+  );
+}
+
+/** 开源代码 as a round GitHub button beside the palette, on wide screens only: below 1180px the bar is already full and the menu panel lists the page. */
+function CodeButton() {
+  const { t } = useLocale();
+  const current = useLocation({ select: (location) => baseLocalePath(location.pathname) === CODE_ITEM.to });
+  const label = t(CODE_ITEM.label);
+  return (
+    <Link
+      to={CODE_ITEM.to}
+      className={cx(roundControl, "hidden w-9 nav:inline-flex", current && "bg-panel-2")}
+      activeOptions={{ exact: true, includeSearch: false }}
+      activeProps={{}}
+      aria-current={current ? "page" : undefined}
+      title={label}
+      aria-label={label}
+    >
+      <GitHubIcon />
+    </Link>
   );
 }
 
@@ -408,7 +438,7 @@ function MobileNav({ isOpen, onNavigate }: { isOpen: boolean; onNavigate: () => 
   return (
     <nav id="nav-menu" aria-label={t("站点导航")} hidden={!isOpen} className="px-[clamp(16px,3.6vw,40px)] pt-2 pb-[18px] shadow-divider-t nav:hidden">
       <ul className="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
-        {NAV_ITEMS.map((item) => {
+        {[...NAV_ITEMS, CODE_ITEM].map((item) => {
           const current = isCurrent(item, path);
           return (
             <li key={item.to}>
@@ -693,6 +723,7 @@ function Shell({ children }: { children?: ReactNode }) {
           <DesktopNav />
 
           <div className="ml-auto flex flex-none items-center gap-1.5">
+            <CodeButton />
             <PaletteMenu isOpen={paletteIsOpen} setOpen={setPaletteIsOpen} />
             <AccountMenu isOpen={accountIsOpen} setOpen={setAccountIsOpen} />
             {/* The bar's one accent action, kept on every width (the menu panel no longer lists 下载). */}

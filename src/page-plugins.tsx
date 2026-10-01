@@ -2,7 +2,9 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useId } from "react";
 import { useAccount } from "./account/session";
 import { OfficialPluginsPanel } from "./community/official-packs";
-import { cardGridClass, Chips, CommunitySectionNav, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch } from "./community/parts";
+import { cardGridClass, Chips, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch } from "./community/parts";
+import { COMMUNITY_SECTIONS } from "./community/sections";
+import { SectionNav } from "./section-nav";
 import { PLUGIN_KIND_LABELS, PluginCard } from "./community/resource-card";
 import { pluginsQuery } from "./data/account";
 import { MAX_SKIN_QUERY_BYTES } from "./data/queries";
@@ -46,7 +48,7 @@ export function PluginsPage() {
           <LinkButton to="/download/">{t("下载水杉输入法")}</LinkButton>
         </div>
       </PageHero>
-      <CommunitySectionNav current="/plugins/" />
+      <SectionNav group={COMMUNITY_SECTIONS} current="/plugins/" />
       <main className="w-full">
         <Container className="pt-8">
           <SegmentedTabs label="插件来源" values={SOURCES} labels={SOURCE_LABELS} value={source} onChange={value => update({ source: value === "community" ? undefined : value, kind: undefined }, true)} panelId={panelId} />

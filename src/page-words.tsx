@@ -8,6 +8,8 @@ import { createdSchema, formatLine, KIND_FIELDS, KIND_FILES, kindEntrySchemas, k
 import type { SubmissionKind } from "../shared/words";
 import { PageHero } from "./page-content";
 import { LocaleLink } from "./locale-link";
+import { FEEDBACK_SECTIONS } from "./feedback/sections";
+import { SectionNav } from "./section-nav";
 import { AnchorButton, Button, Card, Container, cx } from "./ui";
 import { CheckIcon } from "./ui/icons";
 import { checkClass, fieldLabelClass, hintClass, inputClass, stepTitleClass } from "./feedback/styles";
@@ -209,6 +211,7 @@ export function WordsPage() {
         title="提交词条"
         lead="输入法打不出想要的词，或候选旁的译文不合适？可以在这里提交词语、英文单词或翻译，无需 GitHub 账号。提交的词条会写入词库仓库 msime-dictionary 的公开 Pull Request，由维护者逐条审核；审核通过后随之后发布的词库版本在所有平台生效，不会立即出现在你的输入法里。"
       />
+      <SectionNav group={FEEDBACK_SECTIONS} current="/words/" />
       <main className="w-full">
         <Container className="flex flex-wrap items-start gap-6 pt-8">
           {result ? <section className="min-w-0 flex-[1_1_min(100%,560px)] rounded-card bg-panel p-[clamp(24px,3.4vw,40px)] shadow-card outline-none" aria-live="polite" tabIndex={-1} ref={successPanel}>
