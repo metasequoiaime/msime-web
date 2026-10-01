@@ -162,8 +162,6 @@ Turnstile 复用站点现有 widget，所有类型的 action 都为 `words`，�
 
 初次启动使用 TanStack Router 的 SSR 状态恢复并由 React hydrateRoot 接管静态正文；构建为当前页面生成 modulepreload，不预取其他页面。路由恢复脚本作为同源带内容哈希的资源输出，避免额外内联脚本撑大 CSP。主题在接管前保持与静态快照一致，随后在绘制前应用偏好。文档首段在静态构建时就放入页头，不依赖浏览器二次移动。
 
-安装截图保持 Docs 原文不变，在网站渲染时使用本地 WebP、尺寸声明和响应式候选。派生文件可用 `cwebp -q 85 -resize 480 0 public/screenshots/install-finish.png -o public/screenshots/install-finish-480.webp` 和 `cwebp -q 85 public/screenshots/install-finish.png -o public/screenshots/install-finish.webp` 重建。
-
 ### 简繁中文
 
 所有产品页面的简繁版本复用相同 React 组件、CSS 和交互，不维护独立的繁体布局。`/zh-TW/` 对应台湾繁体中文，原简体网址不变；手动切换语言，不按 IP 强制跳转。

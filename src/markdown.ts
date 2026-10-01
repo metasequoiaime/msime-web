@@ -79,14 +79,11 @@ const localizeSiteLinks = (root: ParentNode, localePath: string) => {
         link.append(element);
       }
     }
+    // The installer screenshot was retired from the site; the pinned Docs revision still embeds it, so drop it here (and the paragraph it leaves empty) until the gitlink moves past its removal.
     if (element.getAttribute("src") === "/screenshots/install-finish.png") {
-      element.setAttribute("src", "/screenshots/install-finish.webp");
-      element.setAttribute("srcset", "/screenshots/install-finish-480.webp 480w, /screenshots/install-finish.webp 998w");
-      element.setAttribute("sizes", "(max-width: 600px) calc(100vw - 40px), (max-width: 1100px) 65vw, 760px");
-      element.setAttribute("width", "998");
-      element.setAttribute("height", "767");
-      element.setAttribute("loading", "lazy");
-      element.setAttribute("decoding", "async");
+      const parent = element.parentElement;
+      element.remove();
+      if (parent?.tagName === "P" && !parent.textContent?.trim() && !parent.children.length) parent.remove();
     }
   });
 };

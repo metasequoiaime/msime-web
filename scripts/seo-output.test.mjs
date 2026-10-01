@@ -134,13 +134,11 @@ test('internal navigation and breadcrumbs use canonical pages without duplicate 
   }
 });
 
-test('document screenshots reserve layout and use responsive local images', () => {
-  const img = document('/docs/windows/').querySelector('img[alt="安装完成截图"]');
-  assert.equal(img.getAttribute('width'), '998');
-  assert.equal(img.getAttribute('height'), '767');
-  assert.equal(img.getAttribute('loading'), 'lazy');
-  assert.match(img.getAttribute('srcset'), /480w.*998w/);
-  for (const item of img.getAttribute('srcset').split(',')) assert.ok(existsSync(`dist${item.trim().split(' ')[0]}`));
+test('the retired installer screenshot is not rendered anywhere', () => {
+  for (const path of ['/docs/windows/', '/zh-TW/docs/windows/', '/download/', '/features/']) {
+    assert.equal(document(path).querySelector('img[src*="install-finish"], img[srcset*="install-finish"]'), null, path);
+  }
+  assert.ok(!existsSync('dist/screenshots/install-finish.webp'));
 });
 
 
