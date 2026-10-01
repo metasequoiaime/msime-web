@@ -115,3 +115,74 @@ export const noticesSchema = z.object({
 });
 export type Notices = z.infer<typeof noticesSchema>;
 export type Notice = Notices["items"][number];
+
+// ---- community skins (/api/skins/keyboard, /api/skins/candidate) ----
+
+/** A community item id as msime-backend issues it (`validCommunityID` in internal/account/community.go). It is put into Function paths, so nothing else gets through. */
+export const communitySkinIdSchema = z.string().regex(/^[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/);
+
+const skinColorSchema = z.number().int().min(0).max(0xffffff);
+const optionalIn = (min: number, max: number) => z.number().min(min).max(max).optional().catch(undefined);
+
+/**
+ * A keyboard skin's design, the data-only format of `CommunityDesign` in msime-backend (internal/account/community.go), which matches the iOS `CustomKeyboardSkin` v1. The backend validates every field on publish; the required ones are checked again here because the page draws from them, and an optional field the page cannot use degrades to `undefined` instead of dropping the skin. `photo` never travels in the list, so it is not part of this schema; `/api/skins/keyboard/<id>/photo` serves it.
+ */
+export const keyboardSkinDesignSchema = z.object({
+  background: skinColorSchema,
+  keyBackground: skinColorSchema,
+  keyForeground: skinColorSchema,
+  accent: skinColorSchema,
+  actionBackground: skinColorSchema,
+  cornerRadius: z.number().min(0).max(20),
+  borderWidth: z.number().min(0).max(2),
+  shadow: z.number().min(0).max(0.4),
+  pattern: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
+  monospaced: z.boolean(),
+  keyShape: z.enum(["rounded", "capsule", "ticket", "pebble"]).optional().catch(undefined),
+  keyMaterial: z.enum(["flat", "raised", "glass", "paper"]).optional().catch(undefined),
+  keyOpacity: optionalIn(0.25, 1),
+  gradientEnd: skinColorSchema.optional().catch(undefined),
+  gradientHorizontal: z.boolean().optional().catch(undefined),
+  patternOpacity: optionalIn(0, 0.5),
+  customBorderColor: skinColorSchema.optional().catch(undefined),
+  photoShade: optionalIn(0, 0.8),
+  photoPosition: optionalIn(0, 1),
+});
+export type KeyboardSkinDesign = z.infer<typeof keyboardSkinDesignSchema>;
+
+const ratingAverage = z.number().min(0).max(5);
+
+export const keyboardSkinSchema = z.object({
+  id: communitySkinIdSchema,
+  name: z.string().min(1),
+  description: z.string(),
+  author: z.string(),
+  design: keyboardSkinDesignSchema,
+  downloads: count,
+  ratingCount: count,
+  ratingAverage,
+});
+export type KeyboardSkin = z.infer<typeof keyboardSkinSchema>;
+
+export const candidateSkinSchema = z.object({
+  id: communitySkinIdSchema,
+  name: z.string().min(1),
+  description: z.string(),
+  author: z.string(),
+  version: z.string().max(64),
+  /** The asset licence the author declared, e.g. `CC-BY-4.0`. */
+  license: z.string(),
+  size: count,
+  downloads: count,
+  ratingCount: count,
+  ratingAverage,
+  createdAt: z.iso.datetime({ offset: true }),
+});
+export type CandidateSkin = z.infer<typeof candidateSkinSchema>;
+
+/** One page of a community skin list, re-keyed to camelCase by the Function. `nextOffset` is where the next page starts, or `null` on the last page; it counts the backend's rows, so a row the site could not read never shifts the pages after it. */
+const skinPage = <T extends z.ZodType>(item: T) => z.object({ items: z.array(item), nextOffset: count.nullable(), stale: z.boolean() });
+export const keyboardSkinsSchema = skinPage(keyboardSkinSchema);
+export type KeyboardSkins = z.infer<typeof keyboardSkinsSchema>;
+export const candidateSkinsSchema = skinPage(candidateSkinSchema);
+export type CandidateSkins = z.infer<typeof candidateSkinsSchema>;

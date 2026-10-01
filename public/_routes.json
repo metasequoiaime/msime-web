@@ -11,6 +11,7 @@
     "/api/download-mirrors/",
     "/api/notices",
     "/api/notices/",
+    "/api/skins/*",
     "/api/feedback",
     "/api/feedback/",
     "/api/feedback-images/*",
