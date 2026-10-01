@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { loadNotices } from '../shared/notices.ts';
 import { onRequest } from '../functions/api/notices.ts';
 import { noticesQuery } from '../src/data/queries.ts';
@@ -43,6 +44,12 @@ test('GET /api/notices proxies the configured origin and asks it at most once a 
   await get({ MSIME_API_ORIGIN: 'https://staging.msime.app' });
   assert.deepEqual(urls, ['https://staging.msime.app/v1/notices?channel=site']);
   assert.equal((await get({}, 'POST')).status, 405);
+});
+
+test('Pages routes /api/notices to its Function instead of the static fallback', () => {
+  const routes = JSON.parse(readFileSync(new URL('../public/_routes.json', import.meta.url), 'utf8')).include;
+  assert.ok(routes.includes('/api/notices'));
+  assert.ok(routes.includes('/api/notices/'));
 });
 
 test('GET /api/notices answers 503 when the backend has never answered', async t => {
