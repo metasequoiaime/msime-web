@@ -1,6 +1,6 @@
 import { infiniteQueryOptions, queryOptions, type InfiniteData, type QueryClient } from "@tanstack/react-query";
 import type { CandidateSkinCategory } from "./skin-categories.ts";
-import { DECLARED_PLUGIN_KINDS } from "./plugin-kinds.ts";
+import { DECLARED_PLUGIN_KINDS, isLivePluginKind } from "./plugin-kinds.ts";
 import type { DictionaryKind, Plugin, PluginKind, Resource, ResourceKind } from "./schemas.ts";
 import { siteApi } from "./source.ts";
 
@@ -171,6 +171,7 @@ export const pluginsQuery = (q: string, kind: PluginKind | undefined, scope: Com
   infiniteQueryOptions({
     queryKey: ["account", "plugins", scope, q.trim(), kind ?? "", signedIn] as const,
     queryFn: async ({ signal, pageParam }): Promise<Page<Plugin>> => {
+      if (kind && !isLivePluginKind(kind)) return page<Plugin>(pageParam, { rows: 0, items: [] }, false);
       if (!signedIn && scope === "") return siteApi(publicCatalogPath("plugins", pageParam, q, kind), async value => (await schemas()).publicPluginsSchema.parse(value)).load(signal);
       const path = withSearch("/api/v1/community/plugins", { offset: pageParam, q: q.trim(), kind, scope, fields: signedIn ? "saved" : undefined, kinds: DECLARED_PLUGIN_KINDS });
       const data = await accountCall(path, async value => (await schemas()).pluginsSchema.parse(value), { signal });

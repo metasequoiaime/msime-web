@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DECLARED_PLUGIN_KINDS, PLUGIN_KINDS, pluginSchema, RESOURCE_KINDS, resourceSchema, type Plugin, type PluginKind, type Resource, type ResourceKind } from "../src/data/schemas.ts";
+import { DECLARED_PLUGIN_KINDS, isLivePluginKind, PLUGIN_KINDS, pluginSchema, RESOURCE_KINDS, resourceSchema, type Plugin, type PluginKind, type Resource, type ResourceKind } from "../src/data/schemas.ts";
 import { MAX_SKIN_OFFSET, MAX_SKIN_QUERY_BYTES, type SkinContext } from "./community-skins.ts";
 import { cachedJson, UpstreamUnavailable } from "./edge-cache.ts";
 import { apiOrigin } from "./site-session.ts";
@@ -77,6 +77,8 @@ export async function serveCatalogList(collection: CatalogCollection, { request,
   if (request.method !== "GET") return Response.json({ error: "不支持此请求方式" }, { status: 405, headers: { ...jsonHeaders, Allow: "GET" } });
   const params = catalogListParams(new URL(request.url), collection);
   if (!params) return Response.json({ error: "搜索内容过长，或页码、类型无效。" }, { status: 400, headers: jsonHeaders });
+  // A kind the backend does not serve yet would come back as 400 and surface as 503; the list is simply empty until it does.
+  if (collection === "plugins" && params.kind && !isLivePluginKind(params.kind as PluginKind)) return Response.json({ items: [], nextOffset: null, stale: false }, { headers: jsonHeaders });
   const origin = apiOrigin(env);
   if (!origin) return Response.json({ error: UNAVAILABLE[collection] }, { status: 503, headers: jsonHeaders });
   const key = new Request(new URL(`/api/${collection}${catalogListQuery(collection, params)}`, request.url));

@@ -5,5 +5,8 @@ export type PluginKind = (typeof PLUGIN_KINDS)[number];
 /** The plugin kinds added after the first four. The backend only lists them to callers that declare them in `kinds` (docs/plugin-community.md), so released App versions that cannot install them never see them; the site can draw them all. */
 export const DECLARED_PLUGIN_KINDS = "helpcode,symbol_set,phrase_table,wordbook";
 
-/** The kinds the backend serves today, which get a filter chip on /plugins/. The four in `DECLARED_PLUGIN_KINDS` join this list once the backend serves them; until then their chip would always open an empty list. A `?kind=` link to one of them still filters the list, it just has no chip. */
+/** The kinds the backend serves today, which get a filter chip on /plugins/. The four in `DECLARED_PLUGIN_KINDS` join this list once the backend serves them; until then their chip would always open an empty list. A `?kind=` link to one of them opens an empty list rather than an error, and has no chip. */
 export const LIVE_PLUGIN_KINDS = ["sound", "music", "command_table", "effect"] as const satisfies readonly PluginKind[];
+
+/** Whether the backend serves this kind yet. The backend in production rejects a `kind` it does not know with 400, so a list filtered to a pending kind is answered as empty on the site instead of being asked of the backend. */
+export const isLivePluginKind = (kind: PluginKind) => (LIVE_PLUGIN_KINDS as readonly PluginKind[]).includes(kind);

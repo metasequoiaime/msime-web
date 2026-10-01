@@ -77,6 +77,27 @@ test('GET /api/plugins and /api/resources ask the backend at most once a minute 
   assert.equal((await call(pluginList, '/api/plugins')).status, 503);
 });
 
+test('a plugin kind the backend does not serve yet is an empty list, not a backend error', async t => {
+  globalThis.caches = { default: memoryCache() };
+  const calls = [];
+  t.mock.method(globalThis, 'fetch', async url => {
+    calls.push(url);
+    return Response.json({ error: { code: 'invalid_kind', message: 'invalid_kind' } }, { status: 400 });
+  });
+  const pending = PLUGIN_KINDS.filter(kind => !LIVE_PLUGIN_KINDS.includes(kind));
+  assert.ok(pending.length > 0);
+  for (const kind of pending) {
+    const response = await call(pluginList, `/api/plugins?kind=${kind}`);
+    assert.equal(response.status, 200, kind);
+    assert.deepEqual(await response.json(), { items: [], nextOffset: null, stale: false });
+    for (const signedIn of [false, true]) {
+      const options = pluginsQuery('', kind, '', signedIn);
+      assert.deepEqual(await options.queryFn({ signal: new AbortController().signal, pageParam: 0 }), { items: [], nextOffset: null });
+    }
+  }
+  assert.deepEqual(calls, [], 'pending kinds are never asked of the backend');
+});
+
 test('anonymous gallery reads go to the cached lists and signed-in reads to the proxy', async t => {
   const urls = [];
   t.mock.method(globalThis, 'fetch', async url => {
