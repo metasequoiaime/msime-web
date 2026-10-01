@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { TomlError } from 'smol-toml';
+import { ZodError } from 'zod';
 import { loadCommunityDictionaries, loadCommunityPlugins, MAX_PACK_QUERY_BYTES as SERVER_MAX_QUERY, packListParams } from '../shared/community-packs.ts';
 import { countEntries, loadOfficialDictionaries, loadOfficialPlugins, readPackReadme, readPluginManifest } from '../shared/official-packs.ts';
 import { onRequest as communityPlugins } from '../functions/api/plugins/community.ts';
@@ -108,6 +110,7 @@ const PLUGIN_TOMLS = {
   'fur-elise': toml({ schema_version: 1, kind: 'sound', id: 'fur-elise', name: '致爱丽丝', version: '1.0.0', license: 'CC0-1.0', author: '水杉输入法', description: '钢琴音色', mode: 'sequence' }, '\n[sequence]\nsample = "tone.wav"\nsemitones = [\n  7, 6,\n]\n'),
   neon: toml({ schema_version: 1, kind: 'effect', id: 'neon', name: '霓虹', version: '1.0.0', license: 'CC0-1.0', author: '水杉输入法', description: '' }),
   broken: 'schema_version = 1\nkind = "sound"\n',
+  malformed: 'kind = "sound"\nid = "malformed\nname = "未闭合的字符串"\n',
 };
 
 /** GitHub as the sweep sees it: the tree, the `packs` release and raw files. */
@@ -133,21 +136,45 @@ function github({ release = true, tomls = PLUGIN_TOMLS, calls = [] } = {}) {
   };
 }
 
-test('a plugin.toml is read for its top-level strings and its command count, and nothing inside its tables', () => {
-  const { fields, commands } = readPluginManifest(PLUGIN_TOMLS.kaomoji);
-  assert.equal(fields.name, '颜文字', 'the name inside [[commands]] does not override the top-level one');
-  assert.equal(fields.kind, 'command_table');
-  assert.equal(fields.schema_version, undefined, 'only strings are read');
-  assert.equal(commands, 2);
-  assert.deepEqual(readPluginManifest('name = "a \\"b\\" \\u00e9" # trailing comment\ndescription = "\\U0001F600"\n').fields, { name: 'a "b" é' }, 'an escape JSON lacks leaves the field out');
-  assert.deepEqual(readPluginManifest('[effect]\nname = "late"\n').fields, {});
+test('a plugin.toml is read as TOML: multi-line strings, inline tables and comments, with the top-level fields only', () => {
+  const manifest = readPluginManifest(PLUGIN_TOMLS.kaomoji);
+  assert.equal(manifest.name, '颜文字', 'the name inside [[commands]] does not override the top-level one');
+  assert.equal(manifest.kind, 'command_table');
+  assert.equal(manifest.commands.length, 2);
+
+  const full = readPluginManifest([
+    '# 文件头注释',
+    'kind = "command_table" # 行尾注释',
+    "id = 'literal-id'",
+    'name = "a \\"b\\" \\u00e9 \\U0001F600"',
+    'description = """',
+    '第一行',
+    '第二行 # 不是注释"""',
+    "license = '''CC0-1.0'''",
+    'meta = { homepage = "https://example.com", tags = ["a", "b"] }',
+    'commands = [{ trigger = "kx", template = "(＾▽＾)" }, { trigger = "ng", name = "inline" }]',
+    '',
+    '[extra]',
+    'name = "late"',
+  ].join('\n'));
+  assert.equal(full.id, 'literal-id', 'a literal string');
+  assert.equal(full.name, 'a "b" é 😀', 'escapes JSON lacks, such as \\U, decode');
+  assert.equal(full.description, '第一行\n第二行 # 不是注释', 'a multi-line basic string trims its first newline and keeps the #');
+  assert.equal(full.license, 'CC0-1.0');
+  assert.equal(full.commands.length, 2, 'commands written as an array of inline tables count too');
+  assert.equal(full.meta, undefined, 'keys the page does not read are dropped');
+
+  assert.throws(() => readPluginManifest(PLUGIN_TOMLS.malformed), TomlError, 'invalid TOML');
+  assert.throws(() => readPluginManifest(PLUGIN_TOMLS.broken), ZodError, 'id and name are required');
+  assert.throws(() => readPluginManifest('kind = "sound"\nid = "x"\nname = 3\n'), ZodError, 'a name that is not a string');
+  assert.throws(() => readPluginManifest('[effect]\nkind = "effect"\nid = "x"\nname = "late"\n'), ZodError, 'fields inside a table are not top-level');
 });
 
 test('official plugins carry their release zip when its id and version match, sorted by kind', async () => {
   const calls = [];
   const { items, stale } = await loadOfficialPlugins({ token: 'ghs_test', request: github({ calls }) });
   assert.equal(stale, false);
-  assert.deepEqual(items.map(item => item.id), ['fur-elise', 'kaomoji', 'neon'], 'sound, command table, effect; the broken manifest is skipped');
+  assert.deepEqual(items.map(item => item.id), ['fur-elise', 'kaomoji', 'neon'], 'sound, command table, effect; the broken and malformed manifests are skipped');
   assert.deepEqual(items[1], { id: 'kaomoji', kind: 'command_table', name: '颜文字', description: '常用颜文字：/kx 开心', author: '水杉输入法', version: '1.0.0', license: 'CC0-1.0', commands: 2, size: 874, download: 'https://github.com/metasequoiaime/msime-plugins/releases/download/packs/kaomoji-1.0.0.zip', source: 'https://github.com/metasequoiaime/msime-plugins/tree/main/packs/kaomoji' });
   assert.equal(items[0].mode, 'sequence');
   assert.equal(items[0].download, undefined, 'a zip of another version is not offered');

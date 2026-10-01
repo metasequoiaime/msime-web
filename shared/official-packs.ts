@@ -1,4 +1,5 @@
 import MarkdownIt from "markdown-it";
+import { parse as parseToml } from "smol-toml";
 import { z } from "zod";
 import { officialDictionarySchema, officialPluginSchema, type DictionaryFile, type OfficialDictionaries, type OfficialDictionary, type OfficialPlugin, type OfficialPlugins } from "../src/data/schemas.ts";
 import { PLUGIN_KINDS } from "../src/data/pack-kinds.ts";
@@ -9,7 +10,7 @@ import { communityToken, githubAppConfig } from "./github-app.ts";
 /*
  * The packs the project itself ships in two repositories, read live from GitHub so the pages follow `main` without a site deploy:
  *
- * - msime-plugins `packs/<id>/plugin.toml`, with each pack's .zip from the repository's `packs` release (scripts/build-release.sh names it `<id>-<version>.zip`).
+ * - msime-plugins `packs/<id>/plugin.toml` (parsed with smol-toml), with each pack's .zip from the repository's `packs` release (scripts/build-release.sh names it `<id>-<version>.zip`).
  * - msime-dictionary `packs/<id>/`: a README whose title and first paragraph describe the pack, and the tab-separated word lists users import in the App's 词库 settings.
  *
  * Each sweep is one GitHub API call per repository for the tree (plus one for the plugins release) under the site's GitHub App token, which keeps clear of the 60-an-hour anonymous limit Cloudflare's shared addresses would hit; the file bodies come from raw.githubusercontent.com, which is not an API call. A sweep runs at most once an hour per edge location. Without App credentials (local `wrangler pages dev`) the API is called anonymously.
@@ -72,36 +73,24 @@ const packDirectories = (tree: Tree) => tree.filter(entry => entry.type === "tre
 
 // ---- msime-plugins ----
 
-export type PluginManifest = { fields: Record<string, string>; commands: number };
-
 /**
- * The parts of a plugin.toml the page shows: the top-level `key = "value"` strings (`kind`, `id`, `name`, `version`, `license`, `author`, `description`, `mode`) and how many `[[commands]]` tables it has.
- *
- * This reads that fixed subset rather than all of TOML. The site has no TOML parser among its dependencies, and msime-pack (which CI runs on every pack) only admits single-line basic strings for these keys, written before the first table. A TOML basic string is a JSON string apart from the `\U` and `\e` escapes, so JSON.parse decodes it; a value it cannot decode is left out, and a pack missing its kind, id or name is skipped by the caller.
+ * The parts of a plugin.toml the page shows: the top-level strings `kind`, `id`, `name`, `version`, `license`, `author`, `description` and `mode`, and the `[[commands]]` tables of a command table. Any other key is ignored, so a manifest may carry fields the site does not know about.
  */
-export function readPluginManifest(text: string): PluginManifest {
-  const fields: Record<string, string> = {};
-  let commands = 0;
-  let inTable = false;
-  for (const raw of text.split(/\r?\n/)) {
-    const line = raw.trim();
-    if (line === "[[commands]]") commands++;
-    if (/^\[/.test(line)) {
-      inTable = true;
-      continue;
-    }
-    if (inTable) continue;
-    const match = /^([A-Za-z0-9_-]+)\s*=\s*("(?:[^"\\]|\\.)*")\s*(?:#.*)?$/.exec(line);
-    if (!match || match[1] in fields) continue;
-    try {
-      const value: unknown = JSON.parse(match[2]);
-      if (typeof value === "string") fields[match[1]] = value;
-    } catch {
-      // An escape JSON does not share with TOML: leave the field out.
-    }
-  }
-  return { fields, commands };
-}
+const pluginManifestSchema = z.object({
+  kind: z.string(),
+  id: z.string(),
+  name: z.string(),
+  version: z.string().optional(),
+  license: z.string().optional(),
+  author: z.string().optional(),
+  description: z.string().optional(),
+  mode: z.string().optional(),
+  commands: z.array(z.record(z.string(), z.unknown())).optional(),
+});
+export type PluginManifest = z.infer<typeof pluginManifestSchema>;
+
+/** Parses a plugin.toml with smol-toml and checks the fields the page reads. Throws when the text is not TOML or a field is missing or of the wrong type; the caller skips that pack. */
+export const readPluginManifest = (text: string): PluginManifest => pluginManifestSchema.parse(parseToml(text));
 
 /** Kind order, then the repository's alphabetical order within a kind. */
 const byKind = (left: OfficialPlugin, right: OfficialPlugin) => PLUGIN_KINDS.indexOf(left.kind) - PLUGIN_KINDS.indexOf(right.kind);
@@ -118,18 +107,24 @@ export async function loadOfficialPlugins(access: GitHubAccess = {}): Promise<Of
   const manifests = await Promise.all(directories.map(directory => loadRaw(PLUGINS_REPO, `packs/${directory}/plugin.toml`, access, signal)));
   const items: OfficialPlugin[] = [];
   directories.forEach((directory, index) => {
-    const { fields, commands } = readPluginManifest(manifests[index]);
-    const asset = assets.find(item => item.name === `${fields.id}-${fields.version}.zip` && item.browser_download_url.startsWith(zipPrefix));
+    let manifest: PluginManifest;
+    try {
+      manifest = readPluginManifest(manifests[index]);
+    } catch (error) {
+      console.warn("Skipped an official plugin pack whose plugin.toml the site cannot read", directory, error instanceof Error ? error.message : error);
+      return;
+    }
+    const asset = assets.find(item => item.name === `${manifest.id}-${manifest.version}.zip` && item.browser_download_url.startsWith(zipPrefix));
     const parsed = officialPluginSchema.safeParse({
-      id: fields.id,
-      kind: fields.kind,
-      name: fields.name,
-      description: fields.description ?? "",
-      author: fields.author ?? "",
-      version: fields.version ?? "",
-      license: fields.license ?? "",
-      ...(fields.kind === "sound" && (fields.mode === "keys" || fields.mode === "sequence") ? { mode: fields.mode } : {}),
-      ...(fields.kind === "command_table" ? { commands } : {}),
+      id: manifest.id,
+      kind: manifest.kind,
+      name: manifest.name,
+      description: manifest.description ?? "",
+      author: manifest.author ?? "",
+      version: manifest.version ?? "",
+      license: manifest.license ?? "",
+      ...(manifest.kind === "sound" && (manifest.mode === "keys" || manifest.mode === "sequence") ? { mode: manifest.mode } : {}),
+      ...(manifest.kind === "command_table" ? { commands: manifest.commands?.length ?? 0 } : {}),
       ...(asset ? { size: asset.size, download: asset.browser_download_url } : {}),
       source: sourceUrl(PLUGINS_REPO, `packs/${directory}`),
     });
