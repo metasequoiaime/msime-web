@@ -25,7 +25,7 @@ const TAB_LABELS: Record<Tab, string> = { skins: "我的皮肤", dictionary: "�
 export function MePage() {
   const { t } = useLocale();
   usePageMeta();
-  const { status, me, openLogin } = useAccount();
+  const { status, me, loginAvailable, openLogin } = useAccount();
   const { choice, update } = usePageSearch();
   const tab = choice("tab", TABS, "skins");
   const panelId = `${useId()}-panel`;
@@ -35,12 +35,16 @@ export function MePage() {
       <PageHero variant="plain" kicker="水杉输入法账号" title="我的" lead="管理你在水杉输入法账号里的皮肤、词库、快捷短语、云剪贴板和收藏，与 App 中登录同一账号看到的内容一致。" />
       <main className="w-full">
         <Container className="pt-8">
-          {status === "unknown" ? (
+          {status === "unknown" || (status === "signed-out" && loginAvailable === undefined) ? (
             <StatusCard busy>{t("正在读取账号…")}</StatusCard>
           ) : status === "signed-out" || !me ? (
             <StatusCard>
               <p className="m-0">{t("登录后查看和管理你的皮肤、词库、快捷短语、云剪贴板和收藏。")}</p>
-              <Button size="sm" className="mt-4" onClick={openLogin}>{t("登录")}</Button>
+              {loginAvailable ? (
+                <Button size="sm" className="mt-4" onClick={openLogin}>{t("登录")}</Button>
+              ) : (
+                <p className="m-0 mt-2 text-muted">{t("网页登录暂未开放，请在水杉输入法 App 中登录。")}</p>
+              )}
             </StatusCard>
           ) : (
             <>

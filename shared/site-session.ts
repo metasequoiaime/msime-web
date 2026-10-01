@@ -267,10 +267,12 @@ export async function proxyApi({ request, env }: SessionContext, fetcher: typeof
 
 // ---- auth endpoints ----
 
-/** GET /api/auth/config → `{ google_client_id }`, `null` when the site has no Google client configured (the page then hides 登录). */
+/** GET /api/auth/config → `{ google_client_id }`, `null` when the site has no Google client configured: the page then offers no 登录 in the header or on 我的, and a signed-out visitor pressing a favourite or a star is told to sign in in the App. Every signed-out page view asks, so the browser may keep the answer for a few minutes. */
 export function serveAuthConfig({ request, env }: SessionContext): Response {
   if (request.method !== "GET") return failure("method_not_allowed", 405, { Allow: "GET" });
-  return json({ google_client_id: googleClientId(env) });
+  const response = json({ google_client_id: googleClientId(env) });
+  response.headers.set("Cache-Control", "public, max-age=300");
+  return response;
 }
 
 const challengeSchema = z.object({ challenge_id: z.string().min(1).max(256), nonce: z.string().min(1).max(512) });

@@ -114,6 +114,10 @@ export const authConfigQuery = () =>
     retry: 1,
   });
 
+/** Whether the site offers web sign-in, from `authConfigQuery`: `undefined` until it has answered. A read that failed counts as available, so a network error leaves 登录 in place and the sign-in dialog explains what went wrong. */
+export const webLoginAvailable = (config: { google_client_id: string | null } | undefined, failed: boolean): boolean | undefined =>
+  config ? config.google_client_id !== null : failed ? true : undefined;
+
 // ---- community lists ----
 
 /** One page of a community list as the pages read it: the rows that parsed and where the next page starts. */

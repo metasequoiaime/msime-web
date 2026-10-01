@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { QueryClient } from '@tanstack/react-query';
-import { accountCall, ApiError, isSignedOut, meQuery, patchCommunityItem, pluginsQuery, resourcesQuery, SESSION_RETRY_DELAYS_MS, v1CandidateSkinsQuery, v1KeyboardSkinsQuery } from '../src/data/account.ts';
+import { accountCall, ApiError, authConfigQuery, isSignedOut, meQuery, patchCommunityItem, pluginsQuery, resourcesQuery, SESSION_RETRY_DELAYS_MS, v1CandidateSkinsQuery, v1KeyboardSkinsQuery, webLoginAvailable } from '../src/data/account.ts';
 
 const USER = { id: 'u1', display_name: '水杉小鹿', created_at: '2026-10-01T00:00:00Z' };
 const retry = () => Response.json({ error: 'session_retry' }, { status: 401 });
@@ -106,4 +106,15 @@ test('a reaction is written into every cached list row of the item, including th
   const before = client.getQueryData(lists.pluginGallery);
   patchCommunityItem(client, 'plugin', 'ea041e49-e1ab-48ff-8b06-942ec9c291b9', { saved: true });
   assert.equal(client.getQueryData(lists.pluginGallery), before, 'a list without the item keeps its identity, so nothing re-renders');
+});
+
+test('web sign-in is offered only when the site has a Google client, and unknown until the config answers', async t => {
+  t.mock.method(globalThis, 'fetch', async () => Response.json({ google_client_id: null }));
+  const client = new QueryClient();
+  const config = await client.fetchQuery(authConfigQuery());
+  assert.deepEqual(config, { google_client_id: null });
+  assert.equal(webLoginAvailable(config, false), false, 'no client: no 登录');
+  assert.equal(webLoginAvailable({ google_client_id: 'id.apps.googleusercontent.com' }, false), true);
+  assert.equal(webLoginAvailable(undefined, false), undefined, 'still asking');
+  assert.equal(webLoginAvailable(undefined, true), true, 'a failed read keeps 登录, whose dialog explains the failure');
 });

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { accountCall, authConfigQuery, hasSessionHint, ignoreBody, meQuery, SESSION_HINT_KEY, setSessionHint, SIGNED_OUT_EVENT } from "../data/account";
+import { accountCall, authConfigQuery, hasSessionHint, ignoreBody, meQuery, SESSION_HINT_KEY, setSessionHint, SIGNED_OUT_EVENT, webLoginAvailable } from "../data/account";
 import type { Me } from "../data/schemas";
 import { Button, CloseIcon, cx, useToast } from "../ui";
 import { useSearchReady } from "../use-page-search";
@@ -17,6 +17,8 @@ type AccountContextValue = {
   /** `unknown` while the static HTML hydrates and while `/api/me` is answering for a browser that has signed in before. */
   status: SessionStatus;
   me: Me | null;
+  /** Whether this site offers web sign-in (`/api/auth/config` has a Google client). Read only for signed-out visitors; `undefined` while it is unknown, including for everyone else. When `false` the page offers no 登录 and points to the App instead. */
+  loginAvailable: boolean | undefined;
   openLogin: () => void;
   signOut: () => Promise<void>;
 };
@@ -82,7 +84,10 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const closeLogin = useCallback(() => setLoginOpen(false), []);
 
   const status: SessionStatus = !ready ? "unknown" : !hinted ? "signed-out" : me.isPending ? "unknown" : me.data ? "signed-in" : "signed-out";
-  const value = useMemo<AccountContextValue>(() => ({ status, me: me.data ?? null, openLogin, signOut }), [status, me.data, openLogin, signOut]);
+  // Only a signed-out visitor needs to know, so the signed-in pay nothing for it; the answer is cached for the page's life, and the sign-in dialog reads the same entry.
+  const authConfig = useQuery({ ...authConfigQuery(), enabled: status === "signed-out" });
+  const loginAvailable = webLoginAvailable(authConfig.data, authConfig.isError);
+  const value = useMemo<AccountContextValue>(() => ({ status, me: me.data ?? null, loginAvailable, openLogin, signOut }), [status, me.data, loginAvailable, openLogin, signOut]);
 
   return (
     <AccountContext.Provider value={value}>
