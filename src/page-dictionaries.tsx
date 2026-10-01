@@ -21,7 +21,7 @@ const KIND_UI: Record<ResourceKind, { tab: string; hint: string; noun: string }>
 const TAB_LABELS = { dictionary: KIND_UI.dictionary.tab, reply: KIND_UI.reply.tab };
 
 /**
- * 社区词库：the word packs and reply templates people share from the App (`/v1/community/resources`). Read through the account proxy, so a signed-in visitor sees and changes their own favourites and ratings; anonymous visitors read the same public catalog.
+ * 社区词库：the word packs and reply templates people share from the App (`/v1/community/resources`). A signed-in visitor reads it through the account proxy, so they see and change their own favourites and ratings; anonymous visitors read the same public catalog from the edge-cached `/api/resources`.
  */
 export function DictionariesPage() {
   const { t } = useLocale();

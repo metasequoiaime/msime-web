@@ -1,9 +1,10 @@
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import type { CandidateSkinCategory } from "./skin-categories.ts";
-import type { DictionaryKind, PluginKind, ResourceKind } from "./schemas.ts";
+import type { DictionaryKind, Plugin, PluginKind, Resource, ResourceKind } from "./schemas.ts";
+import { siteApi } from "./source.ts";
 
 /*
- * The signed-in half of the data layer. The browser still talks only to its own origin: `/api/me`, `/api/auth/*` and the `/api/v1/*` proxy, which turns the HttpOnly session cookies into a bearer token for msime-backend (shared/site-session.ts). Nothing here ever sees a token.
+ * The signed-in half of the data layer. The browser still talks only to its own origin: `/api/me`, `/api/auth/*` and the `/api/v1/*` proxy, which turns the HttpOnly session cookies into a bearer token for msime-backend (shared/site-session.ts). Nothing here ever sees a token. Anonymous visitors read the plugin and resource galleries from the edge-cached `/api/plugins` and `/api/resources` instead (shared/community-catalog.ts), as they read the skin galleries from `/api/skins/*`.
  *
  * Every query key starts with `account`, so signing in or out invalidates exactly the data that depends on who is looking.
  */
@@ -160,11 +161,16 @@ export const v1CandidateSkinsQuery = (q: string, category?: CandidateSkinCategor
     retry: 1,
   });
 
-/** Community plugins. Anonymous visitors get the plain catalog; `fields=saved` is asked only with a session, the one case that needs it. */
+/** The same-origin path of one page of an anonymous plugin or resource list. `q` is trimmed and the parameters are written in the order the Function caches under (`catalogListQuery` in shared/community-catalog.ts). */
+export const publicCatalogPath = (collection: "plugins" | "resources", offset: number, q: string, kind?: PluginKind | ResourceKind) =>
+  withSearch(`/api/${collection}`, collection === "resources" ? { kind, offset, q: q.trim() } : { offset, q: q.trim(), kind });
+
+/** Community plugins. Anonymous visitors read the edge-cached public catalog; a signed-in viewer reads it through the proxy with `fields=saved`, so their own rating and favourites show. */
 export const pluginsQuery = (q: string, kind: PluginKind | undefined, scope: CommunityScope, signedIn: boolean) =>
   infiniteQueryOptions({
     queryKey: ["account", "plugins", scope, q.trim(), kind ?? "", signedIn] as const,
-    queryFn: async ({ signal, pageParam }) => {
+    queryFn: async ({ signal, pageParam }): Promise<Page<Plugin>> => {
+      if (!signedIn && scope === "") return siteApi(publicCatalogPath("plugins", pageParam, q, kind), async value => (await schemas()).publicPluginsSchema.parse(value)).load(signal);
       const path = withSearch("/api/v1/community/plugins", { offset: pageParam, q: q.trim(), kind, scope, fields: signedIn ? "saved" : undefined });
       const data = await accountCall(path, async value => (await schemas()).pluginsSchema.parse(value), { signal });
       return page(pageParam, data.plugins, data.has_more);
@@ -175,11 +181,12 @@ export const pluginsQuery = (q: string, kind: PluginKind | undefined, scope: Com
     retry: 1,
   });
 
-/** Community word packs and reply templates. The resource catalog always reports `saved` and `saves`. */
+/** Community word packs and reply templates, anonymously from the edge-cached public catalog and otherwise through the proxy. The resource catalog always reports `saved` and `saves`. */
 export const resourcesQuery = (kind: ResourceKind, q: string, scope: CommunityScope, signedIn: boolean) =>
   infiniteQueryOptions({
     queryKey: ["account", "resources", kind, scope, q.trim(), signedIn] as const,
-    queryFn: async ({ signal, pageParam }) => {
+    queryFn: async ({ signal, pageParam }): Promise<Page<Resource>> => {
+      if (!signedIn && scope === "") return siteApi(publicCatalogPath("resources", pageParam, q, kind), async value => (await schemas()).publicResourcesSchema.parse(value)).load(signal);
       const path = withSearch("/api/v1/community/resources", { kind, offset: pageParam, q: q.trim(), scope });
       const data = await accountCall(path, async value => (await schemas()).resourcesSchema.parse(value), { signal });
       return page(pageParam, data.items, data.has_more);

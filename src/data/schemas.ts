@@ -318,6 +318,11 @@ export const resourceSchema = z.object({
 export type Resource = z.infer<typeof resourceSchema>;
 export const resourcesSchema = z.object({ items: lenientRows(resourceSchema), has_more: z.boolean() });
 
+/** `/api/plugins` and `/api/resources`, the edge-cached lists anonymous visitors read (shared/community-catalog.ts): already a `Page`, with `nextOffset` worked out by the Function. */
+const publicPage = <T extends z.ZodType>(item: T) => z.object({ items: lenientRows(item).transform(rows => rows.items), nextOffset: z.number().int().nonnegative().nullable() });
+export const publicPluginsSchema = publicPage(pluginSchema);
+export const publicResourcesSchema = publicPage(resourceSchema);
+
 // ---- the user's own data (/api/v1/users/me/*) ----
 
 export const DICTIONARY_KINDS = ["pinyin", "wubi", "english", "quick"] as const;
