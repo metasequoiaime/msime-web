@@ -324,6 +324,60 @@ const publicPage = <T extends z.ZodType>(item: T) => z.object({ items: lenientRo
 export const publicPluginsSchema = publicPage(pluginSchema);
 export const publicResourcesSchema = publicPage(resourceSchema);
 
+// ---- official packs (/api/plugins/official, /api/dictionaries/official) ----
+
+/** A file in one of the project's repositories as raw.githubusercontent.com serves it, so a visitor can save it and import it. */
+const rawProjectUrl = z
+  .string()
+  .url()
+  .refine(value => value.startsWith("https://raw.githubusercontent.com/metasequoiaime/"), { message: "地址必须指向本项目仓库中的文件" });
+
+/** A pack from the `packs/` directory of msime-plugins, read from its plugin.toml (shared/official-packs.ts). `download` is the pack's .zip on the repository's `packs` release, absent while that release has no zip for this id and version. */
+export const officialPluginSchema = z.object({
+  id: z.string().min(1),
+  kind: z.enum(PLUGIN_KINDS),
+  name: z.string().min(1),
+  description: z.string(),
+  author: z.string(),
+  version: z.string(),
+  license: z.string(),
+  /** `sequence` for a sound pack that plays a tune (the App's 按键旋律), `keys` for key sounds. Only sound packs have a mode. */
+  mode: z.enum(["keys", "sequence"]).optional(),
+  /** How many `/` commands a command table holds. */
+  commands: count.optional(),
+  /** Bytes of the .zip. */
+  size: count.optional(),
+  download: projectUrl.optional(),
+  source: projectUrl,
+});
+export type OfficialPlugin = z.infer<typeof officialPluginSchema>;
+
+export const officialPluginsSchema = z.object({ items: z.array(officialPluginSchema), stale: z.boolean() });
+export type OfficialPlugins = z.infer<typeof officialPluginsSchema>;
+
+/** One text file of a dictionary pack. `entries` counts its non-empty lines other than `#` comments, absent for a file too large to count at the edge. */
+export const dictionaryFileSchema = z.object({
+  name: z.string().min(1),
+  size: count,
+  entries: count.optional(),
+  url: rawProjectUrl,
+});
+export type DictionaryFile = z.infer<typeof dictionaryFileSchema>;
+
+/** A pack from the `packs/` directory of msime-dictionary: a professional word list users import themselves, outside the default dictionary. Name and description come from the pack's README. */
+export const officialDictionarySchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string(),
+  license: z.string(),
+  files: z.array(dictionaryFileSchema),
+  source: projectUrl,
+});
+export type OfficialDictionary = z.infer<typeof officialDictionarySchema>;
+
+export const officialDictionariesSchema = z.object({ items: z.array(officialDictionarySchema), stale: z.boolean() });
+export type OfficialDictionaries = z.infer<typeof officialDictionariesSchema>;
+
 // ---- the user's own data (/api/v1/users/me/*) ----
 
 export const DICTIONARY_KINDS = ["pinyin", "wubi", "english", "quick"] as const;

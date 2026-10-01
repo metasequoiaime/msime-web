@@ -1,7 +1,7 @@
 import { infiniteQueryOptions, queryOptions, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import type { PlatformsManifest } from "../platforms-data.ts";
 import type { ReleaseFilter } from "./platforms.ts";
-import type { AppStats, CandidateSkins, Community, DownloadMirrors, KeyboardSkins, Notices, Releases, UpdateManifest } from "./schemas.ts";
+import type { AppStats, CandidateSkins, Community, DownloadMirrors, KeyboardSkins, Notices, OfficialDictionaries, OfficialPlugins, Releases, UpdateManifest } from "./schemas.ts";
 import type { CandidateSkinCategory } from "./skin-categories.ts";
 import { siteApi, staticSnapshot, withFallback } from "./source.ts";
 
@@ -172,3 +172,23 @@ export const skinsQuery = <K extends SkinKind>(kind: K, q: string, category?: Ca
   });
 
 export const useSkinsQuery = <K extends SkinKind>(kind: K, q: string, category?: CandidateSkinCategory) => useInfiniteQuery(skinsQuery(kind, q, category));
+
+// ---- official packs ----
+
+export type OfficialPackList = "plugins" | "dictionaries";
+type OfficialPages = { plugins: OfficialPlugins; dictionaries: OfficialDictionaries };
+
+/** The packs the project ships in msime-plugins or msime-dictionary (shared/official-packs.ts). The Function sweeps GitHub at most once an hour, so the page does not ask again within one visit. */
+export const officialPacksQuery = <L extends OfficialPackList>(list: L) =>
+  queryOptions({
+    queryKey: ["official-packs", list] as const,
+    queryFn: ({ signal }) =>
+      siteApi<OfficialPages[L]>(`/api/${list}/official`, async value => {
+        const loaded = await schemas();
+        return (list === "plugins" ? loaded.officialPluginsSchema : loaded.officialDictionariesSchema).parse(value) as OfficialPages[L];
+      }).load(signal),
+    staleTime: Number.POSITIVE_INFINITY,
+    retry: 1,
+  });
+
+export const useOfficialPacksQuery = <L extends OfficialPackList>(list: L) => useQuery(officialPacksQuery(list));
