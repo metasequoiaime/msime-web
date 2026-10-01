@@ -9,9 +9,8 @@ import { groupByArch, readableSize } from "./template";
 /** The Windows installer is also uploaded to this QQ group's files, for visitors who cannot reach GitHub quickly; joining the group also puts them where feedback is answered. */
 const QQ_GROUP = "829919142";
 
-// 系统要求是产品决策，不在产物里，只能写下来
-const PLATFORM_HINTS: Record<Platform, string> = {
-  windows: "适用于 Windows 10 与 Windows 11",
+// 系统要求是产品决策，不在产物里，只能写下来。Windows 的要求选择卡上已经写成「Windows 10/11」，按钮旁不再重复。
+const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
   macos: "适用于 macOS 12 及以上",
   linux: "开发构建，适用于使用 IBus 的桌面环境",
   android: "开发中，尚未发布安装包",
@@ -168,7 +167,8 @@ function WindowsMirrors() {
  */
 function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
   const { t } = useLocale();
-  const hint = <p className="m-0 text-sm leading-[1.8] text-muted">{t(platformHint(entry))}</p>;
+  const hintText = platformHint(entry);
+  const hint = hintText ? <p className="m-0 text-sm leading-[1.8] text-muted">{t(hintText)}</p> : null;
 
   if (entry.distribution === "testflight") {
     return (
