@@ -6,7 +6,7 @@ import { cardGridClass, Chips, PagedList, SearchBox, SegmentedTabs, StatusCard, 
 import { PLUGIN_KIND_LABELS, PluginCard } from "./community/resource-card";
 import { pluginsQuery } from "./data/account";
 import { MAX_SKIN_QUERY_BYTES } from "./data/queries";
-import { PLUGIN_KINDS, type PluginKind } from "./data/schemas";
+import { LIVE_PLUGIN_KINDS, PLUGIN_KINDS, type PluginKind } from "./data/schemas";
 import { LocaleLink } from "./locale-link";
 import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";
@@ -40,7 +40,7 @@ export function PluginsPage() {
         variant="plain"
         kicker="官方与社区"
         title="插件"
-        lead="这里展示水杉输入法用户发布的插件：音效包、音乐包、指令表、特效包、辅助码表、符号集、短语表和单词本，按发布时间从新到旧排列。登录后可以收藏和评分；插件需要在水杉输入法的「社区」页下载安装。官方插件由项目维护，无需登录，可以直接下载 .zip 导入。"
+        lead="这里展示水杉输入法用户发布的插件：音效包、音乐包、指令表和特效包，按发布时间从新到旧排列。登录后可以收藏和评分；插件需要在水杉输入法的「社区」页下载安装。官方插件由项目维护，无需登录，可以直接下载 .zip 导入。"
       >
         <div className="mt-7 flex flex-wrap gap-3">
           <LinkButton to="/download/">{t("下载水杉输入法")}</LinkButton>
@@ -53,7 +53,7 @@ export function PluginsPage() {
           <h2 className="sr-only">{t(SOURCE_LABELS[source])}</h2>
           {source === "official" ? <OfficialPluginsPanel kind={kind} onKind={value => update({ kind: value }, true)} /> : <>
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <Chips legend="插件类型" values={PLUGIN_KINDS} labels={PLUGIN_KIND_LABELS} value={kind} onChange={value => update({ kind: value }, true)} />
+            <Chips legend="插件类型" values={LIVE_PLUGIN_KINDS} labels={PLUGIN_KIND_LABELS} value={kind} onChange={value => update({ kind: value }, true)} />
             <SearchBox label="搜索插件名称" maxBytes={MAX_SKIN_QUERY_BYTES} search={search} />
           </div>
           <section className="mt-6" aria-label={t("插件列表")}>
