@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-01T20:30:50.169Z",
-  "totalStars": 1796,
-  "repoCount": 16,
+  "generatedAt": "2026-10-02T00:13:40.406Z",
+  "totalStars": 1797,
+  "repoCount": 15,
   "starHistory": [
     {
       "month": "2023-10",
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 1796
+      "stars": 1797
     }
   ],
   "starSeries": [
@@ -301,7 +301,7 @@
           "stars": 1577
         },
         {
-          "date": "2026-10-01",
+          "date": "2026-10-02",
           "stars": 1589
         }
       ]
@@ -318,8 +318,8 @@
           "stars": 78
         },
         {
-          "date": "2026-10-01",
-          "stars": 107
+          "date": "2026-10-02",
+          "stars": 108
         }
       ]
     },
@@ -375,7 +375,7 @@
           "stars": 61
         },
         {
-          "date": "2026-10-01",
+          "date": "2026-10-02",
           "stars": 61
         }
       ]
@@ -428,7 +428,7 @@
           "stars": 27
         },
         {
-          "date": "2026-10-01",
+          "date": "2026-10-02",
           "stars": 27
         }
       ]
@@ -581,7 +581,7 @@
           "stars": 7
         },
         {
-          "date": "2026-10-01",
+          "date": "2026-10-02",
           "stars": 7
         }
       ]
@@ -678,7 +678,7 @@
           "stars": 2
         },
         {
-          "date": "2026-10-01",
+          "date": "2026-10-02",
           "stars": 2
         }
       ]
@@ -715,7 +715,7 @@
           "stars": 2
         },
         {
-          "date": "2026-10-01",
+          "date": "2026-10-02",
           "stars": 2
         }
       ]
@@ -728,27 +728,27 @@
           "stars": 1
         },
         {
-          "date": "2026-10-01",
+          "date": "2026-10-02",
           "stars": 1
         }
       ]
     }
   ],
-  "starDelta30d": 924,
+  "starDelta30d": 731,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 11775,
-      "repos": 15
+      "contributions": 11934,
+      "repos": 14
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1808,
-      "repos": 12
+      "contributions": 1791,
+      "repos": 11
     },
     {
       "login": "jsfaint",
