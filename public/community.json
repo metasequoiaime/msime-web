@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-03T12:30:37.039Z",
-  "totalStars": 1855,
+  "generatedAt": "2026-10-03T16:43:56.671Z",
+  "totalStars": 1870,
   "repoCount": 15,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 1855
+      "stars": 1870
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-03",
-          "stars": 1616
+          "stars": 1624
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-03",
-          "stars": 139
+          "stars": 145
         }
       ]
     },
@@ -582,7 +582,7 @@
         },
         {
           "date": "2026-10-03",
-          "stars": 7
+          "stars": 8
         }
       ]
     },
@@ -734,20 +734,20 @@
       ]
     }
   ],
-  "starDelta30d": 654,
+  "starDelta30d": 669,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 12676,
+      "contributions": 12759,
       "repos": 14
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1823,
+      "contributions": 1831,
       "repos": 11
     },
     {
@@ -775,14 +775,28 @@
       "login": "ouchihao",
       "avatarUrl": "https://avatars.githubusercontent.com/u/108930485?v=4",
       "url": "https://github.com/ouchihao",
-      "contributions": 18,
+      "contributions": 20,
       "repos": 1
     },
     {
       "login": "luojiyin1987",
       "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
       "url": "https://github.com/luojiyin1987",
-      "contributions": 8,
+      "contributions": 10,
+      "repos": 1
+    },
+    {
+      "login": "PLOKMCHINA",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/136961193?v=4",
+      "url": "https://github.com/PLOKMCHINA",
+      "contributions": 6,
+      "repos": 2
+    },
+    {
+      "login": "CuartPyaw",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/142556778?v=4",
+      "url": "https://github.com/CuartPyaw",
+      "contributions": 5,
       "repos": 1
     },
     {
@@ -803,20 +817,6 @@
       "login": "Aegon8719",
       "avatarUrl": "https://avatars.githubusercontent.com/u/127523266?v=4",
       "url": "https://github.com/Aegon8719",
-      "contributions": 4,
-      "repos": 1
-    },
-    {
-      "login": "CuartPyaw",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/142556778?v=4",
-      "url": "https://github.com/CuartPyaw",
-      "contributions": 4,
-      "repos": 1
-    },
-    {
-      "login": "liumengwanlhf-design",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/244346592?v=4",
-      "url": "https://github.com/liumengwanlhf-design",
       "contributions": 4,
       "repos": 1
     }
