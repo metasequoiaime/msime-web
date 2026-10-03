@@ -44,7 +44,7 @@ export type PlatformInfo = {
 const MSIME = "https://github.com/metasequoiaime/msime";
 
 /*
- * Static facts about the six platforms. `public/platforms.json` belongs to the release automation and only covers the three desktop platforms with GitHub packages; Android, iOS and HarmonyOS details live here instead, so the manifest's shape never has to change for them. The repository casing matches the URLs the automation writes (`MSIME-Windows`, `MSIME-Linux`).
+ * Static facts about the six platforms. `public/platforms.json` belongs to the release automation and only covers the three desktop platforms with GitHub packages; Android, iOS and HarmonyOS details live here instead, so the manifest's shape never has to change for them. Windows keeps its separate repository; macOS and Linux releases come from the merged `msime` repository.
  */
 export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
   windows: {
@@ -68,7 +68,7 @@ export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
     name: PLATFORM_NAMES.linux,
     host: "IBus 与 Fcitx5 两个并列入口，提供 DEB、RPM 与 TGZ",
     distribution: "release",
-    href: "https://github.com/metasequoiaime/MSIME-Linux/releases",
+    href: `${MSIME}/releases`,
     sourceUrl: `${MSIME}/tree/develop/platforms/linux`,
   },
   android: {

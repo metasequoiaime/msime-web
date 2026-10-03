@@ -7,11 +7,11 @@ import { usePageSearch } from "../use-page-search";
 import { ReleaseCard } from "./release-card";
 import { releaseDate } from "./release-notes";
 
-/** Where each platform publishes. Windows ships from msime-windows; the Rust-engine platforms ship from msime (one release can carry both a macOS package and an iOS TestFlight build); Linux's releases so far live in the archived msime-linux repository. */
+/** Where each platform publishes. Windows ships from msime-windows; the merged msime repository now carries macOS, Linux and mobile releases; msime-linux remains as the archived historical source. */
 const RELEASE_SOURCES = [
   { repo: "msime-windows", platforms: "Windows", note: "安装程序与签名信息随每个版本发布" },
-  { repo: "msime", platforms: "macOS · iOS · Android · HarmonyOS", note: "Rust 输入引擎与各原生宿主的版本，同一个版本可能同时包含 macOS 安装包与 iOS TestFlight 构建" },
-  { repo: "msime-linux", platforms: "Linux", note: "IBus 与 Fcitx5 版本的历史发布，仓库已归档" },
+  { repo: "msime", platforms: "macOS · Linux · iOS · Android · HarmonyOS", note: "Rust 输入引擎与各原生宿主的版本，同一个版本可能同时包含桌面安装包与移动端构建" },
+  { repo: "msime-linux", platforms: "Linux 历史版本", note: "旧版 IBus 与 Fcitx5 发布，仓库已归档" },
 ] as const;
 
 const releasesUrl = (repo: string) => `https://github.com/metasequoiaime/${repo}/releases`;

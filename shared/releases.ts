@@ -5,9 +5,9 @@ import { PROJECT_ORIGIN, RELEASE_BODY_LIMIT, releaseItemSchema, type ReleaseItem
 /*
  * Release history for the changelog page, gathered from every repository that publishes installable builds.
  *
- * - `msime` hosts macOS, iOS and (eventually) Android and HarmonyOS. One release can carry builds for two platforms (`v0.49.0-build.1002.71.1` ships both `-ios-testflight.ipa` and `-macos-universal.pkg`), so the platform is read from each asset name and such a release is listed once under each platform. The tag prefix (`ios-v…`) is the fallback for a release whose assets say nothing.
+ * - `msime` hosts macOS, Linux, iOS and (eventually) Android and HarmonyOS. One release can carry builds for several platforms (`v0.49.0-build.1002.71.1` ships both `-ios-testflight.ipa` and `-macos-universal.pkg`), so the platform is read from each asset name and such a release is listed once under each platform. The tag prefix (`ios-v…`) is the fallback for a release whose assets say nothing.
  * - `msime-windows` only ships Windows.
- * - `msime-linux` is archived but still holds the only Linux releases (0.8.x stable, 0.9.x previews), so it stays a source.
+ * - `msime-linux` is archived; it remains a source for historical Linux releases alongside the merged repository.
  */
 export const RELEASE_SOURCES: readonly { repo: string; platform?: SitePlatform }[] = [
   { repo: "msime" },

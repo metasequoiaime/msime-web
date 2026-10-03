@@ -12,7 +12,8 @@ const SOURCES = {
   windows: 'metasequoiaime/MSIME-Windows',
   // 原来叫 MSIME-Apple。改名后 API 回的地址全是新名字，按旧名校验前缀会把 macOS 的产物全部丢掉、整轮同步失败。
   macos: 'metasequoiaime/msime',
-  linux: 'metasequoiaime/MSIME-Linux',
+  // Linux 也已并入主仓库；旧的 MSIME-Linux 只保留历史发布，当前正式版从这里读取。
+  linux: 'metasequoiaime/msime',
 };
 
 /** 校验和、构建溯源清单和自动更新用的载荷都不该出现在「下载」按钮上。 */
@@ -28,8 +29,9 @@ const isNoise = name =>
 const RULES = {
   windows: [[/^MetasequoiaIME_Setup_v[\w.-]+\.exe$/i, '安装程序', 'x64']],
   // iOS 的 ipa 也在这个仓库里发，但站点把 iOS 标为开发中，把一个能下的包摆在 macOS 名下只会让人误解。
-  // 现行打包是 platforms/macos/package-release.sh 产出的 msime-macos-<版本>-<架构>.dmg（release-macos.yml 以 macos-v<版本> 发布），每个架构一个 DMG，架构写在文件名里；Apple 芯片排在前面做主推。pkg / zip 是此前的打包形状，只在还没有 DMG 发布时展示（见 selectRelease）。
+  // 现行打包是 platforms/macos/package-release.sh 产出的 msime-macos-<版本>-<架构>.dmg（release-macos.yml 以 macos-v<版本> 发布）；架构可以是 universal，也可以分别发布 arm64 / x86_64，Apple 芯片排在前面做主推。pkg / zip 是此前的打包形状，只在还没有 DMG 发布时展示（见 selectRelease）。
   macos: [
+    [/^msime-macos-\d+\.\d+\.\d+-universal\.dmg$/i, '通用 · dmg', 'Universal'],
     [/^msime-macos-\d+\.\d+\.\d+-arm64\.dmg$/i, 'Apple 芯片 · dmg', 'arm64'],
     [/^msime-macos-\d+\.\d+\.\d+-x86_64\.dmg$/i, 'Intel · dmg', 'x86_64'],
     [/-macos-universal[\w-]*\.pkg$/i, '安装包 · pkg', 'Universal'],
