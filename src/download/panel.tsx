@@ -31,7 +31,7 @@ const tileName = (entry: SitePlatformEntry) => {
 };
 
 /*
- * DMG 的系统要求与此前的 universal pkg 不同：package-release.sh 以 macOS 13 为最低版本、只为构建机的架构出包，架构写在文件名里。按清单里实际有的 DMG 说，不写死「Apple 芯片」——哪天多发一个 Intel 包，这句话就不该再把 Intel 用户挡在外面。
+ * DMG 的系统要求与此前的 universal pkg 不同：package-release.sh 以 macOS 13 为最低版本，可能按构建机架构分别出包，也可能提供一个 universal 包。按清单里实际有的 DMG 说，不写死「Apple 芯片」——哪天多发一个 Intel 包，这句话就不该再把 Intel 用户挡在外面。
  */
 const platformHint = (entry: SitePlatformEntry) => {
   const dmgs = entry.id === "macos" ? (entry.release?.downloads.filter((download) => /\.dmg$/i.test(download.name)) ?? []) : [];

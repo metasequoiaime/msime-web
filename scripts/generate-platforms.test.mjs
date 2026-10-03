@@ -6,7 +6,7 @@ const asset = (name, extra = {}) => ({
   name,
   size: 1024,
   digest: `sha256:${'a'.repeat(64)}`,
-  browser_download_url: `https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.9.1/${name}`,
+  browser_download_url: `https://github.com/metasequoiaime/msime/releases/download/v0.9.1/${name}`,
   ...extra,
 });
 
@@ -38,6 +38,26 @@ test('checksums, build manifests and the bare source archive stay out of the dow
   assert.ok(!names.includes('metasequoia-ime-linux-0.9.1.tar.gz'));
 });
 
+test('the merged msime repository Linux release is selected as stable', () => {
+  const names = [
+    'msime-linux_0.9.1_amd64.deb',
+    'msime-linux-0.9.1-1.x86_64.rpm',
+    'msime-linux-0.9.1-linux-x86_64.tar.gz',
+  ];
+  const assets = names.map(name => asset(name, {
+    browser_download_url: `https://github.com/metasequoiaime/msime/releases/download/linux-v0.9.1/${name}`,
+  }));
+  const chosen = selectRelease('linux', [{
+    tag_name: 'linux-v0.9.1', draft: false, prerelease: false,
+    published_at: '2026-10-02T16:40:49Z',
+    html_url: 'https://github.com/metasequoiaime/msime/releases/tag/linux-v0.9.1',
+    assets,
+  }]);
+  assert.equal(chosen.version, '0.9.1');
+  assert.equal(chosen.releaseUrl, 'https://github.com/metasequoiaime/msime/releases/tag/linux-v0.9.1');
+  assert.deepEqual(chosen.downloads.map(download => download.name), names);
+});
+
 test('an asset hosted somewhere other than this repository is refused', () => {
   const foreign = [asset('metasequoia-ime-linux_0.9.1_amd64.deb', {
     browser_download_url: 'https://example.invalid/metasequoia-ime-linux_0.9.1_amd64.deb',
@@ -45,18 +65,18 @@ test('an asset hosted somewhere other than this repository is refused', () => {
   assert.deepEqual(classifyAssets('linux', foreign), []);
 });
 
-// 真实发生过：匿名取 MSIME-Linux 的 releases，GitHub 回的地址是 metasequoiaime/msime-linux，区分大小写的前缀比较全部落空，六个 Linux 包一个不剩，整个平台从清单里消失 —— 页面上只剩「前往发布页」，没有任何报错。
+// 真实发生过：匿名取 Linux releases 时，GitHub 回的仓库地址可能改成小写，区分大小写的前缀比较会把所有包丢掉，六个 Linux 包一个不剩，整个平台从清单里消失 —— 页面上只剩「前往发布页」，没有任何报错。
 test('a repository name returned in a different case is still this repository', () => {
   const lowercased = [asset('metasequoia-ime-linux_0.9.1_amd64.deb', {
-    browser_download_url: 'https://github.com/metasequoiaime/msime-linux/releases/download/v0.9.1/metasequoia-ime-linux_0.9.1_amd64.deb',
+    browser_download_url: 'https://github.com/metasequoiaime/MSIME/releases/download/v0.9.1/metasequoia-ime-linux_0.9.1_amd64.deb',
   })];
   // 写进清单的是配置里那个拼法：大小写翻来翻去不该产生一份新清单
   assert.deepEqual(classifyAssets('linux', lowercased).map(d => d.url), [
-    'https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.9.1/metasequoia-ime-linux_0.9.1_amd64.deb',
+    'https://github.com/metasequoiaime/msime/releases/download/v0.9.1/metasequoia-ime-linux_0.9.1_amd64.deb',
   ]);
   const chosen = selectRelease('linux', [{ tag_name: 'v0.9.1', draft: false, published_at: '2026-09-06T00:00:00Z',
-    html_url: 'https://github.com/metasequoiaime/msime-linux/releases/tag/v0.9.1', assets: lowercased }]);
-  assert.equal(chosen.releaseUrl, 'https://github.com/metasequoiaime/MSIME-Linux/releases/tag/v0.9.1');
+    html_url: 'https://github.com/metasequoiaime/MSIME/releases/tag/v0.9.1', assets: lowercased }]);
+  assert.equal(chosen.releaseUrl, 'https://github.com/metasequoiaime/msime/releases/tag/v0.9.1');
 });
 
 test('a release page hosted somewhere other than this repository is refused', () => {
@@ -89,7 +109,7 @@ test('drafts and releases without a recognisable package are skipped', () => {
     { tag_name: 'v0.9.3', draft: true, published_at: null, html_url: 'x', assets: linuxAssets },
     { tag_name: 'v0.9.2', draft: false, published_at: '2026-09-06T00:00:00Z', html_url: 'x', assets: [asset('notes.txt')] },
     { tag_name: 'v0.9.1', draft: false, prerelease: true, published_at: '2026-09-06T00:00:00Z',
-      html_url: 'https://github.com/metasequoiaime/MSIME-Linux/releases/tag/v0.9.1', assets: linuxAssets },
+      html_url: 'https://github.com/metasequoiaime/msime/releases/tag/v0.9.1', assets: linuxAssets },
   ]);
   assert.equal(chosen.version, '0.9.1');
   assert.equal(chosen.prerelease, true);
@@ -103,7 +123,7 @@ test('nothing is returned when no release qualifies, so the page can fall back',
 test('tags carry an optional platform prefix and build suffix, anything else is refused', () => {
   const withAssets = tag => ({
     tag_name: tag, draft: false, published_at: '2026-09-07T00:00:00Z',
-    html_url: `https://github.com/metasequoiaime/MSIME-Linux/releases/tag/${tag}`, assets: linuxAssets,
+    html_url: `https://github.com/metasequoiaime/msime/releases/tag/${tag}`, assets: linuxAssets,
   });
   assert.equal(selectRelease('linux', [withAssets('nightly')]), null);
   // 后缀只收字母、数字和点：版本号要拼进 markdown 和按钮文字
@@ -124,7 +144,7 @@ test('versions order by numeric core, then a bare version above its suffixed bui
 
 const release = (tag, prerelease, published = '2026-09-10T00:00:00Z') => ({
   tag_name: tag, draft: false, prerelease, published_at: published,
-  html_url: `https://github.com/metasequoiaime/MSIME-Linux/releases/tag/${tag}`, assets: linuxAssets,
+  html_url: `https://github.com/metasequoiaime/msime/releases/tag/${tag}`, assets: linuxAssets,
 });
 
 test('the stable release takes the main slot and a newer pre-release rides along as the preview', () => {
@@ -136,7 +156,7 @@ test('the stable release takes the main slot and a newer pre-release rides along
   assert.equal(chosen.version, '0.48.6-build.1002.61.1');
   assert.equal(chosen.prerelease, false);
   assert.equal(chosen.preview.version, '0.50.0-build.11');
-  assert.equal(chosen.preview.releaseUrl, 'https://github.com/metasequoiaime/MSIME-Linux/releases/tag/v0.50.0-build.11');
+  assert.equal(chosen.preview.releaseUrl, 'https://github.com/metasequoiaime/msime/releases/tag/v0.50.0-build.11');
   assert.equal(chosen.preview.downloads.length, 4);
   assert.equal('prerelease' in chosen.preview, false);
 });
@@ -157,7 +177,7 @@ test('without any stable release the newest pre-release keeps the platform on th
 test('the highest version wins, not the most recently published', () => {
   const at = (tag, when) => ({
     tag_name: tag, draft: false, published_at: when,
-    html_url: `https://github.com/metasequoiaime/MSIME-Linux/releases/tag/${tag}`, assets: linuxAssets,
+    html_url: `https://github.com/metasequoiaime/msime/releases/tag/${tag}`, assets: linuxAssets,
   });
   // 补发一个旧版本不该把页面推回去
   const chosen = selectRelease('linux', [at('v0.8.9', '2026-09-07T00:00:00Z'), at('v0.9.1', '2026-09-01T00:00:00Z')]);
@@ -179,6 +199,12 @@ test('macOS DMGs are listed per architecture, Apple silicon first, without the c
   assert.deepEqual(downloads.map(d => `${d.label} ${d.arch}`), ['Apple 芯片 · dmg arm64', 'Intel · dmg x86_64']);
 });
 
+test('macOS universal DMGs are listed from the current release format', () => {
+  const downloads = classifyAssets('macos', ['SHA256SUMS', 'msime-macos-0.51.1-universal.dmg']
+    .map(name => macosAsset('macos-v0.51.1', name)));
+  assert.deepEqual(downloads.map(d => `${d.label} ${d.arch}`), ['通用 · dmg Universal']);
+});
+
 test('once a DMG release exists the pkg era releases are no longer offered', () => {
   const chosen = selectRelease('macos', [
     legacyMacos('v0.50.0-build.11'), legacyMacos('v0.50.0-build.9'),
@@ -192,6 +218,16 @@ test('once a DMG release exists the pkg era releases are no longer offered', () 
   const previewOnly = selectRelease('macos', [legacyMacos('v0.50.0-build.9'), macosRelease('macos-v0.50.1', ['msime-macos-0.50.1-arm64.dmg'], true)]);
   assert.equal(previewOnly.version, '0.50.1');
   assert.equal(previewOnly.downloads[0].name, 'msime-macos-0.50.1-arm64.dmg');
+});
+
+test('the universal DMG release supersedes the legacy pkg release', () => {
+  const chosen = selectRelease('macos', [
+    legacyMacos('v0.50.0-build.9'),
+    macosRelease('macos-v0.51.1', ['msime-macos-0.51.1-universal.dmg']),
+  ]);
+  assert.equal(chosen.version, '0.51.1');
+  assert.deepEqual(chosen.downloads.map(d => d.name), ['msime-macos-0.51.1-universal.dmg']);
+  assert.equal(chosen.preview, null);
 });
 
 test('without any DMG release the pkg and zip stay on the page', () => {

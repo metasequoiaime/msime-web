@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-30T20:20:41.704Z",
+  "generatedAt": "2026-10-03T03:57:10.240Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -22,167 +22,57 @@
     },
     "macos": {
       "repository": "metasequoiaime/msime",
-      "version": "0.50.0-build.9",
-      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/v0.50.0-build.9",
-      "publishedAt": "2026-09-18T01:49:54Z",
+      "version": "0.51.1",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.51.1",
+      "publishedAt": "2026-10-02T16:59:10Z",
       "prerelease": false,
-      "signed": true,
+      "signed": null,
       "downloads": [
         {
-          "label": "安装包 · pkg",
+          "label": "通用 · dmg",
           "arch": "Universal",
-          "name": "MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/v0.50.0-build.9/MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg",
-          "size": 77939496,
-          "sha256": "7dfbf0202a6c0a7166db426e05afcb429a2e5381dd85c9f9d2fce51a592d365f"
-        },
-        {
-          "label": "压缩包 · zip",
-          "arch": "Universal",
-          "name": "MetasequoiaIME-v0.50.0-build.9-macos-universal.zip",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/v0.50.0-build.9/MetasequoiaIME-v0.50.0-build.9-macos-universal.zip",
-          "size": 78047415,
-          "sha256": "4a97723c73ba35e7ff4d77d7a1866b5acf8cfbc1dd239ca89bfcda4c9c7e9d18"
+          "name": "msime-macos-0.51.1-universal.dmg",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.51.1/msime-macos-0.51.1-universal.dmg",
+          "size": 175530671,
+          "sha256": "8bb1644df7ae34e1dda1cc6c017d596877e7f35b3528eb1e9b07a9eca93ec9ef"
         }
       ],
-      "preview": {
-        "version": "0.50.0-build.11",
-        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/v0.50.0-build.11",
-        "publishedAt": "2026-09-18T07:46:28Z",
-        "signed": true,
-        "downloads": [
-          {
-            "label": "安装包 · pkg",
-            "arch": "Universal",
-            "name": "MetasequoiaIME-v0.50.0-build.11-macos-universal.pkg",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/v0.50.0-build.11/MetasequoiaIME-v0.50.0-build.11-macos-universal.pkg",
-            "size": 77939439,
-            "sha256": "5060fcfccb66ba7b5c5fd972f0e74422523694c95e674b640039c8ad454a5c34"
-          },
-          {
-            "label": "压缩包 · zip",
-            "arch": "Universal",
-            "name": "MetasequoiaIME-v0.50.0-build.11-macos-universal.zip",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/v0.50.0-build.11/MetasequoiaIME-v0.50.0-build.11-macos-universal.zip",
-            "size": 78047838,
-            "sha256": "9146fabd19b8fc740f345c3537c3e07666d245ffe828d938e8463dc9a519b7ed"
-          }
-        ]
-      }
+      "preview": null
     },
     "linux": {
-      "repository": "metasequoiaime/MSIME-Linux",
-      "version": "0.8.2",
-      "releaseUrl": "https://github.com/metasequoiaime/MSIME-Linux/releases/tag/v0.8.2",
-      "publishedAt": "2026-09-06T03:24:21Z",
+      "repository": "metasequoiaime/msime",
+      "version": "0.9.1",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/linux-v0.9.1",
+      "publishedAt": "2026-10-02T16:40:49Z",
       "prerelease": false,
       "signed": null,
       "downloads": [
         {
           "label": "Debian / Ubuntu · deb",
           "arch": "x86_64",
-          "name": "metasequoia-ime-linux_0.8.2_amd64.deb",
-          "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.8.2/metasequoia-ime-linux_0.8.2_amd64.deb",
-          "size": 55925616,
-          "sha256": "5d65daa96fb67c3d34ad6bda3e4f99f1c899f0d7b74c076e3ca089a4c3db4479"
-        },
-        {
-          "label": "Debian / Ubuntu · deb",
-          "arch": "aarch64",
-          "name": "metasequoia-ime-linux_0.8.2_arm64.deb",
-          "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.8.2/metasequoia-ime-linux_0.8.2_arm64.deb",
-          "size": 55408466,
-          "sha256": "46c325d57929fdc33415469d4e83cf04d4730afafb615d26cc6b27a0bc5f563d"
+          "name": "msime-linux_0.9.1_amd64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.9.1/msime-linux_0.9.1_amd64.deb",
+          "size": 75407768,
+          "sha256": "17b11459a4f17bf55b02a48c7cd458e70a7e37bbc24e8a914cd507fe07fdbe28"
         },
         {
           "label": "Fedora / openSUSE · rpm",
           "arch": "x86_64",
-          "name": "metasequoia-ime-linux-0.8.2-1.x86_64.rpm",
-          "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.8.2/metasequoia-ime-linux-0.8.2-1.x86_64.rpm",
-          "size": 55815165,
-          "sha256": "bc3ac6829139b79aaad9e45afc2728511a9a629629c19a89aa4f8032e459ca62"
-        },
-        {
-          "label": "Fedora / openSUSE · rpm",
-          "arch": "aarch64",
-          "name": "metasequoia-ime-linux-0.8.2-1.aarch64.rpm",
-          "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.8.2/metasequoia-ime-linux-0.8.2-1.aarch64.rpm",
-          "size": 55296296,
-          "sha256": "8e267d3619b9d987ec04f22c2fc1df5db525cd0d5d17baf62bb3dfefacc0ba34"
+          "name": "msime-linux-0.9.1-1.x86_64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.9.1/msime-linux-0.9.1-1.x86_64.rpm",
+          "size": 58620289,
+          "sha256": "f2d001a2e2fcb7e754d1cfb58fd07e873a313d1b3cbe0636b9cfb38db96c9c63"
         },
         {
           "label": "通用压缩包 · tar.gz",
           "arch": "x86_64",
-          "name": "metasequoia-ime-linux-0.8.2-linux-x86_64.tar.gz",
-          "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.8.2/metasequoia-ime-linux-0.8.2-linux-x86_64.tar.gz",
-          "size": 55925795,
-          "sha256": "3a9ac86069f029155b3db222c1be5d5b6c9c5dd39ec5b4fc803cab70ae7896f0"
-        },
-        {
-          "label": "通用压缩包 · tar.gz",
-          "arch": "aarch64",
-          "name": "metasequoia-ime-linux-0.8.2-linux-aarch64.tar.gz",
-          "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.8.2/metasequoia-ime-linux-0.8.2-linux-aarch64.tar.gz",
-          "size": 55392064,
-          "sha256": "7e1962f6c8193081e3e2d1ad2a3a9699c7f2b2fed32fc00234c4c302ebe568bb"
+          "name": "msime-linux-0.9.1-linux-x86_64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.9.1/msime-linux-0.9.1-linux-x86_64.tar.gz",
+          "size": 75412422,
+          "sha256": "836da4dfcf204cc54cf8d5f7c5b7e1d9698a9efd2dc4596f9c8223f4952439dc"
         }
       ],
-      "preview": {
-        "version": "0.9.1",
-        "releaseUrl": "https://github.com/metasequoiaime/MSIME-Linux/releases/tag/v0.9.1",
-        "publishedAt": "2026-09-06T14:43:55Z",
-        "signed": null,
-        "downloads": [
-          {
-            "label": "Debian / Ubuntu · deb",
-            "arch": "x86_64",
-            "name": "metasequoia-ime-linux_0.9.1_amd64.deb",
-            "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.9.1/metasequoia-ime-linux_0.9.1_amd64.deb",
-            "size": 75964156,
-            "sha256": "a6f41fc80c6489ca851fd923709271bd9b9ba88a8a194eb05201a172ca10eca2"
-          },
-          {
-            "label": "Debian / Ubuntu · deb",
-            "arch": "aarch64",
-            "name": "metasequoia-ime-linux_0.9.1_arm64.deb",
-            "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.9.1/metasequoia-ime-linux_0.9.1_arm64.deb",
-            "size": 75398098,
-            "sha256": "0ea03e38ebf353e622cbef97331864e1783f2f68c84855138fcf303f31ccc5bf"
-          },
-          {
-            "label": "Fedora / openSUSE · rpm",
-            "arch": "x86_64",
-            "name": "metasequoia-ime-linux-0.9.1-1.x86_64.rpm",
-            "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.9.1/metasequoia-ime-linux-0.9.1-1.x86_64.rpm",
-            "size": 75762583,
-            "sha256": "bde5cd1233116f7f1c196f49ce86781ef5d308e20ce94d4d720d27b92a3ac25d"
-          },
-          {
-            "label": "Fedora / openSUSE · rpm",
-            "arch": "aarch64",
-            "name": "metasequoia-ime-linux-0.9.1-1.aarch64.rpm",
-            "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.9.1/metasequoia-ime-linux-0.9.1-1.aarch64.rpm",
-            "size": 75213455,
-            "sha256": "2d1cdcd686503709461aa4a374707678881f2925a1e4b2380ff6b39858d52e29"
-          },
-          {
-            "label": "通用压缩包 · tar.gz",
-            "arch": "x86_64",
-            "name": "metasequoia-ime-linux-0.9.1-linux-x86_64.tar.gz",
-            "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.9.1/metasequoia-ime-linux-0.9.1-linux-x86_64.tar.gz",
-            "size": 75961478,
-            "sha256": "33ae1db6f2ee011c805afa404b323e8f1a2a6fa8ca6aa289290a669be9c855e6"
-          },
-          {
-            "label": "通用压缩包 · tar.gz",
-            "arch": "aarch64",
-            "name": "metasequoia-ime-linux-0.9.1-linux-aarch64.tar.gz",
-            "url": "https://github.com/metasequoiaime/MSIME-Linux/releases/download/v0.9.1/metasequoia-ime-linux-0.9.1-linux-aarch64.tar.gz",
-            "size": 75389077,
-            "sha256": "e6fa90292ea7c1e465a0e5775c93d1f4cbd208a555ca128124fb7802a5d78dd5"
-          }
-        ]
-      }
+      "preview": null
     }
   },
   "dictionary": {
