@@ -359,3 +359,12 @@ test('download actions and installation instructions share one surface without a
     assert.equal(surface.querySelector('.doc-card'), null);
   }
 });
+
+test('the current macOS DMG guide describes the in-app install flow', () => {
+  const macos = document('/download/').querySelector('#download-macos');
+  assert.ok(macos);
+  assert.match(macos.textContent, /立即安装/);
+  assert.match(macos.textContent, /进入设置/);
+  assert.match(macos.textContent, /~/);
+  assert.doesNotMatch(macos.textContent, /打开「应用程序」里的 MSIME。它会把输入法装进/);
+});
