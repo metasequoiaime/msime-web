@@ -1,7 +1,7 @@
 {
   "name": "水杉输入法",
   "short_name": "水杉",
-  "description": "开源多平台中文输入法，覆盖 Windows、macOS、Linux、Android、iOS 与 HarmonyOS。",
+  "description": "开源多平台中文输入法，覆盖 Windows、macOS、Linux、Android、iOS 与 HarmonyOS，也能嵌入网页使用。",
   "start_url": "/",
   "display": "browser",
   "lang": "zh-CN",

@@ -25,11 +25,12 @@ const FEATURES = [
   },
 ] as const;
 
-/** How each platform reaches users today, shown as a small tag on its card. Android and HarmonyOS have no published package yet. */
+/** How each platform reaches users today, shown as a small tag on its card. Android and HarmonyOS have no published package yet; Web is a package developers embed in their own pages. */
 const DISTRIBUTION_LABELS: Record<Distribution, { label: string; tone: "accent" | "neutral" }> = {
   release: { label: "可下载", tone: "accent" },
   testflight: { label: "TestFlight", tone: "accent" },
   source: { label: "开发中", tone: "neutral" },
+  sdk: { label: "开发者接入", tone: "accent" },
 };
 
 /** The privacy banner's grove (viewBox 0 0 1200 400), drawn in the banner's glow colour. */
@@ -107,8 +108,8 @@ export function HomePage() {
         <div data-reveal>
           <SectionHeading
             id="home-platforms"
-            title={t("六个平台，原生体验")}
-            lead={t("五个平台共用 Rust 输入引擎，Windows 版独立开发。")}
+            title={t("六个平台原生体验，网页也能用")}
+            lead={t("五个平台共用 Rust 输入引擎，Windows 版独立开发；同一个引擎编译成 WebAssembly，可以嵌进任何网页。")}
             action={
               <LinkButton to="/download/" variant="soft">
                 {t("前往下载页 →")}
@@ -120,13 +121,23 @@ export function HomePage() {
           {SITE_PLATFORMS.map((id) => {
             const platform = PLATFORM_CATALOG[id];
             const status = DISTRIBUTION_LABELS[platform.distribution];
+            // Web 不是装在系统里的输入法，单独占一整行，排在六个原生平台之后，两列和三列时原生平台都正好排满。
+            const embedded = platform.distribution === "sdk";
             return (
-              <Card as="li" key={id} className="min-w-0 rounded-tile p-4 sm:p-6" data-reveal>
+              <Card as="li" key={id} className={cx("min-w-0 rounded-tile p-4 sm:p-6", embedded && "col-span-full")} data-reveal>
                 <div className="flex items-center justify-between gap-3">
                   <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
                 </div>
                 <h3 className="m-0 mt-4 text-[17px] font-bold text-ink sm:mt-5 sm:text-[22px]">{platform.name}</h3>
+                {embedded && (
+                  <p className="m-0 mt-2 text-[15px] leading-[1.8] text-body">
+                    {t("把输入法嵌进你的网页：全拼、双拼、五笔在访客的浏览器里运行，不需要安装，也不经过服务器。")}{" "}
+                    <LocaleLink to="/download/" search={{ platform: "web" }} className="font-semibold text-accent-ink no-underline hover:text-ink">
+                      {t("接入方式 →")}
+                    </LocaleLink>
+                  </p>
+                )}
               </Card>
             );
           })}

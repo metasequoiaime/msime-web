@@ -56,11 +56,12 @@ const MIRROR_ACTION =
 const tileStatus = (entry: SitePlatformEntry) => {
   if (entry.distribution === "testflight") return "TestFlight";
   if (entry.distribution === "source") return "开发中";
+  if (entry.distribution === "sdk") return "npm";
   return entry.release ? `v${entry.release.version}` : "查看发布页";
 };
 
 /**
- * The six platform tiles, three to a row: desktop on the first row, mobile on the second. On a phone a third of the panel is too narrow for mark, name and status side by side, so the tile stacks them centred; from `sm` up the mark sits on the left and the status follows the name on the same line, wrapping under it only when the column is too narrow.
+ * The seven platform tiles, three to a row: desktop on the first row, mobile on the second, and Web alone on a third row across the full width, since it is embedded in pages rather than installed. On a phone a third of the panel is too narrow for mark, name and status side by side, so the tile stacks them centred; from `sm` up the mark sits on the left and the status follows the name on the same line, wrapping under it only when the column is too narrow.
  *
  * The status uses the body font, not `font-mono`: JetBrains Mono is not bundled, and where it is missing the monospace fallback on Windows is a serif face.
  */
@@ -194,6 +195,29 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
     );
   }
 
+  if (entry.distribution === "sdk") {
+    return (
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+        <div className="min-w-0">
+          <Pill>{t("开发者接入")}</Pill>
+          <p className="m-0 mt-2.5 text-[15px] leading-[1.85] text-body">
+            {t("Web 版不用下载安装：它是一个 npm 包，网站开发者把它嵌进自己的网页，访客在浏览器里就能用全拼、双拼和五笔。接入方式见下方说明。")}
+          </p>
+        </div>
+        <div className="flex flex-none flex-wrap gap-3">
+          <AnchorButton variant="secondary" href={entry.href}>
+            {t("npm 包")}
+            <ExternalIcon />
+          </AnchorButton>
+          <AnchorButton variant="secondary" href={entry.sourceUrl}>
+            {t("源码与示例")}
+            <ExternalIcon />
+          </AnchorButton>
+        </div>
+      </div>
+    );
+  }
+
   if (entry.distribution === "source") {
     return (
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
@@ -242,7 +266,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 /**
  * 页面顶部的下载入口（design-home §6「选择卡」），也是整页的标题区：页面不再有单独的页头，h1 就在这里，平台卡片和下载按钮在首屏内。
  *
- * 六个平台都是可选的卡片，按 UA 猜到的那个只是默认选中；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 与 HarmonyOS 如实说明还在开发、只能从源码构建。QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的下载按钮旁边。
+ * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 与 HarmonyOS 如实说明还在开发、只能从源码构建，Web 是给网站开发者接入的 npm 包。QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的下载按钮旁边。
  *
  * `.download-panel` is a test hook: the static HTML must show the Windows version inside it.
  */
@@ -271,7 +295,7 @@ export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePl
               onClick={() => {
                 onSelect(entry.id);
               }}
-              className={cx(TILE, "cursor-pointer", active ? "bg-accent-soft shadow-ring-accent" : "bg-panel-2 hover:bg-accent-soft")}
+              className={cx(TILE, "cursor-pointer", entry.distribution === "sdk" && "col-span-full sm:justify-center", active ? "bg-accent-soft shadow-ring-accent" : "bg-panel-2 hover:bg-accent-soft")}
             >
               <PlatformIcon platform={entry.id} className="flex-none" />
               <span className="flex min-w-0 flex-col items-center gap-x-2.5 sm:flex-row sm:flex-wrap sm:items-baseline">

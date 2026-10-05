@@ -12,7 +12,7 @@ import { Container } from "./ui";
 import { usePageSearch } from "./use-page-search";
 
 /**
- * 下载页（design-home §6）：六个平台的选择卡、所选平台的安装说明，最后是各平台的更新日志（`#releases`）。没有单独的页头：选择卡自带 h1，紧贴导航栏，下载按钮不用滚动就能点到。
+ * 下载页（design-home §6）：七个平台的选择卡、所选平台的安装说明，最后是各平台的更新日志（`#releases`）。没有单独的页头：选择卡自带 h1，紧贴导航栏，下载按钮不用滚动就能点到。
  *
  * Test hooks kept from the previous layout: `.content-flow` wraps both `.download-panel` and `#download-content`; there is no `aside` in `main` and no `.doc-card` inside `.content-flow`. The release list sits after `.content-flow`, not inside it. The static HTML renders the Windows choice with every platform's guide visible; `?platform=` applies after hydration.
  */

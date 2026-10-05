@@ -112,6 +112,76 @@ HarmonyOS 版正在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/
 
 源码和构建脚本都在 msime 仓库的 `platforms/harmony` 目录。构建需要 DevEco Studio 提供的 OpenHarmony NDK 与 `hvigorw`，步骤见该目录 README 的「本地构建」一节。开发中的构建不保证稳定，遇到问题欢迎到[Bug 与需求反馈](/feedback/)反馈。
 
+## Web
+
+### 嵌进你的网页
+
+Web 版是给网站开发者用的：同一个 Rust 输入引擎编译成 WebAssembly，打包成 npm 包 [`@msime/web-engine`](https://www.npmjs.com/package/@msime/web-engine)。引擎在访客浏览器的 Web Worker 里运行，支持全拼、小鹤双拼、自然码双拼和五笔 86，输入的内容不会发送到任何服务器，也不需要你提供后端。
+
+两行代码就能接到页面的文本框上，`attachInput` 会处理按键并显示候选栏：
+
+```js
+import { createMsimeEngine, attachInput } from "@msime/web-engine";
+
+const engine = await createMsimeEngine({ scheme: "quanpin" });
+attachInput(document.querySelector("textarea"), engine);
+```
+
+完整的 API、自定义候选栏和按键处理见 [packages/web-engine 的说明](https://github.com/metasequoiaime/msime/tree/develop/packages/web-engine#readme)。
+
+### 方式一：部署到自己的静态站点
+
+把运行时和资源复制到站点的发布目录，页面直接引用，不需要打包器，也不需要任何配置：
+
+```sh
+npx @msime/web-engine copy public/msime
+```
+
+```html
+<script type="module">
+  import { createMsimeEngine, attachInput } from "/msime/index.js";
+  const engine = await createMsimeEngine({ scheme: "quanpin" });
+  attachInput(document.querySelector("textarea"), engine);
+</script>
+```
+
+只需要全拼和双拼时，加上 `--no-wubi` 可以少放五笔词库；`--no-model` 不放整句模型，候选按词频排序，首次加载少约 4 MB。用 Vite、webpack 等打包器的项目照常 `npm install @msime/web-engine`，资源仍用上面的命令复制出来，再把 `assetBase: "/msime/assets/"` 传给 `createMsimeEngine`。
+
+### 方式二：直接从 CDN 引用
+
+包发布在 npm 上，jsDelivr 会自动提供 CDN 地址，什么文件都不用部署：
+
+```html
+<script type="module">
+  import { createMsimeEngine, attachInput } from "https://cdn.jsdelivr.net/npm/@msime/web-engine/index.js";
+  const engine = await createMsimeEngine();
+  attachInput(document.querySelector("textarea"), engine);
+</script>
+```
+
+正式上线请在地址里写上版本号（如 `@msime/web-engine@0.1.2`），避免新版本自动生效。这种方式依赖第三方 CDN，适合原型和流量较大的站点；希望资源都在自己域名下时用方式一。
+
+### 部署平台
+
+[示例站点](https://github.com/metasequoiaime/msime/tree/develop/packages/web-engine/examples/static-site)附带各平台的现成配置：
+
+- **GitHub Pages**：用示例里的 `github-pages.yml` 发布。Pages 不能自定义缓存时间，文件过期后靠 ETag 校验，不会重复下载。
+- **Vercel**：`vercel.json` 已写好构建命令、输出目录和缓存头。
+- **Cloudflare Pages**：构建命令 `npm run build`，输出目录 `site`，缓存头在 `_headers` 里。
+- **Cloudflare Workers**：用 Workers Static Assets 托管同一个目录，`npx wrangler deploy` 即可。引擎依然在访客的浏览器里运行，Workers 只负责提供文件。
+
+不要把 GitHub Release 的下载地址直接当作资源地址：它会跳转到另一个域名，并且不允许跨域读取，浏览器会拒绝。
+
+### 体积与浏览器要求
+
+每个页面只下载用到的方案：全拼或双拼约 16 MB（不要整句模型约 12 MB），五笔约 8 MB。文件按 HTTP 缓存规则缓存，再次打开不会重新下载。
+
+需要支持 WebAssembly、模块 Worker 和 `DecompressionStream` 的浏览器：Chrome / Edge 80 及以上、Firefox 114 及以上、Safari 16.4 及以上。页面设置了内容安全策略（CSP）时，`script-src` 需要允许 `'wasm-unsafe-eval'`；从 CDN 引用时还需要 `worker-src blob:`。
+
+### 许可
+
+`@msime/web-engine` 以 GPL-3.0-only 发布，嵌入你的网页时需要遵守 GPL 的条款。词库、模型和第三方组件的声明在包内的 `assets/NOTICE.md`，部署时请一并发布。
+
 ## 隐私
 
 本地输入处理不需要联网。Windows 和 Linux 的云候选默认开启，可在安装或设置中关闭；AI 联想、在线翻译、语音输入与更新检查的行为因平台和设置而异。

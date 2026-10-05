@@ -24,7 +24,7 @@ export const REPOSITORY_GROUPS: readonly RepositoryGroup[] = [
   {
     title: "主仓库与服务",
     repositories: [
-      { name: "msime", description: "主仓库：macOS、Linux、Android、iOS、HarmonyOS 原生宿主与 Rust 输入引擎" },
+      { name: "msime", description: "主仓库：macOS、Linux、Android、iOS、HarmonyOS 原生宿主、Rust 输入引擎与网页引擎 @msime/web-engine" },
       { name: "msime-windows", description: "Windows 产品：TSF、Server、GUI、设置页与安装器" },
       { name: "msime-cloud", description: "水杉云：共通 Go 后端，提供云候选、AI 联想、翻译、语音识别与 Swagger 接口文档" },
       { name: "MSIME-Docs", description: "用户指南与架构文档" },
