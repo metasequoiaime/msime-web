@@ -5,6 +5,7 @@ import { useLocale } from "./use-locale";
 import { redirect, createMemoryHistory, createRootRoute, createRoute, createRouter, lazyRouteComponent, Outlet } from "@tanstack/react-router";
 import { usePageMeta } from "./page-meta";
 import { docsSearchSchema } from "./docs-search";
+import { downloadSearchSchema } from "./download-search";
 import { SiteShell } from "./site-shell";
 import { Container, Grove, LinkButton } from "./ui";
 
@@ -103,6 +104,7 @@ const downloadRoute = createRoute({
   getParentRoute: () => shellRoute,
   path: "/download",
   component: lazyRouteComponent(() => import("./page-download"), "DownloadPage"),
+  validateSearch: downloadSearchSchema,
 });
 
 function redirectBeta({ location }: { location: { pathname: string; search: Record<string, unknown> } }) {

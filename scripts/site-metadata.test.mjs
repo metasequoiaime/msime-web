@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { test } from 'node:test';
 import { docsSearchSchema } from '../src/docs-search.ts';
+import { downloadSearchSchema } from '../src/download-search.ts';
 import { communitySchema } from '../src/community-data.ts';
 import { fetchPlatforms } from '../src/platforms-data.ts';
 import { seoPages, pageSeo } from '../shared/site-seo.ts';
@@ -86,6 +87,19 @@ test('lightweight guide query validation accepts only known scalar values', () =
   for (const platform of ['windows', 'macos', 'macos-voice', 'linux']) assert.deepEqual(docsSearchSchema({ platform }), { platform });
   for (const platform of ['__proto__', 'constructor', 'unknown', ['windows'], {}, null, 1]) assert.deepEqual(docsSearchSchema({ platform }), {});
   assert.deepEqual(docsSearchSchema({ unrelated: 'ignored' }), {});
+});
+
+test('download query validation preserves the selected platform and release filter', () => {
+  assert.deepEqual(downloadSearchSchema({ platform: 'linux', release: 'linux', unrelated: 'ignored' }), { platform: 'linux', release: 'linux' });
+  assert.deepEqual(downloadSearchSchema({ platform: 'ios' }), { platform: 'ios' });
+  for (const search of [
+    { platform: '__proto__' },
+    { platform: ['linux'] },
+    { platform: {} },
+    { release: 'unknown' },
+    { release: ['linux'] },
+    { release: null },
+  ]) assert.deepEqual(downloadSearchSchema(search), {});
 });
 
 test('deferred community validation still rejects unsafe URLs and invalid metrics', () => {
