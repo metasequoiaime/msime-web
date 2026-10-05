@@ -17,6 +17,11 @@
 /community.json
   Cache-Control: no-cache
 
+# Linux 一键安装脚本：按纯文本返回，浏览器里打开就能先读一遍再决定是否运行；改了支持的发行版要立即生效。
+/install.sh
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: no-cache
+
 # HTML must revalidate after deployments; hashed assets retain their immutable cache.
 /
   Cache-Control: no-cache

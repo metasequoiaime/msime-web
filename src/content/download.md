@@ -60,9 +60,19 @@ macOS 版内置 Sparkle 自动更新，安装后可从输入法菜单中的「�
 
 ## Linux
 
+### 一键安装
+
+Fedora 43/44、openSUSE Tumbleweed、Ubuntu 24.04/26.04（及基于它们的 Linux Mint 等）、Debian testing/unstable 可以直接用系统的包管理器安装，之后随系统更新一起升级：
+
+```sh
+curl -fsSL https://msime.app/install.sh | sh
+```
+
+脚本按发行版添加 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime) 上的 `home:msime` 软件源和签名公钥，用 dnf、zypper 或 apt 安装 `msime`，再为当前用户下载词库、完成首次配置。不想运行脚本时也可以手动添加 [软件源](https://download.opensuse.org/repositories/home:/msime/)，每个发行版目录里有 dnf / zypper 用的 `home:msime.repo` 与 apt 用的签名公钥 `Release.key`。Fedora 另有 aarch64 包，其余发行版目前只有 x86_64。
+
 ### 安装说明
 
-按发行版选择对应的包。同一个包同时提供 Fcitx5 插件与 IBus 引擎，两者功能一致，用桌面环境正在使用的那个即可。安装包不带词库，安装后打开「水杉输入法」设置完成首次配置并下载词库（或在终端运行 `msime-linux-setup --download`），它会把输入法加入当前的输入法列表；没有自动加入时，Fcitx5 用 `fcitx5-configtool` 添加「水杉输入法」，IBus 执行 `ibus restart` 后在输入源设置中添加「Metasequoia 水杉输入法」。
+其他发行版按下面的列表选择对应的包。同一个包同时提供 Fcitx5 插件与 IBus 引擎，两者功能一致，用桌面环境正在使用的那个即可。安装包不带词库，安装后打开「水杉输入法」设置完成首次配置并下载词库（或在终端运行 `msime-linux-setup --download`），它会把输入法加入当前的输入法列表；没有自动加入时，Fcitx5 用 `fcitx5-configtool` 添加「水杉输入法」，IBus 执行 `ibus restart` 后在输入源设置中添加「Metasequoia 水杉输入法」。
 
 源码在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/develop/platforms/linux)。
 
