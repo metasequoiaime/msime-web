@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useTheme } from "../theme";
 import { ExternalIcon } from "../ui";
 import { useLocale } from "../use-locale";
 
@@ -13,11 +14,21 @@ const MIN_HEIGHT = 320;
 const MAX_HEIGHT = 2400;
 
 /**
- * 下载页选中 Web 时，在选择卡和接入指南之间嵌入在线演示：引擎在 iframe 里的演示页中运行，本站的 CSP 只需在 frame-src 放行演示页的源，不用为 wasm 放开 script-src。iframe 懒加载，访客没有滚到这里就不下载引擎和词库。演示页加载时不抢焦点，并用 postMessage 报告内容高度，这里据此调整 iframe 的高度，免得出现第二条滚动条。
+ * 下载页选中 Web 时，在选择卡和接入指南之间嵌入在线演示（背景透明，融进本页）：引擎在 iframe 里的演示页中运行，本站的 CSP 只需在 frame-src 放行演示页的源，不用为 wasm 放开 script-src。iframe 懒加载，访客没有滚到这里就不下载引擎和词库。演示页加载时不抢焦点，并用 postMessage 报告内容高度，这里据此调整 iframe 的高度，免得出现第二条滚动条。
+ *
+ * 深浅色跟本站的主题开关一致：地址里的 ?theme= 给初始值（只取一次，换主题不重新加载 iframe），之后每次变化发 msime-demo:theme 消息过去。两边的 color-scheme 不一致时浏览器会给 iframe 画上不透明的底色，透明背景就失效了。
  */
 export function WebDemo() {
   const { t } = useLocale();
+  const { isLight } = useTheme();
+  const theme = isLight ? "light" : "dark";
   const [height, setHeight] = useState(INITIAL_HEIGHT);
+  const [src] = useState(() => `${WEB_DEMO_URL}?embed&theme=${theme}`);
+  const frame = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    frame.current?.contentWindow?.postMessage({ type: "msime-demo:theme", theme }, DEMO_ORIGIN);
+  }, [theme]);
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
@@ -46,9 +57,10 @@ export function WebDemo() {
         {t("下面就是嵌入了 @msime/web-engine 的页面：引擎在你的浏览器里运行，不用切换系统输入法，直接打字。右侧可以换皮肤、布局和方案，完整演示里还能看到对应的接入代码。")}
       </p>
       <iframe
-        className="mt-5 block w-full rounded-panel border-0 bg-transparent"
-        style={{ height }}
-        src={`${WEB_DEMO_URL}?embed`}
+        ref={frame}
+        className="mt-5 block w-full border-0 bg-transparent"
+        style={{ height, colorScheme: theme }}
+        src={src}
         title={t("水杉输入法网页版在线试用")}
         loading="lazy"
         allow="clipboard-write"
