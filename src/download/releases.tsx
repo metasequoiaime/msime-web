@@ -7,10 +7,10 @@ import { usePageSearch } from "../use-page-search";
 import { ReleaseCard } from "./release-card";
 import { releaseDate } from "./release-notes";
 
-/** Where each platform publishes. Windows ships from msime-windows; the merged msime repository now carries macOS, Linux and mobile releases; msime-linux remains as the archived historical source. */
+/** Where each platform publishes. Windows ships from msime-windows; the merged msime repository now carries macOS, Linux, mobile and web engine releases; msime-linux remains as the archived historical source. */
 const RELEASE_SOURCES = [
   { repo: "msime-windows", platforms: "Windows", note: "安装程序与签名信息随每个版本发布" },
-  { repo: "msime", platforms: "macOS · Linux · iOS · Android · HarmonyOS", note: "Rust 输入引擎与各原生宿主的版本，同一个版本可能同时包含桌面安装包与移动端构建" },
+  { repo: "msime", platforms: "macOS · Linux · iOS · Android · HarmonyOS · Web", note: "Rust 输入引擎与各原生宿主的版本，同一个版本可能同时包含桌面安装包与移动端构建；Web 版以 web-engine 开头的版本单独发布" },
   { repo: "msime-linux", platforms: "Linux 历史版本", note: "旧版 IBus 与 Fcitx5 发布，仓库已归档" },
 ] as const;
 
@@ -64,7 +64,7 @@ export function ReleasesSection() {
         {t("更新日志")}
       </h2>
       <p className="m-0 mt-3 max-w-[64ch] text-[15px] leading-[1.85] text-body">
-        {t("六个平台各自发布。这里汇总所有平台的 GitHub Release，按发布时间倒序排列。")}
+        {t("七个平台各自发布。这里汇总所有平台的 GitHub Release，按发布时间倒序排列。")}
       </p>
 
       <fieldset className="m-0 mt-6 min-w-0 border-0 p-0">

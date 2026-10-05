@@ -5,11 +5,29 @@ import { toTraditional } from "../shared/translate";
 import { localeHref } from "../shared/locales";
 import { GUIDE_NAMES } from "../shared/site-seo";
 import MarkdownIt from "markdown-it";
+import "./prism";
+// The core only: the package's main entry bundles plugins that touch Element at load, which the static render (linkedom: a document, no Element) does not have.
+import Prism from "prismjs/components/prism-core";
+import "prismjs/components/prism-markup";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-powershell";
+import "prismjs/components/prism-json";
+
+/** Fence names used in this site's markdown and the guides, mapped to the Prism grammar that highlights them. */
+const PRISM_LANGUAGES: Record<string, string> = { js: "javascript", javascript: "javascript", html: "markup", xml: "markup", sh: "bash", shell: "bash", bash: "bash", powershell: "powershell", ps1: "powershell", json: "json" };
 
 export const markdown = new MarkdownIt({
   html: false,
   linkify: true,
   typographer: true,
+  // Prism escapes what it returns, so markdown-it uses it as the block's HTML; an empty string falls back to markdown-it's own escaping, for fences in other languages.
+  highlight: (code, lang) => {
+    const name = PRISM_LANGUAGES[lang.toLowerCase()];
+    const grammar = name ? Prism.languages[name] : undefined;
+    return grammar && name ? Prism.highlight(code, grammar, name) : "";
+  },
 });
 
 export function localizedHtml(html: string, path: string) {

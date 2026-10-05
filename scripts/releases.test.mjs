@@ -33,6 +33,8 @@ test('assets are classified one by one, by platform word first and installer ext
     'metasequoia-ime-linux_0.9.1_amd64.deb': 'linux',
     'msime-1.0.0-arm64.apk': 'android',
     'msime-1.0.0-harmonyos.hap': 'harmony',
+    'msime_engine_bg.wasm': 'web',
+    'msime-web-engine-0.1.2.tgz': 'web',
     'appcast.xml': null,
     'MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg.sha256': null,
     'product-manifest.json': null,
@@ -51,6 +53,14 @@ test('a release that ships two platforms is listed under both; the tag prefix is
   assert.deepEqual(releasePlatforms(release('msime-windows', 'v0.9.1', ['product-manifest.json']), 'windows'), ['windows'], 'a single-platform repository answers for every release');
   assert.equal(tagVersion('ios-v0.50.0-build.14'), '0.50.0-build.14');
   assert.equal(tagVersion('v0.9.1'), '0.9.1');
+});
+
+test('a web engine release is listed under Web, by its wasm or else by its web-engine- tag', () => {
+  // The asset list of web-engine-v0.1.1, the first one the site lists; its dictionaries and notice say nothing about the platform.
+  const assets = ['msime-pinyin.db.gz', 'msime-wubi86.db.gz', 'msime_engine.js', 'msime_engine_bg.wasm', 'NOTICE.md', 'sentence-model.safetensors.gz', 'SHA256SUMS.txt', 'web-engine-manifest.json'];
+  assert.deepEqual(releasePlatforms(release('msime', 'web-engine-v0.1.1', assets)), ['web']);
+  assert.deepEqual(releasePlatforms(release('msime', 'web-engine-v0.1.1', ['NOTICE.md'])), ['web'], 'the tag prefix is the fallback');
+  assert.equal(tagVersion('web-engine-v0.1.1'), '0.1.1');
 });
 
 test('releases outside the repository, drafts and non-version tags are dropped, not rendered', () => {

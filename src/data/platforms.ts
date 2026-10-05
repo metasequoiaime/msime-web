@@ -2,8 +2,8 @@ import type { PlatformRelease, Platforms } from "../platforms-data.ts";
 
 // This module must stay free of runtime zod imports: the home page's platform cards import it, and zod is kept out of that chunk.
 
-/** Every platform the site presents, in display order. `harmony` is HarmonyOS. */
-export const SITE_PLATFORMS = ["windows", "macos", "linux", "android", "ios", "harmony"] as const;
+/** Every platform the site presents, in display order. `harmony` is HarmonyOS; `web` is the engine compiled to WebAssembly for embedding in web pages, last because it is not an installed input method. */
+export const SITE_PLATFORMS = ["windows", "macos", "linux", "android", "ios", "harmony", "web"] as const;
 export type SitePlatform = (typeof SITE_PLATFORMS)[number];
 
 export const PLATFORM_NAMES: Record<SitePlatform, string> = {
@@ -13,6 +13,7 @@ export const PLATFORM_NAMES: Record<SitePlatform, string> = {
   android: "Android",
   ios: "iOS",
   harmony: "HarmonyOS",
+  web: "Web",
 };
 
 /** Filter values accepted by `/api/releases?platform=` and `releasesQuery()`. */
@@ -26,8 +27,9 @@ export const IOS_TESTFLIGHT_URL = "https://testflight.apple.com/join/bUzPvyqt";
  * - `release`: installable packages on GitHub Releases, described by `public/platforms.json`.
  * - `testflight`: Apple's public beta only; the IPAs on GitHub are TestFlight builds, not sideloadable.
  * - `source`: developed in the msime repository with no published package yet.
+ * - `sdk`: a library for developers to embed (the web engine on npm), not something end users install.
  */
-export type Distribution = "release" | "testflight" | "source";
+export type Distribution = "release" | "testflight" | "source" | "sdk";
 
 export type PlatformInfo = {
   id: SitePlatform;
@@ -43,8 +45,11 @@ export type PlatformInfo = {
 
 const MSIME = "https://github.com/metasequoiaime/msime";
 
+/** The web engine's npm package; the same files are attached to every `web-engine-v…` release in the msime repository. */
+export const WEB_ENGINE_NPM_URL = "https://www.npmjs.com/package/@msime/web-engine";
+
 /*
- * Static facts about the six platforms. `public/platforms.json` belongs to the release automation and only covers the three desktop platforms with GitHub packages; Android, iOS and HarmonyOS details live here instead, so the manifest's shape never has to change for them. Windows keeps its separate repository; macOS and Linux releases come from the merged `msime` repository.
+ * Static facts about the seven platforms. `public/platforms.json` belongs to the release automation and only covers the three desktop platforms with GitHub packages; Android, iOS and HarmonyOS details live here instead, so the manifest's shape never has to change for them. Windows keeps its separate repository; macOS and Linux releases come from the merged `msime` repository.
  */
 export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
   windows: {
@@ -95,6 +100,14 @@ export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
     href: `${MSIME}/tree/develop/platforms/harmony`,
     sourceUrl: `${MSIME}/tree/develop/platforms/harmony`,
   },
+  web: {
+    id: "web",
+    name: PLATFORM_NAMES.web,
+    host: "Rust 引擎编译成 WebAssembly，在网页的 Web Worker 中运行",
+    distribution: "sdk",
+    href: WEB_ENGINE_NPM_URL,
+    sourceUrl: `${MSIME}/tree/develop/packages/web-engine`,
+  },
 };
 
 export type SitePlatformEntry = PlatformInfo & {
@@ -102,7 +115,7 @@ export type SitePlatformEntry = PlatformInfo & {
   release: PlatformRelease | null;
 };
 
-/** All six platforms in display order, each joined with its release from `platforms.json` when there is one. Pure: safe during SSR with seeded query data or with none. */
+/** All seven platforms in display order, each joined with its release from `platforms.json` when there is one. Pure: safe during SSR with seeded query data or with none. */
 export function sitePlatforms(platforms?: Partial<Platforms>): SitePlatformEntry[] {
   return SITE_PLATFORMS.map(id => {
     const info = PLATFORM_CATALOG[id];

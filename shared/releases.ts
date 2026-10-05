@@ -5,7 +5,7 @@ import { PROJECT_ORIGIN, RELEASE_BODY_LIMIT, releaseItemSchema, type ReleaseItem
 /*
  * Release history for the changelog page, gathered from every repository that publishes installable builds.
  *
- * - `msime` hosts macOS, Linux, iOS and (eventually) Android and HarmonyOS. One release can carry builds for several platforms (`v0.49.0-build.1002.71.1` ships both `-ios-testflight.ipa` and `-macos-universal.pkg`), so the platform is read from each asset name and such a release is listed once under each platform. The tag prefix (`ios-v…`) is the fallback for a release whose assets say nothing.
+ * - `msime` hosts macOS, Linux, iOS, (eventually) Android and HarmonyOS, and the web engine (`web-engine-v…` releases: the wasm, its dictionaries and the npm package `@msime/web-engine`). One release can carry builds for several platforms (`v0.49.0-build.1002.71.1` ships both `-ios-testflight.ipa` and `-macos-universal.pkg`), so the platform is read from each asset name and such a release is listed once under each platform. The tag prefix (`ios-v…`) is the fallback for a release whose assets say nothing.
  * - `msime-windows` only ships Windows.
  * - `msime-linux` is archived; it remains a source for historical Linux releases alongside the merged repository.
  */
@@ -16,10 +16,10 @@ export const RELEASE_SOURCES: readonly { repo: string; platform?: SitePlatform }
 ];
 
 const PLATFORM_TOKENS: Record<string, SitePlatform> = {
-  windows: "windows", macos: "macos", linux: "linux", android: "android", ios: "ios", harmony: "harmony", harmonyos: "harmony", ohos: "harmony",
+  windows: "windows", macos: "macos", linux: "linux", android: "android", ios: "ios", harmony: "harmony", harmonyos: "harmony", ohos: "harmony", web: "web",
 };
 const EXTENSIONS: Record<string, SitePlatform> = {
-  exe: "windows", msi: "windows", msix: "windows", pkg: "macos", dmg: "macos", deb: "linux", rpm: "linux", appimage: "linux", apk: "android", aab: "android", ipa: "ios", hap: "harmony",
+  exe: "windows", msi: "windows", msix: "windows", pkg: "macos", dmg: "macos", deb: "linux", rpm: "linux", appimage: "linux", apk: "android", aab: "android", ipa: "ios", hap: "harmony", wasm: "web",
 };
 
 /** The platform an asset belongs to, from a platform word in its name (`-macos-universal.pkg`, `-ios-testflight.ipa`) or else from an installer extension. Checksums, appcasts and manifests carry neither and return `null`. */
@@ -33,7 +33,9 @@ export function assetPlatform(name: string): SitePlatform | null {
   return EXTENSIONS[lower.slice(lower.lastIndexOf(".") + 1)] ?? null;
 }
 
-const TAG_PREFIX = /^(windows|macos|linux|android|ios|harmony)-/;
+const TAG_PREFIX = /^(windows|macos|linux|android|ios|harmony|web-engine)-/;
+/** The platform a tag prefix names; `web-engine-v…` is the web engine's release. */
+const PREFIX_PLATFORMS: Record<string, SitePlatform> = { windows: "windows", macos: "macos", linux: "linux", android: "android", ios: "ios", harmony: "harmony", "web-engine": "web" };
 
 /** Platforms one release belongs to. A repository that ships a single platform answers for all its releases. */
 export function releasePlatforms(release: { tag_name: string; assets: { name: string }[] }, fixed?: SitePlatform): SitePlatform[] {
@@ -44,13 +46,13 @@ export function releasePlatforms(release: { tag_name: string; assets: { name: st
     if (platform) found.add(platform);
   }
   if (!found.size) {
-    const prefix = release.tag_name.match(TAG_PREFIX)?.[1] as SitePlatform | undefined;
-    if (prefix) found.add(prefix);
+    const prefix = release.tag_name.match(TAG_PREFIX)?.[1];
+    if (prefix) found.add(PREFIX_PLATFORMS[prefix]);
   }
   return [...found];
 }
 
-/** `ios-v0.50.0-build.14` → `0.50.0-build.14`; `v0.9.1` → `0.9.1`. */
+/** `ios-v0.50.0-build.14` → `0.50.0-build.14`; `web-engine-v0.1.1` → `0.1.1`; `v0.9.1` → `0.9.1`. */
 export const tagVersion = (tag: string) => tag.replace(TAG_PREFIX, "").replace(/^v/i, "");
 
 /** Release notes without HTML comments (the release workflow's machine markers), cut to `RELEASE_BODY_LIMIT` UTF-8 bytes at a line break where one is close. */

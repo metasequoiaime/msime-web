@@ -606,7 +606,7 @@ function SiteFooter({ inert }: { inert: boolean }) {
               <LogoMark size={36} />
               <span className="text-lg font-bold tracking-[.03em] text-ink">{t("水杉输入法")}</span>
             </div>
-            <p className="m-0 mt-3.5 text-sm leading-[1.85] text-muted">{t("开源多平台中文输入法，覆盖 Windows、macOS、Linux、Android、iOS 与 HarmonyOS，各平台原生实现。")}</p>
+            <p className="m-0 mt-3.5 text-sm leading-[1.85] text-muted">{t("开源多平台中文输入法，覆盖 Windows、macOS、Linux、Android、iOS 与 HarmonyOS，各平台原生实现，也能嵌入网页使用。")}</p>
             <div className="mt-[18px] flex flex-wrap gap-2">
               <a className={chipClass()} href="https://t.me/msimegroup" target="_blank" rel="noreferrer" title="Telegram" aria-label="Telegram">
                 <TelegramIcon size={16} />

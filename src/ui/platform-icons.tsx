@@ -52,6 +52,28 @@ export function CloudDownloadIcon({ size = 22, ...props }: IconProps) {
   );
 }
 
+/** A globe for the web engine: the web has no single brand mark, so it is stroke-drawn like the UI icons, at the same weight as the cloud above. */
+export function WebIcon({ size = 22, ...props }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.9}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
+      <circle cx="12" cy="12" r="9.5" />
+      <path d="M2.5 12h19M12 2.5c2.6 2.7 3.9 5.9 3.9 9.5s-1.3 6.8-3.9 9.5M12 2.5C9.4 5.2 8.1 8.4 8.1 12s1.3 6.8 3.9 9.5" />
+    </svg>
+  );
+}
+
 const PLATFORM_ICONS: Record<SitePlatform, (props: IconProps) => React.JSX.Element> = {
   windows: WindowsIcon,
   macos: AppleIcon,
@@ -59,9 +81,10 @@ const PLATFORM_ICONS: Record<SitePlatform, (props: IconProps) => React.JSX.Eleme
   android: AndroidIcon,
   ios: AppleIcon,
   harmony: HarmonyOSIcon,
+  web: WebIcon,
 };
 
-/** The mark for one of the site's six platforms. */
+/** The mark for one of the site's seven platforms. */
 export function PlatformIcon({ platform, ...props }: IconProps & { platform: SitePlatform }) {
   const Icon = PLATFORM_ICONS[platform];
   return <Icon {...props} />;

@@ -76,9 +76,9 @@ test('the response headers lock the page down and keep hashed assets cacheable',
   for (const directive of ["default-src 'self'", "frame-ancestors 'none'", "object-src 'none'", "base-uri 'none'"]) {
     assert.ok(csp.includes(directive), `CSP 缺 ${directive}`);
   }
-  // 只放行头像、Turnstile 的脚本与验证框、词条提交所用的公共 API，以及 Google 登录（GIS）和账号头像。
+  // 只放行头像、Turnstile 的脚本与验证框、词条提交所用的公共 API、Google 登录（GIS）和账号头像，以及下载页 Web 平台嵌入的在线演示（frame-src）。
   const externals = [...csp.matchAll(/https:\/\/[^\s;]+/g)].map(m => m[0]);
-  assert.deepEqual(externals, ['https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/client', 'https://accounts.google.com/gsi/style', 'https://avatars.githubusercontent.com', 'https://*.googleusercontent.com', 'https://media.msime.app', 'https://api.msime.app', 'https://accounts.google.com/gsi/', 'https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/']);
+  assert.deepEqual(externals, ['https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/client', 'https://accounts.google.com/gsi/style', 'https://avatars.githubusercontent.com', 'https://*.googleusercontent.com', 'https://media.msime.app', 'https://api.msime.app', 'https://accounts.google.com/gsi/', 'https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/', 'https://metasequoiaime.github.io']);
   assert.match(headers, /\/assets\/\*\n\s+Cache-Control: public, max-age=31536000, immutable/);
 });
 

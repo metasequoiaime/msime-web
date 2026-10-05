@@ -180,6 +180,49 @@
     font-size: inherit;
   }
 
+  /* ---- Syntax highlighting (Prism tokens from markdown.ts) ---- */
+  /* Colours sit on --panel-2, the code block's background; the dark set repeats for system dark, as tokens.css does. */
+  .docs-content {
+    --code-comment: #6E7E72;
+    --code-keyword: #1E7A44;
+    --code-string: #9A5A22;
+    --code-function: #1F6FA8;
+    --code-number: #8A3FA8;
+    --code-property: #A3472A;
+    --code-tag: #B0482A;
+  }
+
+  [data-theme="dark"] .docs-content {
+    --code-comment: #7E9886;
+    --code-keyword: #7FE08E;
+    --code-string: #F2C97D;
+    --code-function: #8FD3FF;
+    --code-number: #D7A8FF;
+    --code-property: #FFB38A;
+    --code-tag: #FF9C8F;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"] .docs-content {
+      --code-comment: #7E9886;
+      --code-keyword: #7FE08E;
+      --code-string: #F2C97D;
+      --code-function: #8FD3FF;
+      --code-number: #D7A8FF;
+      --code-property: #FFB38A;
+      --code-tag: #FF9C8F;
+    }
+  }
+
+  .docs-content pre .token.comment { color: var(--code-comment); font-style: italic; }
+  .docs-content pre :is(.token.keyword, .token.boolean, .token.important) { color: var(--code-keyword); }
+  .docs-content pre :is(.token.string, .token.attr-value, .token.template-string) { color: var(--code-string); }
+  .docs-content pre :is(.token.function, .token.class-name, .token.builtin) { color: var(--code-function); }
+  .docs-content pre .token.number { color: var(--code-number); }
+  .docs-content pre :is(.token.property, .token.attr-name, .token.parameter, .token.literal-property, .token.variable) { color: var(--code-property); }
+  .docs-content pre .token.tag { color: var(--code-tag); }
+  .docs-content pre :is(.token.punctuation, .token.operator) { color: var(--muted); }
+
   /* ---- Keys and glyph samples (markUpKeystrokes / markUpGlyphSamples) ---- */
   /* A key is a keycap: framed, with a bottom edge. The `+` between keys stays outside the caps, so a chord reads as separate keys. */
   kbd {

@@ -139,17 +139,20 @@ test('releases and app-stats queries use their own keys and same-origin Function
   await assert.rejects(run(releasesQuery()), 'a release linking outside the organisation is rejected in the browser too');
 });
 
-test('the six-platform catalogue joins desktop releases and keeps mobile details static', () => {
+test('the seven-platform catalogue joins desktop releases and keeps mobile and web details static', () => {
   const entries = sitePlatforms(platforms.platforms);
   assert.deepEqual(entries.map(entry => entry.id), [...SITE_PLATFORMS]);
-  assert.deepEqual(entries.map(entry => entry.id), ['windows', 'macos', 'linux', 'android', 'ios', 'harmony']);
+  assert.deepEqual(entries.map(entry => entry.id), ['windows', 'macos', 'linux', 'android', 'ios', 'harmony', 'web']);
   for (const entry of entries) {
     if (['windows', 'macos', 'linux'].includes(entry.id)) assert.equal(entry.release?.version, platforms.platforms[entry.id].version);
     else assert.equal(entry.release, null);
-    assert.ok(entry.href.startsWith('https://github.com/metasequoiaime/') || entry.href === IOS_TESTFLIGHT_URL);
+    assert.ok(entry.href.startsWith('https://github.com/metasequoiaime/') || entry.href === IOS_TESTFLIGHT_URL || entry.href === 'https://www.npmjs.com/package/@msime/web-engine');
   }
+  const web = entries.find(entry => entry.id === 'web');
+  assert.equal(web.distribution, 'sdk');
+  assert.equal(web.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/packages/web-engine');
   const ios = entries.find(entry => entry.id === 'ios');
   assert.equal(ios.distribution, 'testflight');
   assert.equal(ios.href, 'https://testflight.apple.com/join/bUzPvyqt');
-  assert.deepEqual(sitePlatforms().map(entry => entry.release), [null, null, null, null, null, null], 'renders without a manifest');
+  assert.deepEqual(sitePlatforms().map(entry => entry.release), [null, null, null, null, null, null, null], 'renders without a manifest');
 });
