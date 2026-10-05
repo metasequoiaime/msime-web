@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-04T06:03:30.066Z",
+  "generatedAt": "2026-10-05T03:51:58.231Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -22,27 +22,19 @@
     },
     "macos": {
       "repository": "metasequoiaime/msime",
-      "version": "0.50.0-build.9",
-      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/v0.50.0-build.9",
-      "publishedAt": "2026-09-18T01:49:54Z",
+      "version": "0.51.1",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.51.1",
+      "publishedAt": "2026-10-05T03:49:25Z",
       "prerelease": false,
-      "signed": true,
+      "signed": null,
       "downloads": [
         {
-          "label": "安装包 · pkg",
+          "label": "通用 · dmg",
           "arch": "Universal",
-          "name": "MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/v0.50.0-build.9/MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg",
-          "size": 77939496,
-          "sha256": "7dfbf0202a6c0a7166db426e05afcb429a2e5381dd85c9f9d2fce51a592d365f"
-        },
-        {
-          "label": "压缩包 · zip",
-          "arch": "Universal",
-          "name": "MetasequoiaIME-v0.50.0-build.9-macos-universal.zip",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/v0.50.0-build.9/MetasequoiaIME-v0.50.0-build.9-macos-universal.zip",
-          "size": 78047415,
-          "sha256": "4a97723c73ba35e7ff4d77d7a1866b5acf8cfbc1dd239ca89bfcda4c9c7e9d18"
+          "name": "msime-macos-0.51.1-universal.dmg",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.51.1/msime-macos-0.51.1-universal.dmg",
+          "size": 175530671,
+          "sha256": "8bb1644df7ae34e1dda1cc6c017d596877e7f35b3528eb1e9b07a9eca93ec9ef"
         }
       ],
       "preview": null
