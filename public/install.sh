@@ -125,6 +125,8 @@ main() {
 		say "msime: 安装完成。这个用户已经配置过，可以直接使用。"
 	else
 		say "msime: 安装完成，开始首次配置（下载词库）……"
+		# msime 0.10.0 的 msime-linux-prepare 不会创建缺失的上级目录，没登录过桌面的新用户连 ~/.config 都没有；新版本已修复（msime#3808），这里先建好，旧版本也能配置。
+		mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}"
 		msime-linux-setup --download
 	fi
 }
