@@ -60,15 +60,59 @@ macOS 版内置 Sparkle 自动更新，安装后可从输入法菜单中的「�
 
 ## Linux
 
-### 一键安装
+### 用包管理器安装
 
-Fedora 43/44、openSUSE Tumbleweed、Ubuntu 24.04/26.04（及基于它们的 Linux Mint 等）、Debian testing/unstable 可以直接用系统的包管理器安装，之后随系统更新一起升级：
+Fedora 43/44、openSUSE Tumbleweed、Ubuntu 24.04/26.04、Debian testing/unstable 有官方软件源，托管在 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime)。添加一次软件源后用系统的包管理器安装，之后随系统更新一起升级。Fedora 另有 aarch64 包，其余发行版目前只有 x86_64。
+
+**Ubuntu 24.04 / 26.04**
+
+```sh
+repo=https://download.opensuse.org/repositories/home:/msime/xUbuntu_$(. /etc/os-release; echo $VERSION_ID)
+sudo install -d -m 0755 /etc/apt/keyrings
+curl -fsSL $repo/Release.key | sudo tee /etc/apt/keyrings/msime.asc > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/msime.asc] $repo/ /" | sudo tee /etc/apt/sources.list.d/msime.list
+sudo apt update
+sudo apt install msime
+```
+
+Linux Mint 等 Ubuntu 衍生版的 `VERSION_ID` 是它自己的版本号，把第一行末尾换成所基于的 Ubuntu 版本（例如 `xUbuntu_24.04`）。
+
+**Debian testing / unstable**
+
+```sh
+repo=https://download.opensuse.org/repositories/home:/msime/Debian_Testing
+sudo install -d -m 0755 /etc/apt/keyrings
+curl -fsSL $repo/Release.key | sudo tee /etc/apt/keyrings/msime.asc > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/msime.asc] $repo/ /" | sudo tee /etc/apt/sources.list.d/msime.list
+sudo apt update
+sudo apt install msime
+```
+
+unstable 把第一行的 `Debian_Testing` 换成 `Debian_Unstable`。Debian 12/13 的 Rust 版本过旧，没有软件源，请用下面列表里的 `.deb`。
+
+**Fedora 43 / 44**
+
+```sh
+sudo dnf config-manager addrepo --from-repofile=https://download.opensuse.org/repositories/home:/msime/Fedora_$(rpm -E %fedora)/home:msime.repo
+sudo dnf install msime
+```
+
+**openSUSE Tumbleweed**
+
+```sh
+sudo zypper addrepo --refresh https://download.opensuse.org/repositories/home:/msime/openSUSE_Tumbleweed/home:msime.repo
+sudo zypper install msime
+```
+
+首次安装时 dnf 和 zypper 会询问是否信任软件源的签名公钥，确认即可。
+
+装好后，每个要使用输入法的用户运行一次 `msime-linux-setup --download`（或打开「水杉输入法」设置）下载词库、完成首次配置。卸载用对应的 `apt remove msime`、`dnf remove msime` 或 `zypper remove msime`。
+
+也可以用一条命令完成上面所有步骤，脚本自动识别发行版并替当前用户完成首次配置，运行前可以先 [读一遍](https://msime.app/install.sh)：
 
 ```sh
 curl -fsSL https://msime.app/install.sh | sh
 ```
-
-脚本按发行版添加 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime) 上的 `home:msime` 软件源和签名公钥，用 dnf、zypper 或 apt 安装 `msime`，再为当前用户下载词库、完成首次配置。不想运行脚本时也可以手动添加 [软件源](https://download.opensuse.org/repositories/home:/msime/)，每个发行版目录里有 dnf / zypper 用的 `home:msime.repo` 与 apt 用的签名公钥 `Release.key`。Fedora 另有 aarch64 包，其余发行版目前只有 x86_64。
 
 ### 安装说明
 
