@@ -58,6 +58,28 @@ test('the merged msime repository Linux release is selected as stable', () => {
   assert.deepEqual(chosen.downloads.map(download => download.name), names);
 });
 
+// linux-v0.10.0 真实发生过：各版本的包与完整版同在一个发布里，API 把日语版排在前面，主下载按钮就成了日语版。
+test('the full Linux package leads and the other editions are labelled by name', () => {
+  const names = [
+    'msime-linux-japanese_0.10.0_amd64.deb',
+    'msime-linux-wubi_0.10.0_amd64.deb',
+    'msime-linux_0.10.0_amd64.deb',
+    'msime-linux-wubi-0.10.0-1.x86_64.rpm',
+    'msime-linux-0.10.0-1.x86_64.rpm',
+    'msime-linux-0.10.0-linux-x86_64.tar.gz',
+    'msime-linux-korean_0.10.0_amd64.deb',
+  ];
+  const downloads = classifyAssets('linux', names.map(name => asset(name)));
+  assert.deepEqual(downloads.map(d => `${d.name} | ${d.label}`), [
+    'msime-linux_0.10.0_amd64.deb | Debian / Ubuntu · deb',
+    'msime-linux-0.10.0-1.x86_64.rpm | Fedora / openSUSE · rpm',
+    'msime-linux-0.10.0-linux-x86_64.tar.gz | 通用压缩包 · tar.gz',
+    'msime-linux-wubi_0.10.0_amd64.deb | 水杉五笔 · Debian / Ubuntu · deb',
+    'msime-linux-wubi-0.10.0-1.x86_64.rpm | 水杉五笔 · Fedora / openSUSE · rpm',
+    'msime-linux-japanese_0.10.0_amd64.deb | 水杉日语 · Debian / Ubuntu · deb',
+  ]);
+});
+
 test('an asset hosted somewhere other than this repository is refused', () => {
   const foreign = [asset('metasequoia-ime-linux_0.9.1_amd64.deb', {
     browser_download_url: 'https://example.invalid/metasequoia-ime-linux_0.9.1_amd64.deb',
