@@ -18,13 +18,13 @@ Server 与设置程序均为 64 位程序，需要安装最新的 **Microsoft Vi
 
 #### 核对构建来源
 
-除了 SHA256，Windows 安装包还带有 GitHub 的构建来源证明（build provenance attestation），可用于核对文件与本项目构建工作流的关联。安装 [GitHub CLI](https://cli.github.com) 后运行：
+经发布工作流构建的 Windows 安装包还带有 GitHub 的构建来源证明（build provenance attestation），可用于核对文件与本项目构建工作流的关联。安装 [GitHub CLI](https://cli.github.com) 后运行：
 
 ```powershell
 gh attestation verify .\{{installerName}} --repo metasequoiaime/MSIME-Windows
 ```
 
-通过时会打印出触发构建的工作流与 commit。该检查与代码签名验证不同；命令的登录与网络要求请以 GitHub CLI 的提示为准。
+通过时会打印出触发构建的工作流与 commit。提示找不到证明时，说明这个版本不是经发布工作流构建的，请以数字签名和 SHA256 为准。该检查与代码签名验证不同；命令的登录与网络要求请以 GitHub CLI 的提示为准。
 
 ## macOS
 
@@ -159,7 +159,7 @@ npx @msime/web-engine copy public/msime
 </script>
 ```
 
-正式上线请在地址里写上版本号（如 `@msime/web-engine@0.1.2`），避免新版本自动生效。这种方式依赖第三方 CDN，适合原型和流量较大的站点；希望资源都在自己域名下时用方式一。
+正式上线请在地址里写上版本号（如 `@msime/web-engine@0.2.0`），避免新版本自动生效。这种方式依赖第三方 CDN，适合原型和流量较大的站点；希望资源都在自己域名下时用方式一。
 
 ### 部署平台
 
@@ -184,6 +184,6 @@ npx @msime/web-engine copy public/msime
 
 ## 隐私
 
-本地输入处理不需要联网。Windows 和 Linux 的云候选默认开启，可在安装或设置中关闭；AI 联想、在线翻译、语音输入与更新检查的行为因平台和设置而异。
+本地输入处理不需要联网。Windows、macOS 和 Linux 的云候选默认开启，首次使用时会先询问，之后也可在设置中关闭；AI 联想、在线翻译、语音输入与更新检查的行为因平台和设置而异。
 
 安装前可查看[隐私说明](/privacy/)，了解发送的数据、默认设置和关闭方式。

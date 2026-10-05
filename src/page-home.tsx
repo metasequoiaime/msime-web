@@ -16,7 +16,7 @@ const FEATURES = [
   {
     glyph: "拼",
     title: "全拼 · 双拼 · 五笔",
-    desc: "四种双拼、五笔 86，外加五套辅助码。",
+    desc: "多种双拼、86/98 五笔，外加六套辅助码，也能导入自己的方案。",
   },
   {
     glyph: "云",
@@ -84,7 +84,7 @@ export function HomePage() {
               {t("隐私边界，应该能被任何人读代码检查")}
             </h2>
             <p className="m-0 mt-4 max-w-[46em] text-base leading-[1.9] text-[#E4EEE6]">
-              {t("默认联网的只有云候选：只发送正在输入的拼音，可随时关闭。")}
+              {t("默认会把输入内容发出设备的只有云联想（正在输入的拼音），以及 macOS、Linux 新装时的候选翻译（当前页候选词）；macOS、Linux 与移动端另有不含输入内容的匿名使用统计。每一项都能在设置里关闭。")}
             </p>
             <div className="mt-[26px] flex flex-wrap gap-3">
               <LocaleLink

@@ -15,7 +15,7 @@ const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
   macos: "适用于 macOS 12 及以上",
   linux: "开发构建，适用于使用 Fcitx5 或 IBus 的桌面环境",
   android: "开发中，尚未发布安装包",
-  ios: "适用于 iOS 15 及以上",
+  ios: "适用于 iOS 17 及以上",
   harmony: "开发中，尚未发布安装包",
 };
 
@@ -26,7 +26,7 @@ const macosMinimum = (entry: SitePlatformEntry) => (entry.release?.downloads.som
 const tileName = (entry: SitePlatformEntry) => {
   if (entry.id === "windows") return "Windows 10/11";
   if (entry.id === "macos") return `macOS ${macosMinimum(entry)}+`;
-  if (entry.id === "ios") return "iOS 15+";
+  if (entry.id === "ios") return "iOS 17+";
   return entry.name;
 };
 
