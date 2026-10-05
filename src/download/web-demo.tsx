@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { ExternalIcon } from "../ui";
 import { useLocale } from "../use-locale";
 
-/** The online demo of @msime/web-engine, deployed from the msime repository's packages/web-engine/demo to GitHub Pages. `?embed` shows only its playground. */
-export const WEB_DEMO_URL = "https://metasequoiaime.github.io/msime/";
+/** The online demo of @msime/web-engine, deployed from the msime repository's packages/web-engine/demo to GitHub Pages under the custom domain wasm.msime.app (metasequoiaime.github.io/msime/ redirects there, and a redirected frame would fail frame-src and the height message's origin check). `?embed` shows only its playground. */
+export const WEB_DEMO_URL = "https://wasm.msime.app/";
 const DEMO_ORIGIN = new URL(WEB_DEMO_URL).origin;
 
 /** Before the embedded page reports its height: tall enough for the playground on a desktop, so the frame rarely jumps. */
