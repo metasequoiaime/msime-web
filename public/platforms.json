@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-05T06:50:14.528Z",
+  "generatedAt": "2026-10-05T07:21:26.189Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -72,7 +72,158 @@
           "sha256": "836da4dfcf204cc54cf8d5f7c5b7e1d9698a9efd2dc4596f9c8223f4952439dc"
         }
       ],
-      "preview": null
+      "preview": {
+        "version": "0.10.0",
+        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/linux-v0.10.0",
+        "publishedAt": "2026-10-05T07:21:07Z",
+        "signed": null,
+        "downloads": [
+          {
+            "label": "Debian / Ubuntu · deb",
+            "arch": "x86_64",
+            "name": "msime-linux-japanese_0.10.0_amd64.deb",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-japanese_0.10.0_amd64.deb",
+            "size": 45910098,
+            "sha256": "8c790c3e6aec7055c36c27891fe8575377d5dce72176d59b0e40fac5aa796182"
+          },
+          {
+            "label": "Debian / Ubuntu · deb",
+            "arch": "x86_64",
+            "name": "msime-linux-pinyin_0.10.0_amd64.deb",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-pinyin_0.10.0_amd64.deb",
+            "size": 68160274,
+            "sha256": "7b7c4ca1df93d7073643e0fff0dc9ce619133b0a62a53c70fb2d3f3fd1145411"
+          },
+          {
+            "label": "Debian / Ubuntu · deb",
+            "arch": "x86_64",
+            "name": "msime-linux-tibetan_0.10.0_amd64.deb",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-tibetan_0.10.0_amd64.deb",
+            "size": 45910966,
+            "sha256": "0d74a15ef4c1a57431b08d10a3f6eabbecd0445990d364cdb82ee9e374117af9"
+          },
+          {
+            "label": "Debian / Ubuntu · deb",
+            "arch": "x86_64",
+            "name": "msime-linux-vietnamese_0.10.0_amd64.deb",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-vietnamese_0.10.0_amd64.deb",
+            "size": 45913150,
+            "sha256": "31d3ebbe1c9401e26ea7dbfa61951a6df5214a86db0a45213dec2bef215a20ad"
+          },
+          {
+            "label": "Debian / Ubuntu · deb",
+            "arch": "x86_64",
+            "name": "msime-linux-wubi_0.10.0_amd64.deb",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-wubi_0.10.0_amd64.deb",
+            "size": 68159840,
+            "sha256": "59e5ee6214b37fb1c0145ffa295731223d8ccc4e0d6d5e08694d509d4669c5ac"
+          },
+          {
+            "label": "Debian / Ubuntu · deb",
+            "arch": "x86_64",
+            "name": "msime-linux_0.10.0_amd64.deb",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux_0.10.0_amd64.deb",
+            "size": 77604228,
+            "sha256": "352deb91824270431bf1b7d989e38306565b42076bbcc9c0a12b67aeb5cb2c98"
+          },
+          {
+            "label": "Fedora / openSUSE · rpm",
+            "arch": "x86_64",
+            "name": "msime-linux-0.10.0-1.x86_64.rpm",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-0.10.0-1.x86_64.rpm",
+            "size": 59880999,
+            "sha256": "343e3729ff60661e391d7885418add94e80e47f99e21b2e6b0efe2043f4a2bb1"
+          },
+          {
+            "label": "Fedora / openSUSE · rpm",
+            "arch": "x86_64",
+            "name": "msime-linux-japanese-0.10.0-1.x86_64.rpm",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-japanese-0.10.0-1.x86_64.rpm",
+            "size": 35567362,
+            "sha256": "3b14cbe81540bdc3cd93c5e937f305a430988cc004314c5b3bd280316dfa9881"
+          },
+          {
+            "label": "Fedora / openSUSE · rpm",
+            "arch": "x86_64",
+            "name": "msime-linux-pinyin-0.10.0-1.x86_64.rpm",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-pinyin-0.10.0-1.x86_64.rpm",
+            "size": 53844077,
+            "sha256": "11f17cbde65bee1bcd16a786b2ac515c80768d049bf4151759271db0f2c2b4c3"
+          },
+          {
+            "label": "Fedora / openSUSE · rpm",
+            "arch": "x86_64",
+            "name": "msime-linux-tibetan-0.10.0-1.x86_64.rpm",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-tibetan-0.10.0-1.x86_64.rpm",
+            "size": 35570368,
+            "sha256": "beba49af76930cc85db3cc1473b874104e212e9d65f9427a08a1553fc8cf7359"
+          },
+          {
+            "label": "Fedora / openSUSE · rpm",
+            "arch": "x86_64",
+            "name": "msime-linux-vietnamese-0.10.0-1.x86_64.rpm",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-vietnamese-0.10.0-1.x86_64.rpm",
+            "size": 35568332,
+            "sha256": "49a885357d1cc05f62b7f865d1306bf52e2f4ca9be4391efbb524e2e0cf687da"
+          },
+          {
+            "label": "Fedora / openSUSE · rpm",
+            "arch": "x86_64",
+            "name": "msime-linux-wubi-0.10.0-1.x86_64.rpm",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-wubi-0.10.0-1.x86_64.rpm",
+            "size": 53838788,
+            "sha256": "ba541a89f10a5da421d47ce97737c94098cb69a3bc1700e2a56a2e90e1321681"
+          },
+          {
+            "label": "通用压缩包 · tar.gz",
+            "arch": "x86_64",
+            "name": "msime-linux-0.10.0-linux-x86_64.tar.gz",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-0.10.0-linux-x86_64.tar.gz",
+            "size": 77602097,
+            "sha256": "5b7e9c779aba70813c7e535f93ec17ff9a709b5bac744499e0f48c616b5afdd0"
+          },
+          {
+            "label": "通用压缩包 · tar.gz",
+            "arch": "x86_64",
+            "name": "msime-linux-japanese-0.10.0-linux-x86_64.tar.gz",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-japanese-0.10.0-linux-x86_64.tar.gz",
+            "size": 45916738,
+            "sha256": "e033663b2cf86c4f8faaa505f6f4428e07a267aeffe6fdfd64de185aca37c6b8"
+          },
+          {
+            "label": "通用压缩包 · tar.gz",
+            "arch": "x86_64",
+            "name": "msime-linux-pinyin-0.10.0-linux-x86_64.tar.gz",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-pinyin-0.10.0-linux-x86_64.tar.gz",
+            "size": 68169040,
+            "sha256": "0b91b28b98862a24934f9a6d987407a7d1cb2aee81f952aa7c53ef2eb69fa144"
+          },
+          {
+            "label": "通用压缩包 · tar.gz",
+            "arch": "x86_64",
+            "name": "msime-linux-tibetan-0.10.0-linux-x86_64.tar.gz",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-tibetan-0.10.0-linux-x86_64.tar.gz",
+            "size": 45914777,
+            "sha256": "d640285186d4308e7191a64becd3b551a4f8b4cf0597bfe7b3b18466ac251c35"
+          },
+          {
+            "label": "通用压缩包 · tar.gz",
+            "arch": "x86_64",
+            "name": "msime-linux-vietnamese-0.10.0-linux-x86_64.tar.gz",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-vietnamese-0.10.0-linux-x86_64.tar.gz",
+            "size": 45915896,
+            "sha256": "9d50864de502516914c8c5097ee19445f4bb9fa48ec4ac7eb2771667935b24c8"
+          },
+          {
+            "label": "通用压缩包 · tar.gz",
+            "arch": "x86_64",
+            "name": "msime-linux-wubi-0.10.0-linux-x86_64.tar.gz",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.10.0/msime-linux-wubi-0.10.0-linux-x86_64.tar.gz",
+            "size": 68170250,
+            "sha256": "1836328921e50ca4f7136f83f312853316132543170fedf72effc1a76f2d9ddb"
+          }
+        ]
+      }
     }
   },
   "dictionary": {
