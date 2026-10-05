@@ -62,20 +62,14 @@ macOS 版内置 Sparkle 自动更新，安装后可从输入法菜单中的「�
 
 ### 用包管理器安装
 
-Fedora 43/44、openSUSE Tumbleweed、Ubuntu 24.04/26.04、Debian testing/unstable 有官方软件源，托管在 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime)。添加一次软件源后用系统的包管理器安装，之后随系统更新一起升级。Fedora 另有 aarch64 包，其余发行版目前只有 x86_64。
+Ubuntu 24.04/26.04、Fedora 43/44、Debian testing/unstable、openSUSE Tumbleweed 有官方软件源：Ubuntu 用 [Launchpad PPA](https://launchpad.net/~msime/+archive/ubuntu/ppa)，Fedora 用 [COPR](https://copr.fedorainfracloud.org/coprs/msime/msime/)，Debian 与 openSUSE 用 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime)。添加一次软件源后用系统的包管理器安装，之后随系统更新一起升级。Ubuntu 与 Fedora 同时提供 x86_64 和 aarch64，Debian 与 openSUSE 目前只有 x86_64。
 
-**Ubuntu 24.04 / 26.04**
+**Ubuntu 24.04 / 26.04（含 Linux Mint 等衍生版）**
 
 ```sh
-repo=https://download.opensuse.org/repositories/home:/msime/xUbuntu_$(. /etc/os-release; echo $VERSION_ID)
-sudo install -d -m 0755 /etc/apt/keyrings
-curl -fsSL $repo/Release.key | sudo tee /etc/apt/keyrings/msime.asc > /dev/null
-echo "deb [signed-by=/etc/apt/keyrings/msime.asc] $repo/ /" | sudo tee /etc/apt/sources.list.d/msime.list
-sudo apt update
+sudo add-apt-repository ppa:msime/ppa
 sudo apt install msime
 ```
-
-Linux Mint 等 Ubuntu 衍生版的 `VERSION_ID` 是它自己的版本号，把第一行末尾换成所基于的 Ubuntu 版本（例如 `xUbuntu_24.04`）。
 
 **Debian testing / unstable**
 
@@ -93,7 +87,7 @@ unstable 把第一行的 `Debian_Testing` 换成 `Debian_Unstable`。Debian 12/1
 **Fedora 43 / 44**
 
 ```sh
-sudo dnf config-manager addrepo --from-repofile=https://download.opensuse.org/repositories/home:/msime/Fedora_$(rpm -E %fedora)/home:msime.repo
+sudo dnf copr enable msime/msime
 sudo dnf install msime
 ```
 
