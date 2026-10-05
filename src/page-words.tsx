@@ -78,10 +78,15 @@ export function WordsPage() {
   const widgetId = useRef<string | undefined>(undefined);
   const successPanel = useRef<HTMLElement>(null);
   const submitting = useRef(false);
+  const formShown = result === null;
 
+  // The widget lives inside the form, which the success panel replaces; it is rendered again whenever the form comes back, otherwise "继续提交" leaves an empty container and a widget id pointing at the removed one.
   useEffect(() => {
+    if (!formShown) return;
     let active = true;
     const controller = new AbortController();
+    setToken("");
+    setStatus("正在加载提交验证…");
     async function setup() {
       try {
         const response = await fetch(WORD_SUBMISSIONS_URL, { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(10_000)]) });
@@ -111,7 +116,7 @@ export function WordsPage() {
       if (widgetId.current !== undefined) window.turnstile?.remove(widgetId.current);
       widgetId.current = undefined;
     };
-  }, [tw]);
+  }, [tw, formShown]);
 
   useEffect(() => {
     if (result) {
