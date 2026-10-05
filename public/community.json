@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-05T15:58:23.929Z",
-  "totalStars": 2030,
+  "generatedAt": "2026-10-05T22:36:21.071Z",
+  "totalStars": 2093,
   "repoCount": 15,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 2030
+      "stars": 2093
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-05",
-          "stars": 1673
+          "stars": 1674
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-05",
-          "stars": 255
+          "stars": 316
         }
       ]
     },
@@ -587,6 +587,43 @@
       ]
     },
     {
+      "repo": "msime-web",
+      "points": [
+        {
+          "date": "2026-03-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-04-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-05-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-06-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-07-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-08-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-09-30",
+          "stars": 2
+        },
+        {
+          "date": "2026-10-05",
+          "stars": 3
+        }
+      ]
+    },
+    {
       "repo": "Google-PinyinIME-Rev",
       "points": [
         {
@@ -684,43 +721,6 @@
       ]
     },
     {
-      "repo": "msime-web",
-      "points": [
-        {
-          "date": "2026-03-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-04-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-05-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-06-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-07-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-08-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-09-30",
-          "stars": 2
-        },
-        {
-          "date": "2026-10-05",
-          "stars": 2
-        }
-      ]
-    },
-    {
       "repo": "homebrew-tap",
       "points": [
         {
@@ -747,20 +747,20 @@
       ]
     }
   ],
-  "starDelta30d": 731,
+  "starDelta30d": 794,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 13318,
+      "contributions": 13327,
       "repos": 14
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1852,
+      "contributions": 1858,
       "repos": 11
     },
     {
