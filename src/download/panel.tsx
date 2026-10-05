@@ -13,7 +13,7 @@ const QQ_GROUP = "829919142";
 // 系统要求是产品决策，不在产物里，只能写下来。Windows 的要求选择卡上已经写成「Windows 10/11」，按钮旁不再重复。
 const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
   macos: "适用于 macOS 12 及以上",
-  linux: "开发构建，适用于使用 IBus 的桌面环境",
+  linux: "开发构建，适用于使用 Fcitx5 或 IBus 的桌面环境",
   android: "开发中，尚未发布安装包",
   ios: "适用于 iOS 15 及以上",
   harmony: "开发中，尚未发布安装包",
