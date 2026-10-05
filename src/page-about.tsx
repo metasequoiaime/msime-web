@@ -30,7 +30,7 @@ export function AboutPage() {
       <PageHero
         kicker="Metasequoia IME"
         title="关于水杉输入法"
-        lead="一套开源中文输入法，从 Windows 起步，现在已覆盖六个平台。Windows 版独立开发，其余五个平台共用一套 Rust 输入引擎；这套引擎也编译成 WebAssembly，可以嵌入任何网页。"
+        lead="一套开源中文输入法，从 Windows 起步，现在已覆盖六个平台。其余五个平台共用一套 Rust 输入引擎，Windows 正式版仍独立开发，基于同一引擎的新版正在预发布；这套引擎也编译成 WebAssembly，可以嵌入任何网页。"
       />
       <main className="w-full">
         <Container className="pt-[clamp(36px,5vw,64px)]">
