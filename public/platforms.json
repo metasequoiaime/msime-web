@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-05T07:21:26.189Z",
+  "generatedAt": "2026-10-05T09:06:14.049Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -37,7 +37,22 @@
           "sha256": "8bb1644df7ae34e1dda1cc6c017d596877e7f35b3528eb1e9b07a9eca93ec9ef"
         }
       ],
-      "preview": null
+      "preview": {
+        "version": "0.52.0",
+        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.52.0",
+        "publishedAt": "2026-10-05T09:05:11Z",
+        "signed": null,
+        "downloads": [
+          {
+            "label": "通用 · dmg",
+            "arch": "Universal",
+            "name": "msime-macos-0.52.0-universal.dmg",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.52.0/msime-macos-0.52.0-universal.dmg",
+            "size": 181498112,
+            "sha256": "b31d3b8771fdf9b29c6af81342040dcf2447b2350ad7de8f8f89accf35aa1b71"
+          }
+        ]
+      }
     },
     "linux": {
       "repository": "metasequoiaime/msime",
