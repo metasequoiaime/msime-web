@@ -46,7 +46,7 @@ export function HeroDemo({ frame, onHover }: { frame: HeroFrame; onHover: (hover
   return (
     <div ref={wrapper} className="rise-enter min-w-0 [--enter-delay:.15s]">
       <figure
-        className="m-0 mx-auto w-full max-w-[560px] overflow-hidden rounded-tile bg-panel shadow-card [--row:clamp(50px,4.4vw,62px)]"
+        className="m-0 mx-auto w-full max-w-[480px] overflow-hidden rounded-tile bg-panel shadow-card [--row:clamp(36px,3vw,42px)]"
         aria-label={t("输入演示：键入编码后，候选窗在每个候选旁显示译文")}
         onPointerEnter={() => {
           pointer.current = true;
@@ -57,30 +57,29 @@ export function HeroDemo({ frame, onHover }: { frame: HeroFrame; onHover: (hover
           report();
         }}
       >
-        <div className="flex min-h-[clamp(52px,4.6vw,64px)] items-center gap-3 px-[clamp(18px,1.8vw,24px)] py-3 shadow-divider-b">
-          <span className="min-w-0 font-mono text-[clamp(16px,1.5vw,20px)] text-accent-ink">
-            <span className="shadow-[inset_0_-2px_0_var(--accent)]">{frame.code}</span>
-            <span className="ml-0.5 inline-block h-[1.1em] w-0.5 bg-accent align-[-3px]" aria-hidden="true" />
+        <div className="flex min-h-[clamp(44px,3.6vw,50px)] items-center gap-3 px-[clamp(16px,1.5vw,20px)] py-2 shadow-divider-b">
+          <span className="min-w-0 text-[clamp(15px,1.3vw,17px)] text-ink">
+            {frame.code}
+            <span className="ml-px inline-block h-[1.2em] w-[1.5px] bg-accent align-[-0.25em]" aria-hidden="true" />
           </span>
-          <span className="ml-auto flex-none rounded-tab bg-accent-soft px-2 py-0.5 text-[clamp(12px,1vw,14px)] font-semibold text-accent-ink">{t(scheme.label)}</span>
+          <span className="ml-auto flex-none rounded-tab bg-accent-soft px-2 py-0.5 text-[clamp(12px,1vw,13px)] text-accent-ink">{t(scheme.label)}</span>
         </div>
 
         <ol
           className={cx("m-0 list-none p-2 transition-opacity duration-200", composing && "opacity-0")}
-          // Three rows' worth of height whatever the scheme offers, so the card never changes size mid-cycle. --row scales with the viewport so the card holds its own next to the headline.
+          // A full page's worth of height whatever the scheme offers, so the card never changes size mid-cycle. --row scales with the viewport so the card holds its own next to the headline.
           style={{ minHeight: `calc(${CANDIDATE_ROWS} * var(--row) + 16px)` }}
           aria-hidden={composing || undefined}
         >
+          {/* Laid out like the settings app's candidate preview: one regular-weight face throughout, a smaller muted number, and the gloss right after the word. */}
           {scheme.candidates.map((candidate, index) => (
             <li
               key={candidate.word}
-              className={cx("flex h-(--row) items-center gap-[clamp(12px,1.2vw,16px)] rounded-row px-[clamp(12px,1.2vw,16px)]", index === 0 && "bg-accent-soft")}
+              className={cx("flex h-(--row) items-center gap-[clamp(8px,0.8vw,10px)] rounded-row px-[clamp(10px,1vw,12px)]", index === 0 && "bg-accent-soft")}
             >
-              <span className={cx("w-3.5 flex-none font-mono text-[clamp(12px,1vw,14px)]", index === 0 ? "text-accent-ink" : "text-muted")}>{index + 1}</span>
-              <span className={cx("flex-none text-[clamp(20px,2vw,26px)]", index === 0 ? "font-bold text-accent-ink" : "text-ink")}>{t(candidate.word)}</span>
-              <span className={cx("ml-auto min-w-0 truncate text-[clamp(14px,1.2vw,16px)]", index === 0 ? "text-body" : "text-muted")}>
-                {candidate.gloss[frame.language]}
-              </span>
+              <span className="w-3 flex-none text-[clamp(13px,1.1vw,15px)] text-muted">{index + 1}</span>
+              <span className="flex-none text-[clamp(17px,1.5vw,20px)] text-ink">{t(candidate.word)}</span>
+              <span className="min-w-0 truncate text-[clamp(14px,1.2vw,16px)] text-muted">{candidate.gloss[frame.language]}</span>
             </li>
           ))}
         </ol>
