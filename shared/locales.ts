@@ -2,7 +2,7 @@
 export const traditionalPages = {
   '/': { title: '水杉輸入法 MSIME｜開源中文輸入法', description: '水杉輸入法（MSIME）是開源中文輸入法，面向 Windows、macOS、Linux、Android、iOS 與 HarmonyOS 開發，也能嵌入網頁使用，支援全拼、雙拼、五筆，候選字旁直接顯示譯文。' },
   '/features/': { title: '功能與介面｜水杉輸入法', description: '以 Windows 版為例，了解水杉輸入法的候選字視窗、輔助碼、佈景主題與詞庫設定。' },
-  '/download/': { title: '下載與安裝｜水杉輸入法', description: '下載水杉輸入法 Windows、macOS 公開測試版本，或透過 TestFlight 安裝 iOS 版。Linux 正在開發中，提供開發構建與安裝說明。網站開發者可以透過 npm 套件把 Web 版嵌入自己的網頁。' },
+  '/download/': { title: '下載與安裝｜水杉輸入法', description: '下載水杉輸入法 Windows、macOS 與 Linux 版本，或透過 TestFlight 安裝 iOS 版。網站開發者可以透過 npm 套件把 Web 版嵌入自己的網頁。' },
   '/faq/': { title: '常見問題與疑難排解｜水杉輸入法', description: '水杉輸入法常見問題：字型方框、安裝與啟動、快捷鍵、候選字和連線功能的排查方式。' },
   '/feedback/': { title: '回報問題與提出建議｜水杉輸入法', description: '了解如何回報水杉輸入法問題或提出功能建議。可使用繁體中文描述，提交內容會公開刊登於 GitHub。' },
   '/words/': { title: '提交詞條｜水杉輸入法', description: '無需 GitHub 帳號，為水杉輸入法詞庫提交新詞與拼音、英文單字或候選譯文。詞條經維護者審核後，隨後續詞庫版本發布到所有平台。' },
@@ -17,8 +17,8 @@ export const traditionalPages = {
   '/docs/': { title: '使用指南｜水杉輸入法', description: '選擇 Windows、macOS 或 Linux 使用指南，查看安裝、設定與疑難排解。' },
   '/docs/windows/': { title: 'Windows 安裝與使用指南｜水杉輸入法', description: 'Windows 版水杉輸入法完整使用指南：安裝、輸入方案、設定、詞庫與疑難排解。' },
   '/docs/macos/': { title: 'macOS 安裝與使用指南｜水杉輸入法', description: 'macOS 版水杉輸入法使用指南：安裝、鍵盤輸入、設定、備份與更新。' },
-  '/docs/macos-voice/': { title: 'macOS 語音輸入指南｜水杉輸入法', description: '設定 macOS 語音輸入、本機 Whisper 與雲端辨識，了解快捷鍵、文字潤飾和隱私。' },
-  '/docs/linux/': { title: 'Linux 安裝與使用指南｜水杉輸入法', description: 'Linux IBus 版水杉輸入法指南：安裝、設定、輸入功能、資料與疑難排解。' },
+  '/docs/macos-voice/': { title: 'macOS 語音輸入指南｜水杉輸入法', description: '設定 macOS 語音輸入的雲端辨識、本機模型與系統辨識，了解錄音按鍵、文字潤飾和隱私。' },
+  '/docs/linux/': { title: 'Linux 安裝與使用指南｜水杉輸入法', description: 'Linux 版水杉輸入法指南：安裝與首次設定、Fcitx5 與 IBus 啟用、輸入功能、資料與疑難排解。' },
 } as const;
 export const TW_PREFIX = '/zh-TW';
 export const isTraditional = (path: string) => path === TW_PREFIX || path.startsWith(`${TW_PREFIX}/`);

@@ -17,7 +17,7 @@ export function CodePage() {
   return (
     <>
       <PageHero
-        kicker="GPL-3.0 开源"
+        kicker="开源"
         title="开源代码"
         lead="水杉输入法由多个相互协作的开源项目组成。各仓库的构建方式、依赖与许可以其 README 和 LICENSE 为准。"
       />

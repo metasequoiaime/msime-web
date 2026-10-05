@@ -18,13 +18,13 @@ Server 与设置程序均为 64 位程序，需要安装最新的 **Microsoft Vi
 
 #### 核对构建来源
 
-除了 SHA256，Windows 安装包还带有 GitHub 的构建来源证明（build provenance attestation），可用于核对文件与本项目构建工作流的关联。安装 [GitHub CLI](https://cli.github.com) 后运行：
+经发布工作流构建的 Windows 安装包还带有 GitHub 的构建来源证明（build provenance attestation），可用于核对文件与本项目构建工作流的关联。安装 [GitHub CLI](https://cli.github.com) 后运行：
 
 ```powershell
 gh attestation verify .\{{installerName}} --repo metasequoiaime/MSIME-Windows
 ```
 
-通过时会打印出触发构建的工作流与 commit。该检查与代码签名验证不同；命令的登录与网络要求请以 GitHub CLI 的提示为准。
+通过时会打印出触发构建的工作流与 commit。提示找不到证明时，说明这个版本不是经发布工作流构建的，请以数字签名和 SHA256 为准。该检查与代码签名验证不同；命令的登录与网络要求请以 GitHub CLI 的提示为准。
 
 ## macOS
 
@@ -62,9 +62,9 @@ macOS 版内置 Sparkle 自动更新，安装后可从输入法菜单中的「�
 
 ### 安装说明
 
-按发行版选择对应的包。安装后重启 IBus，再在桌面环境的输入源设置中添加「Metasequoia IME」。
+按发行版选择对应的包。同一个包同时提供 Fcitx5 插件与 IBus 引擎，两者功能一致，用桌面环境正在使用的那个即可。安装包不带词库，安装后打开「水杉输入法」设置完成首次配置并下载词库（或在终端运行 `msime-linux-setup --download`），它会把输入法加入当前的输入法列表；没有自动加入时，Fcitx5 用 `fcitx5-configtool` 添加「水杉输入法」，IBus 执行 `ibus restart` 后在输入源设置中添加「Metasequoia 水杉输入法」。
 
-这里提供的是开发构建，功能与稳定性仍在完善中。新的 Linux 宿主正在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/develop/platforms/linux)中开发，同时提供 IBus 与 Fcitx5 两个入口。
+源码在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/develop/platforms/linux)。
 
 ### 签名与校验
 
@@ -159,7 +159,7 @@ npx @msime/web-engine copy public/msime
 </script>
 ```
 
-正式上线请在地址里写上版本号（如 `@msime/web-engine@0.1.2`），避免新版本自动生效。这种方式依赖第三方 CDN，适合原型和流量较大的站点；希望资源都在自己域名下时用方式一。
+正式上线请在地址里写上版本号（如 `@msime/web-engine@0.2.0`），避免新版本自动生效。这种方式依赖第三方 CDN，适合原型和流量较大的站点；希望资源都在自己域名下时用方式一。
 
 ### 部署平台
 
@@ -184,6 +184,6 @@ npx @msime/web-engine copy public/msime
 
 ## 隐私
 
-本地输入处理不需要联网。Windows 和 Linux 的云候选默认开启，可在安装或设置中关闭；AI 联想、在线翻译、语音输入与更新检查的行为因平台和设置而异。
+本地输入处理不需要联网。Windows、macOS 和 Linux 的云候选默认开启，首次使用时会先询问，之后也可在设置中关闭；AI 联想、在线翻译、语音输入与更新检查的行为因平台和设置而异。
 
 安装前可查看[隐私说明](/privacy/)，了解发送的数据、默认设置和关闭方式。

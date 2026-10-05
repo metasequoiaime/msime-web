@@ -175,7 +175,7 @@ export function FaqPage() {
         {platformQuestions.length === 0 && <div className="rounded-group bg-panel-2 px-6 py-9 text-center text-[15px] leading-[1.8] text-body" role="status">
           <p className="m-0">{t(`${platform} 的常见问题正在整理中。可以先查看文档，或在 GitHub 搜索已有反馈。`)}</p>
           <div className="mt-5 flex flex-wrap justify-center gap-2.5">
-            {platform === "macOS" && <LinkButton size="sm" to="/download/" search={{ platform: "macos" }}>{t("下载 macOS 公开测试版")}</LinkButton>}
+            {platform === "macOS" && <LinkButton size="sm" to="/download/" search={{ platform: "macos" }}>{t("下载 macOS 版")}</LinkButton>}
             {platform === "iOS" && <LinkButton size="sm" to="/download/" search={{ platform: "ios" }}>{t("加入 iOS 公开测试")}</LinkButton>}
             <AnchorButton size="sm" variant="secondary" href={issuesUrl(platform)}>{t("在 GitHub 搜索已有反馈")}<ExternalIcon size={12} /></AnchorButton>
           </div>

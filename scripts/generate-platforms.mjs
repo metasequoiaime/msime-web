@@ -21,6 +21,32 @@ const isNoise = name =>
   name.endsWith('.sha256') || name === 'product-manifest.json' || name === 'appcast.xml' ||
   name.includes('-update.zip') || name.includes('.xcarchive');
 
+const LINUX_PACKAGES = [
+  [/_amd64\.deb$/i, 'Debian / Ubuntu · deb', 'x86_64'],
+  [/_arm64\.deb$/i, 'Debian / Ubuntu · deb', 'aarch64'],
+  [/\.x86_64\.rpm$/i, 'Fedora / openSUSE · rpm', 'x86_64'],
+  [/\.aarch64\.rpm$/i, 'Fedora / openSUSE · rpm', 'aarch64'],
+  [/-linux-x86_64\.tar\.gz$/i, '通用压缩包 · tar.gz', 'x86_64'],
+  [/-linux-aarch64\.tar\.gz$/i, '通用压缩包 · tar.gz', 'aarch64'],
+];
+
+/*
+ * 同一个 linux-v 发布里除了水杉输入法本身（msime-linux），还有按版本表 shared/contracts/editions.json 打出的独立版本 msime-linux-<id>。它们的文件名后缀和完整版一样，只按后缀匹配时谁在 API 里排前面谁就成了主推按钮——linux-v0.10.0 的主按钮就这样变成了日语版。完整版只认包名后紧跟版本号的文件，各版本另起一组、标签带上版本名，排在完整版之后；版本表里新增的版本没登记在这里时宁可不展示，也不要冒充完整版。
+ */
+const LINUX_FULL = '(?:msime|metasequoia-ime)-linux';
+const LINUX_EDITIONS = [
+  ['pinyin', '水杉拼音'],
+  ['wubi', '水杉五笔'],
+  ['japanese', '水杉日语'],
+  ['vietnamese', '水杉越南语'],
+  ['tibetan', '水杉藏文'],
+];
+/** 包名后面紧跟版本号（deb 用 `_`，rpm 与 tar.gz 用 `-`），`msime-linux` 因此不会匹配到 `msime-linux-wubi_…`。 */
+const linuxPackage = (name, suffix) => {
+  const prefix = new RegExp(`^${name}[_-]\\d`, 'i');
+  return { test: file => prefix.test(file) && suffix.test(file) };
+};
+
 /*
  * 每个平台把产物翻译成人看得懂的名字。顺序就是页面上的展示顺序，第一个是主推。
  *
@@ -38,12 +64,9 @@ const RULES = {
     [/-macos-universal[\w-]*\.zip$/i, '压缩包 · zip', 'Universal'],
   ],
   linux: [
-    [/_amd64\.deb$/i, 'Debian / Ubuntu · deb', 'x86_64'],
-    [/_arm64\.deb$/i, 'Debian / Ubuntu · deb', 'aarch64'],
-    [/\.x86_64\.rpm$/i, 'Fedora / openSUSE · rpm', 'x86_64'],
-    [/\.aarch64\.rpm$/i, 'Fedora / openSUSE · rpm', 'aarch64'],
-    [/-linux-x86_64\.tar\.gz$/i, '通用压缩包 · tar.gz', 'x86_64'],
-    [/-linux-aarch64\.tar\.gz$/i, '通用压缩包 · tar.gz', 'aarch64'],
+    ...LINUX_PACKAGES.map(([suffix, label, arch]) => [linuxPackage(LINUX_FULL, suffix), label, arch]),
+    ...LINUX_EDITIONS.flatMap(([id, name]) =>
+      LINUX_PACKAGES.map(([suffix, label, arch]) => [linuxPackage(`msime-linux-${id}`, suffix), `${name} · ${label}`, arch])),
   ],
 };
 

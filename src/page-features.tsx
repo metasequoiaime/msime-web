@@ -120,9 +120,9 @@ const LAYOUT_OPTIONS = [
   { value: "horizontal", label: "横排" },
 ] as const;
 
-const BUILT_IN_SKINS = ["Fluent", "微信绿", "石墨 Graphite", "杨柳青 Willow green"] as const;
+const BUILT_IN_SKINS = ["Fluent", "微信绿", "石墨 Graphite", "杨柳青 Willow green", "秋桂 Autumn osmanthus", "微软 Microsoft"] as const;
 
-const HELP_CODES = ["蓝天小雨点", "自然码", "首右 2.0", "首右 Plus", "小鹤"] as const;
+const HELP_CODES = ["蓝天小雨点", "自然码", "首右 2.0", "首右 Plus", "小鹤", "拼音加加"] as const;
 
 const readableSize = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 
@@ -254,7 +254,7 @@ export function FeaturesPage() {
             title="自定义候选窗皮肤"
             lead={
               <>
-                {t("内置")} {t(BUILT_IN_SKINS.join(" / "))} {t("四套。外部皮肤把含")}
+                {t("内置")} {t(BUILT_IN_SKINS.join(" / "))} {t("六套。外部皮肤把含")}
                 <code className={INLINE_CODE}>skin.toml</code> {t("的文件夹放进")}
                 {t(" ")}
                 <code className={cx(INLINE_CODE, "[overflow-wrap:anywhere]")}>{breakAtSeparators("%LOCALAPPDATA%\\metasequoiaime\\skins")}</code> {t("再点「刷新皮肤」即可。")}
@@ -321,7 +321,7 @@ export function FeaturesPage() {
 
           <FeatureBlock
             eyebrow="辅助码"
-            title="五套方案，把同音候选分开"
+            title="六套方案，把同音候选分开"
             lead={t("候选项后面括号里的两个字母就是辅助码。打完拼音再补一到两码，可以缩小同音候选范围，减少翻页。可选方案：")}
           >
             <ul className="m-0 mt-4 flex list-none flex-wrap gap-2 p-0">

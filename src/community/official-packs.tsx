@@ -150,9 +150,9 @@ export function OfficialPluginsPanel({ kind, onKind }: { kind: PluginKind | unde
       <Card tone="muted" as="section" className="mt-12 rounded-tile px-6 py-[22px]" aria-labelledby={howId}>
         <h2 id={howId} className="m-0 font-heading text-[15.5px] font-bold text-ink">{t("如何安装官方插件")}</h2>
         <ol className="m-0 mt-2 list-decimal pl-5 text-sm leading-[1.85] text-body">
-          <li>{t("安装水杉输入法电脑版。")}<LocaleLink to="/download/">{t("前往下载页")}</LocaleLink></li>
+          <li>{t("安装水杉输入法 macOS 或 Linux 版。")}<LocaleLink to="/download/">{t("前往下载页")}</LocaleLink></li>
           <li>{t("下载 .zip，在水杉输入法设置的「插件」页点「导入 .zip」选中它。导入时输入法会再校验一遍，不合格的包不会被安装。")}</li>
-          <li>{t("音效包、按键旋律和特效包在「插件 → 声音与效果」中选用；指令表在「输入 → 实用功能」打开 / 指令后，按 / 再输入指令字母即可使用。")}</li>
+          <li>{t("导入后在「插件」页点开对应的包，设为当前音效包、按键旋律、特效包或背景音乐，开关和音量在「声音与效果」里；指令表在包详情里启用，并在「输入 → 快捷模式」打开「指令(/ 模式)」后，按 / 再输入指令字母即可使用。")}</li>
         </ol>
         <p className="m-0 mt-3 text-sm leading-[1.85] text-body">
           {t("想制作自己的插件？格式说明和模板见")}{" "}
