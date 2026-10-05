@@ -62,7 +62,7 @@ macOS 版内置 Sparkle 自动更新，安装后可从输入法菜单中的「�
 
 ### 安装说明
 
-按发行版选择对应的包。同一个包同时提供 Fcitx5 插件与 IBus 引擎，两者功能一致，用桌面环境正在使用的那个即可。安装后打开「水杉输入法」设置完成首次配置（或在终端运行 `msime-linux-setup`），它会把输入法加入当前的输入法列表；没有自动加入时，Fcitx5 用 `fcitx5-configtool` 添加「水杉输入法」，IBus 执行 `ibus restart` 后在输入源设置中添加「Metasequoia 水杉输入法」。
+按发行版选择对应的包。同一个包同时提供 Fcitx5 插件与 IBus 引擎，两者功能一致，用桌面环境正在使用的那个即可。安装包不带词库，安装后打开「水杉输入法」设置完成首次配置并下载词库（或在终端运行 `msime-linux-setup --download`），它会把输入法加入当前的输入法列表；没有自动加入时，Fcitx5 用 `fcitx5-configtool` 添加「水杉输入法」，IBus 执行 `ibus restart` 后在输入源设置中添加「Metasequoia 水杉输入法」。
 
 源码在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/develop/platforms/linux)。
 

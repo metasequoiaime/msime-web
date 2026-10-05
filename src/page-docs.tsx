@@ -25,8 +25,8 @@ import { ExternalIcon, LinkButton } from "./ui";
 const GUIDES = [
   { id: "windows", label: "Windows", file: "windows.md", source: windowsGuide, heading: "Windows 使用指南", lead: "在 Windows 上安装水杉输入法，配置输入方案、词库与设置窗口，以及更新、备份与故障排查。" },
   { id: "macos", label: "macOS", file: "macos.md", source: macosGuide, heading: "macOS 使用指南", lead: "在 macOS 上安装并启用水杉输入法，了解常用操作、设置与候选窗口、本地快捷模式，以及更新与卸载。" },
-  { id: "macos-voice", label: "macOS 语音", file: "macos-voice.md", source: macosVoiceGuide, heading: "macOS 语音输入指南", lead: "配置云端识别或本地 Whisper 模型，使用快捷键录音上屏，并了解麦克风权限与数据去向。" },
-  { id: "linux", label: "Linux", file: "linux.md", source: linuxGuide, heading: "Linux 使用指南", lead: "在 Linux 上通过 IBus 启用水杉输入法，配置输入与辅助码、联网功能与桌面工具，以及数据、升级和故障排查。" },
+  { id: "macos-voice", label: "macOS 语音", file: "macos-voice.md", source: macosVoiceGuide, heading: "macOS 语音输入指南", lead: "选择云端识别、本地模型或系统识别，按住右 Option 录音上屏，并了解麦克风权限与数据去向。" },
+  { id: "linux", label: "Linux", file: "linux.md", source: linuxGuide, heading: "Linux 使用指南", lead: "在 Linux 上安装水杉输入法并完成首次配置，在 Fcitx5 或 IBus 中启用，配置输入与辅助码、联网功能与桌面工具，以及数据、升级和故障排查。" },
 ] as const;
 
 const GUIDE_IDS = GUIDES.map((guide) => guide.id);

@@ -24,8 +24,8 @@ export const seoPages: Record<string, { title: string; description: string; noin
 const GUIDE_SEO: Record<keyof typeof GUIDE_NAMES, { title: string; description: string }> = {
   windows: { title: "Windows 安装与使用指南｜水杉输入法", description: "Windows 版水杉输入法完整使用指南：安装、输入方案、设置、词库与故障排查。" },
   macos: { title: "macOS 安装与使用指南｜水杉输入法", description: "macOS 版水杉输入法使用指南：安装与启用、常用操作、设置与候选窗口、备份与更新。" },
-  "macos-voice": { title: "macOS 语音输入指南｜水杉输入法", description: "配置水杉输入法的 macOS 语音输入：云端识别与本地 Whisper 模型、录音快捷键、文本整理，以及麦克风权限和数据说明。" },
-  linux: { title: "Linux 安装与使用指南｜水杉输入法", description: "Linux IBus 版水杉输入法指南：下载启用、输入与快捷键、辅助码设置、数据升级与故障排查。" },
+  "macos-voice": { title: "macOS 语音输入指南｜水杉输入法", description: "配置水杉输入法的 macOS 语音输入：云端识别、本地模型与系统识别、录音按键、文本整理，以及麦克风权限和数据说明。" },
+  linux: { title: "Linux 安装与使用指南｜水杉输入法", description: "Linux 版水杉输入法指南：安装与首次配置、Fcitx5 与 IBus 启用、输入与快捷键、辅助码设置、数据升级与故障排查。" },
 };
 for (const [id, page] of Object.entries(GUIDE_SEO)) seoPages[`/docs/${id}/`] = page;
 for (const [path, page] of Object.entries(traditionalPages)) seoPages[traditionalPath(path)] = path === "/docs/" ? { ...page, canonicalPath: "/zh-TW/docs/windows/" } : page;

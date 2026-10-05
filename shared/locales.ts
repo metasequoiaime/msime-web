@@ -17,8 +17,8 @@ export const traditionalPages = {
   '/docs/': { title: '使用指南｜水杉輸入法', description: '選擇 Windows、macOS 或 Linux 使用指南，查看安裝、設定與疑難排解。' },
   '/docs/windows/': { title: 'Windows 安裝與使用指南｜水杉輸入法', description: 'Windows 版水杉輸入法完整使用指南：安裝、輸入方案、設定、詞庫與疑難排解。' },
   '/docs/macos/': { title: 'macOS 安裝與使用指南｜水杉輸入法', description: 'macOS 版水杉輸入法使用指南：安裝、鍵盤輸入、設定、備份與更新。' },
-  '/docs/macos-voice/': { title: 'macOS 語音輸入指南｜水杉輸入法', description: '設定 macOS 語音輸入、本機 Whisper 與雲端辨識，了解快捷鍵、文字潤飾和隱私。' },
-  '/docs/linux/': { title: 'Linux 安裝與使用指南｜水杉輸入法', description: 'Linux IBus 版水杉輸入法指南：安裝、設定、輸入功能、資料與疑難排解。' },
+  '/docs/macos-voice/': { title: 'macOS 語音輸入指南｜水杉輸入法', description: '設定 macOS 語音輸入的雲端辨識、本機模型與系統辨識，了解錄音按鍵、文字潤飾和隱私。' },
+  '/docs/linux/': { title: 'Linux 安裝與使用指南｜水杉輸入法', description: 'Linux 版水杉輸入法指南：安裝與首次設定、Fcitx5 與 IBus 啟用、輸入功能、資料與疑難排解。' },
 } as const;
 export const TW_PREFIX = '/zh-TW';
 export const isTraditional = (path: string) => path === TW_PREFIX || path.startsWith(`${TW_PREFIX}/`);
