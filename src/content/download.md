@@ -112,6 +112,21 @@ sudo zypper install msime
 
 首次安装时 zypper 会询问是否信任软件源的签名公钥，确认即可。卸载：`sudo zypper remove msime`。Leap 暂不支持。
 
+#### Arch / Omarchy
+
+Arch Linux 及 Omarchy、EndeavourOS 等衍生版，软件源在 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime)，目前只有 x86_64。先信任软件源的签名公钥（指纹 `F339A91A4C77008B49101BEFF9D283EB1137FF6B`），再加入 `pacman.conf`：
+
+```sh
+curl -fsSL https://download.opensuse.org/repositories/home:/msime/Arch/x86_64/home_msime_Arch.key | sudo pacman-key --add -
+sudo pacman-key --lsign-key F339A91A4C77008B49101BEFF9D283EB1137FF6B
+printf '\n[home_msime_Arch]\nServer = https://download.opensuse.org/repositories/home:/msime/Arch/$arch\n' | sudo tee -a /etc/pacman.conf
+sudo pacman -Syu msime-bin
+```
+
+卸载：`sudo pacman -R msime-bin`。
+
+在 Omarchy 上，首次配置（`msime-linux-setup --download`）还会接上 Omarchy 的主题钩子和状态栏插件：运行 `omarchy plugin enable metasequoia.msime` 把中/英状态放上状态栏；在输入法的「主题」菜单或设置页选「Omarchy」，候选窗就跟随 Omarchy 主题换色。Omarchy 的 Fcitx5 由用户服务启动，升级后用 `systemctl --user restart omarchy-fcitx5.service` 重启，不要用 `fcitx5 -r`。
+
 #### NixOS
 
 仓库根目录的 `flake.nix` 提供 Fcitx5 插件。插件运行在 `fcitx5` 进程里，要与系统的 Fcitx5 出自同一份 nixpkgs，所以在系统配置里用 overlay：
@@ -134,7 +149,7 @@ NixOS 上目前只接入 Fcitx5，设置窗口与语音输入还没有接进 Nix
 
 #### 一键脚本
 
-Ubuntu、Fedora、Debian、openSUSE 也可以用一条命令完成：脚本识别发行版，添加对应的软件源与签名公钥，用系统的包管理器安装，再替当前用户下载词库、完成首次配置。运行前可以先 [读一遍](https://msime.app/install.sh)。
+Ubuntu、Fedora、Debian、openSUSE、Arch 也可以用一条命令完成：脚本识别发行版，添加对应的软件源与签名公钥，用系统的包管理器安装，再替当前用户下载词库、完成首次配置。运行前可以先 [读一遍](https://msime.app/install.sh)。
 
 ```sh
 curl -fsSL https://msime.app/install.sh | sh

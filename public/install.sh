@@ -6,6 +6,8 @@ set -eu
 
 BASE=https://download.opensuse.org/repositories/home:/msime
 DOWNLOAD_PAGE=https://msime.app/download/
+# OBS 给 home:msime 的签名公钥。Arch 的公钥只按这个指纹本地信任，下载到的公钥对不上时 pacman 不会接受软件源。
+ARCH_KEY_FINGERPRINT=F339A91A4C77008B49101BEFF9D283EB1137FF6B
 
 say() { printf '%s\n' "$*"; }
 fail() { printf 'msime: %s\n' "$*" >&2; exit 1; }
@@ -75,10 +77,16 @@ main() {
 				REPO=Debian_Testing FAMILY=apt
 			fi
 			;;
+		arch)
+			REPO=Arch FAMILY=pacman
+			;;
 		*)
 			release=$(ubuntu_release)
 			if [ -n "$release" ]; then
 				REPO=xUbuntu_$release FAMILY=apt
+			elif case " ${ID_LIKE:-} " in *" arch "*) true ;; *) false ;; esac; then
+				# Omarchy 沿用 Arch 的 ID=arch；EndeavourOS、CachyOS 等在 ID_LIKE 里写着 arch。
+				REPO=Arch FAMILY=pacman
 			else
 				unsupported "暂不支持这个发行版（${PRETTY_NAME:-$ID}）。"
 			fi
@@ -87,7 +95,7 @@ main() {
 
 	# 只有 Fedora 同时提供 aarch64；其余源目前只有 x86_64。先确认源里真有这个架构的包，再动系统配置。
 	case "$FAMILY:$ARCH" in
-		dnf:x86_64 | dnf:aarch64 | zypper:x86_64) arch_dir=$ARCH ;;
+		dnf:x86_64 | dnf:aarch64 | zypper:x86_64 | pacman:x86_64) arch_dir=$ARCH ;;
 		apt:x86_64) arch_dir=amd64 ;;
 		*) unsupported "$REPO 的软件源暂不提供 $ARCH 架构的包。" ;;
 	esac
@@ -106,6 +114,16 @@ main() {
 				$SUDO zypper --non-interactive addrepo --refresh "$BASE/$REPO/home:msime.repo"
 			fi
 			$SUDO zypper --non-interactive install msime
+			;;
+		pacman)
+			curl -fsSL "$BASE/$REPO/x86_64/home_msime_Arch.key" | $SUDO pacman-key --add -
+			$SUDO pacman-key --lsign-key "$ARCH_KEY_FINGERPRINT"
+			if ! grep -q '^\[home_msime_Arch\]' /etc/pacman.conf; then
+				# shellcheck disable=SC2016 # $arch 是给 pacman 展开的变量
+				printf '\n[home_msime_Arch]\nServer = %s/%s/$arch\n' "$BASE" "$REPO" | $SUDO tee -a /etc/pacman.conf >/dev/null
+			fi
+			# Arch 不支持只刷新数据库不升级的部分升级，所以与系统一起 -Syu。
+			$SUDO pacman -Syu --noconfirm --needed msime-bin
 			;;
 		apt)
 			$SUDO install -d -m 0755 /etc/apt/keyrings
