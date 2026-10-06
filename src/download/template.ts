@@ -150,6 +150,19 @@ export type GuideBlock = { title: string; body: string };
  */
 export type GuideSection = { heading: string; platform: Platform | null; intro: string; blocks: GuideBlock[] };
 
+/**
+ * The `#### ` sub-sections of a platform's main block, shown as tabs (Linux: one per distribution). The text before the first `#### ` stays above the tabs. A block with fewer than two sub-sections is not split, so a lone `#### ` keeps rendering as a heading.
+ */
+export const splitTabs = (body: string): { lead: string; tabs: GuideBlock[] } | null => {
+  const [lead, ...rest] = body.split(/^#### /m);
+  if (rest.length < 2) return null;
+  const tabs = rest.map((chunk) => {
+    const end = chunk.indexOf("\n");
+    return { title: (end === -1 ? chunk : chunk.slice(0, end)).trim(), body: end === -1 ? "" : chunk.slice(end + 1).trim() };
+  });
+  return { lead: lead.trim(), tabs };
+};
+
 const platformOf = (heading: string) => PLATFORMS.find((platform) => PLATFORM_LABELS[platform] === heading) ?? null;
 
 /** Splits the filled template into `## ` sections and `### ` blocks. Headings are read before any Traditional Chinese conversion, so the platform lookup never depends on the locale. */

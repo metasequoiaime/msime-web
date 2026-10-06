@@ -1,11 +1,12 @@
-import { memo, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { traditionalMarkdown } from "../../shared/translate";
+import { SegmentedTabs, tabId } from "../community/parts";
 import { renderContent } from "../markdown";
 import { PLATFORM_LABELS, type Platform } from "../platform";
 import { cx } from "../ui";
 import { useInternalLinks } from "../use-internal-links";
 import { useLocale } from "../use-locale";
-import type { GuideBlock, GuideSection } from "./template";
+import { type GuideBlock, type GuideSection, splitTabs } from "./template";
 
 type Tone = "warn" | "safe" | "note";
 
@@ -73,7 +74,41 @@ function Callout({ block, html }: { block: GuideBlock; html: string }) {
   );
 }
 
-type RenderedSection = GuideSection & { introHtml: string; blockHtml: string[] };
+type RenderedTabs = { leadHtml: string; tabs: { title: string; html: string }[] };
+
+type RenderedSection = GuideSection & { introHtml: string; blockHtml: string[]; mainTabs: RenderedTabs | null };
+
+/** The tab a visitor most likely wants, when the browser says which distribution it runs on (Firefox on Ubuntu and Fedora puts the name in its user agent). */
+const preferredTab = (titles: string[]) => {
+  const agent = typeof navigator === "undefined" ? "" : navigator.userAgent;
+  return titles.find((title) => agent.includes(title)) ?? null;
+};
+
+/**
+ * The `#### ` sub-sections of a main block as tabs. Every panel is rendered and the unselected ones are only `hidden`, so the static HTML and its markdown export still carry every distribution's commands. The first tab is selected until hydration, then the one matching the user agent if any.
+ */
+function GuideTabs({ id, rendered }: { id: string; rendered: RenderedTabs }) {
+  const titles = rendered.tabs.map((tab) => tab.title);
+  const [selected, setSelected] = useState(titles[0]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: 只在挂载时按 UA 选一次，之后以用户的选择为准
+  useEffect(() => {
+    const preferred = preferredTab(titles);
+    if (preferred) setSelected(preferred);
+  }, []);
+  const labels = Object.fromEntries(titles.map((title) => [title, title]));
+  return (
+    <div className="mt-5">
+      <SegmentedTabs label="发行版" values={titles} labels={labels} value={selected} onChange={setSelected} panelId={id} size="sm" />
+      <div id={id} role="tabpanel" aria-labelledby={tabId(id, selected)} className="mt-4">
+        {rendered.tabs.map((tab) => (
+          <div key={tab.title} hidden={tab.title !== selected}>
+            <Prose html={tab.html} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function PlatformSection({ section, hidden, name }: { section: RenderedSection; hidden: boolean; name: string }) {
   const { t } = useLocale();
@@ -88,7 +123,14 @@ function PlatformSection({ section, hidden, name }: { section: RenderedSection; 
           {heading}
         </h2>
         {section.introHtml && <Prose html={section.introHtml} className="mt-3.5" />}
-        {mainHtml && <Prose html={mainHtml} className="mt-3.5" />}
+        {section.mainTabs ? (
+          <>
+            {section.mainTabs.leadHtml && <Prose html={section.mainTabs.leadHtml} className="mt-3.5" />}
+            <GuideTabs id={`download-${section.platform}-tabs`} rendered={section.mainTabs} />
+          </>
+        ) : (
+          mainHtml && <Prose html={mainHtml} className="mt-3.5" />
+        )}
       </div>
       {callouts.length > 0 && (
         <div className="mt-[clamp(28px,4vw,48px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-4">
@@ -114,7 +156,11 @@ export function DownloadGuide({ sections, platform, filter }: { sections: GuideS
   const rendered = useMemo<RenderedSection[] | null>(() => {
     if (!sections) return null;
     const html = (source: string) => (source ? renderContent(tw ? traditionalMarkdown(source) : source, { localePath: path }).bodyHtml : "");
-    return sections.map((section) => ({ ...section, introHtml: html(section.intro), blockHtml: section.blocks.map((block) => html(block.body)) }));
+    return sections.map((section) => {
+      const split = section.platform && section.blocks[0] ? splitTabs(section.blocks[0].body) : null;
+      const mainTabs = split && { leadHtml: html(split.lead), tabs: split.tabs.map((tab) => ({ title: tab.title, html: html(tab.body) })) };
+      return { ...section, introHtml: html(section.intro), blockHtml: section.blocks.map((block) => html(block.body)), mainTabs };
+    });
   }, [sections, tw, path]);
 
   return (
