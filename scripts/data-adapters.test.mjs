@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { siteApi, SourceError, staticSnapshot, withFallback } from '../src/data/source.ts';
 import { appStatsQuery, communityQuery, platformsQuery, releasesQuery, updateManifestQuery } from '../src/data/queries.ts';
-import { IOS_TESTFLIGHT_URL, sitePlatforms, SITE_PLATFORMS } from '../src/data/platforms.ts';
+import { ANDROID_PGYER_URL, IOS_TESTFLIGHT_URL, sitePlatforms, SITE_PLATFORMS } from '../src/data/platforms.ts';
 import { communitySchema } from '../src/community-data.ts';
 
 const read = path => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'));
@@ -146,7 +146,7 @@ test('the seven-platform catalogue joins desktop releases and keeps mobile and w
   for (const entry of entries) {
     if (['windows', 'macos', 'linux'].includes(entry.id)) assert.equal(entry.release?.version, platforms.platforms[entry.id].version);
     else assert.equal(entry.release, null);
-    assert.ok(entry.href.startsWith('https://github.com/metasequoiaime/') || entry.href === IOS_TESTFLIGHT_URL || entry.href === 'https://www.npmjs.com/package/@msime/web-engine');
+    assert.ok(entry.href.startsWith('https://github.com/metasequoiaime/') || entry.href === IOS_TESTFLIGHT_URL || entry.href === ANDROID_PGYER_URL || entry.href === 'https://www.npmjs.com/package/@msime/web-engine');
   }
   const web = entries.find(entry => entry.id === 'web');
   assert.equal(web.distribution, 'sdk');
@@ -154,5 +154,9 @@ test('the seven-platform catalogue joins desktop releases and keeps mobile and w
   const ios = entries.find(entry => entry.id === 'ios');
   assert.equal(ios.distribution, 'testflight');
   assert.equal(ios.href, 'https://testflight.apple.com/join/bUzPvyqt');
+  const android = entries.find(entry => entry.id === 'android');
+  assert.equal(android.distribution, 'pgyer');
+  assert.equal(android.href, 'https://www.pgyer.com/msime');
+  assert.equal(android.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/platforms/android');
   assert.deepEqual(sitePlatforms().map(entry => entry.release), [null, null, null, null, null, null, null], 'renders without a manifest');
 });

@@ -22,14 +22,18 @@ export type ReleaseFilter = (typeof RELEASE_FILTERS)[number];
 
 export const IOS_TESTFLIGHT_URL = "https://testflight.apple.com/join/bUzPvyqt";
 
+/** Android test builds are distributed through Pgyer (蒲公英), which serves a scan-or-tap install page reachable from mainland China; there is no GitHub release for Android yet. */
+export const ANDROID_PGYER_URL = "https://www.pgyer.com/msime";
+
 /**
  * How a platform reaches users today.
  * - `release`: installable packages on GitHub Releases, described by `public/platforms.json`.
  * - `testflight`: Apple's public beta only; the IPAs on GitHub are TestFlight builds, not sideloadable.
+ * - `pgyer`: a test APK on Pgyer's install page, sideloaded rather than installed from a store.
  * - `source`: developed in the msime repository with no published package yet.
  * - `sdk`: a library for developers to embed (the web engine on npm), not something end users install.
  */
-export type Distribution = "release" | "testflight" | "source" | "sdk";
+export type Distribution = "release" | "testflight" | "pgyer" | "source" | "sdk";
 
 export type PlatformInfo = {
   id: SitePlatform;
@@ -37,7 +41,7 @@ export type PlatformInfo = {
   /** One-line description of the native host, as the design's platform cards show it. */
   host: string;
   distribution: Distribution;
-  /** Where the platform card sends visitors: the releases page, TestFlight, or the platform's source directory. */
+  /** Where the platform card sends visitors: the releases page, TestFlight, Pgyer, or the platform's source directory. */
   href: string;
   /** Source directory, for "view the code" links. */
   sourceUrl: string;
@@ -80,8 +84,8 @@ export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
     id: "android",
     name: PLATFORM_NAMES.android,
     host: "输入法服务独立进程，手写走 ML Kit Digital Ink",
-    distribution: "source",
-    href: `${MSIME}/tree/develop/platforms/android`,
+    distribution: "pgyer",
+    href: ANDROID_PGYER_URL,
     sourceUrl: `${MSIME}/tree/develop/platforms/android`,
   },
   ios: {

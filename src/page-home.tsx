@@ -29,6 +29,7 @@ const FEATURES = [
 const DISTRIBUTION_LABELS: Record<Distribution, { label: string; tone: "accent" | "neutral" }> = {
   release: { label: "可下载", tone: "accent" },
   testflight: { label: "TestFlight", tone: "accent" },
+  pgyer: { label: "测试版", tone: "accent" },
   source: { label: "开发中", tone: "neutral" },
   sdk: { label: "开发者接入", tone: "accent" },
 };
