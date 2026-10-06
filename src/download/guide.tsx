@@ -85,9 +85,10 @@ const preferredTab = (titles: string[]) => {
 };
 
 /**
- * The `#### ` sub-sections of a main block as tabs. Every panel is rendered and the unselected ones are only `hidden`, so the static HTML and its markdown export still carry every distribution's commands. The first tab is selected until hydration, then the one matching the user agent if any.
+ * The `#### ` sub-sections of a main block as tabs. Each panel starts with a visually hidden heading naming its tab, so screen readers and the markdown export know which distribution a block of commands is for. Every panel is rendered and the unselected ones are only `hidden`, so the static HTML and its markdown export still carry every distribution's commands. The first tab is selected until hydration, then the one matching the user agent if any.
  */
 function GuideTabs({ id, rendered }: { id: string; rendered: RenderedTabs }) {
+  const { t } = useLocale();
   const titles = rendered.tabs.map((tab) => tab.title);
   const [selected, setSelected] = useState(titles[0]);
   // biome-ignore lint/correctness/useExhaustiveDependencies: 只在挂载时按 UA 选一次，之后以用户的选择为准
@@ -102,6 +103,8 @@ function GuideTabs({ id, rendered }: { id: string; rendered: RenderedTabs }) {
       <div id={id} role="tabpanel" aria-labelledby={tabId(id, selected)} className="mt-4">
         {rendered.tabs.map((tab) => (
           <div key={tab.title} hidden={tab.title !== selected}>
+            {/* 标签上的名字只在按钮里；面板自己带一个读屏可见的标题，导出的 download.md 和 llms-full.txt 里每段命令前也就有了发行版名。 */}
+            <h3 className="sr-only">{t(tab.title)}</h3>
             <Prose html={tab.html} />
           </div>
         ))}
