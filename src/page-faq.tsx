@@ -10,7 +10,6 @@ import { usePageMeta } from "./page-meta";
 import { withHeadingIds } from "./toc";
 import { useInternalLinks } from "./use-internal-links";
 import { DocsControlBar, guideForFaqPlatform, platformRowClass, platformTabClass } from "./docs/control-bar";
-import { PLATFORM_CATALOG } from "./data/platforms";
 import { AnchorButton, ExternalIcon, LinkButton, SearchIcon, cx } from "./ui";
 
 const platforms = ["Windows", "macOS", "Linux", "iOS", "Android"] as const;
@@ -189,7 +188,7 @@ export function FaqPage() {
             <LinkButton variant="secondary" to="/words/">{t("补充词条")}</LinkButton>
             {guide && <LinkButton variant="secondary" to="/docs/$guide/" params={{ guide }}>{t(`查看 ${platform} 指南`)}</LinkButton>}
             {platform === "iOS" && <LinkButton variant="secondary" to="/download/" search={{ platform: "ios" }}>{t("查看 iOS 公开测试说明")}</LinkButton>}
-            {platform === "Android" && <AnchorButton variant="secondary" href={PLATFORM_CATALOG.android.sourceUrl}>{t("查看 Android 平台说明")}<ExternalIcon size={12} /></AnchorButton>}
+            {platform === "Android" && <LinkButton variant="secondary" to="/download/" search={{ platform: "android" }}>{t("查看 Android 测试版安装说明")}</LinkButton>}
           </div>
         </section>
       </div>

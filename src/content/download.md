@@ -173,11 +173,17 @@ curl -fsSL https://msime.app/install.sh | sh
 
 ## Android
 
-### 开发状态
+### 安装与启用
 
-Android 版正在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/develop/platforms/android)中开发，目前还没有发布安装包，也没有上架应用商店。
+1. 在手机浏览器中打开[蒲公英下载页](https://www.pgyer.com/msime)，点“安装”下载 APK；在电脑上打开时，用手机扫页面上的二维码。
+2. 打开下载好的 APK。系统提示“禁止安装未知来源应用”时，按提示允许浏览器安装应用，再回到安装界面。
+3. 安装完成后打开水杉输入法，按引导到系统设置中启用它，并切换为当前输入法。
 
-输入法服务运行在独立进程中，手写识别使用 ML Kit Digital Ink。发布安装包后，这里会给出下载入口。
+需要 Android 9 及以上。鸿蒙 NEXT（HarmonyOS 5 及以上）不能安装 APK，请关注下方的 HarmonyOS 版。
+
+### 测试版说明
+
+Android 版目前是测试版，没有上架应用商店。部分手机安装时会提示“未经检测”或“存在风险”，这是系统对商店外应用的通用提示；只从上面的蒲公英链接下载，不要安装来路不明的 APK。新版本发布后，在蒲公英下载页下载并覆盖安装即可，不会丢失词库和设置。
 
 ### 从源码构建
 

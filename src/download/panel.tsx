@@ -14,7 +14,7 @@ const QQ_GROUP = "829919142";
 const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
   macos: "适用于 macOS 12 及以上",
   linux: "适用于使用 Fcitx5 或 IBus 的桌面环境",
-  android: "开发中，尚未发布安装包",
+  android: "适用于 Android 9 及以上；测试版，需允许安装未知来源应用",
   ios: "适用于 iOS 17 及以上",
   harmony: "开发中，尚未发布安装包",
 };
@@ -27,6 +27,7 @@ const tileName = (entry: SitePlatformEntry) => {
   if (entry.id === "windows") return "Windows 10/11";
   if (entry.id === "macos") return `macOS ${macosMinimum(entry)}+`;
   if (entry.id === "ios") return "iOS 17+";
+  if (entry.id === "android") return "Android 9+";
   return entry.name;
 };
 
@@ -55,6 +56,7 @@ const MIRROR_ACTION =
 /** What the tile's status says: the current version, or, kept to a word, how the platform is distributed. The details sit in the action strip and the guide below. */
 const tileStatus = (entry: SitePlatformEntry) => {
   if (entry.distribution === "testflight") return "TestFlight";
+  if (entry.distribution === "pgyer") return "测试版";
   if (entry.distribution === "source") return "开发中";
   if (entry.distribution === "sdk") return "npm";
   return entry.release ? `v${entry.release.version}` : "查看发布页";
@@ -195,6 +197,18 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
     );
   }
 
+  if (entry.distribution === "pgyer") {
+    return (
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+        <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer">
+          {t("通过蒲公英安装 Android 版")}
+          <ExternalIcon />
+        </a>
+        {hint}
+      </div>
+    );
+  }
+
   if (entry.distribution === "sdk") {
     return (
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
@@ -266,7 +280,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 /**
  * 页面顶部的下载入口（design-home §6「选择卡」），也是整页的标题区：页面不再有单独的页头，h1 就在这里，平台卡片和下载按钮在首屏内。
  *
- * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 与 HarmonyOS 如实说明还在开发、只能从源码构建，Web 是给网站开发者接入的 npm 包。QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的下载按钮旁边。
+ * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 是蒲公英上的测试版，HarmonyOS 如实说明还在开发、只能从源码构建，Web 是给网站开发者接入的 npm 包。QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的下载按钮旁边。
  *
  * `.download-panel` is a test hook: the static HTML must show the Windows version inside it.
  */
