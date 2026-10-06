@@ -60,18 +60,35 @@ macOS 版内置 Sparkle 自动更新，安装后可从输入法菜单中的「�
 
 ## Linux
 
-### 用包管理器安装
+### 安装方式
 
-Ubuntu 24.04/26.04、Fedora 43/44、Debian testing/unstable、openSUSE Tumbleweed 有官方软件源：Ubuntu 用 [Launchpad PPA](https://launchpad.net/~msime/+archive/ubuntu/ppa)，Fedora 用 [COPR](https://copr.fedorainfracloud.org/coprs/msime/msime/)，Debian 与 openSUSE 用 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime)。添加一次软件源后用系统的包管理器安装，之后随系统更新一起升级。Ubuntu 与 Fedora 同时提供 x86_64 和 aarch64，Debian 与 openSUSE 目前只有 x86_64。
+按发行版添加一次软件源，之后用系统的包管理器安装，并随系统更新一起升级。同一个包同时提供 Fcitx5 插件与 IBus 引擎，两者功能一致，用桌面环境正在使用的那个即可。
 
-**Ubuntu 24.04 / 26.04（含 Linux Mint 等衍生版）**
+#### Ubuntu
+
+Ubuntu 24.04 / 26.04 及 Linux Mint 等衍生版，软件源是 [Launchpad PPA](https://launchpad.net/~msime/+archive/ubuntu/ppa)，提供 x86_64 与 aarch64：
 
 ```sh
 sudo add-apt-repository ppa:msime/ppa
 sudo apt install msime
 ```
 
-**Debian testing / unstable**
+卸载：`sudo apt remove msime`。Ubuntu 22.04 的 Fcitx5 版本过旧，不受支持。
+
+#### Fedora
+
+Fedora 43 / 44，软件源是 [COPR](https://copr.fedorainfracloud.org/coprs/msime/msime/)，提供 x86_64 与 aarch64：
+
+```sh
+sudo dnf copr enable msime/msime
+sudo dnf install msime
+```
+
+首次安装时 dnf 会询问是否信任软件源的签名公钥，确认即可。卸载：`sudo dnf remove msime`。
+
+#### Debian
+
+Debian testing / unstable，软件源在 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime)，目前只有 x86_64：
 
 ```sh
 repo=https://download.opensuse.org/repositories/home:/msime/Debian_Testing
@@ -82,37 +99,58 @@ sudo apt update
 sudo apt install msime
 ```
 
-unstable 把第一行的 `Debian_Testing` 换成 `Debian_Unstable`。Debian 12/13 的 Rust 版本过旧，没有软件源，请用下面列表里的 `.deb`。
+unstable 把第一行的 `Debian_Testing` 换成 `Debian_Unstable`。卸载：`sudo apt remove msime`。Debian 12 / 13 的 Rust 版本过旧，没有软件源，请用本页下载区的 `.deb`。
 
-**Fedora 43 / 44**
+#### openSUSE
 
-```sh
-sudo dnf copr enable msime/msime
-sudo dnf install msime
-```
-
-**openSUSE Tumbleweed**
+openSUSE Tumbleweed，软件源在 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime)，目前只有 x86_64：
 
 ```sh
 sudo zypper addrepo --refresh https://download.opensuse.org/repositories/home:/msime/openSUSE_Tumbleweed/home:msime.repo
 sudo zypper install msime
 ```
 
-首次安装时 dnf 和 zypper 会询问是否信任软件源的签名公钥，确认即可。
+首次安装时 zypper 会询问是否信任软件源的签名公钥，确认即可。卸载：`sudo zypper remove msime`。Leap 暂不支持。
 
-装好后，每个要使用输入法的用户运行一次 `msime-linux-setup --download`（或打开「水杉输入法」设置）下载词库、完成首次配置。卸载用对应的 `apt remove msime`、`dnf remove msime` 或 `zypper remove msime`。
+#### NixOS
 
-也可以用一条命令完成上面所有步骤，脚本自动识别发行版并替当前用户完成首次配置，运行前可以先 [读一遍](https://msime.app/install.sh)：
+仓库根目录的 `flake.nix` 提供 Fcitx5 插件。插件运行在 `fcitx5` 进程里，要与系统的 Fcitx5 出自同一份 nixpkgs，所以在系统配置里用 overlay：
+
+```nix
+# flake.nix 的 inputs
+msime.url = "github:metasequoiaime/msime";
+
+# NixOS 模块
+nixpkgs.overlays = [ inputs.msime.overlays.default ];
+i18n.inputMethod = {
+  enable = true;
+  type = "fcitx5";
+  fcitx5.addons = [ pkgs.msime-fcitx5 ];
+};
+environment.systemPackages = [ pkgs.msime-fcitx5 ]; # 首次配置要用的 msime-linux-setup
+```
+
+NixOS 上目前只接入 Fcitx5，设置窗口与语音输入还没有接进 Nix。
+
+#### 一键脚本
+
+Ubuntu、Fedora、Debian、openSUSE 也可以用一条命令完成：脚本识别发行版，添加对应的软件源与签名公钥，用系统的包管理器安装，再替当前用户下载词库、完成首次配置。运行前可以先 [读一遍](https://msime.app/install.sh)。
 
 ```sh
 curl -fsSL https://msime.app/install.sh | sh
 ```
 
-### 安装说明
+#### 其他发行版
 
-其他发行版按下面的列表选择对应的包。同一个包同时提供 Fcitx5 插件与 IBus 引擎，两者功能一致，用桌面环境正在使用的那个即可。安装包不带词库，安装后打开「水杉输入法」设置完成首次配置并下载词库（或在终端运行 `msime-linux-setup --download`），它会把输入法加入当前的输入法列表；没有自动加入时，Fcitx5 用 `fcitx5-configtool` 添加「水杉输入法」，IBus 执行 `ibus restart` 后在输入源设置中添加「Metasequoia 水杉输入法」。
+用本页下载区的安装包：Debian 系用 `.deb`（`sudo apt install ./<文件名>.deb`），Fedora 等 RPM 系用 `.rpm`（`sudo dnf install ./<文件名>.rpm`）；`.tar.gz` 只适用于使用 Debian 目录布局、不经 apt 安装的系统，需要自行安装依赖。这些包不会自动更新，新版本发布后要重新下载安装。
 
 源码在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/develop/platforms/linux)。
+
+### 安装之后
+
+安装包不带词库。每个要使用输入法的用户运行一次 `msime-linux-setup --download`，或打开「水杉输入法」设置完成首次配置：它下载并校验词库，再把输入法加入当前的输入法列表。没有自动加入时，Fcitx5 用 `fcitx5-configtool` 添加「水杉输入法」，IBus 执行 `ibus restart` 后在输入源设置中添加「Metasequoia 水杉输入法」。
+
+升级之后，Fcitx5 执行 `fcitx5 -r` 或重新登录即可用上新版本；IBus 切换一次窗口就会换到新版本。
 
 ### 签名与校验
 
