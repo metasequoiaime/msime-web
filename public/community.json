@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-06T02:30:54.617Z",
-  "totalStars": 2129,
+  "generatedAt": "2026-10-06T09:25:07.576Z",
+  "totalStars": 2183,
   "repoCount": 15,
   "starHistory": [
     {
@@ -145,11 +145,11 @@
     },
     {
       "month": "2026-09",
-      "stars": 1747
+      "stars": 1746
     },
     {
       "month": "2026-10",
-      "stars": 2129
+      "stars": 2183
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-06",
-          "stars": 1680
+          "stars": 1686
         }
       ]
     },
@@ -315,11 +315,11 @@
         },
         {
           "date": "2026-09-30",
-          "stars": 75
+          "stars": 74
         },
         {
           "date": "2026-10-06",
-          "stars": 346
+          "stars": 393
         }
       ]
     },
@@ -429,7 +429,7 @@
         },
         {
           "date": "2026-10-06",
-          "stars": 27
+          "stars": 28
         }
       ]
     },
@@ -747,13 +747,13 @@
       ]
     }
   ],
-  "starDelta30d": 795,
+  "starDelta30d": 850,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 13344,
+      "contributions": 13583,
       "repos": 14
     },
     {
@@ -795,8 +795,15 @@
       "login": "luojiyin1987",
       "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
       "url": "https://github.com/luojiyin1987",
-      "contributions": 11,
-      "repos": 1
+      "contributions": 12,
+      "repos": 2
+    },
+    {
+      "login": "metasequoiaime-dev",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
+      "url": "https://github.com/metasequoiaime-dev",
+      "contributions": 6,
+      "repos": 2
     },
     {
       "login": "PLOKMCHINA",
@@ -809,13 +816,6 @@
       "login": "CuartPyaw",
       "avatarUrl": "https://avatars.githubusercontent.com/u/142556778?v=4",
       "url": "https://github.com/CuartPyaw",
-      "contributions": 5,
-      "repos": 1
-    },
-    {
-      "login": "metasequoiaime-dev",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
-      "url": "https://github.com/metasequoiaime-dev",
       "contributions": 5,
       "repos": 1
     },
