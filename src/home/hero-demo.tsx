@@ -46,7 +46,7 @@ export function HeroDemo({ frame, onHover }: { frame: HeroFrame; onHover: (hover
   return (
     <div ref={wrapper} className="rise-enter min-w-0 [--enter-delay:.15s]">
       <figure
-        className="m-0 mx-auto w-full max-w-[400px] overflow-hidden rounded-tile bg-panel shadow-card [--row:clamp(30px,2.4vw,34px)]"
+        className="m-0 mx-auto w-full max-w-[400px] overflow-hidden rounded-tile bg-panel shadow-card [--row:clamp(34px,2.8vw,40px)]"
         aria-label={t("输入演示：键入编码后，候选窗在每个候选旁显示译文")}
         onPointerEnter={() => {
           pointer.current = true;
