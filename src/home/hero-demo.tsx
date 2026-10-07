@@ -46,7 +46,7 @@ export function HeroDemo({ frame, onHover }: { frame: HeroFrame; onHover: (hover
   return (
     <div ref={wrapper} className="rise-enter min-w-0 [--enter-delay:.15s]">
       <figure
-        className="m-0 mx-auto w-full max-w-[480px] overflow-hidden rounded-tile bg-panel shadow-card [--row:clamp(36px,3vw,42px)]"
+        className="m-0 mx-auto w-full max-w-[400px] overflow-hidden rounded-tile bg-panel shadow-card [--row:clamp(30px,2.4vw,34px)]"
         aria-label={t("输入演示：键入编码后，候选窗在每个候选旁显示译文")}
         onPointerEnter={() => {
           pointer.current = true;
@@ -57,8 +57,8 @@ export function HeroDemo({ frame, onHover }: { frame: HeroFrame; onHover: (hover
           report();
         }}
       >
-        <div className="flex min-h-[clamp(44px,3.6vw,50px)] items-center gap-3 px-[clamp(16px,1.5vw,20px)] py-2 shadow-divider-b">
-          <span className="min-w-0 text-[clamp(15px,1.3vw,17px)] text-ink">
+        <div className="flex min-h-[clamp(36px,3vw,40px)] items-center gap-2 px-[clamp(12px,1.2vw,16px)] py-1.5 shadow-divider-b">
+          <span className="min-w-0 text-[clamp(14px,1.2vw,15px)] text-ink">
             {frame.code}
             <span className="ml-px inline-block h-[1.2em] w-[1.5px] bg-accent align-[-0.25em]" aria-hidden="true" />
           </span>
@@ -66,26 +66,26 @@ export function HeroDemo({ frame, onHover }: { frame: HeroFrame; onHover: (hover
         </div>
 
         <ol
-          className={cx("m-0 list-none p-2 transition-opacity duration-200", composing && "opacity-0")}
+          className={cx("m-0 list-none p-1.5 transition-opacity duration-200", composing && "opacity-0")}
           // A full page's worth of height whatever the scheme offers, so the card never changes size mid-cycle. --row scales with the viewport so the card holds its own next to the headline.
-          style={{ minHeight: `calc(${CANDIDATE_ROWS} * var(--row) + 16px)` }}
+          style={{ minHeight: `calc(${CANDIDATE_ROWS} * var(--row) + 12px)` }}
           aria-hidden={composing || undefined}
         >
           {/* Laid out like the settings app's candidate preview: one regular-weight face throughout, a smaller muted number, and the gloss right after the word. */}
           {scheme.candidates.map((candidate, index) => (
             <li
               key={candidate.word}
-              className={cx("flex h-(--row) items-center gap-[clamp(8px,0.8vw,10px)] rounded-row px-[clamp(10px,1vw,12px)]", index === 0 && "bg-accent-soft")}
+              className={cx("flex h-(--row) items-center gap-2 rounded-row px-[clamp(8px,0.8vw,10px)]", index === 0 && "bg-accent-soft")}
             >
-              <span className="w-3 flex-none text-[clamp(13px,1.1vw,15px)] text-muted">{index + 1}</span>
-              <span className="flex-none text-[clamp(17px,1.5vw,20px)] text-ink">{t(candidate.word)}</span>
-              <span className="min-w-0 truncate text-[clamp(14px,1.2vw,16px)] text-muted">{candidate.gloss[frame.language]}</span>
+              <span className="w-3 flex-none text-[clamp(12px,1vw,13px)] text-muted">{index + 1}</span>
+              <span className="flex-none text-[clamp(15px,1.3vw,17px)] text-ink">{t(candidate.word)}</span>
+              <span className="min-w-0 truncate text-[clamp(12px,1.1vw,14px)] text-muted">{candidate.gloss[frame.language]}</span>
             </li>
           ))}
         </ol>
       </figure>
 
-      <div className="mt-5 flex justify-center gap-1.5">
+      <div className="mt-4 flex justify-center gap-1.5">
         {PAIRS.map((pair, index) => (
           <button
             key={`${pair.scheme}-${pair.language}`}
