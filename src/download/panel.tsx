@@ -9,7 +9,7 @@ import { groupByArch, readableSize } from "./template";
 
 /** The Windows installer is also uploaded to this QQ group's files, for visitors who cannot reach GitHub quickly; joining the group also puts them where feedback is answered. */
 const QQ_GROUP = "829919142";
-const ALIPAN_CODE = "27qi";
+const QUARK_CODE = "fwpc";
 
 // 系统要求是产品决策，不在产物里，只能写下来。Windows 的要求选择卡上已经写成「Windows 10/11」，按钮旁不再重复。
 const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
@@ -159,18 +159,18 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
       <div className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2 rounded-btn bg-panel px-3 py-2 text-[15px] leading-snug font-semibold whitespace-nowrap text-ink shadow-ring-2 sm:gap-2.5 sm:px-5 md:flex-none">
         <CloudDownloadIcon size={20} className="flex-none" />
         <div>
-          <a className="flex items-center gap-2 text-ink no-underline hover:text-accent-ink" href="https://www.alipan.com/s/wKbWStNYVLZ" target="_blank" rel="noreferrer">
-            {t("阿里云盘下载")}
+          <a className="flex items-center gap-2 text-ink no-underline hover:text-accent-ink" href={`https://pan.quark.cn/s/571391fee026?pwd=${QUARK_CODE}`} target="_blank" rel="noreferrer">
+            {t("夸克网盘下载")}
             <ExternalIcon className="flex-none text-accent-ink" />
           </a>
           <div className="flex items-center gap-2 text-[13px] font-medium text-muted tabular-nums">
-            <span>{t("提取码：")}{ALIPAN_CODE}</span>
+            <span>{t("提取码：")}{QUARK_CODE}</span>
             <button
               type="button"
               className="rounded px-1 py-0.5 text-accent-ink hover:bg-panel-2 hover:text-ink"
-              aria-label={t("复制阿里云盘提取码")}
+              aria-label={t("复制夸克网盘提取码")}
               onClick={async () => {
-                show(t((await copyText(ALIPAN_CODE)) ? `已复制提取码 ${ALIPAN_CODE}` : `复制失败，请手动复制提取码：${ALIPAN_CODE}`));
+                show(t((await copyText(QUARK_CODE)) ? `已复制提取码 ${QUARK_CODE}` : `复制失败，请手动复制提取码：${QUARK_CODE}`));
               }}
             >
               {t("复制")}
