@@ -5,10 +5,11 @@ export type LanguageId = "en" | "ja";
 
 type Candidate = { word: string; gloss: Record<LanguageId, string> };
 
-const DAWN_REDWOOD: Candidate = { word: "水杉", gloss: { en: "dawn redwood", ja: "メタセコイア" } };
+const METASEQUOIA: Candidate = { word: "水杉", gloss: { en: "metasequoia", ja: "メタセコイア" } };
 // 全拼和双拼敲的是同一组音节，候选一致：词组之后是首音节的单字，和真实输入法的候选顺序一样。单字按 msime-dictionary 里 shui 的字频排。
 const PINYIN_CANDIDATES: Candidate[] = [
-  DAWN_REDWOOD,
+  METASEQUOIA,
+  { word: "水山", gloss: { en: "water and mountains", ja: "水と山" } },
   { word: "睡衫", gloss: { en: "nightshirt", ja: "寝間着" } },
   { word: "水", gloss: { en: "water", ja: "水（みず）" } },
   { word: "谁", gloss: { en: "who", ja: "誰（だれ）" } },
@@ -24,11 +25,11 @@ const PINYIN_CANDIDATES: Candidate[] = [
 export const SCHEMES: Record<SchemeId, { word: string; label: string; code: string; candidates: Candidate[] }> = {
   quanpin: { word: "全拼", label: "全拼", code: "shui'shan", candidates: PINYIN_CANDIDATES },
   shuangpin: { word: "双拼", label: "小鹤双拼", code: "uv'uj", candidates: PINYIN_CANDIDATES },
-  wubi: { word: "五笔", label: "五笔 86", code: "iise", candidates: [DAWN_REDWOOD, { word: "消极", gloss: { en: "negative · passive", ja: "消極的" } }] },
+  wubi: { word: "五笔", label: "五笔 86", code: "iise", candidates: [METASEQUOIA, { word: "消极", gloss: { en: "negative · passive", ja: "消極的" } }] },
 };
 
 /** 候选窗最多几行；五笔只有两个候选，按这个数留高度，免得切换方案时卡片跳动。 */
-export const CANDIDATE_ROWS = 6;
+export const CANDIDATE_ROWS = 7;
 
 /** Language names are shown as written in that language, so they never go through the zh-TW converter. */
 export const LANGUAGES: Record<LanguageId, string> = { en: "English", ja: "日本語" };
