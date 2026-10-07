@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-07T07:12:01.625Z",
-  "totalStars": 2234,
+  "generatedAt": "2026-10-07T14:44:49.600Z",
+  "totalStars": 2302,
   "repoCount": 15,
   "starHistory": [
     {
@@ -141,15 +141,15 @@
     },
     {
       "month": "2026-08",
-      "stars": 837
+      "stars": 836
     },
     {
       "month": "2026-09",
-      "stars": 1745
+      "stars": 1744
     },
     {
       "month": "2026-10",
-      "stars": 2234
+      "stars": 2301
     }
   ],
   "starSeries": [
@@ -294,15 +294,15 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 792
+          "stars": 791
         },
         {
           "date": "2026-09-30",
-          "stars": 1571
+          "stars": 1570
         },
         {
           "date": "2026-10-07",
-          "stars": 1695
+          "stars": 1736
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-07",
-          "stars": 435
+          "stars": 461
         }
       ]
     },
@@ -747,28 +747,28 @@
       ]
     }
   ],
-  "starDelta30d": 866,
+  "starDelta30d": 934,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 16133,
+      "contributions": 16489,
       "repos": 14
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1860,
+      "contributions": 1864,
       "repos": 11
     },
     {
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 111,
-      "repos": 2
+      "contributions": 112,
+      "repos": 3
     },
     {
       "login": "claude",
@@ -781,7 +781,7 @@
       "login": "Neptrue-Lin",
       "avatarUrl": "https://avatars.githubusercontent.com/u/29837162?v=4",
       "url": "https://github.com/Neptrue-Lin",
-      "contributions": 23,
+      "contributions": 24,
       "repos": 1
     },
     {
@@ -792,18 +792,18 @@
       "repos": 1
     },
     {
+      "login": "metasequoiaime-dev",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
+      "url": "https://github.com/metasequoiaime-dev",
+      "contributions": 15,
+      "repos": 3
+    },
+    {
       "login": "luojiyin1987",
       "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
       "url": "https://github.com/luojiyin1987",
       "contributions": 13,
       "repos": 2
-    },
-    {
-      "login": "metasequoiaime-dev",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
-      "url": "https://github.com/metasequoiaime-dev",
-      "contributions": 9,
-      "repos": 3
     },
     {
       "login": "PLOKMCHINA",
