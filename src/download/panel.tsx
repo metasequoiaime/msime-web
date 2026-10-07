@@ -9,7 +9,7 @@ import { groupByArch, readableSize } from "./template";
 
 /** The Windows installer is also uploaded to this QQ group's files, for visitors who cannot reach GitHub quickly; joining the group also puts them where feedback is answered. */
 const QQ_GROUP = "829919142";
-const QUARK_CODE = "fwpc";
+const QUARK_CODE = "gdaa";
 
 // 系统要求是产品决策，不在产物里，只能写下来。Windows 的要求选择卡上已经写成「Windows 10/11」，按钮旁不再重复。
 const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
@@ -159,7 +159,7 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
       <div className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2 rounded-btn bg-panel px-3 py-2 text-[15px] leading-snug font-semibold whitespace-nowrap text-ink shadow-ring-2 sm:gap-2.5 sm:px-5 md:flex-none">
         <CloudDownloadIcon size={20} className="flex-none" />
         <div>
-          <a className="flex items-center gap-2 text-ink no-underline hover:text-accent-ink" href={`https://pan.quark.cn/s/571391fee026?pwd=${QUARK_CODE}`} target="_blank" rel="noreferrer">
+          <a className="flex items-center gap-2 text-ink no-underline hover:text-accent-ink" href={`https://pan.quark.cn/s/50f95054d569?pwd=${QUARK_CODE}`} target="_blank" rel="noreferrer">
             {t("夸克网盘下载")}
             <ExternalIcon className="flex-none text-accent-ink" />
           </a>
