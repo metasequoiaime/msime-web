@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-07T01:01:00.289Z",
-  "totalStars": 2222,
+  "generatedAt": "2026-10-07T07:12:01.625Z",
+  "totalStars": 2234,
   "repoCount": 15,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 2222
+      "stars": 2234
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-07",
-          "stars": 1692
+          "stars": 1695
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-07",
-          "stars": 426
+          "stars": 435
         }
       ]
     },
@@ -747,27 +747,27 @@
       ]
     }
   ],
-  "starDelta30d": 854,
+  "starDelta30d": 866,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 15728,
+      "contributions": 16133,
       "repos": 14
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1859,
+      "contributions": 1860,
       "repos": 11
     },
     {
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 109,
+      "contributions": 111,
       "repos": 2
     },
     {
@@ -802,7 +802,7 @@
       "login": "metasequoiaime-dev",
       "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
       "url": "https://github.com/metasequoiaime-dev",
-      "contributions": 8,
+      "contributions": 9,
       "repos": 3
     },
     {
@@ -820,16 +820,16 @@
       "repos": 1
     },
     {
-      "login": "AaGMix",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/295558529?v=4",
-      "url": "https://github.com/AaGMix",
-      "contributions": 4,
+      "login": "yangkx1024",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
+      "url": "https://github.com/yangkx1024",
+      "contributions": 5,
       "repos": 1
     },
     {
-      "login": "Aegon8719",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/127523266?v=4",
-      "url": "https://github.com/Aegon8719",
+      "login": "AaGMix",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/295558529?v=4",
+      "url": "https://github.com/AaGMix",
       "contributions": 4,
       "repos": 1
     }
