@@ -1,14 +1,18 @@
 import { traditionalMarkdown } from "./translate.ts";
 import { z } from "zod";
+import type { SitePlatform } from "../src/data/platforms.ts";
 import type { IssueTemplate, Screenshot } from "./feedback-templates.ts";
 
+// MSIME-Apple 改名为 msime 并成为多平台仓库；MSIME-Linux 与 MSIME-Engine 已归档并关闭 Issues，Linux 前端和公共引擎的开发与反馈都并入 msime。官网面向普通用户，只按输入法平台分流（与站点六个平台一致，同一仓库的平台也分开选，Issue 页脚会写明平台；Web 引擎不是输入法，不在其列），引擎、API、文档和官网的问题留给贡献者直接去 GitHub 提。
 export const targets = {
   windows: { label: "Windows 输入法", repo: "MSIME-Windows" },
-  // MSIME-Apple 改名为 msime 并成为多平台仓库；MSIME-Linux 与 MSIME-Engine 已归档并关闭 Issues，Linux 前端和公共引擎的开发与反馈都并入 msime。官网面向普通用户，只按输入法平台分流，引擎、API、文档和官网的问题留给贡献者直接去 GitHub 提。
-  apple: { label: "macOS / iOS 输入法", repo: "msime" },
+  macos: { label: "macOS 输入法", repo: "msime" },
   linux: { label: "Linux 输入法", repo: "msime" },
-} as const;
-export const targetSchema = z.enum(["windows", "apple", "linux"]);
+  android: { label: "Android 输入法", repo: "msime" },
+  ios: { label: "iOS 输入法", repo: "msime" },
+  harmony: { label: "HarmonyOS 输入法", repo: "msime" },
+} as const satisfies Partial<Record<SitePlatform, { label: string; repo: string }>>;
+export const targetSchema = z.enum(["windows", "macos", "linux", "android", "ios", "harmony"]);
 export const contactFields = [
   { name: "github", label: "GitHub 用户名", placeholder: "例如 octocat，无需 @ 或链接", type: "text", max: 39 },
   { name: "email", label: "Email", placeholder: "name@example.com", type: "email", max: 254 },

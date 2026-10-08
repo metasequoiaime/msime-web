@@ -15,7 +15,7 @@ import { FeedbackResponseError, readFeedbackResponse } from "./feedback-response
 import { loadTurnstile } from "./turnstile";
 import { PageHero } from "./page-content";
 import { LocaleLink } from "./locale-link";
-import { AppleIcon, Button, Container, LinuxIcon, Pill, WindowsIcon, cx } from "./ui";
+import { Button, Container, Pill, PlatformIcon, cx } from "./ui";
 import { FeedbackAside } from "./feedback/feedback-aside";
 import { FEEDBACK_SECTIONS } from "./feedback/sections";
 import { SectionNav } from "./section-nav";
@@ -25,13 +25,13 @@ import { alertClass, checkClass, fieldLabelClass, hintClass, inputClass, markdow
 const emptyForm: Feedback = { target: "windows", title: "", templateId: "", templateRevision: "", answers: {}, screenshotFields: [], github: "", email: "", consent: true };
 type LocalScreenshot = { id: string; field: string; file: File; url: string };
 type Draft = { title: string; answers: Answers; screenshots: LocalScreenshot[] };
-const targetIcons = { windows: WindowsIcon, apple: AppleIcon, linux: LinuxIcon } as const;
 
 export function FeedbackPage() {
   const { t, tw } = useLocale();
   usePageMeta("Bug 与需求反馈 | 水杉输入法", "反馈问题或提出建议，提交内容将公开发布到 GitHub。");
   const { get, choice, update } = usePageSearch();
-  const targetResult = feedbackSchema.shape.target.safeParse(get("target"));
+  // "apple" was the combined macOS / iOS target before every platform got its own; old links land on macOS.
+  const targetResult = feedbackSchema.shape.target.safeParse(get("target") === "apple" ? "macos" : get("target"));
   const requestedTarget = targetResult.success ? targetResult.data : "windows";
   const requestedTemplate = get("template");
   const [form, setForm] = useState<Feedback>(() => ({ ...emptyForm, target: requestedTarget, templateId: requestedTemplate }));
@@ -328,13 +328,12 @@ export function FeedbackPage() {
                 <fieldset className="m-0 min-w-0 border-0 p-0" disabled={busy || readingImages}>
                   <section aria-labelledby="feedback-step-target">
                     <h2 id="feedback-step-target" className="sr-only">{t("选择反馈对象")}</h2>
-                    {/* 180px rather than the design's 150px: "macOS / iOS 输入法" plus its icon would otherwise break mid-word. */}
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]" role="radiogroup" aria-labelledby="feedback-step-target">
-                      {Object.entries(targets).map(([key, item]) => { const Icon = targetIcons[key as keyof typeof targets]; return <label key={key} className="flex min-h-11 gap-2 cursor-pointer items-center rounded-field bg-panel-2 px-3 py-2 text-sm leading-normal text-ink transition-[background-color,box-shadow] duration-150 [word-break:keep-all] [overflow-wrap:anywhere] hover:bg-accent-soft has-[:checked]:bg-accent-soft has-[:checked]:font-semibold has-[:checked]:text-accent-ink has-[:checked]:shadow-ring-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-labelledby="feedback-step-target">
+                      {Object.entries(targets).map(([key, item]) => <label key={key} className="flex min-h-11 gap-2 cursor-pointer items-center rounded-field bg-panel-2 px-3 py-2 text-sm leading-normal text-ink transition-[background-color,box-shadow] duration-150 [word-break:keep-all] [overflow-wrap:anywhere] hover:bg-accent-soft has-[:checked]:bg-accent-soft has-[:checked]:font-semibold has-[:checked]:text-accent-ink has-[:checked]:shadow-ring-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
                         <input className="sr-only" type="radio" name="target" value={key} checked={form.target === key} onChange={() => update({ target: key, template: undefined, tab: "edit" })} />
-                        <Icon size={18} className="flex-none" />
+                        <PlatformIcon platform={key as keyof typeof targets} size={18} className="flex-none" />
                         <span>{t(item.label)}</span>
-                      </label>; })}
+                      </label>)}
                     </div>
                     <p className={cx(hintClass, "mt-3")}>
                       {t("遇到使用问题？先看看")}

@@ -13,7 +13,7 @@ const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 20
 const env = { GITHUB_APP_ID: '123', GITHUB_APP_INSTALLATION_ID: '456', GITHUB_APP_PRIVATE_KEY: privateKey.export({ type: 'pkcs1', format: 'pem' }), TURNSTILE_SITE_KEY: 'test-only-sitekey', TURNSTILE_SECRET: 'test-only-secret', FEEDBACK_ORIGIN: 'https://msime.app' };
 const sources = Object.fromEntries(['windows','linux','common'].map(name => [name, readFileSync(new URL(`fixtures/feedback/${name}.yml`, import.meta.url),'utf8')]));
 const sha = source => createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0${source}`).digest('hex');
-// apple 和 linux 共用 msime 仓库，所以模板按仓库而不是按 target 取
+// 除 Windows 外的平台共用 msime 仓库，所以模板按仓库而不是按 target 取
 const fixtureOf = target => ({ 'MSIME-Windows': 'windows', msime: 'linux' })[targets[target]?.repo];
 function templateFor(target = 'windows', source = sources[fixtureOf(target)] ?? sources.common) {
   const repo = fixtureOf(target) ? targets[target].repo : '.github';

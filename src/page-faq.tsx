@@ -104,7 +104,6 @@ export function FaqPage() {
   const guide = guideForFaqPlatform(platformId);
   const sourcePath = `guides/${tw ? "zh-TW/" : ""}faq.md`;
   const sourceUrl = `https://github.com/metasequoiaime/MSIME-Docs/blob/main/${sourcePath}`;
-  const feedbackTarget = platform === "macOS" || platform === "iOS" ? "apple" : platform === "Linux" ? "linux" : platform === "Windows" ? "windows" : undefined;
 
   return <>
     {platformQuestions.length > 0 && <script type="application/ld+json">{serializeJsonLd({ "@context": "https://schema.org", "@type": "FAQPage", "@id": `https://msime.app${path}#faq`, mainEntity: platformQuestions.map(question => ({ "@type": "Question", name: question.title, acceptedAnswer: { "@type": "Answer", text: question.text.trim() } })) })}</script>}
@@ -190,7 +189,7 @@ export function FaqPage() {
           <h2 className="m-0 font-heading text-[21px] leading-[1.4] font-bold text-ink">{t("还没找到答案？")}</h2>
           <p className="m-0 mt-2 text-[15px] leading-[1.85] text-body">{t("遇到故障时，请带上版本号、复现步骤和截图。打不出来的词，可以直接补充到词库。")}</p>
           <div className="mt-[18px] flex flex-wrap gap-2.5">
-            <LinkButton to="/feedback/" search={{ target: feedbackTarget }}>{t("提交问题或建议")}</LinkButton>
+            <LinkButton to="/feedback/" search={{ target: platformId }}>{t("提交问题或建议")}</LinkButton>
             <LinkButton variant="secondary" to="/words/">{t("补充词条")}</LinkButton>
             {guide && <LinkButton variant="secondary" to="/docs/$guide/" params={{ guide }}>{t(`查看 ${platform} 指南`)}</LinkButton>}
             {platform === "iOS" && <LinkButton variant="secondary" to="/download/" search={{ platform: "ios" }}>{t("查看 iOS 公开测试说明")}</LinkButton>}
