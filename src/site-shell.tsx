@@ -12,7 +12,7 @@ import { AccountProvider, useAccount } from "./account/session";
 import { Avatar } from "./account/avatar";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
-import { WEB_IME_LABELS, WEB_IME_SCHEMES, WEB_IME_SWITCH_KEY, useWebIme, type WebImeStatus } from "./web-ime/use-web-ime";
+import { HELPCODE_LABELS, HELPCODE_SCHEMES, SHUANGPIN_LAYOUTS, WEB_IME_LABELS, WEB_IME_SWITCH_KEY, isShuangpin, takesHelpcode, useWebIme, type WebImeStatus } from "./web-ime/use-web-ime";
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, KeyboardIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
@@ -274,11 +274,13 @@ const webImeStatusText = (on: boolean, status: WebImeStatus | null) => {
 /**
  * 顶栏的「网页输入法」按钮：本站每一页的文本框默认用浏览器里运行的水杉引擎（@msime/web-engine）打字，这里换方案；选「关闭」交还给系统输入法。
  *
+ * 方案分三类：全拼、双拼、五笔。选了双拼才出现「双拼布局」一行（小鹤、自然码、手到、微软），「双拼」回到最近用的那套布局；全拼和双拼下才出现「辅助码」一组，默认关闭。
+ *
  * 只在有键盘和精确指针的设备上显示（`any-pointer-fine`）：手机的软键盘不发出引擎认得的按键，在那里打开它只会白下载一遍词库。开着时按钮带强调色的圈，加载中圈会闪，出错时换成警示色。
  */
 function WebImeMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
   const { t } = useLocale();
-  const { scheme, status, choose } = useWebIme();
+  const { scheme, shuangpin, helpcode, status, choose, chooseHelpcode } = useWebIme();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const close = useCallback(
@@ -294,7 +296,7 @@ function WebImeMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: bool
     if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitemradio"][aria-checked="true"]')?.focus();
   }, [isOpen]);
 
-  const label = t(scheme ? `网页输入法：${WEB_IME_LABELS[scheme]}` : "网页输入法");
+  const label = t(scheme ? `网页输入法：${WEB_IME_LABELS[scheme]}${isShuangpin(scheme) ? "双拼" : ""}${helpcode && takesHelpcode(scheme) ? ` + ${HELPCODE_LABELS[helpcode]}辅助码` : ""}` : "网页输入法");
   const state = status?.state;
 
   return (
@@ -328,16 +330,46 @@ function WebImeMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: bool
           onKeyDown={onMenuKeyDown}
           className="absolute top-11 right-0 z-40 w-[300px] rounded-menu bg-panel p-2 shadow-card max-sm:fixed max-sm:inset-x-3 max-sm:top-[62px] max-sm:w-auto"
         >
-          <OptionGroup label="网页输入法" columns="grid-cols-5">
+          <OptionGroup label="网页输入法" columns="grid-cols-4">
             <OptionButton checked={!scheme} onSelect={() => choose(null)}>
               {t("关闭")}
             </OptionButton>
-            {WEB_IME_SCHEMES.map((choice) => (
-              <OptionButton key={choice} checked={scheme === choice} onSelect={() => choose(choice)}>
-                {t(WEB_IME_LABELS[choice])}
-              </OptionButton>
-            ))}
+            <OptionButton checked={scheme === "quanpin"} onSelect={() => choose("quanpin")}>
+              {t("全拼")}
+            </OptionButton>
+            <OptionButton checked={isShuangpin(scheme)} onSelect={() => choose(isShuangpin(scheme) ? scheme : shuangpin)}>
+              {t("双拼")}
+            </OptionButton>
+            <OptionButton checked={scheme === "wubi86"} onSelect={() => choose("wubi86")}>
+              {t("五笔")}
+            </OptionButton>
           </OptionGroup>
+          {isShuangpin(scheme) && (
+            <OptionGroup label="双拼布局" columns="grid-cols-4">
+              {SHUANGPIN_LAYOUTS.map((layout) => (
+                <OptionButton key={layout} checked={scheme === layout} onSelect={() => choose(layout)}>
+                  {t(WEB_IME_LABELS[layout])}
+                </OptionButton>
+              ))}
+            </OptionGroup>
+          )}
+          {takesHelpcode(scheme) && (
+            <OptionGroup label="辅助码" columns="grid-cols-4">
+              <OptionButton checked={!helpcode} onSelect={() => chooseHelpcode(null)}>
+                {t("关闭")}
+              </OptionButton>
+              {HELPCODE_SCHEMES.map((name) => (
+                <OptionButton key={name} checked={helpcode === name} onSelect={() => chooseHelpcode(name)}>
+                  {t(HELPCODE_LABELS[name])}
+                </OptionButton>
+              ))}
+            </OptionGroup>
+          )}
+          {helpcode && takesHelpcode(scheme) && (
+            <p className="m-0 px-1.5 pt-2.5 text-xs leading-[1.7] text-muted">
+              {t(scheme === "quanpin" ? "辅助码：拼音后打一个大写字母调整顺序，末尾打两个大写字母筛选。候选后面是它的辅助码。" : "辅助码：音节后接着打第三键调整顺序，第四键按住 Shift 筛选。候选后面是它的辅助码。")}
+            </p>
+          )}
           <p className={cx("m-0 px-1.5 pt-2.5 pb-1 text-xs leading-[1.7]", state === "error" ? "text-warn" : "text-muted")} aria-live="polite">
             {t(webImeStatusText(Boolean(scheme), status))}
           </p>

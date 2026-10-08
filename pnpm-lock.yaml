@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@msime/web-engine':
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.4.0
+        version: 0.4.0
       '@tanstack/react-query':
         specifier: ^5.104.0
         version: 5.104.0(react@19.3.0)
@@ -156,8 +156,8 @@ packages:
   '@mixmark-io/domino@2.2.0':
     resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
 
-  '@msime/web-engine@0.3.1':
-    resolution: {integrity: sha512-YBJ7xLL8MkDHg9z4LTk8aPO2zORQF65EHi2WhwynU2K3xJ8YWExIK8yZLfVey6jBfJs+I1CKm3kWK/qOT58bOw==}
+  '@msime/web-engine@0.4.0':
+    resolution: {integrity: sha512-ptKBtPX75P/y0AjWPRzvDGQGRj9L/kZ/r870i0eVt3HmpKVqjNNdqXi0vnmyA/6PdAhkouxaIE9/pExsu8QZfQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -1118,7 +1118,7 @@ snapshots:
 
   '@mixmark-io/domino@2.2.0': {}
 
-  '@msime/web-engine@0.3.1': {}
+  '@msime/web-engine@0.4.0': {}
 
   '@oxc-project/types@0.152.0': {}
 
