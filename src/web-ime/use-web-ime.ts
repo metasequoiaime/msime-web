@@ -17,7 +17,21 @@ export const WEB_IME_LABELS: Record<WebImeScheme, string> = {
   wubi86: "五笔",
 };
 
+/** 提示里用的全名；菜单五个格子放不下，用上面的短名。 */
+const WEB_IME_NAMES: Record<WebImeScheme, string> = {
+  quanpin: "全拼",
+  xiaohe: "小鹤双拼",
+  ziranma: "自然码双拼",
+  wubi86: "五笔 86",
+};
+
+/** 在文本框里按它切到下一个方案。借用 Rime 呼出方案选单的 Ctrl+`，浏览器和系统都没占用它。 */
+export const WEB_IME_SWITCH_KEY = "Ctrl+`";
+const isSwitchKey = (event: KeyboardEvent) => event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey && event.code === "Backquote";
+
 const STORAGE_KEY = "msime-web-ime";
+/** 第一次就绪时提示过怎么切换方案，之后不再提示。 */
+const HINT_KEY = "msime-web-ime-hinted";
 /** 官网默认用水杉的网页输入法：没选过的访客也是全拼。 */
 const DEFAULT_SCHEME: WebImeScheme = "quanpin";
 /** 选了「关闭」要记下来，否则下次又回到默认的全拼。 */
@@ -34,6 +48,17 @@ const readStored = (): WebImeScheme | null => {
   } catch {
     return DEFAULT_SCHEME;
   }
+};
+
+/** 这个浏览器第一次用上网页输入法：记下来并返回 true。存不了时（无痕模式等）每个页面提示一次也无妨。 */
+const firstUse = () => {
+  try {
+    if (localStorage.getItem(HINT_KEY)) return false;
+    localStorage.setItem(HINT_KEY, "1");
+  } catch {
+    // 照样提示
+  }
+  return true;
 };
 
 const store = (scheme: WebImeScheme | null) => {
@@ -64,6 +89,10 @@ export function useWebIme() {
   dark.current = !isLight;
   const notice = useRef("");
   notice.current = t("水杉输入法还在加载，刚打的字会在就绪后接着输入");
+  const schemeRef = useRef(scheme);
+  schemeRef.current = scheme;
+  const translate = useRef(t);
+  translate.current = t;
   // 加载期间接住打进文本框的键（见 key-buffer.ts）；第一次接住时提示一下，免得以为键盘没反应。
   const [buffer] = useState(() => createKeyBuffer(() => show(notice.current)));
 
@@ -73,8 +102,12 @@ export function useWebIme() {
       if (next?.state === "loading") buffer.start();
       else if (next?.state === "ready") buffer.replay();
       else buffer.flush();
+      // 默认开着，访客可能根本不知道这是网页里的输入法、也不知道能换方案，所以第一次用上时说一次。
+      const current = schemeRef.current;
+      if (next?.state === "ready" && current && firstUse())
+        show(translate.current(`正在用水杉网页输入法（${WEB_IME_NAMES[current]}）· ${WEB_IME_SWITCH_KEY} 或顶栏键盘图标切换方案 · 单按 Shift 切换中英文`), 8000);
     },
-    [buffer]
+    [buffer, show]
   );
 
   // 静态预渲染的页面里没有 localStorage，接管后再读，免得水合时两边不一致。没有精确指针的设备（手机、平板）上顶栏不显示这个开关，软键盘也不发出引擎认得的按键，记着的选择在那里不生效。
@@ -149,6 +182,20 @@ export function useWebIme() {
     setActive(true);
     setAttempt((count) => count + 1);
   }, []);
+
+  // 在文本框里按 Ctrl+` 轮换方案，不用回到顶栏。输入法关着时不接管这个键，关掉了就是不想要它。
+  useEffect(() => {
+    if (!scheme) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!isSwitchKey(event) || !isImeField(event.target)) return;
+      event.preventDefault();
+      const next = WEB_IME_SCHEMES[(WEB_IME_SCHEMES.indexOf(scheme) + 1) % WEB_IME_SCHEMES.length];
+      choose(next);
+      show(translate.current(`已切换到${WEB_IME_NAMES[next]}`));
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  }, [scheme, choose, show]);
 
   return { scheme, status, choose };
 }

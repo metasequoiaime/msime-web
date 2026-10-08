@@ -2,8 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { CheckIcon } from "./icons";
 
 type ToastContextValue = {
-  /** Shows a short confirmation at the bottom of the screen for 2.2 s; a new message replaces the current one. */
-  show: (text: string) => void;
+  /** Shows a short confirmation at the bottom of the screen, for 2.2 s unless `ms` says longer; a new message replaces the current one. */
+  show: (text: string, ms?: number) => void;
 };
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -15,10 +15,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<{ id: number; text: string } | null>(null);
   const timer = useRef<number | undefined>(undefined);
 
-  const show = useCallback((text: string) => {
+  const show = useCallback((text: string, ms = TOAST_MS) => {
     window.clearTimeout(timer.current);
     setToast((current) => ({ id: (current?.id ?? 0) + 1, text }));
-    timer.current = window.setTimeout(() => setToast(null), TOAST_MS);
+    timer.current = window.setTimeout(() => setToast(null), ms);
   }, []);
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
