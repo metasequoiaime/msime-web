@@ -55,8 +55,11 @@ export function formatIssue(data: Feedback, template: IssueTemplate, screenshots
     const value = data[field.name]?.trim();
     return value ? [`| ${label(field.label)} | ${contactLiteral(value)} |`] : [];
   });
+  // 模板的标题前缀（如 "[Bug]:"）只在仓库里有意义，表单不让用户看到它，创建 Issue 时再补上；旧草稿里已带前缀的不重复添加。
+  const title = data.title.trim();
+  const prefix = template.title.trim();
   return {
-    title: data.title.replaceAll("@", "@\u200b"),
+    title: (!title || !prefix || title.startsWith(prefix) ? title : `${prefix} ${title}`).replaceAll("@", "@\u200b"),
     labels: template.labels,
     ...(template.issueType ? { type: template.issueType } : {}),
     body: [
