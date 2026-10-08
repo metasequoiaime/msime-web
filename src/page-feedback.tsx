@@ -72,7 +72,7 @@ export function FeedbackPage() {
       if ((field.type === "input" || field.type === "textarea") && typeof value === "string") answers[field.id] = value;
       else if ((field.type === "dropdown" || field.type === "checkboxes") && Array.isArray(value)) answers[field.id] = value.filter(item => field.options.some(option => option.label === item));
     }
-    setForm(previous => ({ ...previous, target, title: draft?.title ?? next.title, templateId: next.id, templateRevision: next.revision, answers }));
+    setForm(previous => ({ ...previous, target, title: draft?.title ?? "", templateId: next.id, templateRevision: next.revision, answers }));
     setScreenshots((draft?.screenshots ?? []).map(image => ({ ...image, field: image.field && !next.fields.some(field => field.id === image.field && acceptsScreenshot(field, image.file.type)) ? "" : image.field })));
     setError("");
   }

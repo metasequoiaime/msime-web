@@ -136,6 +136,13 @@ test('Markdown, contacts and labels follow the template without active user ment
   assert.ok(!issue.body.includes('感谢建议！'));
 });
 
+test('the form title is entered without the template prefix and the issue title gets it back once', () => {
+  const template=templateFor();
+  assert.equal(formatIssue(feedbackSchema.parse({...form,title:'增加候选窗口字号设置'}),template).title,'[Feat] 增加候选窗口字号设置');
+  assert.equal(formatIssue(feedbackSchema.parse({...form,title:'[Feat] 增加候选窗口字号设置'}),template).title,'[Feat] 增加候选窗口字号设置');
+  assert.equal(formatIssue({...form,title:''},template).title,'');
+});
+
 const png = new Uint8Array([137,80,78,71,13,10,26,10]);
 const multipart = (files=[new File([png],'private.png',{type:'image/png'})],data=form) => {
   const body=new FormData();
