@@ -103,7 +103,7 @@ export function HomeHero() {
 
   return (
     <Container as="section" width="page" className="page-enter pt-[clamp(32px,4vw,56px)]">
-      <div ref={hero} className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-start gap-[clamp(28px,4vw,72px)]">
+      <div ref={hero} className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-center gap-[clamp(28px,4vw,72px)]">
         <div className="rise-enter @container min-w-0">
           <CommunityLinks />
           <Headline frame={frame} />
