@@ -72,6 +72,11 @@ export function FaqPage() {
   const categoryId = choice("category", ["", ...categoryIds] as const, "");
   const category = categoryId ? faq.categories[categoryIds.indexOf(categoryId)] ?? "" : "";
   const setQuery = (value: string) => update({ q: value || undefined }, true, false);
+  // The box keeps its own text because `?q=` only changes once the router's navigation lands: bound to the URL directly, React wrote the old value back after every keystroke, which broke IME composition (pinyin steps piled up as literal text, "fangkuang" + 方框 became "ffafan…方框").
+  const [draft, setDraft] = useState(query);
+  const searchInput = useRef<HTMLInputElement>(null);
+  // While the visitor types, the URL follows the box; any other change to `?q=` (hydration, history, a platform switch, an answer link) refills it.
+  useEffect(() => { if (document.activeElement !== searchInput.current) setDraft(query); }, [query]);
   const setCategory = (value: string) => update({ category: categoryIds[faq.categories.indexOf(value)] }, false, false);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const root = useRef<HTMLDivElement>(null);
@@ -123,10 +128,11 @@ export function FaqPage() {
         {platformQuestions.length > 0 && <>
           <section className="rounded-panel bg-panel p-[clamp(16px,2.4vw,22px)] shadow-card" aria-label={t("查找问题")}>
             <label className="sr-only" htmlFor="faq-search">{t("搜索常见问题")}</label>
-            <div className="relative">
+            {/* Pinyin still being composed is not a query; the URL takes the text once the IME commits it, or on Enter. */}
+            <form className="relative" onSubmit={event => { event.preventDefault(); setQuery(draft); }}>
               <SearchIcon className="pointer-events-none absolute top-[13px] left-3.5 text-muted" />
-              <input id="faq-search" className="block h-11 w-full rounded-field border-0 bg-panel-2 pr-3.5 pl-[42px] font-[inherit] text-base text-ink placeholder:text-muted md:text-[15px] [&::-webkit-search-cancel-button]:cursor-pointer [&::-webkit-search-cancel-button]:grayscale" type="search" placeholder={t("搜索问题，例如 方框、快捷键、翻译")} value={query} onChange={event => setQuery(event.target.value)} />
-            </div>
+              <input ref={searchInput} id="faq-search" className="block h-11 w-full rounded-field border-0 bg-panel-2 pr-3.5 pl-[42px] font-[inherit] text-base text-ink placeholder:text-muted md:text-[15px] [&::-webkit-search-cancel-button]:cursor-pointer [&::-webkit-search-cancel-button]:grayscale" type="search" placeholder={t("搜索问题，例如 方框、快捷键、翻译")} value={draft} onChange={event => { setDraft(event.target.value); if (!(event.nativeEvent as InputEvent).isComposing) setQuery(event.target.value); }} onCompositionEnd={event => setQuery(event.currentTarget.value)} />
+            </form>
             <fieldset className="m-0 mt-3 flex min-w-0 flex-wrap gap-1.5 border-0 p-0">
               <legend className="sr-only">{t("问题分类")}</legend>
               {["", ...faq.categories].map(value => <button key={value} type="button" className={chipClass(category === value)} aria-pressed={category === value} onClick={() => setCategory(value)}>{t(value || "全部问题")}</button>)}
