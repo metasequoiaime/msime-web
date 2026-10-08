@@ -1,5 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { canonicalGithubUrl } from './github-url.mjs';
+import { attachMirrors, mirrorBase } from './mirror-downloads.mjs';
 
 /*
  * public/platforms.json 给下载页提供三个平台各自的最新版本与安装包。
@@ -269,8 +270,10 @@ async function main() {
     .map(selectDictionary)
     .find(Boolean) ?? null;
 
+  // 配置了国内镜像时，每个包都带上 OSS 地址；文件由紧接着运行的 mirror-downloads.mjs 上传，上传失败这一轮就不会提 PR。
+  const mirrored = attachMirrors(platforms, mirrorBase(process.env.DOWNLOAD_MIRROR_BASE_URL));
   await writeFile(new URL('../public/platforms.json', import.meta.url),
-    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms, dictionary }, null, 2)}\n`);
+    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary }, null, 2)}\n`);
   console.log(Object.entries(platforms).map(([k, v]) => `${k} v${v.version} (${v.downloads.length} 个产物)${v.preview ? ` + 预览版 v${v.preview.version}` : ''}`).join(', '),
     dictionary ? `| 词库 ${dictionary.tag} (${dictionary.files.length} 个文件)` : '| 词库 未取到');
 }

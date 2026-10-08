@@ -24,6 +24,8 @@ const downloadSchema = z.object({
   arch: z.string().regex(/^[A-Za-z0-9_+-]{1,24}$/),
   name: z.string(),
   url: projectUrl,
+  // 国内镜像（阿里云 OSS）上的同一个文件，由 scripts/mirror-downloads.mjs 上传并回读核对后才写进清单。镜像只是 GitHub 之外的备选，地址不合规时单独丢掉这一项，不连累整份清单。
+  mirrorUrl: z.url({ protocol: /^https$/, hostname: z.regexes.domain }).optional().catch(undefined),
   size: z.number().int().nonnegative(),
   sha256: z.string().regex(/^[0-9a-f]{64}$/).nullable().catch(null),
 });

@@ -51,6 +51,20 @@ Biome 只开了 linter，formatter 处于关闭状态——仓库既有代码尚
 
 取的是版本号最高的有效非 draft release，包含 prerelease 在内。这里不能用 `/releases/latest`，它会跳过 prerelease，而本产品目前发布的每一个 release 都是 prerelease。
 
+### 国内镜像（阿里云 OSS）
+
+GitHub Release 在国内下载很慢，所以 `sync-downloads.yml` 每一轮都会把 `public/platforms.json` 列出的全部安装包（三个桌面平台的正式版和预览版）复制到阿里云 OSS 的香港 Bucket，对象名为 `releases/<仓库>/<tag>/<文件名>`。下载页在 GitHub 按钮旁边显示「国内镜像下载」，「其他安装包」里的每一项也带一个「国内镜像」链接。只有已上传、并且通过公网地址核对过大小和 SHA256 的包才会带 `mirrorUrl`；某个包镜像失败时，它暂时只保留 GitHub 下载，发布不受影响，这一轮 workflow 会标红。镜像链接的点击会以 `channel=cn-mirror` 上报下载次数（`shared/download-events.ts`）。
+
+仓库变量 `DOWNLOAD_MIRROR_BASE_URL` 是总开关：不设置时整条链路不运行，页面和以前一样。启用前先准备好下面这些：
+
+1. OSS Bucket：地域选「中国香港」（`oss-cn-hongkong`），不需要 ICP 备案。允许匿名读取 `releases/*`：可以把读写权限设为公共读，也可以保持私有、再加一条只放行匿名 `oss:GetObject` 的 Bucket Policy。建议加一条生命周期规则，清理 90 天前的 `releases/` 对象；当前版本被清掉后，下一轮同步会重新上传。
+2. 域名（建议配置）：在 OSS「域名管理」里绑定 `dl.msime.app` 并配置 HTTPS 证书，然后在 Cloudflare DNS 添加 CNAME 指向 `<bucket>.oss-cn-hongkong.aliyuncs.com`，代理状态设为「仅 DNS」（灰云）。不绑定域名时，可以直接使用 `https://<bucket>.oss-cn-hongkong.aliyuncs.com`。
+3. RAM 的 OIDC 身份提供商：Issuer 填 `https://token.actions.githubusercontent.com`，客户端 ID 填 `sts.aliyuncs.com`。
+4. RAM 角色：信任上面的 OIDC 提供商，条件限定 `oidc:sub` = `repo:metasequoiaime/msime-web:ref:refs/heads/main`、`oidc:aud` = `sts.aliyuncs.com`；最大会话时间不少于 3600 秒。权限策略只授予 `oss:PutObject`、`oss:AbortMultipartUpload`、`oss:ListParts`，资源为 `acs:oss:*:*:<bucket>/releases/*`。仓库里不存放长期 AccessKey。
+5. 仓库变量（Settings → Secrets and variables → Actions → Variables）：`ALIYUN_OSS_REGION`=`oss-cn-hongkong`、`ALIYUN_OSS_BUCKET`、`ALIYUN_OSS_ROLE_ARN`、`ALIYUN_OIDC_PROVIDER_ARN`，最后设置 `DOWNLOAD_MIRROR_BASE_URL`（如 `https://dl.msime.app`）。
+
+第一轮会把所有安装包从 GitHub 搬到 OSS，耗时较长；之后每轮只对公网地址发 HEAD 请求，有新版本时才上传。
+
 ## Bug 反馈 or 功能建议
 
 提交 issue 到本项目的 [issue](https://github.com/metasequoiaime/MSIME-Web/issues) 区。

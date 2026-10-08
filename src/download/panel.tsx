@@ -1,6 +1,6 @@
 import type { SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
-import type { Platform } from "../platform.ts";
+import type { DesktopPlatform, Platform } from "../platform.ts";
 import { useDownloadMirrorsQuery } from "../data/queries";
 import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, copyText, cx, ExternalIcon, GitHubIcon, Pill, PlatformIcon, QQIcon, useToast } from "../ui";
 import { useLocale } from "../use-locale";
@@ -73,8 +73,25 @@ const TILE =
 const TILE_NAME = "text-sm leading-snug font-semibold [overflow-wrap:break-word] sm:text-lg lg:text-[20px]";
 const TILE_STATUS = "text-[12.5px] leading-snug font-medium text-accent-ink tabular-nums [overflow-wrap:anywhere] sm:text-sm";
 
-/* 主推那个之外的包，按架构分组收进折叠区。正式版和预览版各用一份。 */
-function MorePackages({ downloads }: { downloads: PlatformRelease["downloads"] }) {
+/** A click on the OSS copy is counted as a cn-mirror download (shared/download-events.ts); GitHub downloads are counted by the backend. */
+const reportMirror = (platform: DesktopPlatform, version: string, entry: PlatformRelease["downloads"][number]) => () => {
+  reportMirrorDownload({ platform, version, artifact: entry.name });
+};
+
+/** The OSS copy of the selected package, beside the GitHub button. Left out when the manifest carries no mirror. */
+function MirrorAction({ platform, version, entry, className }: { platform: DesktopPlatform; version: string; entry: PlatformRelease["downloads"][number]; className: string }) {
+  const { t } = useLocale();
+  if (!entry.mirrorUrl) return null;
+  return (
+    <a className={className} href={entry.mirrorUrl} rel="noreferrer" aria-label={t(`从国内镜像下载 ${entry.name}`)} onClick={reportMirror(platform, version, entry)}>
+      <CloudDownloadIcon size={20} className="flex-none" />
+      {t("国内镜像下载")}
+    </a>
+  );
+}
+
+/* 主推那个之外的包，按架构分组收进折叠区。正式版和预览版各用一份。有国内镜像的包在大小前面多一个「国内镜像」链接。 */
+function MorePackages({ platform, version, downloads }: { platform: DesktopPlatform; version: string; downloads: PlatformRelease["downloads"] }) {
   const { t } = useLocale();
   return (
     <details className="group mt-4 rounded-group bg-panel-2 px-4 [&[open]]:pb-3">
@@ -92,7 +109,14 @@ function MorePackages({ downloads }: { downloads: PlatformRelease["downloads"] }
                   <a className="min-w-0 text-sm font-medium text-accent-ink [overflow-wrap:anywhere] hover:text-ink" href={entry.url} rel="noreferrer">
                     {t(entry.label)}
                   </a>
-                  <span className="flex-none text-[13px] text-muted tabular-nums">{t(readableSize(entry.size))}</span>
+                  <span className="flex flex-none items-baseline gap-3 text-[13px] text-muted tabular-nums">
+                    {entry.mirrorUrl && (
+                      <a className="font-medium text-accent-ink hover:text-ink" href={entry.mirrorUrl} rel="noreferrer" aria-label={t(`从国内镜像下载 ${entry.name}`)} onClick={reportMirror(platform, version, entry)}>
+                        {t("国内镜像")}
+                      </a>
+                    )}
+                    {t(readableSize(entry.size))}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -108,7 +132,7 @@ function MorePackages({ downloads }: { downloads: PlatformRelease["downloads"] }
  *
  * 上游每次合并都会自动发一个 Pre-release，却只把人工挑过的那个标成正式版。只展示正式版，想试最新改动的人得自己去 GitHub 翻；只展示预览版，又等于把没挑过的构建推给所有人。所以两个都给，正式版占主按钮，预览版在下面明确标出来。
  */
-function PreviewPanel({ preview }: { preview: PreviewRelease }) {
+function PreviewPanel({ platform, preview }: { platform: DesktopPlatform; preview: PreviewRelease }) {
   const { t } = useLocale();
   const [first] = preview.downloads;
 
@@ -123,15 +147,21 @@ function PreviewPanel({ preview }: { preview: PreviewRelease }) {
         >
           {t(`下载预览版 v${preview.version}`)}
         </a>
+        <MirrorAction
+          platform={platform}
+          version={preview.version}
+          entry={first}
+          className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
+        />
       </div>
       <p className="m-0 mt-3 text-sm leading-[1.8] text-muted">{t("包含尚未进入正式版的改动，可能不稳定。")}</p>
-      {preview.downloads.length > 1 && <MorePackages downloads={preview.downloads.slice(1)} />}
+      {preview.downloads.length > 1 && <MorePackages platform={platform} version={preview.version} downloads={preview.downloads.slice(1)} />}
     </section>
   );
 }
 
 /**
- * Windows-only mirrors beside the GitHub button. The QQ group number is copied rather than linked: QQ has no web link that opens a group's files. The Lanzou link is set by admins in msime-backend and left out until one is configured or while the backend cannot be reached.
+ * Windows-only mirrors after the GitHub and OSS buttons. The QQ group number is copied rather than linked: QQ has no web link that opens a group's files. The Lanzou link is set by admins in msime-backend and left out until one is configured or while the backend cannot be reached.
  *
  * A click on the Lanzou link is reported as an anonymous download count (shared/download-events.ts) with the release's installer name and version; without a release manifest there is nothing accurate to report, so the click goes uncounted.
  */
@@ -186,7 +216,7 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
           rel="noreferrer"
           onClick={() => {
             const installer = release?.downloads[0];
-            if (release && installer) reportMirrorDownload({ version: release.version, artifact: installer.name });
+            if (release && installer) reportMirrorDownload({ platform: "windows", version: release.version, artifact: installer.name });
           }}
         >
           <CloudDownloadIcon size={20} className="flex-none" />
@@ -289,13 +319,14 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           {t(primary ? "GitHub 下载" : "GitHub 发布页")}
           {!primary && <ExternalIcon />}
         </a>
+        {primary && release && <MirrorAction platform={entry.id as DesktopPlatform} version={release.version} entry={primary} className={MIRROR_ACTION} />}
         {entry.id === "windows" && <WindowsMirrors release={release} />}
         {release ? hint : <p className="m-0 text-sm leading-[1.8] text-muted">{t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")}</p>}
       </div>
 
-      {release && release.downloads.length > 1 && <MorePackages downloads={release.downloads.slice(1)} />}
+      {release && release.downloads.length > 1 && <MorePackages platform={entry.id as DesktopPlatform} version={release.version} downloads={release.downloads.slice(1)} />}
 
-      {release?.preview && <PreviewPanel preview={release.preview} />}
+      {release?.preview && <PreviewPanel platform={entry.id as DesktopPlatform} preview={release.preview} />}
     </div>
   );
 }
@@ -303,7 +334,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 /**
  * 页面顶部的下载入口（design-home §6「选择卡」），也是整页的标题区：页面不再有单独的页头，h1 就在这里，平台卡片和下载按钮在首屏内。
  *
- * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 是蒲公英上的测试版，HarmonyOS 如实说明还在开发、只能从源码构建，Web 是给网站开发者接入的 npm 包。QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的下载按钮旁边。
+ * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 是蒲公英上的测试版，HarmonyOS 如实说明还在开发、只能从源码构建，Web 是给网站开发者接入的 npm 包。桌面平台的安装包在配置了国内镜像（阿里云 OSS）时，GitHub 按钮旁边多一个「国内镜像下载」；QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的按钮之后。
  *
  * `.download-panel` is a test hook: the static HTML must show the Windows version inside it.
  */

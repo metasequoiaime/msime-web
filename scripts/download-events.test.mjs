@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mirrorDownloadEvent, reportMirrorDownload, TELEMETRY_EVENTS_URL } from '../shared/download-events.ts';
 
-const download = { version: '0.9.3', artifact: 'MetasequoiaIME_Setup_v0.9.3.exe' };
+const download = { platform: 'windows', version: '0.9.3', artifact: 'MetasequoiaIME_Setup_v0.9.3.exe' };
 
 test('a mirror click is an anonymous cn-mirror download of the Windows installer', () => {
   assert.deepEqual(mirrorDownloadEvent(download, 'f0c1e2d3-a4b5-4c6d-8e7f-001122334455'), {
@@ -18,6 +18,13 @@ test('a mirror click is an anonymous cn-mirror download of the Windows installer
   assert.match(first.id, /^[0-9a-f-]{36}$/);
   assert.notEqual(first.id, second.id, 'every click gets a fresh id');
   assert.equal('install_id' in first, false, 'the website sends no install id');
+});
+
+test('a mirror click on a macOS or Linux package is counted under that platform', () => {
+  const event = mirrorDownloadEvent({ platform: 'linux', version: '0.11.0', artifact: 'msime-linux_0.11.0_amd64.deb' });
+  assert.equal(event.platform, 'linux');
+  assert.equal(event.artifact, 'msime-linux_0.11.0_amd64.deb');
+  assert.equal(event.channel, 'cn-mirror');
 });
 
 test('the event is posted straight to the backend with keepalive and no credentials', async () => {
