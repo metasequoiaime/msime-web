@@ -12,7 +12,7 @@ import { AccountProvider, useAccount } from "./account/session";
 import { Avatar } from "./account/avatar";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
-import { WEB_IME_LABELS, WEB_IME_SCHEMES, useWebIme, type WebImeStatus } from "./web-ime/use-web-ime";
+import { WEB_IME_LABELS, WEB_IME_SCHEMES, WEB_IME_SWITCH_KEY, useWebIme, type WebImeStatus } from "./web-ime/use-web-ime";
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, KeyboardIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
@@ -266,7 +266,7 @@ const WEB_IME_ERRORS: Record<string, string> = {
 const webImeStatusText = (on: boolean, status: WebImeStatus | null) => {
   if (!on) return "已关闭，本站的文本框交还给系统输入法。选一个方案就能在本站任意文本框里用水杉打字。";
   if (!status) return "本站的文本框默认用水杉打字，引擎在你的浏览器里运行，打的字不会发到任何服务器。第一次点进文本框时下载十几 MB 的引擎和词库，之后由浏览器缓存。";
-  if (status.state === "ready") return "已就绪：点进任意文本框就能打字，单按 Shift 切换中英文。";
+  if (status.state === "ready") return `已就绪：点进任意文本框就能打字。在文本框里按 ${WEB_IME_SWITCH_KEY} 切换方案，单按 Shift 切换中英文。`;
   if (status.state === "loading") return status.total > 0 ? `正在下载引擎和词库… ${Math.floor((status.loaded / status.total) * 100)}%` : "正在加载引擎…";
   return WEB_IME_ERRORS[status.code] ?? "引擎出错了，再选一次方案可以重新启动。";
 };
