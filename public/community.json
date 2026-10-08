@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-08T00:24:25.836Z",
-  "totalStars": 2392,
+  "generatedAt": "2026-10-08T06:39:05.472Z",
+  "totalStars": 2620,
   "repoCount": 15,
   "starHistory": [
     {
@@ -141,15 +141,15 @@
     },
     {
       "month": "2026-08",
-      "stars": 836
+      "stars": 835
     },
     {
       "month": "2026-09",
-      "stars": 1742
+      "stars": 1741
     },
     {
       "month": "2026-10",
-      "stars": 2392
+      "stars": 2619
     }
   ],
   "starSeries": [
@@ -294,15 +294,15 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 791
+          "stars": 790
         },
         {
           "date": "2026-09-30",
-          "stars": 1569
+          "stars": 1568
         },
         {
           "date": "2026-10-08",
-          "stars": 1809
+          "stars": 2003
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-08",
-          "stars": 479
+          "stars": 512
         }
       ]
     },
@@ -747,28 +747,35 @@
       ]
     }
   ],
-  "starDelta30d": 1009,
+  "starDelta30d": 1237,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 16798,
+      "contributions": 17098,
       "repos": 14
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1865,
+      "contributions": 1872,
       "repos": 11
     },
     {
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 112,
+      "contributions": 113,
       "repos": 3
+    },
+    {
+      "login": "Neptrue-Lin",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/29837162?v=4",
+      "url": "https://github.com/Neptrue-Lin",
+      "contributions": 26,
+      "repos": 1
     },
     {
       "login": "claude",
@@ -778,17 +785,10 @@
       "repos": 1
     },
     {
-      "login": "Neptrue-Lin",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/29837162?v=4",
-      "url": "https://github.com/Neptrue-Lin",
-      "contributions": 24,
-      "repos": 1
-    },
-    {
       "login": "ouchihao",
       "avatarUrl": "https://avatars.githubusercontent.com/u/108930485?v=4",
       "url": "https://github.com/ouchihao",
-      "contributions": 20,
+      "contributions": 21,
       "repos": 1
     },
     {
@@ -797,6 +797,13 @@
       "url": "https://github.com/metasequoiaime-dev",
       "contributions": 15,
       "repos": 3
+    },
+    {
+      "login": "yangkx1024",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
+      "url": "https://github.com/yangkx1024",
+      "contributions": 14,
+      "repos": 1
     },
     {
       "login": "luojiyin1987",
@@ -816,13 +823,6 @@
       "login": "CuartPyaw",
       "avatarUrl": "https://avatars.githubusercontent.com/u/142556778?v=4",
       "url": "https://github.com/CuartPyaw",
-      "contributions": 5,
-      "repos": 1
-    },
-    {
-      "login": "yangkx1024",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
-      "url": "https://github.com/yangkx1024",
       "contributions": 5,
       "repos": 1
     },
