@@ -8,6 +8,8 @@ name: Sync downloads
 #
 # 半小时一轮的 cron 只是兜底。真正让页面跟上发布的是 repository_dispatch：上游（MSIME-Windows / msime，原 MSIME-Apple / 已归档的 MSIME-Linux）的发布流水线发完版后往本仓库投一个事件即可触发，Windows 发版后 4 秒站上就是新版本。两个历史事件名都保留，上游不用改。
 #
+# 国内镜像：配置了仓库变量 DOWNLOAD_MIRROR_BASE_URL 时，platforms.json 里每个包都带一个阿里云 OSS（香港）上的 mirrorUrl。上传在提 PR 之前完成，凭据是用 GitHub OIDC 扮演 RAM 角色换来的临时 STS 密钥，仓库里不存长期密钥。某个包镜像失败只会让它暂时没有镜像按钮，不拦发布；这一轮在提完 PR 之后标红。所需的阿里云资源和变量见 README「国内镜像」。
+#
 # 守卫（scripts/enable-manifest-automerge.py）把分支和它能改的文件绑死：这条分支只能改这两份清单，其余检查（非草稿、base 为 main、head sha 精确匹配、同仓来源、main 必须有 PR 规则和三项必需检查）一律不变。
 
 on:
@@ -29,7 +31,12 @@ jobs:
     name: Propose refreshed download manifests
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 新版本第一次镜像要把三个平台的全部安装包（Linux 有三十多个）从 GitHub 搬到香港；之后每轮只对公网地址做 HEAD。
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      # 只给阿里云 OIDC 换取临时凭据用。
+      id-token: write
     steps:
       - name: Check out the site
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -43,14 +50,46 @@ jobs:
           node-version: 22
 
       - name: Validate and regenerate
-        id: write
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOWNLOAD_MIRROR_BASE_URL: ${{ vars.DOWNLOAD_MIRROR_BASE_URL }}
         run: |
           set -euo pipefail
           node --test scripts/generate-update.test.mjs scripts/generate-platforms.test.mjs scripts/manifest-changed.test.mjs
           node scripts/generate-update.mjs
           node scripts/generate-platforms.mjs
+
+      - name: Enable corepack
+        if: vars.DOWNLOAD_MIRROR_BASE_URL != ''
+        run: corepack enable
+
+      - name: Install the OSS SDK
+        if: vars.DOWNLOAD_MIRROR_BASE_URL != ''
+        run: pnpm install --frozen-lockfile
+
+      # 换不到凭据时不在这里停下：已经镜像过的包不需要凭据，需要上传的包会在下一步各自失败并被去掉 mirrorUrl。
+      - name: Assume the OSS upload role
+        if: vars.DOWNLOAD_MIRROR_BASE_URL != ''
+        continue-on-error: true
+        uses: aliyun/configure-aliyun-credentials-action@1e5248c8d5d93a8781ac344a68e19a43341e79e6 # v1.1.0
+        with:
+          role-to-assume: ${{ vars.ALIYUN_OSS_ROLE_ARN }}
+          oidc-provider-arn: ${{ vars.ALIYUN_OIDC_PROVIDER_ARN }}
+          role-session-name: msime-web-sync-downloads
+          role-session-expiration: 3600
+
+      - name: Mirror packages to Aliyun OSS
+        id: mirror
+        if: vars.DOWNLOAD_MIRROR_BASE_URL != ''
+        env:
+          ALIYUN_OSS_REGION: ${{ vars.ALIYUN_OSS_REGION }}
+          ALIYUN_OSS_BUCKET: ${{ vars.ALIYUN_OSS_BUCKET }}
+        run: node scripts/mirror-downloads.mjs
+
+      - name: Detect changes
+        id: write
+        run: |
+          set -euo pipefail
           # update.json 没有时间戳，`git diff` 就是答案。platforms.json 另有一个 generatedAt，每轮都不一样，直接比会让一天 48 轮里的绝大多数都产出一个只挪时间戳的提交。
           changed=false
           if ! git diff --quiet -- public/update.json; then changed=true; fi
@@ -78,7 +117,7 @@ jobs:
           delete-branch: true
           commit-message: 'chore(site): refresh download manifests'
           title: 'chore(site): refresh download manifests'
-          body: 'Latest published release and packages for Windows, macOS and Linux, plus the Windows update endpoint the app polls. Both manifests carry the Windows version, so they move together. Auto-merge requires the normal build, workflow validation and dependency review.'
+          body: 'Latest published release and packages for Windows, macOS and Linux, plus the Windows update endpoint the app polls. Both manifests carry the Windows version, so they move together. Packages carry a mirrorUrl only after their Aliyun OSS copy has been uploaded and checked at the public URL. Auto-merge requires the normal build, workflow validation and dependency review.'
 
       - name: Enable auto-merge behind the required checks
         if: steps.proposal.outputs.pull-request-number != '' && steps.proposal.outputs.pull-request-operation != 'closed'
@@ -88,3 +127,11 @@ jobs:
           PR_NUMBER: ${{ steps.proposal.outputs.pull-request-number }}
           HEAD_SHA: ${{ steps.proposal.outputs.pull-request-head-sha }}
         run: python3 scripts/enable-manifest-automerge.py --repo "$GH_REPO" --pr "$PR_NUMBER" --sha "$HEAD_SHA"
+
+      - name: Fail when a package could not be mirrored
+        if: steps.mirror.outputs.failed != '' && steps.mirror.outputs.failed != '0'
+        env:
+          FAILED: ${{ steps.mirror.outputs.failed }}
+        run: |
+          echo "::error::$FAILED package(s) could not be mirrored to Aliyun OSS; they are listed without a mirror until the next successful run."
+          exit 1
