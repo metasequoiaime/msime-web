@@ -6,13 +6,11 @@ export type LanguageId = "en" | "ja";
 type Candidate = { word: string; gloss: Record<LanguageId, string> };
 
 const METASEQUOIA: Candidate = { word: "水杉", gloss: { en: "metasequoia", ja: "メタセコイア" } };
-// 全拼和双拼敲的是同一组音节，候选一致：词组之后是首音节的单字，和真实输入法的候选顺序一样。单字按 msime-dictionary 里 shui 的字频排。只放前五个，让首屏的演示卡片保持紧凑。
+// 全拼和双拼敲的是同一组音节，候选一致。只放完整匹配 shui'shan 的三个词组，和真实输入法排在最前面的一样；首音节的单字不放，让首屏的演示卡片保持紧凑。
 const PINYIN_CANDIDATES: Candidate[] = [
   METASEQUOIA,
   { word: "水山", gloss: { en: "water and mountains", ja: "水と山" } },
   { word: "睡衫", gloss: { en: "nightshirt", ja: "寝間着" } },
-  { word: "水", gloss: { en: "water", ja: "水（みず）" } },
-  { word: "谁", gloss: { en: "who", ja: "誰（だれ）" } },
 ];
 
 /**
