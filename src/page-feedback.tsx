@@ -412,7 +412,7 @@ export function FeedbackPage() {
                     </h2>
                     <div className="mt-3 grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-x-2.5 gap-y-3">
                       {contactFields.map(field => <label key={field.name} className="block min-w-0 text-[13px] text-muted">{t(field.label)}
-                        <input className={cx(inputClass, "mt-1.5 text-[14.5px]")} name={field.name} type={field.type} value={form[field.name]} maxLength={field.max} placeholder={t(field.placeholder)} autoCapitalize="none" spellCheck={false} onChange={event => setForm({ ...form, [field.name]: event.target.value })} />
+                        <input data-msime={field.name === "github" ? "off" : undefined} className={cx(inputClass, "mt-1.5 text-[14.5px]")} name={field.name} type={field.type} value={form[field.name]} maxLength={field.max} placeholder={t(field.placeholder)} autoCapitalize="none" spellCheck={false} onChange={event => setForm({ ...form, [field.name]: event.target.value })} />
                       </label>)}
                     </div>
                   </section>

@@ -174,7 +174,7 @@ function EntryFields({ kind, draft, onChange }: { kind: DictionaryKind; draft: D
     <>
       <label className="min-w-0">
         <span className="sr-only">{t(fields.code)}</span>
-        <input className={cx(field, "font-mono")} value={draft.code} placeholder={`${t(fields.code)}：${fields.codeExample}`} autoComplete="off" autoCapitalize="none" spellCheck={false} maxLength={512} required onChange={event => onChange({ ...draft, code: event.target.value })} />
+        <input data-msime="off" className={cx(field, "font-mono")} value={draft.code} placeholder={`${t(fields.code)}：${fields.codeExample}`} autoComplete="off" autoCapitalize="none" spellCheck={false} maxLength={512} required onChange={event => onChange({ ...draft, code: event.target.value })} />
       </label>
       <label className="min-w-0">
         <span className="sr-only">{t(fields.word)}</span>

@@ -12,7 +12,8 @@ import { AccountProvider, useAccount } from "./account/session";
 import { Avatar } from "./account/avatar";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
-import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
+import { WEB_IME_LABELS, WEB_IME_SCHEMES, useWebIme, type WebImeStatus } from "./web-ime/use-web-ime";
+import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, KeyboardIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
   to: "/" | "/download/" | "/skins/" | "/docs/$guide/" | "/feedback/" | "/about/" | "/code/";
@@ -250,6 +251,95 @@ function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boo
           <OptionGroup label="语言" columns="grid-cols-2">
             <LanguageOptions onCurrent={() => close(true)} />
           </OptionGroup>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const WEB_IME_ERRORS: Record<string, string> = {
+  unsupported: "这个浏览器不支持网页输入法，需要 Chrome / Edge 80、Firefox 114 或 Safari 16.4 及以上。",
+  network: "引擎或词库没能下载下来，检查网络后再选一次方案重试。",
+  memory: "内存不足，引擎没能启动。关掉一些标签页后再选一次方案重试。",
+};
+
+const webImeStatusText = (status: WebImeStatus | null) => {
+  if (!status) return "在本站任意文本框里直接用水杉打字。引擎在你的浏览器里运行，打的字不会发到任何服务器；首次启用要下载十几 MB 的引擎和词库，之后由浏览器缓存。";
+  if (status.state === "ready") return "已就绪：点进任意文本框就能打字，单按 Shift 切换中英文。";
+  if (status.state === "loading") return status.total > 0 ? `正在下载引擎和词库… ${Math.floor((status.loaded / status.total) * 100)}%` : "正在加载引擎…";
+  return WEB_IME_ERRORS[status.code] ?? "引擎出错了，再选一次方案可以重新启动。";
+};
+
+/**
+ * 顶栏的「网页输入法」按钮：选一个方案，本站每一页的文本框都改用浏览器里运行的水杉引擎（@msime/web-engine）打字；选「关闭」交还给系统输入法。
+ *
+ * 只在有键盘和精确指针的设备上显示（`any-pointer-fine`）：手机的软键盘不发出引擎认得的按键，在那里打开它只会白下载一遍词库。开着时按钮带强调色的圈，加载中圈会闪，出错时换成警示色。
+ */
+function WebImeMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
+  const { t } = useLocale();
+  const { scheme, status, choose } = useWebIme();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const close = useCallback(
+    (restoreFocus: boolean) => {
+      setOpen(false);
+      if (restoreFocus) buttonRef.current?.focus();
+    },
+    [setOpen]
+  );
+  useDismiss(rootRef, isOpen, close);
+
+  useEffect(() => {
+    if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitemradio"][aria-checked="true"]')?.focus();
+  }, [isOpen]);
+
+  const label = t(scheme ? `网页输入法：${WEB_IME_LABELS[scheme]}` : "网页输入法");
+  const state = status?.state;
+
+  return (
+    <div className="relative hidden any-pointer-fine:block" ref={rootRef}>
+      <button
+        ref={buttonRef}
+        className={cx(
+          roundControl,
+          "inline-flex w-9",
+          isOpen && "bg-panel-2",
+          scheme && (state === "error" ? "text-warn shadow-[inset_0_0_0_2px_var(--color-warn)]" : "text-accent-ink shadow-ring-accent"),
+          state === "loading" && "animate-pulse"
+        )}
+        type="button"
+        title={label}
+        aria-label={label}
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
+        aria-controls={isOpen ? "web-ime-options" : undefined}
+        aria-busy={state === "loading" || undefined}
+        onClick={() => setOpen(!isOpen)}
+      >
+        <KeyboardIcon />
+      </button>
+
+      {isOpen && (
+        <div
+          id="web-ime-options"
+          role="menu"
+          aria-label={t("网页输入法")}
+          onKeyDown={onMenuKeyDown}
+          className="absolute top-11 right-0 z-40 w-[300px] rounded-menu bg-panel p-2 shadow-card max-sm:fixed max-sm:inset-x-3 max-sm:top-[62px] max-sm:w-auto"
+        >
+          <OptionGroup label="网页输入法" columns="grid-cols-5">
+            <OptionButton checked={!scheme} onSelect={() => choose(null)}>
+              {t("关闭")}
+            </OptionButton>
+            {WEB_IME_SCHEMES.map((choice) => (
+              <OptionButton key={choice} checked={scheme === choice} onSelect={() => choose(choice)}>
+                {t(WEB_IME_LABELS[choice])}
+              </OptionButton>
+            ))}
+          </OptionGroup>
+          <p className={cx("m-0 px-1.5 pt-2.5 pb-1 text-xs leading-[1.7]", state === "error" ? "text-warn" : "text-muted")} aria-live="polite">
+            {t(webImeStatusText(scheme ? status : null))}
+          </p>
         </div>
       )}
     </div>
@@ -688,11 +778,12 @@ function Shell({ children }: { children?: ReactNode }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [paletteIsOpen, setPaletteIsOpen] = useState(false);
   const [accountIsOpen, setAccountIsOpen] = useState(false);
+  const [webImeIsOpen, setWebImeIsOpen] = useState(false);
   const closeMenu = useCallback(() => {
     setMenuIsOpen(false);
   }, []);
 
-  useHeaderBehaviour(menuIsOpen || paletteIsOpen || accountIsOpen);
+  useHeaderBehaviour(menuIsOpen || paletteIsOpen || accountIsOpen || webImeIsOpen);
   useMenuFocus(menuIsOpen, closeMenu);
 
   useEffect(() => {
@@ -724,6 +815,7 @@ function Shell({ children }: { children?: ReactNode }) {
 
           <div className="ml-auto flex flex-none items-center gap-1.5">
             <CodeButton />
+            <WebImeMenu isOpen={webImeIsOpen} setOpen={setWebImeIsOpen} />
             <PaletteMenu isOpen={paletteIsOpen} setOpen={setPaletteIsOpen} />
             <AccountMenu isOpen={accountIsOpen} setOpen={setAccountIsOpen} />
             {/* The bar's one accent action, kept on every width (the menu panel no longer lists 下载). */}

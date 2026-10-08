@@ -5,8 +5,8 @@
   "type": "module",
   "packageManager": "pnpm@10.15.0",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build && vite build --ssr src/entry-static.tsx --outDir dist-ssr && node --experimental-strip-types scripts/build-seo.mjs && node scripts/csp-hashes.mjs dist && node --experimental-strip-types --test scripts/seo-output.test.mjs",
+    "dev": "node scripts/copy-web-engine.mjs && vite",
+    "build": "node scripts/copy-web-engine.mjs && tsc && vite build && vite build --ssr src/entry-static.tsx --outDir dist-ssr && node --experimental-strip-types scripts/build-seo.mjs && node scripts/csp-hashes.mjs dist && node --experimental-strip-types --test scripts/seo-output.test.mjs",
     "preview": "vite preview",
     "lint": "biome lint .",
     "test": "node --test scripts/generate-update.test.mjs scripts/generate-community.test.mjs scripts/manifest-changed.test.mjs scripts/site-metadata.test.mjs scripts/generate-platforms.test.mjs scripts/csp-hashes.test.mjs && node --experimental-strip-types --test scripts/feedback.test.mjs scripts/words.test.mjs scripts/live-community.test.mjs scripts/module-recovery.test.mjs scripts/releases.test.mjs scripts/app-stats.test.mjs scripts/download-mirrors.test.mjs scripts/download-events.test.mjs scripts/notices.test.mjs scripts/community-skins.test.mjs scripts/data-adapters.test.mjs scripts/site-session.test.mjs scripts/account-data.test.mjs scripts/community-catalog.test.mjs scripts/official-packs.test.mjs",
@@ -29,6 +29,7 @@
     "vite": "^8.3.1"
   },
   "dependencies": {
+    "@msime/web-engine": "^0.3.1",
     "@tanstack/react-query": "^5.104.0",
     "@tanstack/react-router": "^1.170.40",
     "markdown-it": "^15.0.2",
