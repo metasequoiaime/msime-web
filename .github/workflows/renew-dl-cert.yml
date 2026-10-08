@@ -139,9 +139,11 @@ jobs:
           rm -f "$RUNNER_TEMP/cname.xml"
           # 以 OSS 记录的绑定为准再核对一次：证书指纹必须是这一轮签的那张。
           want=$(openssl x509 -in "$RUNNER_TEMP/fullchain.pem" -noout -fingerprint -sha1 | cut -d= -f2)
+          # ossutil 在 XML 后面另起一行打印「1.53(s) elapsed」，只取到最后一个「>」为止。
           bound=$(ossutil api list-cname --bucket "$BUCKET" --region "${REGION#oss-}" | python3 -c '
           import sys, xml.etree.ElementTree as ET
-          for cname in ET.fromstring(sys.stdin.read()).iter("Cname"):
+          text = sys.stdin.read()
+          for cname in ET.fromstring(text[:text.rindex(">") + 1]).iter("Cname"):
               if cname.findtext("Domain") == sys.argv[1]:
                   print(cname.findtext("Certificate/Fingerprint") or "")' "$DL_DOMAIN")
           if [ "$bound" != "$want" ]; then

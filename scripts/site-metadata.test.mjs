@@ -119,12 +119,12 @@ test('deferred community validation still rejects unsafe URLs and invalid metric
 });
 
 
-test('desktop release data stays valid without an iOS artifact', async (t) => {
+test('release data stays valid without an iOS artifact', async (t) => {
   const manifest = JSON.parse(read('public/platforms.json'));
   assert.equal(manifest.platforms.ios, undefined);
   t.mock.method(globalThis, 'fetch', async () => Response.json(manifest));
   const result = await fetchPlatforms();
-  assert.deepEqual(Object.keys(result.platforms).sort(), ['linux', 'macos', 'windows']);
+  assert.deepEqual(Object.keys(result.platforms).sort(), ['android', 'linux', 'macos', 'windows']);
 });
 
 test('a broken preview drops only the preview, never the stable release beside it', async (t) => {

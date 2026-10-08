@@ -15,6 +15,8 @@ const SOURCES = {
   macos: 'metasequoiaime/msime',
   // Linux 也已并入主仓库；旧的 MSIME-Linux 只保留历史发布，当前正式版从这里读取。
   linux: 'metasequoiaime/msime',
+  // Android 的主入口仍是蒲公英测试版，这里取 android-v 发布里的 APK，下载页在蒲公英旁边给出 GitHub 和国内镜像两个直接下载。
+  android: 'metasequoiaime/msime',
 };
 
 /** 校验和、构建溯源清单和自动更新用的载荷都不该出现在「下载」按钮上。 */
@@ -63,6 +65,11 @@ const RULES = {
     [/^msime-macos-\d+\.\d+\.\d+-x86_64\.dmg$/i, 'Intel · dmg', 'x86_64'],
     [/-macos-universal[\w-]*\.pkg$/i, '安装包 · pkg', 'Universal'],
     [/-macos-universal[\w-]*\.zip$/i, '压缩包 · zip', 'Universal'],
+  ],
+  // release-android.yml 按版本表各打一个 APK：full 叫 msime-android.apk，其余是 msime-android-<id>.apk，版本与 Linux 相同。都是 arm64-v8a 单 ABI（build-apk.sh 的默认值，按需资源包的瘦包也只能是 arm64）。
+  android: [
+    [/^msime-android\.apk$/i, '完整版 · apk', 'arm64'],
+    ...LINUX_EDITIONS.map(([id, name]) => [new RegExp(`^msime-android-${id}\\.apk$`, 'i'), `${name} · apk`, 'arm64']),
   ],
   linux: [
     ...LINUX_PACKAGES.map(([suffix, label, arch]) => [linuxPackage(LINUX_FULL, suffix), label, arch]),

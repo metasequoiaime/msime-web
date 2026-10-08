@@ -264,3 +264,29 @@ test('a DMG name says nothing about its signature', () => {
   assert.equal(signingState('macos', [{ name: 'msime-macos-0.50.0-arm64.dmg' }]), null);
   assert.equal(signingState('macos', [{ name: 'MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg' }]), true);
 });
+
+test('android releases offer the full APK first and each edition after it, checksums excluded', () => {
+  const names = [
+    'msime-android-wubi.apk',
+    'msime-android.apk',
+    'msime-android.apk.sha256',
+    'msime-android-pinyin.apk',
+    'msime-android-unknown.apk',
+  ];
+  const assets = names.map(name => asset(name, {
+    browser_download_url: `https://github.com/metasequoiaime/msime/releases/download/android-v0.3.1/${name}`,
+  }));
+  const chosen = selectRelease('android', [{
+    tag_name: 'android-v0.3.1', draft: false, prerelease: false,
+    published_at: '2026-10-08T08:23:22Z',
+    html_url: 'https://github.com/metasequoiaime/msime/releases/tag/android-v0.3.1',
+    assets,
+  }]);
+  assert.equal(chosen.version, '0.3.1');
+  assert.deepEqual(chosen.downloads.map(d => `${d.name} ${d.label} ${d.arch}`), [
+    'msime-android.apk 完整版 · apk arm64',
+    'msime-android-pinyin.apk 水杉拼音 · apk arm64',
+    'msime-android-wubi.apk 水杉五笔 · apk arm64',
+  ]);
+  assert.equal(chosen.signed, null, 'APK signing is not inferred from the file name');
+});

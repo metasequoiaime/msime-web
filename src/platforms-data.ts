@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { staticSnapshot } from "./data/source.ts";
-import { DESKTOP_PLATFORMS, type DesktopPlatform } from "./platform.ts";
+import { RELEASE_PLATFORMS, type ReleasePlatform } from "./platform.ts";
 
 const PROJECT_RELEASES = "https://github.com/metasequoiaime/";
 
@@ -40,11 +40,11 @@ const releaseSchema = z.object({
   downloads: z.array(downloadSchema).min(1),
 });
 
-/** 由 scripts/generate-platforms.mjs 生成：三个平台各自的正式版，另附比它更新的预览版（没有就是 null）。 */
+/** 由 scripts/generate-platforms.mjs 生成：Windows、macOS、Linux 与 Android 各自的正式版，另附比它更新的预览版（没有就是 null）。 */
 export const platformsSchema = z.object({
   generatedAt: z.string(),
   platforms: z.record(
-    z.enum(DESKTOP_PLATFORMS),
+    z.enum(RELEASE_PLATFORMS),
     releaseSchema.extend({
       prerelease: z.boolean().catch(false),
       // 预览版坏了只是预览版缺席，不拖垮正式版。
@@ -80,6 +80,6 @@ export const fetchPlatforms = () => manifestSource.load();
 
 export type PlatformsManifest = z.infer<typeof platformsSchema>;
 export type Platforms = PlatformsManifest["platforms"];
-export type PlatformRelease = NonNullable<Platforms[DesktopPlatform]>;
+export type PlatformRelease = NonNullable<Platforms[ReleasePlatform]>;
 export type PreviewRelease = NonNullable<PlatformRelease["preview"]>;
 export type Dictionary = NonNullable<z.infer<typeof platformsSchema>["dictionary"]>;
