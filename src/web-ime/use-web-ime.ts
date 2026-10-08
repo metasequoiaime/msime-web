@@ -18,7 +18,7 @@ export const WEB_IME_LABELS: Record<WebImeScheme, string> = {
   quanpin: "全拼",
   xiaohe: "小鹤",
   ziranma: "自然码",
-  shoudao: "手到",
+  shoudao: "首道",
   microsoft: "微软",
   wubi86: "五笔",
 };
@@ -28,7 +28,7 @@ const WEB_IME_NAMES: Record<WebImeScheme, string> = {
   quanpin: "全拼",
   xiaohe: "小鹤双拼",
   ziranma: "自然码双拼",
-  shoudao: "手到双拼",
+  shoudao: "首道双拼",
   microsoft: "微软双拼",
   wubi86: "五笔 86",
 };
