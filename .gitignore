@@ -31,3 +31,6 @@ dist-ssr
 output/
 .playwright-cli/
 .wrangler/
+
+# 构建时由 scripts/copy-web-engine.mjs 从 @msime/web-engine 复制
+public/msime/
