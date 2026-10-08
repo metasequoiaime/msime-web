@@ -1,6 +1,6 @@
 import type { SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
-import type { DesktopPlatform, Platform } from "../platform.ts";
+import type { Platform, ReleasePlatform } from "../platform.ts";
 import { useDownloadMirrorsQuery } from "../data/queries";
 import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, copyText, cx, ExternalIcon, GitHubIcon, Pill, PlatformIcon, QQIcon, useToast } from "../ui";
 import { useLocale } from "../use-locale";
@@ -74,12 +74,12 @@ const TILE_NAME = "text-sm leading-snug font-semibold [overflow-wrap:break-word]
 const TILE_STATUS = "text-[12.5px] leading-snug font-medium text-accent-ink tabular-nums [overflow-wrap:anywhere] sm:text-sm";
 
 /** A click on the OSS copy is counted as a cn-mirror download (shared/download-events.ts); GitHub downloads are counted by the backend. */
-const reportMirror = (platform: DesktopPlatform, version: string, entry: PlatformRelease["downloads"][number]) => () => {
+const reportMirror = (platform: ReleasePlatform, version: string, entry: PlatformRelease["downloads"][number]) => () => {
   reportMirrorDownload({ platform, version, artifact: entry.name });
 };
 
 /** The OSS copy of the selected package, beside the GitHub button. Left out when the manifest carries no mirror. */
-function MirrorAction({ platform, version, entry, className }: { platform: DesktopPlatform; version: string; entry: PlatformRelease["downloads"][number]; className: string }) {
+function MirrorAction({ platform, version, entry, className }: { platform: ReleasePlatform; version: string; entry: PlatformRelease["downloads"][number]; className: string }) {
   const { t } = useLocale();
   if (!entry.mirrorUrl) return null;
   return (
@@ -91,7 +91,7 @@ function MirrorAction({ platform, version, entry, className }: { platform: Deskt
 }
 
 /* 主推那个之外的包，按架构分组收进折叠区。正式版和预览版各用一份。有国内镜像的包在大小前面多一个「国内镜像」链接。 */
-function MorePackages({ platform, version, downloads }: { platform: DesktopPlatform; version: string; downloads: PlatformRelease["downloads"] }) {
+function MorePackages({ platform, version, downloads }: { platform: ReleasePlatform; version: string; downloads: PlatformRelease["downloads"] }) {
   const { t } = useLocale();
   return (
     <details className="group mt-4 rounded-group bg-panel-2 px-4 [&[open]]:pb-3">
@@ -132,7 +132,7 @@ function MorePackages({ platform, version, downloads }: { platform: DesktopPlatf
  *
  * 上游每次合并都会自动发一个 Pre-release，却只把人工挑过的那个标成正式版。只展示正式版，想试最新改动的人得自己去 GitHub 翻；只展示预览版，又等于把没挑过的构建推给所有人。所以两个都给，正式版占主按钮，预览版在下面明确标出来。
  */
-function PreviewPanel({ platform, preview }: { platform: DesktopPlatform; preview: PreviewRelease }) {
+function PreviewPanel({ platform, preview }: { platform: ReleasePlatform; preview: PreviewRelease }) {
   const { t } = useLocale();
   const [first] = preview.downloads;
 
@@ -251,13 +251,27 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
   }
 
   if (entry.distribution === "pgyer") {
+    const apk = entry.release?.downloads[0];
     return (
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
-        <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer">
-          {t("通过蒲公英安装 Android 版")}
-          <ExternalIcon />
-        </a>
-        {hint}
+      <div>
+        <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-3">
+          <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer">
+            {t("通过蒲公英安装 Android 版")}
+            <ExternalIcon />
+          </a>
+          {/* android-v 发布里的 APK：和蒲公英是同一个应用，给装不了蒲公英、或者要特定版本（五笔、日语……）的人直接下载。 */}
+          {entry.release && apk && (
+            <>
+              <a className={MIRROR_ACTION} href={apk.url} rel="noreferrer" aria-label={t(`从 GitHub 下载 Android 版 v${entry.release.version}`)}>
+                <GitHubIcon size={18} />
+                {t("GitHub 下载")}
+              </a>
+              <MirrorAction platform="android" version={entry.release.version} entry={apk} className={MIRROR_ACTION} />
+            </>
+          )}
+          {hint}
+        </div>
+        {entry.release && entry.release.downloads.length > 1 && <MorePackages platform="android" version={entry.release.version} downloads={entry.release.downloads.slice(1)} />}
       </div>
     );
   }
@@ -319,14 +333,14 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           {t(primary ? "GitHub 下载" : "GitHub 发布页")}
           {!primary && <ExternalIcon />}
         </a>
-        {primary && release && <MirrorAction platform={entry.id as DesktopPlatform} version={release.version} entry={primary} className={MIRROR_ACTION} />}
+        {primary && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={primary} className={MIRROR_ACTION} />}
         {entry.id === "windows" && <WindowsMirrors release={release} />}
         {release ? hint : <p className="m-0 text-sm leading-[1.8] text-muted">{t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")}</p>}
       </div>
 
-      {release && release.downloads.length > 1 && <MorePackages platform={entry.id as DesktopPlatform} version={release.version} downloads={release.downloads.slice(1)} />}
+      {release && release.downloads.length > 1 && <MorePackages platform={entry.id as ReleasePlatform} version={release.version} downloads={release.downloads.slice(1)} />}
 
-      {release?.preview && <PreviewPanel platform={entry.id as DesktopPlatform} preview={release.preview} />}
+      {release?.preview && <PreviewPanel platform={entry.id as ReleasePlatform} preview={release.preview} />}
     </div>
   );
 }

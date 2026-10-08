@@ -3,6 +3,10 @@ import { PLATFORM_NAMES, SITE_PLATFORMS, type SitePlatform } from "./data/platfo
 export const DESKTOP_PLATFORMS = ["windows", "macos", "linux"] as const;
 export type DesktopPlatform = (typeof DESKTOP_PLATFORMS)[number];
 
+/** Platforms whose packages come from GitHub releases through `public/platforms.json`: the three desktops plus Android's APKs, offered beside its Pgyer test build. */
+export const RELEASE_PLATFORMS = [...DESKTOP_PLATFORMS, "android"] as const;
+export type ReleasePlatform = (typeof RELEASE_PLATFORMS)[number];
+
 /** Every platform the download page offers, in the site's display order (Windows, macOS, Linux, Android, iOS, HarmonyOS, Web). These are also the accepted values of the download page's `?platform=` parameter. */
 export const PLATFORMS = SITE_PLATFORMS;
 

@@ -139,12 +139,12 @@ test('releases and app-stats queries use their own keys and same-origin Function
   await assert.rejects(run(releasesQuery()), 'a release linking outside the organisation is rejected in the browser too');
 });
 
-test('the seven-platform catalogue joins desktop releases and keeps mobile and web details static', () => {
+test('the seven-platform catalogue joins desktop and Android releases and keeps the rest static', () => {
   const entries = sitePlatforms(platforms.platforms);
   assert.deepEqual(entries.map(entry => entry.id), [...SITE_PLATFORMS]);
   assert.deepEqual(entries.map(entry => entry.id), ['windows', 'macos', 'linux', 'android', 'ios', 'harmony', 'web']);
   for (const entry of entries) {
-    if (['windows', 'macos', 'linux'].includes(entry.id)) assert.equal(entry.release?.version, platforms.platforms[entry.id].version);
+    if (['windows', 'macos', 'linux', 'android'].includes(entry.id)) assert.equal(entry.release?.version, platforms.platforms[entry.id].version);
     else assert.equal(entry.release, null);
     assert.ok(entry.href.startsWith('https://github.com/metasequoiaime/') || entry.href === IOS_TESTFLIGHT_URL || entry.href === ANDROID_PGYER_URL || entry.href === 'https://www.npmjs.com/package/@msime/web-engine');
   }

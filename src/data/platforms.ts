@@ -123,7 +123,8 @@ export type SitePlatformEntry = PlatformInfo & {
 export function sitePlatforms(platforms?: Partial<Platforms>): SitePlatformEntry[] {
   return SITE_PLATFORMS.map(id => {
     const info = PLATFORM_CATALOG[id];
-    const release = info.distribution === "release" && (id === "windows" || id === "macos" || id === "linux") ? (platforms?.[id] ?? null) : null;
+    // Android 的主入口是蒲公英，但 android-v 发布里的 APK 也在清单里，下载页把它们放在蒲公英旁边。
+    const release = id === "windows" || id === "macos" || id === "linux" || id === "android" ? (platforms?.[id] ?? null) : null;
     return { ...info, release };
   });
 }
