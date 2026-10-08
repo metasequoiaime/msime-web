@@ -263,15 +263,16 @@ const WEB_IME_ERRORS: Record<string, string> = {
   memory: "内存不足，引擎没能启动。关掉一些标签页后再选一次方案重试。",
 };
 
-const webImeStatusText = (status: WebImeStatus | null) => {
-  if (!status) return "在本站任意文本框里直接用水杉打字。引擎在你的浏览器里运行，打的字不会发到任何服务器；首次启用要下载十几 MB 的引擎和词库，之后由浏览器缓存。";
+const webImeStatusText = (on: boolean, status: WebImeStatus | null) => {
+  if (!on) return "已关闭，本站的文本框交还给系统输入法。选一个方案就能在本站任意文本框里用水杉打字。";
+  if (!status) return "本站的文本框默认用水杉打字，引擎在你的浏览器里运行，打的字不会发到任何服务器。第一次点进文本框时下载十几 MB 的引擎和词库，之后由浏览器缓存。";
   if (status.state === "ready") return "已就绪：点进任意文本框就能打字，单按 Shift 切换中英文。";
   if (status.state === "loading") return status.total > 0 ? `正在下载引擎和词库… ${Math.floor((status.loaded / status.total) * 100)}%` : "正在加载引擎…";
   return WEB_IME_ERRORS[status.code] ?? "引擎出错了，再选一次方案可以重新启动。";
 };
 
 /**
- * 顶栏的「网页输入法」按钮：选一个方案，本站每一页的文本框都改用浏览器里运行的水杉引擎（@msime/web-engine）打字；选「关闭」交还给系统输入法。
+ * 顶栏的「网页输入法」按钮：本站每一页的文本框默认用浏览器里运行的水杉引擎（@msime/web-engine）打字，这里换方案；选「关闭」交还给系统输入法。
  *
  * 只在有键盘和精确指针的设备上显示（`any-pointer-fine`）：手机的软键盘不发出引擎认得的按键，在那里打开它只会白下载一遍词库。开着时按钮带强调色的圈，加载中圈会闪，出错时换成警示色。
  */
@@ -338,7 +339,7 @@ function WebImeMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: bool
             ))}
           </OptionGroup>
           <p className={cx("m-0 px-1.5 pt-2.5 pb-1 text-xs leading-[1.7]", state === "error" ? "text-warn" : "text-muted")} aria-live="polite">
-            {t(webImeStatusText(scheme ? status : null))}
+            {t(webImeStatusText(Boolean(scheme), status))}
           </p>
         </div>
       )}
