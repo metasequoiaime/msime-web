@@ -82,10 +82,10 @@ export function startWebIme(initialScheme: WebImeScheme, initialDark: boolean, o
       });
     }
     if (stopped || !engine) return;
-    onStatus({ state: "ready" });
-    // 引擎加载期间点进的文本框，就绪后直接接上，不用再点一次。
+    // 引擎加载期间点进的文本框，就绪后直接接上，不用再点一次。先接上再报告就绪：页面收到就绪就重放加载期间接住的键，那时必须已经有人在听。
     const active = document.activeElement;
     if (isImeField(active)) attach(active);
+    onStatus({ state: "ready" });
   };
 
   const sync = () => {

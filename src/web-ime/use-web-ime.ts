@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTheme } from "../theme";
+import { useToast } from "../ui";
+import { useLocale } from "../use-locale";
 import type { WebImeController, WebImeScheme, WebImeStatus } from "./engine";
+import { createKeyBuffer } from "./key-buffer";
 
 export type { WebImeScheme, WebImeStatus };
 
@@ -44,13 +47,29 @@ const store = (scheme: WebImeScheme | null) => {
  */
 export function useWebIme() {
   const { isLight } = useTheme();
+  const { t } = useLocale();
+  const { show } = useToast();
   const [scheme, setScheme] = useState<WebImeScheme | null>(null);
-  const [status, setStatus] = useState<WebImeStatus | null>(null);
+  const [status, setStatusState] = useState<WebImeStatus | null>(null);
   // 每次在菜单里选方案加一：加载失败后再选同一个方案就是重试，方案没变也要让下面的 effect 重跑。
   const [attempt, setAttempt] = useState(0);
   const controller = useRef<WebImeController | null>(null);
   const dark = useRef(!isLight);
   dark.current = !isLight;
+  const notice = useRef("");
+  notice.current = t("水杉输入法还在加载，刚打的字会在就绪后接着输入");
+  // 加载期间接住打进文本框的键（见 key-buffer.ts）；第一次接住时提示一下，免得以为键盘没反应。
+  const [buffer] = useState(() => createKeyBuffer(() => show(notice.current)));
+
+  const setStatus = useCallback(
+    (next: WebImeStatus | null) => {
+      setStatusState(next);
+      if (next?.state === "loading") buffer.start();
+      else if (next?.state === "ready") buffer.replay();
+      else buffer.flush();
+    },
+    [buffer]
+  );
 
   // 静态预渲染的页面里没有 localStorage，接管后再读，免得水合时两边不一致。没有精确指针的设备（手机、平板）上顶栏不显示这个开关，软键盘也不发出引擎认得的按键，记着的选择在那里不生效。
   useEffect(() => setScheme(window.matchMedia(FINE_POINTER).matches ? readStored() : null), []);
@@ -75,14 +94,14 @@ export function useWebIme() {
     return () => {
       cancelled = true;
     };
-  }, [scheme, attempt]);
+  }, [scheme, attempt, setStatus]);
 
   useEffect(() => {
     if (scheme) return;
     controller.current?.stop();
     controller.current = null;
     setStatus(null);
-  }, [scheme]);
+  }, [scheme, setStatus]);
 
   useEffect(() => {
     controller.current?.setDark(!isLight);
@@ -92,8 +111,9 @@ export function useWebIme() {
     () => () => {
       controller.current?.stop();
       controller.current = null;
+      buffer.flush();
     },
-    []
+    [buffer]
   );
 
   /** Picking a scheme (again, after an error) loads the engine right away; null turns the IME off and frees the engine. */
