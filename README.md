@@ -57,10 +57,10 @@ GitHub Release 在国内下载很慢，所以 `sync-downloads.yml` 每一轮都�
 
 仓库变量 `DOWNLOAD_MIRROR_BASE_URL` 是总开关：不设置时整条链路不运行，页面和以前一样。启用前先准备好下面这些：
 
-1. OSS Bucket：地域选「中国香港」（`oss-cn-hongkong`），不需要 ICP 备案。允许匿名读取 `releases/*`：可以把读写权限设为公共读，也可以保持私有、再加一条只放行匿名 `oss:GetObject` 的 Bucket Policy。建议加一条生命周期规则，清理 90 天前的 `releases/` 对象；当前版本被清掉后，下一轮同步会重新上传。
+1. OSS Bucket：地域选「中国香港」（`oss-cn-hongkong`），不需要 ICP 备案；现用的是 `metasequoiaime`。允许匿名读取 `releases/*`：可以把读写权限设为公共读，也可以保持私有、再加一条只放行匿名 `oss:GetObject` 的 Bucket Policy。建议加一条生命周期规则，清理 90 天前的 `releases/` 对象；当前版本被清掉后，下一轮同步会重新上传。
 2. 域名（建议配置）：在 OSS「域名管理」里绑定 `dl.msime.app` 并配置 HTTPS 证书，然后在 Cloudflare DNS 添加 CNAME 指向 `<bucket>.oss-cn-hongkong.aliyuncs.com`，代理状态设为「仅 DNS」（灰云）。不绑定域名时，可以直接使用 `https://<bucket>.oss-cn-hongkong.aliyuncs.com`。
 3. RAM 的 OIDC 身份提供商：Issuer 填 `https://token.actions.githubusercontent.com`，客户端 ID 填 `sts.aliyuncs.com`。
-4. RAM 角色：信任上面的 OIDC 提供商，条件限定 `oidc:sub` = `repo:metasequoiaime/msime-web:ref:refs/heads/main`、`oidc:aud` = `sts.aliyuncs.com`；最大会话时间不少于 3600 秒。权限策略只授予 `oss:PutObject`、`oss:AbortMultipartUpload`、`oss:ListParts`，资源为 `acs:oss:*:*:<bucket>/releases/*`。仓库里不存放长期 AccessKey。
+4. RAM 角色：信任上面的 OIDC 提供商，条件限定 `oidc:sub` = `repo:metasequoiaime@324869696/msime-web@1187844001:ref:refs/heads/main`、`oidc:aud` = `sts.aliyuncs.com`。本仓库开启了 GitHub 的不可变 subject（`gh api repos/metasequoiaime/msime-web/actions/oidc/customization/sub` 可以查到），token 里的 `sub` 带组织和仓库的数字 ID，写成 `repo:metasequoiaime/msime-web:…` 的条件永远匹配不上，换取凭据会报 `AuthenticationFail.NoPermission`；最大会话时间不少于 3600 秒。权限策略只授予 `oss:PutObject`、`oss:AbortMultipartUpload`、`oss:ListParts`，资源为 `acs:oss:*:*:<bucket>/releases/*`。仓库里不存放长期 AccessKey。
 5. 仓库变量（Settings → Secrets and variables → Actions → Variables）：`ALIYUN_OSS_REGION`=`oss-cn-hongkong`、`ALIYUN_OSS_BUCKET`、`ALIYUN_OSS_ROLE_ARN`、`ALIYUN_OIDC_PROVIDER_ARN`，最后设置 `DOWNLOAD_MIRROR_BASE_URL`（如 `https://dl.msime.app`）。
 
 第一轮会把所有安装包从 GitHub 搬到 OSS，耗时较长；之后每轮只对公网地址发 HEAD 请求，有新版本时才上传。
