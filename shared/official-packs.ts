@@ -20,6 +20,8 @@ const OWNER = "metasequoiaime";
 export const PLUGINS_REPO = "msime-plugins";
 export const DICTIONARY_REPO = "msime-dictionary";
 const BRANCH = "main";
+/** The China download mirror (Aliyun OSS, README「国内镜像」): `<prefix><GitHub URL>`, fetched from GitHub once and kept. Only immutable addresses go through it: release assets, and raw files pinned to a commit. */
+export const DOWNLOAD_MIRROR = "https://dl.msime.app/gh/";
 /** The release scripts/build-release.sh uploads every pack's zip to. */
 const PLUGINS_RELEASE = "packs";
 
@@ -50,20 +52,29 @@ async function githubApi(path: string, { token, request = fetch }: GitHubAccess,
   return request(`https://api.github.com/repos/${OWNER}/${path}`, { headers: apiHeaders(token), signal });
 }
 
-/** The repository's tree on `main`. A truncated tree would silently drop packs, so it is refused. */
-async function loadTree(repo: string, access: GitHubAccess, signal: AbortSignal): Promise<Tree> {
-  const response = await githubApi(`${repo}/git/trees/${BRANCH}?recursive=1`, access, signal);
+/** The commit `main` points at, so the tree and every raw link of one sweep name the same immutable snapshot. */
+async function loadCommit(repo: string, { token, request = fetch }: GitHubAccess, signal: AbortSignal): Promise<string> {
+  const response = await request(`https://api.github.com/repos/${OWNER}/${repo}/commits/${BRANCH}`, { headers: { ...apiHeaders(token), Accept: "application/vnd.github.sha" }, signal });
+  if (!response.ok) throw new Error(`GitHub commit unavailable: HTTP ${response.status} (${repo})`);
+  const sha = (await response.text()).trim();
+  if (!/^[0-9a-f]{40}$/.test(sha)) throw new Error(`GitHub commit unreadable (${repo})`);
+  return sha;
+}
+
+/** The repository's tree at `ref`. A truncated tree would silently drop packs, so it is refused. */
+async function loadTree(repo: string, access: GitHubAccess, signal: AbortSignal, ref: string = BRANCH): Promise<Tree> {
+  const response = await githubApi(`${repo}/git/trees/${ref}?recursive=1`, access, signal);
   if (!response.ok) throw new Error(`GitHub tree unavailable: HTTP ${response.status} (${repo})`);
   const tree = treeSchema.parse(await response.json());
   if (tree.truncated) throw new Error(`GitHub tree truncated (${repo})`);
   return tree.tree;
 }
 
-export const rawUrl = (repo: string, path: string) => `https://raw.githubusercontent.com/${OWNER}/${repo}/${BRANCH}/${path.split("/").map(encodeURIComponent).join("/")}`;
+export const rawUrl = (repo: string, path: string, ref: string = BRANCH) => `https://raw.githubusercontent.com/${OWNER}/${repo}/${ref}/${path.split("/").map(encodeURIComponent).join("/")}`;
 const sourceUrl = (repo: string, path: string) => `https://github.com/${OWNER}/${repo}/tree/${BRANCH}/${path.split("/").map(encodeURIComponent).join("/")}`;
 
-async function loadRaw(repo: string, path: string, { request = fetch }: GitHubAccess, signal: AbortSignal): Promise<string> {
-  const response = await request(rawUrl(repo, path), { headers: { "User-Agent": "MSIME-Web-packs" }, signal });
+async function loadRaw(repo: string, path: string, { request = fetch }: GitHubAccess, signal: AbortSignal, ref: string = BRANCH): Promise<string> {
+  const response = await request(rawUrl(repo, path, ref), { headers: { "User-Agent": "MSIME-Web-packs" }, signal });
   if (!response.ok) throw new Error(`Raw file unavailable: HTTP ${response.status} (${repo}/${path})`);
   return response.text();
 }
@@ -125,7 +136,7 @@ export async function loadOfficialPlugins(access: GitHubAccess = {}): Promise<Of
       license: manifest.license ?? "",
       ...(manifest.kind === "sound" && (manifest.mode === "keys" || manifest.mode === "sequence") ? { mode: manifest.mode } : {}),
       ...(manifest.kind === "command_table" ? { commands: manifest.commands?.length ?? 0 } : {}),
-      ...(asset ? { size: asset.size, download: asset.browser_download_url } : {}),
+      ...(asset ? { size: asset.size, download: asset.browser_download_url, mirror: DOWNLOAD_MIRROR + asset.browser_download_url } : {}),
       source: sourceUrl(PLUGINS_REPO, `packs/${directory}`),
     });
     if (parsed.success) items.push(parsed.data);
@@ -164,7 +175,9 @@ export const countEntries = (text: string) => text.split(/\r?\n/).filter(line =>
 
 export async function loadOfficialDictionaries(access: GitHubAccess = {}): Promise<OfficialDictionaries> {
   const signal = AbortSignal.timeout(20_000);
-  const tree = await loadTree(DICTIONARY_REPO, access, signal);
+  // Visitors download these files, so the links are pinned to the commit the sweep read: a link to `main` could serve a newer file than the size and count shown, and only a pinned address can go through the mirror, which keeps what it fetched.
+  const commit = await loadCommit(DICTIONARY_REPO, access, signal);
+  const tree = await loadTree(DICTIONARY_REPO, access, signal, commit);
   const items: OfficialDictionary[] = [];
   for (const directory of packDirectories(tree)) {
     const prefix = `packs/${directory}/`;
@@ -173,11 +186,12 @@ export async function loadOfficialDictionaries(access: GitHubAccess = {}): Promi
     const lists = blobs.filter(entry => entry.path.endsWith(".txt"));
     if (lists.length === 0) continue;
     const [about, files] = await Promise.all([
-      readme ? loadRaw(DICTIONARY_REPO, readme.path, access, signal).then(readPackReadme) : Promise.resolve({ name: "", description: "" }),
+      readme ? loadRaw(DICTIONARY_REPO, readme.path, access, signal, commit).then(readPackReadme) : Promise.resolve({ name: "", description: "" }),
       Promise.all(lists.map(async (entry): Promise<DictionaryFile> => {
         const size = entry.size ?? 0;
-        const entries = size <= MAX_COUNTED_BYTES ? countEntries(await loadRaw(DICTIONARY_REPO, entry.path, access, signal)) : undefined;
-        return { name: entry.path.slice(prefix.length), size, ...(entries === undefined ? {} : { entries }), url: rawUrl(DICTIONARY_REPO, entry.path) };
+        const entries = size <= MAX_COUNTED_BYTES ? countEntries(await loadRaw(DICTIONARY_REPO, entry.path, access, signal, commit)) : undefined;
+        const url = rawUrl(DICTIONARY_REPO, entry.path, commit);
+        return { name: entry.path.slice(prefix.length), size, ...(entries === undefined ? {} : { entries }), url, mirror: DOWNLOAD_MIRROR + url };
       })),
     ]);
     const parsed = officialDictionarySchema.safeParse({ id: directory, name: about.name || directory, description: about.description, license: DICTIONARY_PACK_LICENSE, files, source: sourceUrl(DICTIONARY_REPO, `packs/${directory}`) });

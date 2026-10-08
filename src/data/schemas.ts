@@ -332,6 +332,12 @@ const rawProjectUrl = z
   .url()
   .refine(value => value.startsWith("https://raw.githubusercontent.com/metasequoiaime/"), { message: "地址必须指向本项目仓库中的文件" });
 
+/** The same file through the China download mirror (shared/official-packs.ts `DOWNLOAD_MIRROR`): the mirror prefix followed by the GitHub address. */
+const mirrorUrl = z
+  .string()
+  .url()
+  .refine(value => value.startsWith("https://dl.msime.app/gh/https://"), { message: "镜像地址必须是 dl.msime.app 上的 GitHub 文件" });
+
 /** A pack from the `packs/` directory of msime-plugins, read from its plugin.toml (shared/official-packs.ts). `download` is the pack's .zip on the repository's `packs` release, absent while that release has no zip for this id and version. */
 export const officialPluginSchema = z.object({
   id: z.string().min(1),
@@ -348,6 +354,8 @@ export const officialPluginSchema = z.object({
   /** Bytes of the .zip. */
   size: count.optional(),
   download: projectUrl.optional(),
+  /** `download` through the China mirror. */
+  mirror: mirrorUrl.optional(),
   source: projectUrl,
 });
 export type OfficialPlugin = z.infer<typeof officialPluginSchema>;
@@ -361,6 +369,8 @@ export const dictionaryFileSchema = z.object({
   size: count,
   entries: count.optional(),
   url: rawProjectUrl,
+  /** `url` through the China mirror. */
+  mirror: mirrorUrl.optional(),
 });
 export type DictionaryFile = z.infer<typeof dictionaryFileSchema>;
 

@@ -112,6 +112,12 @@ function OfficialPluginCard({ pack }: { pack: OfficialPlugin }) {
               {t("下载 .zip")}
             </AnchorButton>
           )}
+          {pack.mirror && (
+            <AnchorButton variant="secondary" size="sm" href={pack.mirror} target="_self" aria-label={t(`从国内镜像下载 ${pack.name} 的 .zip`)}>
+              <DownloadIcon size={15} />
+              {t("国内镜像")}
+            </AnchorButton>
+          )}
           <SourceLink href={pack.source} label={t(`在 GitHub 查看 ${pack.name} 的源文件`)}>{t("源文件")}</SourceLink>
         </div>
       }
@@ -175,7 +181,14 @@ function FileRow({ file }: { file: DictionaryFile }) {
       <a className="font-mono text-[13px] [overflow-wrap:anywhere]" href={file.url} target="_blank" rel="noreferrer" aria-label={t(`打开 ${file.name}`)}>
         {file.name}
       </a>
-      <span className="text-[12.5px] text-muted tabular-nums">{facts}</span>
+      <span className="flex items-baseline gap-3 text-[12.5px] text-muted tabular-nums">
+        {file.mirror && (
+          <a className="font-medium" href={file.mirror} target="_blank" rel="noreferrer" aria-label={t(`从国内镜像打开 ${file.name}`)}>
+            {t("国内镜像")}
+          </a>
+        )}
+        {facts}
+      </span>
     </li>
   );
 }
