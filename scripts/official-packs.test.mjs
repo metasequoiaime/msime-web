@@ -26,6 +26,9 @@ const PLUGIN_TOMLS = {
   malformed: 'kind = "sound"\nid = "malformed\nname = "未闭合的字符串"\n',
 };
 
+const DICTIONARY_COMMIT = '0123456789abcdef0123456789abcdef01234567';
+const RAW_DICTIONARY = `https://raw.githubusercontent.com/metasequoiaime/msime-dictionary/${DICTIONARY_COMMIT}`;
+
 /** GitHub as the sweep sees it: the tree, the `packs` release and raw files. */
 function github({ release = true, tomls = PLUGIN_TOMLS, calls = [] } = {}) {
   return async (url, init) => {
@@ -40,11 +43,14 @@ function github({ release = true, tomls = PLUGIN_TOMLS, calls = [] } = {}) {
     }
     const raw = /^https:\/\/raw\.githubusercontent\.com\/metasequoiaime\/msime-plugins\/main\/packs\/([^/]+)\/plugin\.toml$/.exec(url);
     if (raw && raw[1] in tomls) return new Response(tomls[raw[1]]);
-    if (url === 'https://api.github.com/repos/metasequoiaime/msime-dictionary/git/trees/main?recursive=1') {
+    if (url === 'https://api.github.com/repos/metasequoiaime/msime-dictionary/commits/main') {
+      return init?.headers?.Accept === 'application/vnd.github.sha' ? new Response(`${DICTIONARY_COMMIT}\n`) : new Response(null, { status: 415 });
+    }
+    if (url === `https://api.github.com/repos/metasequoiaime/msime-dictionary/git/trees/${DICTIONARY_COMMIT}?recursive=1`) {
       return Response.json({ tree: [{ path: 'packs', type: 'tree' }, { path: 'packs/unreal_houdini', type: 'tree' }, { path: 'packs/unreal_houdini/README.md', type: 'blob', size: 100 }, { path: 'packs/unreal_houdini/quanpin.txt', type: 'blob', size: 40 }, { path: 'packs/unreal_houdini/english.txt', type: 'blob', size: 3 * 1024 * 1024 }, { path: 'packs/unreal_houdini/notes/x.txt', type: 'blob', size: 1 }, { path: 'packs/readme-only', type: 'tree' }, { path: 'packs/readme-only/README.md', type: 'blob', size: 1 }, { path: 'cn/BaseDictIceV1.txt', type: 'blob', size: 99 }] });
     }
-    if (url === 'https://raw.githubusercontent.com/metasequoiaime/msime-dictionary/main/packs/unreal_houdini/README.md') return new Response('# Unreal Engine 与 Houdini 专业词库\n\n面向 [Unreal Engine](https://example.com) 和 `Houdini`\n的可选词库。\n\n## 导入\n\n别的段落\n');
-    if (url === 'https://raw.githubusercontent.com/metasequoiaime/msime-dictionary/main/packs/unreal_houdini/quanpin.txt') return new Response('# 注释\n虚幻编辑器\txu\'huan\t10000\n\n内容浏览器\tnei\'rong\t10000\r\n');
+    if (url === `${RAW_DICTIONARY}/packs/unreal_houdini/README.md`) return new Response('# Unreal Engine 与 Houdini 专业词库\n\n面向 [Unreal Engine](https://example.com) 和 `Houdini`\n的可选词库。\n\n## 导入\n\n别的段落\n');
+    if (url === `${RAW_DICTIONARY}/packs/unreal_houdini/quanpin.txt`) return new Response('# 注释\n虚幻编辑器\txu\'huan\t10000\n\n内容浏览器\tnei\'rong\t10000\r\n');
     return new Response(null, { status: 404 });
   };
 }
@@ -88,7 +94,7 @@ test('official plugins carry their release zip when its id and version match, so
   const { items, stale } = await loadOfficialPlugins({ token: 'ghs_test', request: github({ calls }) });
   assert.equal(stale, false);
   assert.deepEqual(items.map(item => item.id), ['fur-elise', 'kaomoji', 'neon'], 'sound, command table, effect; the broken and malformed manifests are skipped');
-  assert.deepEqual(items[1], { id: 'kaomoji', kind: 'command_table', name: '颜文字', description: '常用颜文字：/kx 开心', author: '水杉输入法', version: '1.0.0', license: 'CC0-1.0', commands: 2, size: 874, download: 'https://github.com/metasequoiaime/msime-plugins/releases/download/packs/kaomoji-1.0.0.zip', source: 'https://github.com/metasequoiaime/msime-plugins/tree/main/packs/kaomoji' });
+  assert.deepEqual(items[1], { id: 'kaomoji', kind: 'command_table', name: '颜文字', description: '常用颜文字：/kx 开心', author: '水杉输入法', version: '1.0.0', license: 'CC0-1.0', commands: 2, size: 874, download: 'https://github.com/metasequoiaime/msime-plugins/releases/download/packs/kaomoji-1.0.0.zip', mirror: 'https://dl.msime.app/gh/https://github.com/metasequoiaime/msime-plugins/releases/download/packs/kaomoji-1.0.0.zip', source: 'https://github.com/metasequoiaime/msime-plugins/tree/main/packs/kaomoji' });
   assert.equal(items[0].mode, 'sequence');
   assert.equal(items[0].download, undefined, 'a zip of another version is not offered');
   assert.equal(items[2].download, undefined, 'a zip outside the project release is not offered');
@@ -119,12 +125,15 @@ test('official dictionaries list each pack\'s word lists with their entry counts
     description: '面向 Unreal Engine 和 Houdini 的可选词库。',
     license: 'GPL-3.0',
     files: [
-      { name: 'quanpin.txt', size: 40, entries: 2, url: 'https://raw.githubusercontent.com/metasequoiaime/msime-dictionary/main/packs/unreal_houdini/quanpin.txt' },
-      { name: 'english.txt', size: 3 * 1024 * 1024, url: 'https://raw.githubusercontent.com/metasequoiaime/msime-dictionary/main/packs/unreal_houdini/english.txt' },
+      { name: 'quanpin.txt', size: 40, entries: 2, url: `${RAW_DICTIONARY}/packs/unreal_houdini/quanpin.txt`, mirror: `https://dl.msime.app/gh/${RAW_DICTIONARY}/packs/unreal_houdini/quanpin.txt` },
+      { name: 'english.txt', size: 3 * 1024 * 1024, url: `${RAW_DICTIONARY}/packs/unreal_houdini/english.txt`, mirror: `https://dl.msime.app/gh/${RAW_DICTIONARY}/packs/unreal_houdini/english.txt` },
     ],
     source: 'https://github.com/metasequoiaime/msime-dictionary/tree/main/packs/unreal_houdini',
   });
   assert.ok(officialDictionariesSchema.parse({ items, stale: false }));
+  // 链接钉在这一轮读到的提交上，镜像才能缓存它；指向 main 的地址会让镜像留住旧文件。
+  assert.ok(items[0].files.every(file => file.url.includes(`/${DICTIONARY_COMMIT}/`) && file.mirror === `https://dl.msime.app/gh/${file.url}`));
+  assert.equal(officialDictionariesSchema.safeParse({ items: [{ ...items[0], files: [{ ...items[0].files[0], mirror: 'https://evil.example/x' }] }], stale: false }).success, false, 'a mirror link elsewhere is refused');
 });
 
 test('GET /api/plugins/official and /api/dictionaries/official sweep GitHub once an hour and answer 503 when it never answered', async t => {

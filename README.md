@@ -65,6 +65,8 @@ GitHub Release 在国内下载很慢，所以 `sync-downloads.yml` 每一轮都�
 
 第一轮会把所有安装包从 GitHub 搬到 OSS，耗时较长；之后每轮只对公网地址发 HEAD 请求，有新版本时才上传。
 
+同一个 Bucket 还以 `gh/<GitHub 原地址>` 的形式镜像其他下载：`https://dl.msime.app/gh/` 加原地址即可，没缓存过的文件由 OSS 的镜像回源规则从 GitHub 取一次后留存（`gh/` 下 90 天后清理，用到时再回源）。回源和匿名读取只开放给这些前缀：`metasequoiaime` 的 msime-dictionary、chinese-ime-lm、msime、MSIME-Windows、msime-plugins 与 `k2-fsa/sherpa-onnx` 的 `releases/download/`，以及 `raw.githubusercontent.com` 上的 `metasequoiaime/msime-engine/` 和 `metasequoiaime/msime-dictionary/`。缓存不会重新校验，所以只有内容不再变化的地址才能走镜像：发布资产，以及钉在提交上的 raw 文件；客户端的资源包、语音模型和应用更新都按锁文件或校验值核对，镜像出错时退回原地址。官方词库包的链接因此钉在每一轮读到的提交上（`shared/official-packs.ts`）。
+
 ## Bug 反馈 or 功能建议
 
 提交 issue 到本项目的 [issue](https://github.com/metasequoiaime/MSIME-Web/issues) 区。
