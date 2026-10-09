@@ -1,3 +1,4 @@
+import { FriendLinks } from "./about/friend-links";
 import { LakeIllustration } from "./about/lake-illustration";
 import { LocaleLink } from "./locale-link";
 import { PageHero } from "./page-content";
@@ -14,7 +15,7 @@ const eyebrowClass = "m-0 text-[13.5px] tracking-[0.16em] text-accent-ink";
 const chipClass =
   "inline-flex min-h-8 items-center rounded-full bg-panel px-[13px] py-[5px] text-sm text-ink no-underline transition-colors duration-150 hover:text-accent-ink [overflow-wrap:anywhere]";
 
-/** 关于页（design-home §11）：名字的由来配湖畔插画，项目理念，许可、签名与社区三张卡片。 */
+/** 关于页（design-home §11）：名字的由来配湖畔插画，项目理念，许可、签名与社区三张卡片，最后是友情链接。 */
 export function AboutPage() {
   const { t } = useLocale();
   const toast = useToast();
@@ -117,6 +118,8 @@ export function AboutPage() {
               </p>
             </Card>
           </div>
+
+          <FriendLinks eyebrowClass={eyebrowClass} />
         </Container>
       </main>
     </>
