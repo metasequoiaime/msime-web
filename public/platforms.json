@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T13:50:40.014Z",
+  "generatedAt": "2026-10-09T15:22:28.294Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -15,8 +15,7 @@
           "name": "MetasequoiaIME_Setup_v0.9.5.exe",
           "url": "https://github.com/metasequoiaime/MSIME-Windows/releases/download/v0.9.5/MetasequoiaIME_Setup_v0.9.5.exe",
           "size": 110650144,
-          "sha256": "6641a5bbec4cb374bbc54eb1dff1b3aead6a2e6a0e4190eab994223ee296aea5",
-          "mirrorUrl": "https://dl.msime.app/releases/MSIME-Windows/v0.9.5/MetasequoiaIME_Setup_v0.9.5.exe"
+          "sha256": "6641a5bbec4cb374bbc54eb1dff1b3aead6a2e6a0e4190eab994223ee296aea5"
         }
       ],
       "preview": null
@@ -35,8 +34,7 @@
           "name": "msime-macos-0.52.0-universal.dmg",
           "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.52.0/msime-macos-0.52.0-universal.dmg",
           "size": 181491568,
-          "sha256": "eba2346d3447fb72a81bfa06386b5ca93225ba41b47727070ccd5a30418fcc17",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.52.0/msime-macos-0.52.0-universal.dmg"
+          "sha256": "eba2346d3447fb72a81bfa06386b5ca93225ba41b47727070ccd5a30418fcc17"
         }
       ],
       "preview": null
@@ -55,8 +53,7 @@
           "name": "msime-linux_0.11.0_amd64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux_0.11.0_amd64.deb",
           "size": 32799076,
-          "sha256": "912b1f7baf6ded840c5890f4d1d1b283e1e4583294990b0438f3220fc2fd876b",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux_0.11.0_amd64.deb"
+          "sha256": "912b1f7baf6ded840c5890f4d1d1b283e1e4583294990b0438f3220fc2fd876b"
         },
         {
           "label": "Debian / Ubuntu · deb",
@@ -64,8 +61,7 @@
           "name": "msime-linux_0.11.0_arm64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux_0.11.0_arm64.deb",
           "size": 32913680,
-          "sha256": "b9df7de0d6165c3097f4bf9519de988c29b619bccb10a108f7628416d62fa0be",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux_0.11.0_arm64.deb"
+          "sha256": "b9df7de0d6165c3097f4bf9519de988c29b619bccb10a108f7628416d62fa0be"
         },
         {
           "label": "Fedora / openSUSE · rpm",
@@ -73,8 +69,7 @@
           "name": "msime-linux-0.11.0-1.x86_64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-0.11.0-1.x86_64.rpm",
           "size": 32991997,
-          "sha256": "6be0d86e81072faca59cf9dd261ce752916f6498624eafe4499833bd6c065b41",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-0.11.0-1.x86_64.rpm"
+          "sha256": "6be0d86e81072faca59cf9dd261ce752916f6498624eafe4499833bd6c065b41"
         },
         {
           "label": "Fedora / openSUSE · rpm",
@@ -82,8 +77,7 @@
           "name": "msime-linux-0.11.0-1.aarch64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-0.11.0-1.aarch64.rpm",
           "size": 30510961,
-          "sha256": "dd01e60b4b9498604071b3aa18a7149dc39be89e22c6ed61047c79a25fd24b96",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-0.11.0-1.aarch64.rpm"
+          "sha256": "dd01e60b4b9498604071b3aa18a7149dc39be89e22c6ed61047c79a25fd24b96"
         },
         {
           "label": "通用压缩包 · tar.gz",
@@ -91,8 +85,7 @@
           "name": "msime-linux-0.11.0-linux-x86_64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-0.11.0-linux-x86_64.tar.gz",
           "size": 57931160,
-          "sha256": "18fffff4f75ddfadd0ac523cb0f2c5ae327b540c549674dda43ae034973b1365",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-0.11.0-linux-x86_64.tar.gz"
+          "sha256": "18fffff4f75ddfadd0ac523cb0f2c5ae327b540c549674dda43ae034973b1365"
         },
         {
           "label": "通用压缩包 · tar.gz",
@@ -100,8 +93,7 @@
           "name": "msime-linux-0.11.0-linux-aarch64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-0.11.0-linux-aarch64.tar.gz",
           "size": 58486954,
-          "sha256": "02ab315bdca8c40ea310c0dedb358919059cdb91f9e96ed60556d152cb30c19b",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-0.11.0-linux-aarch64.tar.gz"
+          "sha256": "02ab315bdca8c40ea310c0dedb358919059cdb91f9e96ed60556d152cb30c19b"
         },
         {
           "label": "水杉拼音 · Debian / Ubuntu · deb",
@@ -109,8 +101,7 @@
           "name": "msime-linux-pinyin_0.11.0_amd64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-pinyin_0.11.0_amd64.deb",
           "size": 27529104,
-          "sha256": "ae55d860e6b46e7c0f0ff776622183f3305dd7e1a1d195761ce51814df6840fb",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-pinyin_0.11.0_amd64.deb"
+          "sha256": "ae55d860e6b46e7c0f0ff776622183f3305dd7e1a1d195761ce51814df6840fb"
         },
         {
           "label": "水杉拼音 · Debian / Ubuntu · deb",
@@ -118,8 +109,7 @@
           "name": "msime-linux-pinyin_0.11.0_arm64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-pinyin_0.11.0_arm64.deb",
           "size": 27651892,
-          "sha256": "2d82991bc6698cdc6cc3f414b69ea0f988c0dfbf6e64f89497a71342eed20838",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-pinyin_0.11.0_arm64.deb"
+          "sha256": "2d82991bc6698cdc6cc3f414b69ea0f988c0dfbf6e64f89497a71342eed20838"
         },
         {
           "label": "水杉拼音 · Fedora / openSUSE · rpm",
@@ -127,8 +117,7 @@
           "name": "msime-linux-pinyin-0.11.0-1.x86_64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-pinyin-0.11.0-1.x86_64.rpm",
           "size": 27738333,
-          "sha256": "e69557ad818367f96fa1d2c2cd8d89df2a090169490c84f91d53f41097d6389d",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-pinyin-0.11.0-1.x86_64.rpm"
+          "sha256": "e69557ad818367f96fa1d2c2cd8d89df2a090169490c84f91d53f41097d6389d"
         },
         {
           "label": "水杉拼音 · Fedora / openSUSE · rpm",
@@ -136,8 +125,7 @@
           "name": "msime-linux-pinyin-0.11.0-1.aarch64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-pinyin-0.11.0-1.aarch64.rpm",
           "size": 25252569,
-          "sha256": "b1225b0698c5fa80a195f64bdfb1807bc8a60d72e0bcf71292a4a1f176820597",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-pinyin-0.11.0-1.aarch64.rpm"
+          "sha256": "b1225b0698c5fa80a195f64bdfb1807bc8a60d72e0bcf71292a4a1f176820597"
         },
         {
           "label": "水杉拼音 · 通用压缩包 · tar.gz",
@@ -145,8 +133,7 @@
           "name": "msime-linux-pinyin-0.11.0-linux-x86_64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-pinyin-0.11.0-linux-x86_64.tar.gz",
           "size": 48496442,
-          "sha256": "509f186e341d19849c10dc0ff704a192f6b0b34cda03eea0d8d9b8f02753ab31",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-pinyin-0.11.0-linux-x86_64.tar.gz"
+          "sha256": "509f186e341d19849c10dc0ff704a192f6b0b34cda03eea0d8d9b8f02753ab31"
         },
         {
           "label": "水杉拼音 · 通用压缩包 · tar.gz",
@@ -154,8 +141,7 @@
           "name": "msime-linux-pinyin-0.11.0-linux-aarch64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-pinyin-0.11.0-linux-aarch64.tar.gz",
           "size": 49045884,
-          "sha256": "30d2d39590a896f94bc366ac79dbb7885760f51cf80564c6b4226a9bcf663b07",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-pinyin-0.11.0-linux-aarch64.tar.gz"
+          "sha256": "30d2d39590a896f94bc366ac79dbb7885760f51cf80564c6b4226a9bcf663b07"
         },
         {
           "label": "水杉五笔 · Debian / Ubuntu · deb",
@@ -163,8 +149,7 @@
           "name": "msime-linux-wubi_0.11.0_amd64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-wubi_0.11.0_amd64.deb",
           "size": 27532336,
-          "sha256": "31ddf77b1ee21ac0750d4230c94686d6396b5747f79c5a4b747fcf548eaaa0d8",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-wubi_0.11.0_amd64.deb"
+          "sha256": "31ddf77b1ee21ac0750d4230c94686d6396b5747f79c5a4b747fcf548eaaa0d8"
         },
         {
           "label": "水杉五笔 · Debian / Ubuntu · deb",
@@ -172,8 +157,7 @@
           "name": "msime-linux-wubi_0.11.0_arm64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-wubi_0.11.0_arm64.deb",
           "size": 27646312,
-          "sha256": "f366a19d7e6f1dbc3bccbdd7be4330b94932b9f789e66bb2e5a640bc46f911a7",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-wubi_0.11.0_arm64.deb"
+          "sha256": "f366a19d7e6f1dbc3bccbdd7be4330b94932b9f789e66bb2e5a640bc46f911a7"
         },
         {
           "label": "水杉五笔 · Fedora / openSUSE · rpm",
@@ -181,8 +165,7 @@
           "name": "msime-linux-wubi-0.11.0-1.x86_64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-wubi-0.11.0-1.x86_64.rpm",
           "size": 27746165,
-          "sha256": "35c732a260a33f9643962634cd4b106f14577bf5250a57f4822787eca3a3b632",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-wubi-0.11.0-1.x86_64.rpm"
+          "sha256": "35c732a260a33f9643962634cd4b106f14577bf5250a57f4822787eca3a3b632"
         },
         {
           "label": "水杉五笔 · Fedora / openSUSE · rpm",
@@ -190,8 +173,7 @@
           "name": "msime-linux-wubi-0.11.0-1.aarch64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-wubi-0.11.0-1.aarch64.rpm",
           "size": 25252817,
-          "sha256": "8ab46501cdb8790babbb82e4f2dc8700094f917916e673e616513d1739e38291",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-wubi-0.11.0-1.aarch64.rpm"
+          "sha256": "8ab46501cdb8790babbb82e4f2dc8700094f917916e673e616513d1739e38291"
         },
         {
           "label": "水杉五笔 · 通用压缩包 · tar.gz",
@@ -199,8 +181,7 @@
           "name": "msime-linux-wubi-0.11.0-linux-x86_64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-wubi-0.11.0-linux-x86_64.tar.gz",
           "size": 48495308,
-          "sha256": "8c767895dab29c48fe7f92b88a9c84f35ca4275aec5a9ffc9dc1d9c9ebb9409f",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-wubi-0.11.0-linux-x86_64.tar.gz"
+          "sha256": "8c767895dab29c48fe7f92b88a9c84f35ca4275aec5a9ffc9dc1d9c9ebb9409f"
         },
         {
           "label": "水杉五笔 · 通用压缩包 · tar.gz",
@@ -208,8 +189,7 @@
           "name": "msime-linux-wubi-0.11.0-linux-aarch64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-wubi-0.11.0-linux-aarch64.tar.gz",
           "size": 49044611,
-          "sha256": "12f44bb8cfca09fce5513d28cd7ef932bb4dc529914e92c351a6403eda2f27ca",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-wubi-0.11.0-linux-aarch64.tar.gz"
+          "sha256": "12f44bb8cfca09fce5513d28cd7ef932bb4dc529914e92c351a6403eda2f27ca"
         },
         {
           "label": "水杉日语 · Debian / Ubuntu · deb",
@@ -217,8 +197,7 @@
           "name": "msime-linux-japanese_0.11.0_amd64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-japanese_0.11.0_amd64.deb",
           "size": 24802976,
-          "sha256": "753aebc84bc21d5eae219b0b397a4c6367d1f0185f26bd7050103fcb8d1e7265",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-japanese_0.11.0_amd64.deb"
+          "sha256": "753aebc84bc21d5eae219b0b397a4c6367d1f0185f26bd7050103fcb8d1e7265"
         },
         {
           "label": "水杉日语 · Debian / Ubuntu · deb",
@@ -226,8 +205,7 @@
           "name": "msime-linux-japanese_0.11.0_arm64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-japanese_0.11.0_arm64.deb",
           "size": 24933148,
-          "sha256": "454a278191fd559edade4b3cc7cc329221c36b98e1b4c0af036793c0423e7796",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-japanese_0.11.0_arm64.deb"
+          "sha256": "454a278191fd559edade4b3cc7cc329221c36b98e1b4c0af036793c0423e7796"
         },
         {
           "label": "水杉日语 · Fedora / openSUSE · rpm",
@@ -235,8 +213,7 @@
           "name": "msime-linux-japanese-0.11.0-1.x86_64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-japanese-0.11.0-1.x86_64.rpm",
           "size": 25019329,
-          "sha256": "0d58415b03cdd0f5c9f6d684618a72fb03dff8c2a6dff4a08932c4253b16b4b7",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-japanese-0.11.0-1.x86_64.rpm"
+          "sha256": "0d58415b03cdd0f5c9f6d684618a72fb03dff8c2a6dff4a08932c4253b16b4b7"
         },
         {
           "label": "水杉日语 · Fedora / openSUSE · rpm",
@@ -244,8 +221,7 @@
           "name": "msime-linux-japanese-0.11.0-1.aarch64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-japanese-0.11.0-1.aarch64.rpm",
           "size": 22519217,
-          "sha256": "cbef0a6ee024be542d65fc145a5778a280f3f7fdcd00d253b4e88cbfabe1e39a",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-japanese-0.11.0-1.aarch64.rpm"
+          "sha256": "cbef0a6ee024be542d65fc145a5778a280f3f7fdcd00d253b4e88cbfabe1e39a"
         },
         {
           "label": "水杉日语 · 通用压缩包 · tar.gz",
@@ -253,8 +229,7 @@
           "name": "msime-linux-japanese-0.11.0-linux-x86_64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-japanese-0.11.0-linux-x86_64.tar.gz",
           "size": 44056326,
-          "sha256": "c916524340cda06187009cc2a00f53dac42e1d02d56057295981eb930eb1322e",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-japanese-0.11.0-linux-x86_64.tar.gz"
+          "sha256": "c916524340cda06187009cc2a00f53dac42e1d02d56057295981eb930eb1322e"
         },
         {
           "label": "水杉日语 · 通用压缩包 · tar.gz",
@@ -262,8 +237,7 @@
           "name": "msime-linux-japanese-0.11.0-linux-aarch64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-japanese-0.11.0-linux-aarch64.tar.gz",
           "size": 44610207,
-          "sha256": "d0cb70576bc23f42ad1e87cf72956e170b1f6997b20edafb4b689d653c815122",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-japanese-0.11.0-linux-aarch64.tar.gz"
+          "sha256": "d0cb70576bc23f42ad1e87cf72956e170b1f6997b20edafb4b689d653c815122"
         },
         {
           "label": "水杉越南语 · Debian / Ubuntu · deb",
@@ -271,8 +245,7 @@
           "name": "msime-linux-vietnamese_0.11.0_amd64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-vietnamese_0.11.0_amd64.deb",
           "size": 24822292,
-          "sha256": "9b9ab14dcbff2d4aa713686728408ebc47f6629d0eafde678cee51e8b344384b",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-vietnamese_0.11.0_amd64.deb"
+          "sha256": "9b9ab14dcbff2d4aa713686728408ebc47f6629d0eafde678cee51e8b344384b"
         },
         {
           "label": "水杉越南语 · Debian / Ubuntu · deb",
@@ -280,8 +253,7 @@
           "name": "msime-linux-vietnamese_0.11.0_arm64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-vietnamese_0.11.0_arm64.deb",
           "size": 24917600,
-          "sha256": "3a356a2767208d62380d0d703c9a6fdf351e0bb54c6e5c420308bcbadd5d2418",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-vietnamese_0.11.0_arm64.deb"
+          "sha256": "3a356a2767208d62380d0d703c9a6fdf351e0bb54c6e5c420308bcbadd5d2418"
         },
         {
           "label": "水杉越南语 · Fedora / openSUSE · rpm",
@@ -289,8 +261,7 @@
           "name": "msime-linux-vietnamese-0.11.0-1.x86_64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-vietnamese-0.11.0-1.x86_64.rpm",
           "size": 25012485,
-          "sha256": "be818899d30558a4d0b54b8d5e0cfda5b4cddd4ee44b0c0bcb4a1920371c944d",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-vietnamese-0.11.0-1.x86_64.rpm"
+          "sha256": "be818899d30558a4d0b54b8d5e0cfda5b4cddd4ee44b0c0bcb4a1920371c944d"
         },
         {
           "label": "水杉越南语 · Fedora / openSUSE · rpm",
@@ -298,8 +269,7 @@
           "name": "msime-linux-vietnamese-0.11.0-1.aarch64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-vietnamese-0.11.0-1.aarch64.rpm",
           "size": 22515737,
-          "sha256": "bdb1303eaea1ee5fff3c8e80fdfc12f62c1cf6369389d8cfdce11cd4fea28e1a",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-vietnamese-0.11.0-1.aarch64.rpm"
+          "sha256": "bdb1303eaea1ee5fff3c8e80fdfc12f62c1cf6369389d8cfdce11cd4fea28e1a"
         },
         {
           "label": "水杉越南语 · 通用压缩包 · tar.gz",
@@ -307,8 +277,7 @@
           "name": "msime-linux-vietnamese-0.11.0-linux-x86_64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-vietnamese-0.11.0-linux-x86_64.tar.gz",
           "size": 44057314,
-          "sha256": "61c919855a6c779db66919cb7ab1902d0986b170b7d1529696970c8f37148e09",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-vietnamese-0.11.0-linux-x86_64.tar.gz"
+          "sha256": "61c919855a6c779db66919cb7ab1902d0986b170b7d1529696970c8f37148e09"
         },
         {
           "label": "水杉越南语 · 通用压缩包 · tar.gz",
@@ -316,8 +285,7 @@
           "name": "msime-linux-vietnamese-0.11.0-linux-aarch64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-vietnamese-0.11.0-linux-aarch64.tar.gz",
           "size": 44615198,
-          "sha256": "6253034e6300e68fbc26fbc1ef79f47631b6f43d1249ce85d8734810b5abc26f",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-vietnamese-0.11.0-linux-aarch64.tar.gz"
+          "sha256": "6253034e6300e68fbc26fbc1ef79f47631b6f43d1249ce85d8734810b5abc26f"
         },
         {
           "label": "水杉藏文 · Debian / Ubuntu · deb",
@@ -325,8 +293,7 @@
           "name": "msime-linux-tibetan_0.11.0_amd64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-tibetan_0.11.0_amd64.deb",
           "size": 24826248,
-          "sha256": "09e0e2535acee393ac10e7e728a3d9acc9d0ea032281ec2c90fcae44fead5053",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-tibetan_0.11.0_amd64.deb"
+          "sha256": "09e0e2535acee393ac10e7e728a3d9acc9d0ea032281ec2c90fcae44fead5053"
         },
         {
           "label": "水杉藏文 · Debian / Ubuntu · deb",
@@ -334,8 +301,7 @@
           "name": "msime-linux-tibetan_0.11.0_arm64.deb",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-tibetan_0.11.0_arm64.deb",
           "size": 24913768,
-          "sha256": "11ab703214f36c3f8022da103317abbb09f942dae707881b47c5562e4e5a510e",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-tibetan_0.11.0_arm64.deb"
+          "sha256": "11ab703214f36c3f8022da103317abbb09f942dae707881b47c5562e4e5a510e"
         },
         {
           "label": "水杉藏文 · Fedora / openSUSE · rpm",
@@ -343,8 +309,7 @@
           "name": "msime-linux-tibetan-0.11.0-1.x86_64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-tibetan-0.11.0-1.x86_64.rpm",
           "size": 25017513,
-          "sha256": "5d6e81ee6f6c3e623c2fd08ba393445a3cd9d819c45b733c4a97a6baad0093a2",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-tibetan-0.11.0-1.x86_64.rpm"
+          "sha256": "5d6e81ee6f6c3e623c2fd08ba393445a3cd9d819c45b733c4a97a6baad0093a2"
         },
         {
           "label": "水杉藏文 · Fedora / openSUSE · rpm",
@@ -352,8 +317,7 @@
           "name": "msime-linux-tibetan-0.11.0-1.aarch64.rpm",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-tibetan-0.11.0-1.aarch64.rpm",
           "size": 22516589,
-          "sha256": "2681587edbe23cacb0a816cb2e074ce2b2be309c05035108a7d72ca136cb9274",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-tibetan-0.11.0-1.aarch64.rpm"
+          "sha256": "2681587edbe23cacb0a816cb2e074ce2b2be309c05035108a7d72ca136cb9274"
         },
         {
           "label": "水杉藏文 · 通用压缩包 · tar.gz",
@@ -361,8 +325,7 @@
           "name": "msime-linux-tibetan-0.11.0-linux-x86_64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-tibetan-0.11.0-linux-x86_64.tar.gz",
           "size": 44056465,
-          "sha256": "1dd9f00f98944138237e2396502d3bf80c3d0c5db3f57e52098fbe2d8e086419",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-tibetan-0.11.0-linux-x86_64.tar.gz"
+          "sha256": "1dd9f00f98944138237e2396502d3bf80c3d0c5db3f57e52098fbe2d8e086419"
         },
         {
           "label": "水杉藏文 · 通用压缩包 · tar.gz",
@@ -370,8 +333,7 @@
           "name": "msime-linux-tibetan-0.11.0-linux-aarch64.tar.gz",
           "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.11.0/msime-linux-tibetan-0.11.0-linux-aarch64.tar.gz",
           "size": 44613772,
-          "sha256": "9484098f16409f7f17b76a4133762fffcf98b75d2a6f0e98f8a0ce1aab9cf85f",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.11.0/msime-linux-tibetan-0.11.0-linux-aarch64.tar.gz"
+          "sha256": "9484098f16409f7f17b76a4133762fffcf98b75d2a6f0e98f8a0ce1aab9cf85f"
         }
       ],
       "preview": null
@@ -390,8 +352,7 @@
           "name": "msime-android.apk",
           "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.3.1/msime-android.apk",
           "size": 119296257,
-          "sha256": "971289421564cb7f17078179d0375cd6bf316a24636a5b8d61ed095dac5e39bf",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.3.1/msime-android.apk"
+          "sha256": "971289421564cb7f17078179d0375cd6bf316a24636a5b8d61ed095dac5e39bf"
         },
         {
           "label": "水杉拼音 · apk",
@@ -399,8 +360,7 @@
           "name": "msime-android-pinyin.apk",
           "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.3.1/msime-android-pinyin.apk",
           "size": 119296257,
-          "sha256": "3a6f01a188d68ee9fc428993eb903d794bb2cee86551abc8be4ce41cffd6db3f",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.3.1/msime-android-pinyin.apk"
+          "sha256": "3a6f01a188d68ee9fc428993eb903d794bb2cee86551abc8be4ce41cffd6db3f"
         },
         {
           "label": "水杉五笔 · apk",
@@ -408,8 +368,7 @@
           "name": "msime-android-wubi.apk",
           "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.3.1/msime-android-wubi.apk",
           "size": 146465652,
-          "sha256": "3bc30d581430625dbc1a66b61df0f74505bed7d0cfbd5b3827ff3abccf1805c6",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.3.1/msime-android-wubi.apk"
+          "sha256": "3bc30d581430625dbc1a66b61df0f74505bed7d0cfbd5b3827ff3abccf1805c6"
         },
         {
           "label": "水杉日语 · apk",
@@ -417,8 +376,7 @@
           "name": "msime-android-japanese.apk",
           "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.3.1/msime-android-japanese.apk",
           "size": 101155094,
-          "sha256": "a4a49d53881473af0302600c221cafc9edcaa3de3e02bf9ab6a440b56610f2fe",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.3.1/msime-android-japanese.apk"
+          "sha256": "a4a49d53881473af0302600c221cafc9edcaa3de3e02bf9ab6a440b56610f2fe"
         },
         {
           "label": "水杉越南语 · apk",
@@ -426,8 +384,7 @@
           "name": "msime-android-vietnamese.apk",
           "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.3.1/msime-android-vietnamese.apk",
           "size": 81305610,
-          "sha256": "c8bbdc2aac1870f7a335c901960387a0cfe82a886a49c0fae32ff06675de4177",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.3.1/msime-android-vietnamese.apk"
+          "sha256": "c8bbdc2aac1870f7a335c901960387a0cfe82a886a49c0fae32ff06675de4177"
         },
         {
           "label": "水杉藏文 · apk",
@@ -435,8 +392,7 @@
           "name": "msime-android-tibetan.apk",
           "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.3.1/msime-android-tibetan.apk",
           "size": 81305610,
-          "sha256": "62cb124a4628b9aae73addf0d58904b0b4a61bc0c4773b728ebadeabcab07228",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.3.1/msime-android-tibetan.apk"
+          "sha256": "62cb124a4628b9aae73addf0d58904b0b4a61bc0c4773b728ebadeabcab07228"
         }
       ],
       "preview": null
