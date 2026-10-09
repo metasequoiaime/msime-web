@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-09T06:42:07.374Z",
-  "totalStars": 2961,
+  "generatedAt": "2026-10-09T14:21:06.740Z",
+  "totalStars": 3092,
   "repoCount": 15,
   "starHistory": [
     {
@@ -141,15 +141,15 @@
     },
     {
       "month": "2026-08",
-      "stars": 835
+      "stars": 834
     },
     {
       "month": "2026-09",
-      "stars": 1740
+      "stars": 1739
     },
     {
       "month": "2026-10",
-      "stars": 2960
+      "stars": 3091
     }
   ],
   "starSeries": [
@@ -294,15 +294,15 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 790
+          "stars": 789
         },
         {
           "date": "2026-09-30",
-          "stars": 1567
+          "stars": 1566
         },
         {
           "date": "2026-10-09",
-          "stars": 2293
+          "stars": 2383
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-09",
-          "stars": 561
+          "stars": 585
         }
       ]
     },
@@ -376,7 +376,7 @@
         },
         {
           "date": "2026-10-09",
-          "stars": 61
+          "stars": 63
         }
       ]
     },
@@ -429,7 +429,7 @@
         },
         {
           "date": "2026-10-09",
-          "stars": 28
+          "stars": 32
         }
       ]
     },
@@ -582,7 +582,7 @@
         },
         {
           "date": "2026-10-09",
-          "stars": 10
+          "stars": 11
         }
       ]
     },
@@ -619,7 +619,7 @@
         },
         {
           "date": "2026-10-09",
-          "stars": 3
+          "stars": 4
         }
       ]
     },
@@ -716,7 +716,37 @@
         },
         {
           "date": "2026-10-09",
-          "stars": 2
+          "stars": 3
+        }
+      ]
+    },
+    {
+      "repo": "msime-cloud",
+      "points": [
+        {
+          "date": "2026-09-30",
+          "stars": 1
+        },
+        {
+          "date": "2026-10-09",
+          "stars": 3
+        }
+      ]
+    },
+    {
+      "repo": ".github",
+      "points": [
+        {
+          "date": "2026-08-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-09-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-10-09",
+          "stars": 1
         }
       ]
     },
@@ -734,11 +764,91 @@
       ]
     },
     {
-      "repo": "msime-cloud",
+      "repo": "msime-plugins",
       "points": [
         {
           "date": "2026-09-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-10-09",
           "stars": 1
+        }
+      ]
+    },
+    {
+      "repo": "msime-skin-example",
+      "points": [
+        {
+          "date": "2026-08-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-09-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-10-09",
+          "stars": 1
+        }
+      ]
+    },
+    {
+      "repo": "msime-skins",
+      "points": [
+        {
+          "date": "2026-09-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-10-09",
+          "stars": 1
+        }
+      ]
+    },
+    {
+      "repo": "pinyin_cpp",
+      "points": [
+        {
+          "date": "2026-06-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-07-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-08-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-09-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-10-09",
+          "stars": 1
+        }
+      ]
+    },
+    {
+      "repo": "pinyin_python",
+      "points": [
+        {
+          "date": "2026-06-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-07-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-08-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-09-30",
+          "stars": 0
         },
         {
           "date": "2026-10-09",
@@ -747,27 +857,27 @@
       ]
     }
   ],
-  "starDelta30d": 1568,
+  "starDelta30d": 1700,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 17897,
+      "contributions": 18104,
       "repos": 14
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1879,
+      "contributions": 1884,
       "repos": 11
     },
     {
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 114,
+      "contributions": 124,
       "repos": 3
     },
     {
@@ -785,6 +895,13 @@
       "repos": 1
     },
     {
+      "login": "yangkx1024",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
+      "url": "https://github.com/yangkx1024",
+      "contributions": 23,
+      "repos": 1
+    },
+    {
       "login": "ouchihao",
       "avatarUrl": "https://avatars.githubusercontent.com/u/108930485?v=4",
       "url": "https://github.com/ouchihao",
@@ -795,22 +912,15 @@
       "login": "metasequoiaime-dev",
       "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
       "url": "https://github.com/metasequoiaime-dev",
-      "contributions": 20,
+      "contributions": 21,
       "repos": 3
-    },
-    {
-      "login": "yangkx1024",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
-      "url": "https://github.com/yangkx1024",
-      "contributions": 14,
-      "repos": 1
     },
     {
       "login": "luojiyin1987",
       "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
       "url": "https://github.com/luojiyin1987",
-      "contributions": 13,
-      "repos": 2
+      "contributions": 17,
+      "repos": 3
     },
     {
       "login": "PLOKMCHINA",
