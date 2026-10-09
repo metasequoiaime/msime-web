@@ -8,9 +8,12 @@
 
 ### 必备运行环境
 
-Server 与设置程序均为 64 位程序，需要安装最新的 **Microsoft Visual C++ 2015–2022 Redistributable（x64）**，可直接从微软官方地址[下载 `vc_redist.x64.exe`](https://aka.ms/vc14/vc_redist.x64.exe)。
+Server 与设置程序均为 64 位程序，需要安装以下两个运行库：
 
-注意：`vc_redist.x86.exe` 与 x64 是两套独立的运行库，已经装了 x86 也不能代替。若安装后无法切换、Server 反复退出或设置窗口闪退，请优先安装或修复 x64 运行库并重新启动 Windows。更多症状和排查方法见[安装后无法使用或设置窗口闪退](/docs/windows/#安装后无法使用或设置窗口闪退)。
+- 最新的 **Microsoft Visual C++ 2015–2022 Redistributable（x64）**，可直接从微软官方地址[下载 `vc_redist.x64.exe`](https://aka.ms/vc14/vc_redist.x64.exe)。
+- **Microsoft Edge WebView2 Runtime**，从微软官方[下载页](https://developer.microsoft.com/en-us/microsoft-edge/webview2#download)获取；选择 Evergreen Standalone Installer 时请下载 **x64** 版本。
+
+注意：`vc_redist.x86.exe` 与 x64 是两套独立的运行库，已经装了 x86 也不能代替。若安装后无法切换、Server 反复退出或设置窗口闪退，请优先安装或修复 x64 运行库与 WebView2 Runtime，并重新启动 Windows。更多症状和排查方法见[安装后无法使用或设置窗口闪退](/docs/windows/#安装后无法使用或设置窗口闪退)。
 
 ### 安全提示
 
