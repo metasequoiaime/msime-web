@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-09T14:21:06.740Z",
-  "totalStars": 3092,
+  "generatedAt": "2026-10-09T19:45:37.379Z",
+  "totalStars": 3131,
   "repoCount": 15,
   "starHistory": [
     {
@@ -141,15 +141,15 @@
     },
     {
       "month": "2026-08",
-      "stars": 834
+      "stars": 832
     },
     {
       "month": "2026-09",
-      "stars": 1739
+      "stars": 1737
     },
     {
       "month": "2026-10",
-      "stars": 3091
+      "stars": 3131
     }
   ],
   "starSeries": [
@@ -294,15 +294,15 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 789
+          "stars": 787
         },
         {
           "date": "2026-09-30",
-          "stars": 1566
+          "stars": 1564
         },
         {
           "date": "2026-10-09",
-          "stars": 2383
+          "stars": 2415
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-09",
-          "stars": 585
+          "stars": 592
         }
       ]
     },
@@ -429,7 +429,7 @@
         },
         {
           "date": "2026-10-09",
-          "stars": 32
+          "stars": 33
         }
       ]
     },
@@ -857,20 +857,20 @@
       ]
     }
   ],
-  "starDelta30d": 1700,
+  "starDelta30d": 1742,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 18104,
+      "contributions": 18229,
       "repos": 14
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1884,
+      "contributions": 1889,
       "repos": 11
     },
     {
@@ -895,6 +895,13 @@
       "repos": 1
     },
     {
+      "login": "metasequoiaime-dev",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
+      "url": "https://github.com/metasequoiaime-dev",
+      "contributions": 23,
+      "repos": 3
+    },
+    {
       "login": "yangkx1024",
       "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
       "url": "https://github.com/yangkx1024",
@@ -907,13 +914,6 @@
       "url": "https://github.com/ouchihao",
       "contributions": 22,
       "repos": 1
-    },
-    {
-      "login": "metasequoiaime-dev",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
-      "url": "https://github.com/metasequoiaime-dev",
-      "contributions": 21,
-      "repos": 3
     },
     {
       "login": "luojiyin1987",
