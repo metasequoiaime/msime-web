@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-10T12:26:58.046Z",
-  "totalStars": 3240,
+  "generatedAt": "2026-10-10T17:28:10.260Z",
+  "totalStars": 3280,
   "repoCount": 14,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 3240
+      "stars": 3280
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-10",
-          "stars": 2498
+          "stars": 2535
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-10",
-          "stars": 617
+          "stars": 620
         }
       ]
     },
@@ -844,27 +844,27 @@
       ]
     }
   ],
-  "starDelta30d": 1841,
+  "starDelta30d": 1881,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 18593,
+      "contributions": 18699,
       "repos": 13
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1890,
+      "contributions": 1894,
       "repos": 11
     },
     {
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 124,
+      "contributions": 125,
       "repos": 3
     },
     {
@@ -875,18 +875,18 @@
       "repos": 1
     },
     {
+      "login": "metasequoiaime-dev",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
+      "url": "https://github.com/metasequoiaime-dev",
+      "contributions": 26,
+      "repos": 3
+    },
+    {
       "login": "claude",
       "avatarUrl": "https://avatars.githubusercontent.com/u/81847?v=4",
       "url": "https://github.com/claude",
       "contributions": 24,
       "repos": 1
-    },
-    {
-      "login": "metasequoiaime-dev",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
-      "url": "https://github.com/metasequoiaime-dev",
-      "contributions": 24,
-      "repos": 3
     },
     {
       "login": "ouchihao",
