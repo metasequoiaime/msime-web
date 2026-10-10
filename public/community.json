@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-10T00:01:24.136Z",
-  "totalStars": 3137,
-  "repoCount": 15,
+  "generatedAt": "2026-10-10T05:47:45.367Z",
+  "totalStars": 3180,
+  "repoCount": 14,
   "starHistory": [
     {
       "month": "2023-10",
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 3137
+      "stars": 3180
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-10",
-          "stars": 2420
+          "stars": 2448
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-10",
-          "stars": 593
+          "stars": 607
         }
       ]
     },
@@ -429,7 +429,7 @@
         },
         {
           "date": "2026-10-10",
-          "stars": 33
+          "stars": 34
         }
       ]
     },
@@ -587,6 +587,19 @@
       ]
     },
     {
+      "repo": "msime-cloud",
+      "points": [
+        {
+          "date": "2026-09-30",
+          "stars": 1
+        },
+        {
+          "date": "2026-10-10",
+          "stars": 4
+        }
+      ]
+    },
+    {
       "repo": "msime-web",
       "points": [
         {
@@ -721,19 +734,6 @@
       ]
     },
     {
-      "repo": "msime-cloud",
-      "points": [
-        {
-          "date": "2026-09-30",
-          "stars": 1
-        },
-        {
-          "date": "2026-10-10",
-          "stars": 3
-        }
-      ]
-    },
-    {
       "repo": ".github",
       "points": [
         {
@@ -752,19 +752,6 @@
     },
     {
       "repo": "homebrew-tap",
-      "points": [
-        {
-          "date": "2026-09-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-10-10",
-          "stars": 1
-        }
-      ]
-    },
-    {
-      "repo": "msime-plugins",
       "points": [
         {
           "date": "2026-09-30",
@@ -857,14 +844,14 @@
       ]
     }
   ],
-  "starDelta30d": 1738,
+  "starDelta30d": 1781,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 18358,
-      "repos": 14
+      "contributions": 18439,
+      "repos": 13
     },
     {
       "login": "fanlusky",
