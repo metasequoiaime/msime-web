@@ -136,6 +136,17 @@ test('Markdown, contacts and labels follow the template without active user ment
   assert.ok(!issue.body.includes('感谢建议！'));
 });
 
+test('issues state the platform first and label targets that share the multi-platform repo', () => {
+  for (const [target, { label, issueLabel }] of Object.entries(targets)) {
+    const template = templateFor(target);
+    const issue = formatIssue(feedbackSchema.parse(validForm(target)), template);
+    assert.ok(issue.body.startsWith(`### 平台\n\n${label}\n\n### `));
+    assert.deepEqual(issue.labels, issueLabel ? [...template.labels, issueLabel] : template.labels);
+  }
+  const android = templateFor('android');
+  assert.deepEqual(formatIssue(feedbackSchema.parse(validForm('android', android)), { ...android, labels: ['enhancement', 'platform/android'] }).labels, ['enhancement', 'platform/android']);
+});
+
 test('the form title is entered without the template prefix and the issue title gets it back once', () => {
   const template=templateFor();
   assert.equal(formatIssue(feedbackSchema.parse({...form,title:'增加候选窗口字号设置'}),template).title,'[Feat] 增加候选窗口字号设置');
