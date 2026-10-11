@@ -277,7 +277,7 @@ async function main() {
     .map(selectDictionary)
     .find(Boolean) ?? null;
 
-  // 配置了国内镜像时，每个包都带上 OSS 地址；文件由紧接着运行的 mirror-downloads.mjs 上传，上传失败这一轮就不会提 PR。
+  // 配置了国内镜像时，每个包都带上镜像地址；紧接着运行的 mirror-downloads.mjs 通过镜像地址把它读一遍、核对不过的去掉 mirrorUrl。
   const mirrored = attachMirrors(platforms, mirrorBase(process.env.DOWNLOAD_MIRROR_BASE_URL));
   await writeFile(new URL('../public/platforms.json', import.meta.url),
     `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary }, null, 2)}\n`);

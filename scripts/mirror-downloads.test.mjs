@@ -1,9 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { mkdtemp, readdir, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { test } from 'node:test';
 import { attachMirrors, dropMirrors, mirrorBase, mirrorKey, mirroredDownloads, mirrorOne, mirrorUrl } from './mirror-downloads.mjs';
 import { platformsSchema } from '../src/platforms-data.ts';
@@ -23,7 +20,7 @@ test('the mirror base must be a plain https URL and loses its trailing slash', (
   assert.equal(mirrorBase(''), null);
   assert.equal(mirrorBase(undefined), null);
   assert.equal(mirrorBase('https://dl.msime.app/'), BASE);
-  assert.equal(mirrorBase('https://msime-dl.oss-cn-hongkong.aliyuncs.com'), 'https://msime-dl.oss-cn-hongkong.aliyuncs.com');
+  assert.equal(mirrorBase('https://mirror.example.com'), 'https://mirror.example.com');
   assert.throws(() => mirrorBase('http://dl.msime.app'), /plain https URL/);
   assert.throws(() => mirrorBase('https://dl.msime.app/?x=1'), /plain https URL/);
 });
@@ -68,30 +65,23 @@ const BODY = Buffer.from('hello');
 const SHA = createHash('sha256').update(BODY).digest('hex');
 
 /**
- * A fake bucket behind the public mirror URL. `objects` maps a key to the sha256 stored with it; the public URL answers from it the way OSS does, with the stored checksum in `x-oss-meta-sha256`. `publicDenied` makes it answer 403 for everything, as a bucket without public read does.
+ * The public mirror URL as workers/dl/ answers it. `objects` maps a key to the bytes R2 holds; HEAD reports only those, and a GET for a missing key stores `githubBody` first, the way the worker fills from GitHub. `denied` makes it answer 403 for everything.
  */
-function harness({ objects = {}, githubBody = BODY, publicDenied = false, credentials = true } = {}) {
-  const calls = { client: 0, upload: [], fetch: [] };
-  const oss = {
-    async multipartUpload(key, file, options) {
-      calls.upload.push({ key, file, options });
-      objects[key] = options.meta.sha256;
-    },
-  };
-  const client = async () => {
-    calls.client += 1;
-    if (!credentials) throw new Error('ALIBABA_CLOUD_ACCESS_KEY_ID is required to mirror downloads');
-    return oss;
-  };
+function harness({ objects = {}, githubBody = BODY, denied = false } = {}) {
+  const calls = [];
   const request = async (url, init = {}) => {
-    calls.fetch.push({ url, method: init.method ?? 'GET' });
-    if (url.startsWith('https://github.com/')) return new Response(githubBody);
+    const method = init.method ?? 'GET';
+    calls.push({ url, method });
+    if (denied) return new Response(null, { status: 403, headers: { 'content-length': '0' } });
     const key = decodeURIComponent(new URL(url).pathname.slice(1));
-    if (publicDenied) return new Response(null, { status: 403, headers: { 'content-length': '0' } });
-    if (!(key in objects)) return new Response(null, { status: 404, headers: { 'content-length': '0' } });
-    return new Response(null, { status: 200, headers: { 'content-length': String(BODY.length), 'x-oss-meta-sha256': objects[key] } });
+    if (method === 'HEAD') {
+      if (!(key in objects)) return new Response(null, { status: 404, headers: { 'content-length': '0' } });
+      return new Response(null, { status: 200, headers: { 'content-length': String(objects[key].length) } });
+    }
+    objects[key] ??= githubBody;
+    return new Response(objects[key]);
   };
-  return { calls, client, request };
+  return { calls, objects, request };
 }
 
 const entry = (sha256 = SHA) => {
@@ -99,62 +89,39 @@ const entry = (sha256 = SHA) => {
   return mirrored;
 };
 
-async function withWorkdir(run) {
-  const workdir = await mkdtemp(join(tmpdir(), 'mirror-test-'));
-  try {
-    return await run(workdir);
-  } finally {
-    await rm(workdir, { recursive: true, force: true });
-  }
-}
-
-test('a package already served with the same checksum is left alone and needs no credentials', async () => {
-  const { calls, client, request } = harness({ objects: { [entry().key]: SHA }, credentials: false });
-  await withWorkdir(async workdir => assert.equal(await mirrorOne(entry(), { client, request, workdir }), 'present'));
-  assert.equal(calls.client, 0);
-  assert.deepEqual(calls.fetch, [{ url: entry().mirrorUrl, method: 'HEAD' }], 'only the public copy is checked');
+test('a package already in the mirror is checked with HEAD alone', async () => {
+  const { calls, request } = harness({ objects: { [entry().key]: BODY } });
+  assert.equal(await mirrorOne(entry(), { request }), 'present');
+  assert.deepEqual(calls, [{ url: entry().mirrorUrl, method: 'HEAD' }], 'nothing is downloaded');
 });
 
-test('a missing package is copied from GitHub with its checksum and checked at the public URL', async () => {
-  const { calls, client, request } = harness();
-  await withWorkdir(async workdir => {
-    assert.equal(await mirrorOne(entry(), { client, request, workdir }), 'uploaded');
-    assert.deepEqual(await readdir(workdir), [], 'the temporary copy is removed');
-  });
-  assert.equal(calls.upload.length, 1);
-  const [{ key, options }] = calls.upload;
-  assert.equal(key, 'releases/MSIME-Windows/v0.9.5/MetasequoiaIME_Setup_v0.9.5.exe');
-  assert.deepEqual(options.meta, { sha256: SHA });
-  assert.equal(options.headers['Content-Disposition'], 'attachment; filename="MetasequoiaIME_Setup_v0.9.5.exe"');
-  assert.deepEqual(calls.fetch.map(call => call.method), ['HEAD', 'GET', 'HEAD']);
-});
-
-test('a copy whose checksum no longer matches the release is replaced', async () => {
-  const { calls, client, request } = harness({ objects: { [entry().key]: 'b'.repeat(64) } });
-  await withWorkdir(async workdir => assert.equal(await mirrorOne(entry(), { client, request, workdir }), 'uploaded'));
-  assert.equal(calls.upload.length, 1);
+test('a missing package is pulled into the mirror by reading it back in full, then checked again', async () => {
+  const { calls, objects, request } = harness();
+  assert.equal(await mirrorOne(entry(), { request }), 'filled');
+  assert.deepEqual(objects[entry().key], BODY);
+  assert.deepEqual(calls.map(call => call.method), ['HEAD', 'GET', 'HEAD']);
+  assert.ok(calls.every(call => call.url === entry().mirrorUrl), 'GitHub is only ever reached through the mirror');
 });
 
 test('without a checksum in the manifest a copy of the right size counts as mirrored', async () => {
-  const { calls, client, request } = harness({ objects: { [entry().key]: 'c'.repeat(64) } });
-  await withWorkdir(async workdir => assert.equal(await mirrorOne(entry(null), { client, request, workdir }), 'present'));
-  assert.deepEqual(calls.upload, []);
+  const { request } = harness({ githubBody: Buffer.from('hellO') });
+  assert.equal(await mirrorOne(entry(null), { request }), 'filled');
 });
 
-test('a download that does not match the manifest is never uploaded', async () => {
+test('a mirrored copy that does not match the manifest is an error', async () => {
   for (const [name, options, pattern] of [
     ['checksum', { githubBody: Buffer.from('hellO') }, /does not match/],
-    ['size', { githubBody: Buffer.from('hello!') }, /downloaded 6 bytes/],
+    ['size', { githubBody: Buffer.from('hello!') }, /served 6 bytes/],
+    ['stale copy of another size', { objects: { [entry().key]: Buffer.from('hello!') } }, /served 6 bytes/],
   ]) {
-    const { calls, client, request } = harness(options);
-    await withWorkdir(workdir => assert.rejects(mirrorOne(entry(), { client, request, workdir }), pattern, name));
-    assert.deepEqual(calls.upload, [], name);
+    const { request } = harness(options);
+    await assert.rejects(mirrorOne(entry(), { request }), pattern, name);
   }
 });
 
-test('an upload the public cannot download is an error, not a dead link', async () => {
-  const { client, request } = harness({ publicDenied: true });
-  await withWorkdir(workdir => assert.rejects(mirrorOne(entry(), { client, request, workdir }), /answered HTTP 403/));
+test('a mirror the public cannot download is an error, not a dead link', async () => {
+  const { request } = harness({ denied: true });
+  await assert.rejects(mirrorOne(entry(), { request }), /answered HTTP 403/);
 });
 
 test('a package that could not be mirrored loses its mirror and keeps its GitHub download', () => {

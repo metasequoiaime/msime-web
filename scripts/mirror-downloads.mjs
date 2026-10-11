@@ -1,24 +1,19 @@
 import { createHash } from 'node:crypto';
-import { createWriteStream } from 'node:fs';
-import { appendFile, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { Readable, Transform } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
+import { appendFile, readFile, writeFile } from 'node:fs/promises';
 
 /*
- * 国内镜像：把下载页上的每个安装包从 GitHub Release 复制一份到阿里云 OSS（香港），页面在 GitHub 按钮旁边给出镜像地址。
+ * 国内镜像：下载页上的每个安装包在 dl.msime.app（Cloudflare R2 前面的 Worker，workers/dl/）上都有一份，页面在 GitHub 按钮旁边给出镜像地址。
  *
  * GitHub 的 release 下载在国内经常只有几十 KB/s，QQ 群文件、夸克和蓝奏云盘又只有 Windows 安装包、而且要人工上传。这里跟着 sync-downloads 的同一轮走：platforms.json 选出哪些包，就镜像哪些包，不需要任何人手动搬运。
  *
- * 顺序是先上传、后提 PR：generate-platforms.mjs 只负责按固定规则把 mirrorUrl 写进清单，这个脚本把清单里的每个 mirrorUrl 都变成真实可下载的文件，并从公网地址回读核对大小和校验值。核对不过的包从清单里去掉 mirrorUrl，页面上只出现确实能下的镜像。
+ * 镜像里没有的文件由 Worker 在第一次 GET 时从 GitHub 取来存下，所以这里不上传、也不需要任何凭据：对镜像地址发一次 GET 就把文件放了进去，同时从公网地址回读核对大小和校验值。顺序是先预热、后提 PR：generate-platforms.mjs 只负责按固定规则把 mirrorUrl 写进清单，这个脚本把清单里的每个 mirrorUrl 都变成真实可下载的文件，用户点下去不会是那个等 GitHub 的第一次。核对不过的包从清单里去掉 mirrorUrl，页面上只出现确实能下的镜像。
  *
- * 镜像失败不拦发布：同一份清单还带着 Windows 版本号，和客户端检查更新读的 update.json 绑在一起（见 sync-downloads.yml），OSS 出故障时让新版本卡在门外，代价远大于暂时少一个镜像按钮。失败的个数写进 step output，workflow 在提完 PR 之后再让这一轮标红。
+ * 镜像失败不拦发布：同一份清单还带着 Windows 版本号，和客户端检查更新读的 update.json 绑在一起（见 sync-downloads.yml），镜像出故障时让新版本卡在门外，代价远大于暂时少一个镜像按钮。失败的个数写进 step output，workflow 在提完 PR 之后再让这一轮标红。
  */
 
 const GITHUB_DOWNLOAD = /^https:\/\/github\.com\/metasequoiaime\/([\w.-]+)\/releases\/download\/([^/]+)\/([^/]+)$/;
 
-/** OSS 对象名：`releases/<仓库>/<tag>/<文件名>`。tag 和文件名一起才唯一，GitHub 上同名文件可能出现在不同 tag 下。 */
+/** R2 对象名：`releases/<仓库>/<tag>/<文件名>`。tag 和文件名一起才唯一，GitHub 上同名文件可能出现在不同 tag 下。 */
 export function mirrorKey(url) {
   const match = GITHUB_DOWNLOAD.exec(url);
   if (!match) throw new Error(`Not a project release download: ${url}`);
@@ -60,61 +55,38 @@ export function mirroredDownloads(manifest) {
 }
 
 /*
- * 公网地址本身就能回答「已经镜像过了吗」：OSS 把上传时写的 x-oss-meta-sha256 原样带在响应头里。只看公网地址还顺带确认了用户真的下得到 —— bucket 没开公共读、域名没绑好时，上传本身是成功的，但用户点下去是 403。
+ * 公网地址本身就能回答「已经镜像过了吗」：Worker 对 HEAD 只报告 R2 里有什么，不会去 GitHub 取。只看公网地址还顺带确认了用户真的下得到。
  *
- * 清单没有校验值（上游没给 digest）时只核对大小：对象按 tag 和文件名存放，不会被别的版本覆盖。
+ * 已经在镜像里的包只核对大小：对象按 tag 和文件名存放，不会被别的版本覆盖，内容是 Worker 从 GitHub 原样取来的；校验值在第一次预热时整份读回来核对过。
  */
 async function publiclyServed(entry, request) {
   const response = await request(entry.mirrorUrl, { method: 'HEAD', signal: AbortSignal.timeout(60_000) });
   const length = response.headers.get('content-length');
-  const sha256 = response.headers.get('x-oss-meta-sha256');
-  const served = response.ok && Number(length) === entry.size && (!entry.sha256 || sha256 === entry.sha256);
-  return { served, status: `HTTP ${response.status}, ${length} bytes, sha256 ${sha256}` };
+  return { served: response.ok && Number(length) === entry.size, status: `HTTP ${response.status}, ${length} bytes` };
 }
 
-/** 下载到临时文件，边写边算 sha256，大小和校验值都要和清单对上，否则不上传。 */
-async function download(entry, file, request) {
-  const response = await request(entry.url, { redirect: 'follow', signal: AbortSignal.timeout(10 * 60_000) });
-  if (!response.ok || !response.body) throw new Error(`${entry.name}: GitHub download failed: HTTP ${response.status}`);
+/** 从镜像地址整份读一遍：Worker 借这次 GET 从 GitHub 取来存下。边读边算 sha256，大小和校验值都要和清单对上。 */
+async function fetchThroughMirror(entry, request) {
+  const response = await request(entry.mirrorUrl, { signal: AbortSignal.timeout(10 * 60_000) });
+  if (!response.ok || !response.body) throw new Error(`${entry.name}: ${entry.mirrorUrl} answered HTTP ${response.status}`);
   const hash = createHash('sha256');
   let size = 0;
-  const measure = new Transform({
-    transform(chunk, _encoding, callback) {
-      hash.update(chunk);
-      size += chunk.length;
-      callback(null, chunk);
-    },
-  });
-  await pipeline(Readable.fromWeb(response.body), measure, createWriteStream(file));
+  for await (const chunk of response.body) {
+    hash.update(chunk);
+    size += chunk.length;
+  }
   const sha256 = hash.digest('hex');
-  if (size !== entry.size) throw new Error(`${entry.name}: downloaded ${size} bytes, the manifest says ${entry.size}`);
-  if (entry.sha256 && sha256 !== entry.sha256) throw new Error(`${entry.name}: sha256 ${sha256} does not match the manifest's ${entry.sha256}`);
-  return sha256;
+  if (size !== entry.size) throw new Error(`${entry.name}: the mirror served ${size} bytes, the manifest says ${entry.size}`);
+  if (entry.sha256 && sha256 !== entry.sha256) throw new Error(`${entry.name}: the mirror served sha256 ${sha256}, which does not match the manifest's ${entry.sha256}`);
 }
 
-/** 同步一个包，返回 `present` 或 `uploaded`；上传后公网地址仍核对不过时抛错。`client` 是取 OSS 客户端的函数，只有真要上传时才调用：已经镜像过的包用不着凭据。 */
-export async function mirrorOne(entry, { client, request = fetch, workdir }) {
+/** 同步一个包，返回 `present`（镜像里已经有）或 `filled`（这一轮让 Worker 从 GitHub 取来存下）；核对不过时抛错。 */
+export async function mirrorOne(entry, { request = fetch } = {}) {
   if ((await publiclyServed(entry, request)).served) return 'present';
-  const file = join(workdir, entry.name);
-  try {
-    const sha256 = await download(entry, file, request);
-    await (await client()).multipartUpload(entry.key, file, {
-      partSize: 16 * 1024 * 1024,
-      parallel: 4,
-      mime: 'application/octet-stream',
-      meta: { sha256 },
-      headers: {
-        // 对象按 tag 和文件名存放，内容不会再变，CDN 和浏览器都可以一直缓存。
-        'Cache-Control': 'public, max-age=31536000, immutable',
-        'Content-Disposition': `attachment; filename="${entry.name}"`,
-      },
-    });
-  } finally {
-    await rm(file, { force: true });
-  }
+  await fetchThroughMirror(entry, request);
   const check = await publiclyServed(entry, request);
-  if (!check.served) throw new Error(`${entry.name}: uploaded, but ${entry.mirrorUrl} answered ${check.status}; expected ${entry.size} bytes, sha256 ${entry.sha256}`);
-  return 'uploaded';
+  if (!check.served) throw new Error(`${entry.name}: fetched through the mirror, but ${entry.mirrorUrl} answered ${check.status}; expected ${entry.size} bytes`);
+  return 'filled';
 }
 
 /** 去掉没能镜像的包的 mirrorUrl。 */
@@ -135,46 +107,20 @@ export function dropMirrors(manifest, failedKeys) {
   };
 }
 
-async function ossClient() {
-  const { default: OSS } = await import('ali-oss');
-  const env = name => {
-    if (!process.env[name]) throw new Error(`${name} is required to mirror downloads`);
-    return process.env[name];
-  };
-  return new OSS({
-    region: env('ALIYUN_OSS_REGION'),
-    bucket: env('ALIYUN_OSS_BUCKET'),
-    // 由 aliyun/configure-aliyun-credentials-action 用 GitHub OIDC 换来的临时凭据，不存长期密钥。
-    accessKeyId: env('ALIBABA_CLOUD_ACCESS_KEY_ID'),
-    accessKeySecret: env('ALIBABA_CLOUD_ACCESS_KEY_SECRET'),
-    stsToken: env('ALIBABA_CLOUD_SECURITY_TOKEN'),
-    secure: true,
-    timeout: 10 * 60_000,
-  });
-}
-
 async function main() {
   const file = new URL('../public/platforms.json', import.meta.url);
   const manifest = JSON.parse(await readFile(file, 'utf8'));
   const entries = mirroredDownloads(manifest);
-  let pending;
-  // 凭据出问题（OIDC 换不到临时密钥）时，已经镜像过的包照样可用，只有需要上传的包会失败。
-  const client = () => (pending ??= ossClient());
-  const workdir = await mkdtemp(join(tmpdir(), 'msime-mirror-'));
   const failed = [];
-  try {
-    for (const entry of entries) {
-      try {
-        console.log(`${await mirrorOne(entry, { client, workdir })}\t${entry.key}`);
-      } catch (error) {
-        failed.push(entry.key);
-        // fetch 只说 "fetch failed"，DNS、TLS、超时这些真正的原因在 cause 里。
-        const cause = error?.cause ? ` (${error.cause.message ?? error.cause})` : '';
-        console.log(`::error title=Mirror failed::${entry.key}: ${error instanceof Error ? error.message : error}${cause}`);
-      }
+  for (const entry of entries) {
+    try {
+      console.log(`${await mirrorOne(entry)}\t${entry.key}`);
+    } catch (error) {
+      failed.push(entry.key);
+      // fetch 只说 "fetch failed"，DNS、TLS、超时这些真正的原因在 cause 里。
+      const cause = error?.cause ? ` (${error.cause.message ?? error.cause})` : '';
+      console.log(`::error title=Mirror failed::${entry.key}: ${error instanceof Error ? error.message : error}${cause}`);
     }
-  } finally {
-    await rm(workdir, { recursive: true, force: true });
   }
   if (failed.length) await writeFile(file, `${JSON.stringify(dropMirrors(manifest, failed), null, 2)}\n`);
   if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `failed=${failed.length}\n`);
