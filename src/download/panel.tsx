@@ -73,12 +73,12 @@ const TILE =
 const TILE_NAME = "text-sm leading-snug font-semibold [overflow-wrap:break-word] sm:text-lg lg:text-[20px]";
 const TILE_STATUS = "text-[12.5px] leading-snug font-medium text-accent-ink tabular-nums [overflow-wrap:anywhere] sm:text-sm";
 
-/** A click on the OSS copy is counted as a cn-mirror download (shared/download-events.ts); GitHub downloads are counted by the backend. */
+/** A click on the mirror copy is counted as a cn-mirror download (shared/download-events.ts); GitHub downloads are counted by the backend. */
 const reportMirror = (platform: ReleasePlatform, version: string, entry: PlatformRelease["downloads"][number]) => () => {
   reportMirrorDownload({ platform, version, artifact: entry.name });
 };
 
-/** The OSS copy of the selected package, beside the GitHub button. Left out when the manifest carries no mirror. */
+/** The mirror copy of the selected package, beside the GitHub button. Left out when the manifest carries no mirror. */
 function MirrorAction({ platform, version, entry, className }: { platform: ReleasePlatform; version: string; entry: PlatformRelease["downloads"][number]; className: string }) {
   const { t } = useLocale();
   if (!entry.mirrorUrl) return null;
@@ -161,7 +161,7 @@ function PreviewPanel({ platform, preview }: { platform: ReleasePlatform; previe
 }
 
 /**
- * Windows-only mirrors after the GitHub and OSS buttons. The QQ group number is copied rather than linked: QQ has no web link that opens a group's files. The Lanzou link is set by admins in msime-backend and left out until one is configured or while the backend cannot be reached.
+ * Windows-only mirrors after the GitHub and mirror buttons. The QQ group number is copied rather than linked: QQ has no web link that opens a group's files. The Lanzou link is set by admins in msime-backend and left out until one is configured or while the backend cannot be reached.
  *
  * A click on the Lanzou link is reported as an anonymous download count (shared/download-events.ts) with the release's installer name and version; without a release manifest there is nothing accurate to report, so the click goes uncounted.
  */
@@ -348,7 +348,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 /**
  * 页面顶部的下载入口（design-home §6「选择卡」），也是整页的标题区：页面不再有单独的页头，h1 就在这里，平台卡片和下载按钮在首屏内。
  *
- * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 是蒲公英上的测试版，HarmonyOS 如实说明还在开发、只能从源码构建，Web 是给网站开发者接入的 npm 包。桌面平台的安装包在配置了国内镜像（阿里云 OSS）时，GitHub 按钮旁边多一个「国内镜像下载」；QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的按钮之后。
+ * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 是蒲公英上的测试版，HarmonyOS 如实说明还在开发、只能从源码构建，Web 是给网站开发者接入的 npm 包。桌面平台的安装包在配置了国内镜像（dl.msime.app）时，GitHub 按钮旁边多一个「国内镜像下载」；QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的按钮之后。
  *
  * `.download-panel` is a test hook: the static HTML must show the Windows version inside it.
  */

@@ -13,7 +13,6 @@ on:
     workflows:
       - Sync community snapshot
       - Sync downloads
-      - Renew dl.msime.app certificate
       - CodeQL
     types: [completed]
 

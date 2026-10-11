@@ -20,7 +20,7 @@ const OWNER = "metasequoiaime";
 export const PLUGINS_REPO = "msime-plugins";
 export const DICTIONARY_REPO = "msime-dictionary";
 const BRANCH = "main";
-/** The China download mirror (Aliyun OSS, README「国内镜像」): `<prefix><GitHub URL>`, fetched from GitHub once and kept. Only immutable addresses go through it: release assets, and raw files pinned to a commit. */
+/** The China download mirror (Cloudflare R2 behind workers/dl/, README「国内镜像」): `<prefix><GitHub URL>`, fetched from GitHub once and kept. Only immutable addresses go through it: release assets, and raw files pinned to a commit. */
 export const DOWNLOAD_MIRROR = "https://dl.msime.app/gh/";
 /** The release scripts/build-release.sh uploads every pack's zip to. */
 const PLUGINS_RELEASE = "packs";

@@ -1,5 +1,5 @@
 /**
- * Download counts for the mirrors in China. GitHub Release downloads are counted by msime-backend from its release snapshots and installed apps report themselves, so the only downloads the website reports are clicks on a mirror link (the Aliyun OSS copy of any desktop package, or the Lanzou link for the Windows installer), as `kind=download` with `channel=cn-mirror`. The GitHub buttons report nothing: counting them here would count the same download twice.
+ * Download counts for the mirrors in China. GitHub Release downloads are counted by msime-backend from its release snapshots and installed apps report themselves, so the only downloads the website reports are clicks on a mirror link (the dl.msime.app copy of any desktop package, or the Lanzou link for the Windows installer), as `kind=download` with `channel=cn-mirror`. The GitHub buttons report nothing: counting them here would count the same download twice.
  *
  * The event is anonymous: a fresh random id per click, no install id, no cookie. `POST /v1/telemetry/events` needs no credentials, and `https://api.msime.app` is already in the page's `connect-src`.
  */

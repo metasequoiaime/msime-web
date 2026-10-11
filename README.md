@@ -51,21 +51,20 @@ Biome 只开了 linter，formatter 处于关闭状态——仓库既有代码尚
 
 取的是版本号最高的有效非 draft release，包含 prerelease 在内。这里不能用 `/releases/latest`，它会跳过 prerelease，而本产品目前发布的每一个 release 都是 prerelease。
 
-### 国内镜像（阿里云 OSS）
+### 国内镜像（Cloudflare R2）
 
-GitHub Release 在国内下载很慢，所以 `sync-downloads.yml` 每一轮都会把 `public/platforms.json` 列出的全部安装包（三个桌面平台的正式版和预览版）复制到阿里云 OSS 的香港 Bucket，对象名为 `releases/<仓库>/<tag>/<文件名>`。下载页在 GitHub 按钮旁边显示「国内镜像下载」，「其他安装包」里的每一项也带一个「国内镜像」链接。只有已上传、并且通过公网地址核对过大小和 SHA256 的包才会带 `mirrorUrl`；某个包镜像失败时，它暂时只保留 GitHub 下载，发布不受影响，这一轮 workflow 会标红。镜像链接的点击会以 `channel=cn-mirror` 上报下载次数（`shared/download-events.ts`）。
+GitHub Release 在国内下载很慢，所以下载页的安装包、客户端的资源包、语音模型和应用更新都在 `dl.msime.app` 上有一份镜像。它是 Cloudflare R2（bucket `msime`，和 `media.msime.app` 共用）前面的一个 Worker，代码在 `workers/dl/`。R2 不收流出流量费用；之前用的阿里云 OSS 香港按外网流出计费（约 0.75 元/GB），上线第二天就下载了 118 GB。没有 ICP 备案就用不了国内节点，Cloudflare 在国内没有节点，速度介于 GitHub 和 OSS 香港之间。
 
-仓库变量 `DOWNLOAD_MIRROR_BASE_URL` 是总开关：不设置时整条链路不运行，页面和以前一样。启用前先准备好下面这些：
+两种地址，对象名就是路径：
 
-1. OSS Bucket：地域选「中国香港」（`oss-cn-hongkong`），不需要 ICP 备案；现用的是 `metasequoiaime`。允许匿名读取 `releases/*`：可以把读写权限设为公共读，也可以保持私有、再加一条只放行匿名 `oss:GetObject` 的 Bucket Policy。建议加一条生命周期规则，清理 90 天前的 `releases/` 对象；当前版本被清掉后，下一轮同步会重新上传。
-2. 域名：`dl.msime.app` 绑定在 `metasequoiaime` 上，Cloudflare 里是指向 `metasequoiaime.oss-cn-hongkong.aliyuncs.com` 的 CNAME，代理状态为「仅 DNS」（灰云）。证书由 `.github/workflows/renew-dl-cert.yml` 每天检查，剩不到 30 天时用 Let's Encrypt（Cloudflare DNS-01）重新签发并挂到 OSS 上。它用的 Cloudflare token 是 environment `dl-cert`（只允许 main）的 secret `CLOUDFLARE_DNS_TOKEN`，阿里云一侧扮演单独的角色 `msime-web-dl-cert`（变量 `ALIYUN_CERT_ROLE_ARN`），只能改这个 bucket 的域名绑定和上传证书；信任条件的 `oidc:sub` 是 `repo:metasequoiaime@324869696/msime-web@1187844001:environment:dl-cert`。
-3. RAM 的 OIDC 身份提供商：Issuer 填 `https://token.actions.githubusercontent.com`，客户端 ID 填 `sts.aliyuncs.com`。
-4. RAM 角色：信任上面的 OIDC 提供商，条件限定 `oidc:sub` = `repo:metasequoiaime@324869696/msime-web@1187844001:ref:refs/heads/main`、`oidc:aud` = `sts.aliyuncs.com`。本仓库开启了 GitHub 的不可变 subject（`gh api repos/metasequoiaime/msime-web/actions/oidc/customization/sub` 可以查到），token 里的 `sub` 带组织和仓库的数字 ID，写成 `repo:metasequoiaime/msime-web:…` 的条件永远匹配不上，换取凭据会报 `AuthenticationFail.NoPermission`；最大会话时间不少于 3600 秒。权限策略只授予 `oss:PutObject`、`oss:AbortMultipartUpload`、`oss:ListParts`，资源为 `acs:oss:*:*:<bucket>/releases/*`。仓库里不存放长期 AccessKey。
-5. 仓库变量（Settings → Secrets and variables → Actions → Variables）：`ALIYUN_OSS_REGION`=`oss-cn-hongkong`、`ALIYUN_OSS_BUCKET`、`ALIYUN_OSS_ROLE_ARN`、`ALIYUN_OIDC_PROVIDER_ARN`，最后设置 `DOWNLOAD_MIRROR_BASE_URL`（现为 `https://dl.msime.app`）。
+- `gh/<GitHub 原地址>`：`https://dl.msime.app/gh/` 加原地址即可，客户端和官方词库包（`shared/official-packs.ts`）用的是这种。
+- `releases/<仓库>/<tag>/<文件名>`：下载页的安装包，对应 `metasequoiaime/<仓库>` 的 release 资产。
 
-第一轮会把所有安装包从 GitHub 搬到 OSS，耗时较长；之后每轮只对公网地址发 HEAD 请求，有新版本时才上传。
+R2 里没有的对象由 Worker 在第一次 GET 时从 GitHub 取来存下，之后都从 R2 读；HEAD 不会触发回源。只放行这些地址，其余一律 403：`metasequoiaime` 的 msime-dictionary、chinese-ime-lm、msime、MSIME-Windows、msime-plugins 与 `k2-fsa/sherpa-onnx` 的 `releases/download/`，以及 `raw.githubusercontent.com` 上的 `metasequoiaime/msime-engine/` 和 `metasequoiaime/msime-dictionary/`。缓存不会重新校验，所以只有内容不再变化的地址才能走镜像：发布资产，以及钉在提交上的 raw 文件；客户端的资源包、语音模型和应用更新都按锁文件或校验值核对，镜像出错时退回原地址。官方词库包的链接因此钉在每一轮读到的提交上。镜像不设自动清理：R2 存储很便宜，而且 `metasequoiaime/msime-plugins` 仓库已经不在了，`gh/` 下它的九个插件包只剩镜像里这一份（2026-10-11 从 OSS 原样拷过来的），清掉就再也取不回来。
 
-同一个 Bucket 还以 `gh/<GitHub 原地址>` 的形式镜像其他下载：`https://dl.msime.app/gh/` 加原地址即可，没缓存过的文件由 OSS 的镜像回源规则从 GitHub 取一次后留存（`gh/` 下 90 天后清理，用到时再回源）。回源和匿名读取只开放给这些前缀：`metasequoiaime` 的 msime-dictionary、chinese-ime-lm、msime、MSIME-Windows、msime-plugins 与 `k2-fsa/sherpa-onnx` 的 `releases/download/`，以及 `raw.githubusercontent.com` 上的 `metasequoiaime/msime-engine/` 和 `metasequoiaime/msime-dictionary/`。缓存不会重新校验，所以只有内容不再变化的地址才能走镜像：发布资产，以及钉在提交上的 raw 文件；客户端的资源包、语音模型和应用更新都按锁文件或校验值核对，镜像出错时退回原地址。官方词库包的链接因此钉在每一轮读到的提交上（`shared/official-packs.ts`）。
+下载页：仓库变量 `DOWNLOAD_MIRROR_BASE_URL`（现为 `https://dl.msime.app`）是总开关，不设置时页面和以前一样。设置后 `sync-downloads.yml` 每一轮都给 `public/platforms.json` 的每个包写上 `mirrorUrl`，并在提 PR 之前通过镜像地址把它读一遍，核对大小和 SHA256：镜像里没有的包借这次读取存进 R2，用户点下去不会是等 GitHub 的第一次。这一步不上传，也不需要任何凭据。之后每轮只对公网地址发 HEAD 请求。某个包核对不过时，它暂时只保留 GitHub 下载，发布不受影响，这一轮 workflow 会标红。下载页在 GitHub 按钮旁边显示「国内镜像下载」，「其他安装包」里的每一项也带一个「国内镜像」链接；点击会以 `channel=cn-mirror` 上报下载次数（`shared/download-events.ts`）。
+
+部署：Worker 不走 CI，改了 `workers/dl/` 之后在该目录运行 `wrangler deploy`（Cloudflare 账号 Metasequoiaime@gmail.com's Account）。`dl.msime.app` 是 Worker 的自定义域名，证书由 Cloudflare 管理。
 
 ## Bug 反馈 or 功能建议
 
