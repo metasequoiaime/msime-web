@@ -173,7 +173,7 @@ CSP 为 Google 登录放行 `https://accounts.google.com/gsi/client`（script-sr
 `pnpm build` 先构建浏览器资源，再在 Node 中渲染同一套 React 页面，生成可直接阅读的静态 HTML；不依赖构建环境安装浏览器。交互仍由浏览器端 React 接管，下载与社区数据从仓库内已生成的 JSON 快照注入，社区运行时校验库只在取新快照时加载，后续更新仍沿用现有自动 PR 和 Pages Git 发布。
 
 - 页面标题、描述、canonical、Open Graph、Twitter 卡片和站点结构化数据统一由 `shared/site-seo.ts` 管理，客户端换页同步更新。
-- `/docs/` 直接显示 Windows 指南，canonical 指向 `/docs/windows/`，保留原有阅读体验；四份指南使用 `/docs/windows/`、`/docs/macos/`、`/docs/macos-voice/`、`/docs/linux/`。旧 `?platform=` 地址通过 Pages Function 301 跳转并保留其他参数。
+- `/docs/` 直接显示 Windows 指南，canonical 指向 `/docs/windows/`，保留原有阅读体验；五份指南使用 `/docs/windows/`、`/docs/macos/`、`/docs/macos-voice/`、`/docs/linux/`、`/docs/android/`。旧 `?platform=` 地址通过 Pages Function 301 跳转并保留其他参数。
 - `/sitemap.xml` 从规范页面注册表生成，重复入口不列入；不伪造 `lastmod`。简历和 404 带 `noindex`，但允许爬虫读取该指令。
 - `/llms.txt` 提供 AI 可读索引，`/llms-full.txt` 按规范地址去重合并公开页面正文。每个公开页面还有 `.md` 副本（首页为 `/index.md`），由静态页面的正文生成，文档（含 `/docs.md` 入口副本）附带固定 Docs commit。Markdown 响应通过 HTTP canonical 指向 HTML，并用 `noindex` 避免重复索引。
 - FAQ 结构化数据来自页面实际显示的 18 条问答；软件标记依据公开价格页声明当前免费（`offers.price: 0`），不添加虚构评价或评分；无真实评价时不声称符合软件富结果资格。`llms.txt` 是社区提案，不是搜索引擎或 AI 推荐的保证。

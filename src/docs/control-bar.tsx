@@ -4,15 +4,15 @@ import { useLocale } from "../use-locale";
 import { cx } from "../ui";
 
 /** Guides published from MSIME-Docs. The FAQ's platform radios use their own ids (`src/page-faq.tsx`); these helpers translate between the two. */
-export type GuideId = "windows" | "macos" | "macos-voice" | "linux";
+export type GuideId = "windows" | "macos" | "macos-voice" | "linux" | "android";
 export type FaqPlatformId = "windows" | "macos" | "linux" | "ios" | "android";
 
 /** The FAQ platform a guide belongs to: the macOS voice guide is still macOS. */
 export const faqPlatformForGuide = (guide: GuideId): FaqPlatformId => (guide === "macos-voice" ? "macos" : guide);
 
-/** The guide for an FAQ platform, or null when MSIME-Docs has no guide for it yet (iOS, Android). */
+/** The guide for an FAQ platform, or null when MSIME-Docs has no guide for it yet (iOS). */
 export const guideForFaqPlatform = (platform: FaqPlatformId): GuideId | null =>
-  platform === "windows" || platform === "macos" || platform === "linux" ? platform : null;
+  platform === "windows" || platform === "macos" || platform === "linux" || platform === "android" ? platform : null;
 
 /** Classes for the row holding the platform tabs. Below 640px the row wraps under the segmented control, so it spans the full width and its tabs share it evenly instead of wrapping one tab onto a line of its own. */
 export const platformRowClass = "flex min-w-0 flex-wrap gap-1 max-md:w-full max-md:flex-nowrap";

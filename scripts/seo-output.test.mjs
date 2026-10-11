@@ -48,13 +48,13 @@ test('sitemap and AI index cover exactly the canonical public pages', () => {
   assert.doesNotMatch(read('llms-full.txt'), /undefined|\{\{[A-Z_]+\}\}/);
 });
 
-test('all four guides and FAQ answers are present without JavaScript', () => {
+test('all five guides and FAQ answers are present without JavaScript', () => {
   const landing = document('/docs/');
   assert.ok(read('docs.md').includes('文档版本：MSIME-Docs'));
   assert.equal(landing.querySelector('link[rel=canonical]').href, `${SITE_ORIGIN}/docs/windows/`);
   assert.ok(landing.querySelector('.docs-article')?.textContent.length > 400, 'the docs entry opens a readable guide');
   assert.equal(landing.querySelector('.docs-platform[aria-current="page"]')?.textContent, 'Windows');
-  for (const guide of ['windows', 'macos', 'macos-voice', 'linux']) {
+  for (const guide of ['windows', 'macos', 'macos-voice', 'linux', 'android']) {
     const doc = document(`/docs/${guide}/`);
     assert.ok(doc.querySelector('.docs-article').textContent.length > 400, guide);
     assert.ok(doc.querySelectorAll('a[href^="/docs/"]').length >= 4, guide);
@@ -62,7 +62,7 @@ test('all four guides and FAQ answers are present without JavaScript', () => {
   }
   const faq = document('/faq/');
   const schema = [...faq.querySelectorAll('script[type="application/ld+json"]')].map(script => JSON.parse(script.textContent)).find(data => data['@type'] === 'FAQPage');
-  assert.equal(schema.mainEntity.length, 26);
+  assert.equal(schema.mainEntity.length, 28);
   for (const item of schema.mainEntity) {
     assert.ok(faq.querySelector('#root').textContent.includes(item.name));
     assert.ok(item.acceptedAnswer.text.length > 20);
@@ -88,7 +88,7 @@ test('noindex pages and Markdown duplicates do not pollute canonical indexing', 
 test('legacy guide redirects preserve queries without accepting unknown or external targets', async () => {
   let calls = 0;
   const next = async () => { calls++; return new Response('static'); };
-  for (const guide of ['windows', 'macos', 'macos-voice', 'linux']) {
+  for (const guide of ['windows', 'macos', 'macos-voice', 'linux', 'android']) {
     const response = await onRequest({ request: new Request(`${SITE_ORIGIN}/docs/?platform=${guide}&utm_source=test`), next });
     assert.equal(response.status, 301);
     assert.equal(response.headers.get('Location'), `${SITE_ORIGIN}/docs/${guide}/?utm_source=test`);
@@ -208,10 +208,10 @@ test('the retired installer screenshot is not rendered anywhere', () => {
 });
 
 
-// This asserted the opposite until the four guides were checked against Search Console: one hard-coded hero meant four indexable URLs, each with its own title, canonical and sitemap entry, all opening on the same H1 and the same summary. The stability the old name was after is structural -- same hero shape on every tab -- not identical words.
+// This asserted the opposite until the guides were checked against Search Console: one hard-coded hero meant several indexable URLs, each with its own title, canonical and sitemap entry, all opening on the same H1 and the same summary. The stability the old name was after is structural -- same hero shape on every tab -- not identical words.
 test('each guide has its own hero and retains its introduction in the article', () => {
   const heroes = new Set();
-  for (const guide of ['windows', 'macos', 'macos-voice', 'linux']) {
+  for (const guide of ['windows', 'macos', 'macos-voice', 'linux', 'android']) {
     const doc = document(`/docs/${guide}/`);
     const lead = doc.querySelector('#page-lead').textContent.trim();
     assert.ok(lead.length > 10, guide);
@@ -222,7 +222,7 @@ test('each guide has its own hero and retains its introduction in the article', 
     assert.ok(doc.querySelector('script[src^="/assets/router-state-"]'));
     assert.equal(doc.querySelector('link[href^="/assets/router-state-"]').getAttribute('as'), 'script');
   }
-  assert.equal(heroes.size, 4, 'every guide page needs its own main heading and summary');
+  assert.equal(heroes.size, 5, 'every guide page needs its own main heading and summary');
 });
 
 test('both languages retain the same page structure, controls and complete content', async () => {
@@ -257,7 +257,7 @@ test('both languages retain the same page structure, controls and complete conte
 test('Traditional documents track complete source and preserve executable examples', async () => {
   const { createHash } = await import('node:crypto');
   const sources = JSON.parse(readFileSync('vendor/MSIME-Docs/guides/zh-TW/sources.json', 'utf8'));
-  for (const name of ['windows', 'macos', 'macos-voice', 'linux', 'faq']) {
+  for (const name of ['windows', 'macos', 'macos-voice', 'linux', 'android', 'faq']) {
     const source = readFileSync(`vendor/MSIME-Docs/guides/${name}.md`, 'utf8');
     const translated = readFileSync(`vendor/MSIME-Docs/guides/zh-TW/${name}.md`, 'utf8');
     assert.equal(createHash('sha256').update(source).digest('hex'), sources.files[`${name}.md`].sourceSha256, name);
@@ -269,7 +269,7 @@ test('Traditional documents track complete source and preserve executable exampl
   }
   const doc = document('/zh-TW/faq/');
   const schema = [...doc.querySelectorAll('script[type="application/ld+json"]')].map(node => JSON.parse(node.textContent)).find(item => item['@type'] === 'FAQPage');
-  assert.equal(schema.mainEntity.length, 26);
+  assert.equal(schema.mainEntity.length, 28);
   for (const answer of doc.querySelectorAll('.faq-answer')) assert.ok(answer.textContent.length > 50);
 });
 

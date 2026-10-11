@@ -24,7 +24,7 @@ const NOINDEX = ['/resume/', '/me/'];
 
 test('the SEO registry includes every entry page', () => {
   for (const path of ['/', ...pageDirectories()]) assert.ok(seoPages[path], path);
-  assert.equal(Object.keys(seoPages).filter(path => path.startsWith('/docs/') && path !== '/docs/').length, 4);
+  assert.equal(Object.keys(seoPages).filter(path => path.startsWith('/docs/') && path !== '/docs/').length, 5);
 });
 
 test('pages excluded from the sitemap actually say so in their own markup', () => {
@@ -88,7 +88,7 @@ test('the response headers lock the page down and keep hashed assets cacheable',
 
 
 test('lightweight guide query validation accepts only known scalar values', () => {
-  for (const platform of ['windows', 'macos', 'macos-voice', 'linux']) assert.deepEqual(docsSearchSchema({ platform }), { platform });
+  for (const platform of ['windows', 'macos', 'macos-voice', 'linux', 'android']) assert.deepEqual(docsSearchSchema({ platform }), { platform });
   for (const platform of ['__proto__', 'constructor', 'unknown', ['windows'], {}, null, 1]) assert.deepEqual(docsSearchSchema({ platform }), {});
   assert.deepEqual(docsSearchSchema({ unrelated: 'ignored' }), {});
 });
