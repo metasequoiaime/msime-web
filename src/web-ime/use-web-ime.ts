@@ -120,6 +120,9 @@ const firstUse = () => {
   return true;
 };
 
+/** 系统输入法上屏的中日韩文字。浏览器里只有系统输入法会发 composition 事件（SDK 用 setRangeText 上屏，不发），但欧洲键盘的死键也会发，所以只认这几种文字。 */
+const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
+
 /** Ctrl+` 按方案类别轮换：全拼、双拼（最近用的布局）、五笔，再回到全拼。 */
 const nextScheme = (scheme: WebImeScheme, shuangpin: ShuangpinLayout): WebImeScheme =>
   scheme === "quanpin" ? shuangpin : isShuangpin(scheme) ? "wubi86" : "quanpin";
@@ -130,6 +133,8 @@ const nextScheme = (scheme: WebImeScheme, shuangpin: ShuangpinLayout): WebImeSch
  * 官网默认开着（全拼），选择记在 localStorage，全站每一页都生效。引擎有十几 MB 资源和上百 MB 内存，所以默认开着也只在用得上时加载：第一次点进文本框，或者在菜单里选方案时。首页、下载页这些没有文本框的页面什么都不下载。SDK 在单独的 chunk 里按需 import，资源第一次下载后由浏览器缓存；加载期间打的字由 key-buffer.ts 接住，就绪后重放。站内换页不重新加载页面，引擎每个标签页只起一次。
  *
  * 辅助码默认关闭，打开后在全拼和各种双拼之间保留；切到五笔时不起作用，切回来照旧。
+ *
+ * 访客自己装了中文输入法时，默认开着的网页输入法要让开：系统输入法切到英文、或在数字后面放过 `.` 时，浏览器收到的是普通按键，网页输入法还在中文状态，就把 `.` 打成了「。」（msime-web#370）。页面看不到系统输入法的中英文状态，但能看到它组字上屏，所以第一次看到系统输入法上屏中日韩文字，就关掉网页输入法并记下来。在菜单里明确选过的方案不受影响。
  */
 export function useWebIme() {
   const { isLight } = useTheme();
@@ -284,6 +289,19 @@ export function useWebIme() {
     document.addEventListener("keydown", onKeyDown, true);
     return () => document.removeEventListener("keydown", onKeyDown, true);
   }, [scheme, shuangpin, choose, show]);
+
+  // 默认开着时，系统输入法一上屏中日韩文字就让开（见上面的说明）。存下「关闭」，之后每一页都不再接管；菜单里选过方案就是访客想用它，不再自动关。
+  useEffect(() => {
+    if (!scheme) return;
+    const onCompositionEnd = (event: CompositionEvent) => {
+      if (read(STORAGE_KEY) !== null || !isImeField(event.target) || !CJK.test(event.data)) return;
+      write(STORAGE_KEY, OFF);
+      setScheme(null);
+      show(translate.current("检测到系统输入法，已关闭水杉网页输入法 · 需要时可在顶栏键盘图标重新打开"), 8000);
+    };
+    document.addEventListener("compositionend", onCompositionEnd, true);
+    return () => document.removeEventListener("compositionend", onCompositionEnd, true);
+  }, [scheme, show]);
 
   return { scheme, shuangpin, helpcode, status, choose, chooseHelpcode };
 }
