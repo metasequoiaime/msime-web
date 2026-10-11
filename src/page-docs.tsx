@@ -3,12 +3,14 @@ import macosGuideTw from "../vendor/MSIME-Docs/guides/zh-TW/macos.md?raw";
 import macosVoiceGuideTw from "../vendor/MSIME-Docs/guides/zh-TW/macos-voice.md?raw";
 import linuxGuideTw from "../vendor/MSIME-Docs/guides/zh-TW/linux.md?raw";
 import androidGuideTw from "../vendor/MSIME-Docs/guides/zh-TW/android.md?raw";
+import iosGuideTw from "../vendor/MSIME-Docs/guides/zh-TW/ios.md?raw";
 import { LocaleLink as Link } from "./locale-link";
 import { useLocale } from "./use-locale";
 import { useNavigate, useSearch, useParams } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
 import linuxGuide from "../vendor/MSIME-Docs/guides/linux.md?raw";
 import androidGuide from "../vendor/MSIME-Docs/guides/android.md?raw";
+import iosGuide from "../vendor/MSIME-Docs/guides/ios.md?raw";
 import macosGuide from "../vendor/MSIME-Docs/guides/macos.md?raw";
 import macosVoiceGuide from "../vendor/MSIME-Docs/guides/macos-voice.md?raw";
 import windowsGuide from "../vendor/MSIME-Docs/guides/windows.md?raw";
@@ -30,6 +32,7 @@ const GUIDES = [
   { id: "macos-voice", label: "macOS 语音", file: "macos-voice.md", source: macosVoiceGuide, heading: "macOS 语音输入指南", lead: "选择云端识别、本地模型或系统识别，按住右 Option 录音上屏，并了解麦克风权限与数据去向。" },
   { id: "linux", label: "Linux", file: "linux.md", source: linuxGuide, heading: "Linux 使用指南", lead: "在 Linux 上安装水杉输入法并完成首次配置，在 Fcitx5 或 IBus 中启用，配置输入与辅助码、联网功能与桌面工具，以及数据、升级和故障排查。" },
   { id: "android", label: "Android", file: "android.md", source: androidGuide, heading: "Android 使用指南", lead: "下载适合的版本并启用水杉键盘，了解升级、中英文切换、9 键与 26 键、浮动键盘、外接键盘和语音输入。" },
+  { id: "ios", label: "iOS", file: "ios.md", source: iosGuide, heading: "iOS 使用指南", lead: "通过 TestFlight 安装并启用水杉键盘，了解输入方案与辅助码、皮肤与键盘、词库导入、完全访问和反馈方式。" },
 ] as const;
 
 const GUIDE_IDS = GUIDES.map((guide) => guide.id);
@@ -50,7 +53,7 @@ export function DocsPage() {
 
   const guide = useMemo(() => GUIDES.find((candidate) => candidate.id === guideId) ?? GUIDES[0], [guideId]);
   const content = useMemo(() => {
-    const translated = { windows: windowsGuideTw, macos: macosGuideTw, "macos-voice": macosVoiceGuideTw, linux: linuxGuideTw, android: androidGuideTw };
+    const translated = { windows: windowsGuideTw, macos: macosGuideTw, "macos-voice": macosVoiceGuideTw, linux: linuxGuideTw, android: androidGuideTw, ios: iosGuideTw };
     const rendered = renderContent(tw ? translated[guide.id] : guide.source, { localePath: path });
     const linked = linkGuideCrossReferences(rendered.bodyHtml, GUIDE_IDS, tw ? "/zh-TW" : "");
     return { ...rendered, ...withHeadingIds(linked) };
@@ -62,7 +65,7 @@ export function DocsPage() {
   const { activeId, lockUntilScrollEnds } = useTocScrollSpy(content.toc, articleRef, tocRef, sidebarRef);
   useInternalLinks(articleRef);
 
-  usePageMeta(guideId ? `${guide.label} 使用指南 | 水杉输入法` : "文档 | 水杉输入法", guideId ? `水杉输入法 ${guide.label} 使用指南：安装、配置、输入与常见问题排查。` : "水杉输入法 Windows、macOS、macOS 语音、Linux 与 Android 使用指南，选择平台查看安装和配置方法。");
+  usePageMeta(guideId ? `${guide.label} 使用指南 | 水杉输入法` : "文档 | 水杉输入法", guideId ? `水杉输入法 ${guide.label} 使用指南：安装、配置、输入与常见问题排查。` : "水杉输入法 Windows、macOS、macOS 语音、Linux、Android 与 iOS 使用指南，选择平台查看安装和配置方法。");
 
   if (guideId && !GUIDES.some(item => item.id === guideId)) {
     return (

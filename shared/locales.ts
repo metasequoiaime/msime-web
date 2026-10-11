@@ -14,12 +14,13 @@ export const traditionalPages = {
   '/code/': { title: '原始碼與參與開發｜水杉輸入法', description: '瀏覽各平台、輸入引擎、詞庫、語言模型及文件的原始碼，了解如何參與開發。' },
   '/price/': { title: '價格與付費計畫｜水杉輸入法', description: '水杉輸入法目前可免費使用，查看後續自願付費支持計畫與第三方服務費用說明。' },
   '/privacy/': { title: '隱私與連線功能說明｜水杉輸入法', description: '了解本機資料、雲端候選字、語音等連線功能的資料流程，以及關閉方式。' },
-  '/docs/': { title: '使用指南｜水杉輸入法', description: '選擇 Windows、macOS、Linux 或 Android 使用指南，查看安裝、設定與疑難排解。' },
+  '/docs/': { title: '使用指南｜水杉輸入法', description: '選擇 Windows、macOS、Linux、Android 或 iOS 使用指南，查看安裝、設定與疑難排解。' },
   '/docs/windows/': { title: 'Windows 安裝與使用指南｜水杉輸入法', description: 'Windows 版水杉輸入法完整使用指南：安裝、輸入方案、設定、詞庫與疑難排解。' },
   '/docs/macos/': { title: 'macOS 安裝與使用指南｜水杉輸入法', description: 'macOS 版水杉輸入法使用指南：安裝、鍵盤輸入、設定、備份與更新。' },
   '/docs/macos-voice/': { title: 'macOS 語音輸入指南｜水杉輸入法', description: '設定 macOS 語音輸入的雲端辨識、本機模型與系統辨識，了解錄音按鍵、文字潤飾和隱私。' },
   '/docs/linux/': { title: 'Linux 安裝與使用指南｜水杉輸入法', description: 'Linux 版水杉輸入法指南：安裝與首次設定、Fcitx5 與 IBus 啟用、輸入功能、資料與疑難排解。' },
   '/docs/android/': { title: 'Android 安裝與使用指南｜水杉輸入法', description: 'Android 版水杉輸入法指南：下載與各版本、啟用鍵盤、升級、中英文切換、9 鍵與 26 鍵、浮動鍵盤、外接鍵盤與語音輸入。' },
+  '/docs/ios/': { title: 'iOS 安裝與使用指南｜水杉輸入法', description: 'iOS 版水杉輸入法指南：TestFlight 安裝與更新、啟用鍵盤、輸入方案與輔助碼、佈景主題與鍵盤、詞庫匯入、完全取用與回報。' },
 } as const;
 export const TW_PREFIX = '/zh-TW';
 export const isTraditional = (path: string) => path === TW_PREFIX || path.startsWith(`${TW_PREFIX}/`);
