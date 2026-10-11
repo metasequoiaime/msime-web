@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-11T06:26:35.959Z",
-  "totalStars": 3343,
+  "generatedAt": "2026-10-11T13:31:24.000Z",
+  "totalStars": 3397,
   "repoCount": 14,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 3343
+      "stars": 3397
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-11",
-          "stars": 2583
+          "stars": 2625
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-11",
-          "stars": 635
+          "stars": 647
         }
       ]
     },
@@ -844,20 +844,20 @@
       ]
     }
   ],
-  "starDelta30d": 1926,
+  "starDelta30d": 1980,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 19271,
+      "contributions": 19447,
       "repos": 13
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1899,
+      "contributions": 1908,
       "repos": 11
     },
     {
@@ -868,18 +868,25 @@
       "repos": 3
     },
     {
-      "login": "Neptrue-Lin",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/29837162?v=4",
-      "url": "https://github.com/Neptrue-Lin",
-      "contributions": 29,
+      "login": "CuartPyaw",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/142556778?v=4",
+      "url": "https://github.com/CuartPyaw",
+      "contributions": 43,
       "repos": 1
     },
     {
       "login": "metasequoiaime-dev",
       "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
       "url": "https://github.com/metasequoiaime-dev",
-      "contributions": 27,
+      "contributions": 29,
       "repos": 3
+    },
+    {
+      "login": "Neptrue-Lin",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/29837162?v=4",
+      "url": "https://github.com/Neptrue-Lin",
+      "contributions": 29,
+      "repos": 1
     },
     {
       "login": "claude",
@@ -903,17 +910,10 @@
       "repos": 1
     },
     {
-      "login": "CuartPyaw",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/142556778?v=4",
-      "url": "https://github.com/CuartPyaw",
-      "contributions": 22,
-      "repos": 1
-    },
-    {
       "login": "luojiyin1987",
       "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
       "url": "https://github.com/luojiyin1987",
-      "contributions": 19,
+      "contributions": 21,
       "repos": 3
     },
     {
