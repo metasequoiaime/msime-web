@@ -10,7 +10,7 @@ import { releaseDate } from "./release-notes";
 /** Where each platform publishes. Windows ships from msime-windows; the merged msime repository now carries macOS, Linux, mobile and web engine releases; msime-linux remains as the archived historical source. */
 const RELEASE_SOURCES = [
   { repo: "msime-windows", platforms: "Windows", note: "安装程序与签名信息随每个版本发布" },
-  { repo: "msime", platforms: "macOS · Linux · iOS · Android · HarmonyOS · Web", note: "Rust 输入引擎与各原生宿主的版本，各平台按 macos-v、linux-v、ios-v、web-engine-v 等前缀分别发布；Android 与 HarmonyOS 尚未发布" },
+  { repo: "msime", platforms: "macOS · Linux · iOS · Android · HarmonyOS · Web", note: "Rust 输入引擎与各原生宿主的版本，各平台按 macos-v、linux-v、ios-v、android-v、web-engine-v 等前缀分别发布；Android 为测试版，HarmonyOS 尚未发布安装包" },
   { repo: "msime-linux", platforms: "Linux 历史版本", note: "旧版 IBus 发布，仓库已归档" },
 ] as const;
 
