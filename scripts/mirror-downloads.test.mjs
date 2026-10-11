@@ -57,7 +57,8 @@ test('the site accepts an https mirror and drops anything else without losing th
   for (const bad of ['http://dl.msime.app/a.exe', 'javascript:alert(1)']) {
     const parsed = platformsSchema.parse(manifest(bad));
     assert.equal(parsed.platforms.windows.downloads[0].mirrorUrl, undefined, bad);
-    assert.equal(parsed.platforms.windows.downloads[0].url, WINDOWS);
+    // The live manifest moves with every Windows release, so the package is compared with itself rather than a pinned version.
+    assert.equal(parsed.platforms.windows.downloads[0].url, current.platforms.windows.downloads[0].url);
   }
 });
 
