@@ -1,0 +1,11 @@
+// dl.msime.app 下载镜像。部署：在本目录运行 `wrangler deploy`（账号 Metasequoiaime@gmail.com's Account）。见 README「国内镜像」。
+{
+  "name": "msime-dl",
+  "main": "index.mjs",
+  "compatibility_date": "2026-10-01",
+  "account_id": "31d143ce9b8a42273190d2bf7254b08e",
+  "workers_dev": false,
+  "routes": [{ "pattern": "dl.msime.app", "custom_domain": true }],
+  "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "msime" }],
+  "observability": { "enabled": true }
+}
