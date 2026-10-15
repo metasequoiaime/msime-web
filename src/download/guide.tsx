@@ -136,7 +136,7 @@ function PlatformSection({ section, hidden, name }: { section: RenderedSection; 
         )}
       </div>
       {callouts.length > 0 && (
-        <div className="mt-[clamp(28px,4vw,48px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-stretch gap-4">
+        <div className={cx("mt-[clamp(28px,4vw,48px)] grid items-stretch gap-4", section.platform === "macos" ? "grid-cols-1" : "grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))]")}>
           {callouts.map((block, index) => (
             <Callout key={block.title} block={block} html={calloutHtml[index]} />
           ))}
