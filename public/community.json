@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-15T12:51:46.046Z",
-  "totalStars": 3719,
+  "generatedAt": "2026-10-15T17:46:11.881Z",
+  "totalStars": 3744,
   "repoCount": 8,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 3719
+      "stars": 3744
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-15",
-          "stars": 2859
+          "stars": 2878
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-15",
-          "stars": 742
+          "stars": 748
         }
       ]
     },
@@ -734,13 +734,13 @@
       ]
     }
   ],
-  "starDelta30d": 2248,
+  "starDelta30d": 2273,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 21208,
+      "contributions": 21272,
       "repos": 8
     },
     {
@@ -754,7 +754,7 @@
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 139,
+      "contributions": 141,
       "repos": 3
     },
     {
@@ -786,6 +786,13 @@
       "repos": 1
     },
     {
+      "login": "luojiyin1987",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
+      "url": "https://github.com/luojiyin1987",
+      "contributions": 24,
+      "repos": 3
+    },
+    {
       "login": "ouchihao",
       "avatarUrl": "https://avatars.githubusercontent.com/u/108930485?v=4",
       "url": "https://github.com/ouchihao",
@@ -798,13 +805,6 @@
       "url": "https://github.com/yangkx1024",
       "contributions": 23,
       "repos": 1
-    },
-    {
-      "login": "luojiyin1987",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
-      "url": "https://github.com/luojiyin1987",
-      "contributions": 22,
-      "repos": 3
     },
     {
       "login": "PLOKMCHINA",
