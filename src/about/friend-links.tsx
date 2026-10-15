@@ -11,9 +11,25 @@ const FRIEND_LINKS = [
     icon: "/img/friends/petra.png",
     desc: "跨 Windows、macOS、Linux 的开源 AI 桌宠：会漫游、会躲鼠标、视线追着光标跑，还能陪你聊天、帮你打开想用的软件。",
   },
+  {
+    name: "指尖冒险 TapTapGo",
+    tag: "打字练习",
+    url: "https://taptapgo.yldm.ai/",
+    host: "taptapgo.yldm.ai",
+    icon: "/img/friends/taptapgo.svg",
+    desc: "从基准键开始闯关学盲打，提供指法练习、打字测速和打字游戏，支持英语、拼音、日语和编程等多种练习语言。",
+  },
+  {
+    name: "EveryAPI",
+    tag: "AI 模型网关",
+    url: "https://everyapi.ai/",
+    host: "everyapi.ai",
+    icon: "/img/friends/everyapi.svg",
+    desc: "一个 API Key 接入多家供应商的 AI 模型，按用量计费，余额长期有效。",
+  },
 ] as const;
 
-/** 关于页底部的友情链接：互相推荐的开源项目，整张卡片可点，新标签页打开。 */
+/** 关于页底部的友情链接：互相推荐的项目，整张卡片可点，新标签页打开。 */
 export function FriendLinks({ eyebrowClass }: { eyebrowClass: string }) {
   const { t } = useLocale();
 
