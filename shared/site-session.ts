@@ -4,7 +4,7 @@ import { apiOriginSchema, DEFAULT_API_ORIGIN } from "./app-stats.ts";
 /*
  * The website's account session, held by the Pages Functions (a backend-for-frontend) rather than by the page.
  *
- * Signing in runs the same Google ID-token flow as the App against msime-backend's `/v1/auth` (challenge with a nonce, Google Identity Services in the page, then login), so it lands on the same account. The access and refresh tokens the backend returns never reach browser JavaScript: they live only in two `__Host-` HttpOnly cookies, and every account call from the page goes through `/api/*` on the site's own origin, where these Functions read the cookies and call the backend with `Authorization: Bearer`. See docs/user-auth.md in msime-backend for the token lifetimes and the refresh rules.
+ * Signing in uses the App's `/v1/auth` email-code or Google ID-token flow. The access and refresh tokens the backend returns never reach browser JavaScript: they live only in two `__Host-` HttpOnly cookies, and every account call from the page goes through `/api/*` on the site's own origin, where these Functions read the cookies and call the backend with `Authorization: Bearer`. See docs/user-auth.md in msime-backend for the token lifetimes and the refresh rules.
  */
 
 export const ACCESS_COOKIE = "__Host-msime_at";
@@ -267,25 +267,48 @@ export async function proxyApi({ request, env }: SessionContext, fetcher: typeof
 
 // ---- auth endpoints ----
 
-/** GET /api/auth/config → `{ google_client_id }`, `null` when the site has no Google client configured: the page then offers no 登录 in the header or on 我的, and a signed-out visitor pressing a favourite or a star is told to sign in in the App. Every signed-out page view asks, so the browser may keep the answer for a few minutes. */
-export function serveAuthConfig({ request, env }: SessionContext): Response {
+/** Public login availability: Google needs a site client ID; email follows the backend's actual provider configuration. No mail credentials live on the site. */
+export async function serveAuthConfig({ request, env }: SessionContext, fetcher: typeof fetch = fetch): Promise<Response> {
   if (request.method !== "GET") return failure("method_not_allowed", 405, { Allow: "GET" });
-  const response = json({ google_client_id: googleClientId(env) });
-  response.headers.set("Cache-Control", "public, max-age=300");
-  return response;
+  try {
+    const response = await backend(env, request, { path: "/v1/auth/providers" }, fetcher);
+    const parsed = z.object({ providers: z.object({ email: z.boolean() }) }).safeParse(response.ok ? await response.json().catch(() => undefined) : undefined);
+    if (!parsed.success) return failure("auth_unavailable", 503);
+    const config = json({ google_client_id: googleClientId(env), email_enabled: parsed.data.providers.email });
+    config.headers.set("Cache-Control", "public, max-age=300");
+    return config;
+  } catch (error) {
+    if (!(error instanceof BackendUnavailable)) throw error;
+    return failure("auth_unavailable", 503);
+  }
 }
 
 const challengeSchema = z.object({ challenge_id: z.string().min(1).max(256), nonce: z.string().min(1).max(512) });
+const emailChallengeSchema = z.object({ challenge_id: z.string().min(1).max(256), expires_in: z.number().int().positive().max(300) });
+const challengeRequestSchema = z.discriminatedUnion("provider", [
+  z.object({ provider: z.literal("google") }).strict(),
+  z.object({ provider: z.literal("email"), target: z.string().trim().max(254).email().toLowerCase() }).strict(),
+]);
 
-/** POST /api/auth/challenge → `{ challenge_id, nonce }` from `POST /v1/auth/challenges {"provider":"google"}`. The nonce goes into Google Identity Services, which signs it into the ID token the backend then checks. */
+/** Creates only login challenges: Google returns its nonce, email sends a code and returns its lifetime. An empty body preserves existing Google clients. */
 export async function serveChallenge({ request, env }: SessionContext, fetcher: typeof fetch = fetch): Promise<Response> {
   if (request.method !== "POST") return failure("method_not_allowed", 405, { Allow: "POST" });
   if (!sameOrigin(request)) return failure("forbidden_origin", 403);
-  if (!googleClientId(env)) return failure("provider_disabled", 503);
+  const body = await boundedBody(request);
+  if (body === undefined) return failure("request_too_large", 413);
+  let input: unknown = { provider: "google" };
+  if (body?.byteLength) {
+    try { input = JSON.parse(new TextDecoder().decode(body)); } catch { return failure("invalid_json", 400); }
+  }
+  const parsedRequest = challengeRequestSchema.safeParse(input);
+  if (!parsedRequest.success) return failure("invalid_json", 400);
+  const email = parsedRequest.data.provider === "email";
+  if (!email && !googleClientId(env)) return failure("provider_disabled", 503);
   try {
-    const response = await backend(env, request, { method: "POST", path: "/v1/auth/challenges", body: JSON.stringify({ provider: "google" }), contentType: "application/json" }, fetcher);
+    const payload = email ? { ...parsedRequest.data, purpose: "login" } : parsedRequest.data;
+    const response = await backend(env, request, { method: "POST", path: "/v1/auth/challenges", body: JSON.stringify(payload), contentType: "application/json" }, fetcher);
     if (!response.ok) return failure((await errorCode(response)) ?? "auth_unavailable", response.status >= 500 ? 503 : response.status);
-    const parsed = challengeSchema.safeParse(await response.json().catch(() => undefined));
+    const parsed = (email ? emailChallengeSchema : challengeSchema).safeParse(await response.json().catch(() => undefined));
     if (!parsed.success) return failure("auth_unavailable", 503);
     return json(parsed.data);
   } catch (error) {

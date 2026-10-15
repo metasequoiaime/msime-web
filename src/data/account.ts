@@ -108,15 +108,15 @@ export const authConfigQuery = () =>
     queryKey: ["auth-config"] as const,
     queryFn: async ({ signal }) => accountCall("/api/auth/config", async value => {
       const { z } = await import("zod");
-      return z.object({ google_client_id: z.string().nullable() }).parse(value);
+      return z.object({ google_client_id: z.string().nullable(), email_enabled: z.boolean().default(false) }).parse(value);
     }, { signal }),
     staleTime: Number.POSITIVE_INFINITY,
     retry: 1,
   });
 
 /** Whether the site offers web sign-in, from `authConfigQuery`: `undefined` until it has answered. A read that failed counts as available, so a network error leaves 登录 in place and the sign-in dialog explains what went wrong. */
-export const webLoginAvailable = (config: { google_client_id: string | null } | undefined, failed: boolean): boolean | undefined =>
-  config ? config.google_client_id !== null : failed ? true : undefined;
+export const webLoginAvailable = (config: { google_client_id: string | null; email_enabled?: boolean } | undefined, failed: boolean): boolean | undefined =>
+  config ? config.google_client_id !== null || config.email_enabled === true : failed ? true : undefined;
 
 // ---- community lists ----
 

@@ -372,12 +372,53 @@ test('refresh and login calls carry the proxy headers too', async t => {
 // ---- config and challenge ----
 
 test('the Google client ID is public configuration, null when unset or malformed', async t => {
-  const configured = authConfig({ request: browser('/api/auth/config'), env: ENV });
-  assert.deepEqual(await configured.json(), { google_client_id: CLIENT_ID });
-  assert.equal(configured.headers.get('Cache-Control'), 'public, max-age=300', 'every signed-out page view asks, so the browser keeps it');
-  for (const value of [undefined, '', 'not-a-client-id', `${CLIENT_ID}<script>`]) assert.deepEqual(await (await authConfig({ request: browser('/api/auth/config'), env: { GOOGLE_WEB_CLIENT_ID: value } })).json(), { google_client_id: null });
+  const configured = await run(t, authConfig, browser('/api/auth/config'), { 'GET /v1/auth/providers': Response.json({ providers: { email: true } }) });
+  assert.deepEqual(await configured.response.json(), { google_client_id: CLIENT_ID, email_enabled: true });
+  assert.equal(configured.response.headers.get('Cache-Control'), 'public, max-age=300', 'every signed-out page view asks, so the browser keeps it');
+  for (const value of [undefined, '', 'not-a-client-id', `${CLIENT_ID}<script>`]) {
+    const result = await run(t, authConfig, browser('/api/auth/config'), { 'GET /v1/auth/providers': Response.json({ providers: { email: false } }) }, { MSIME_API_ORIGIN: API, GOOGLE_WEB_CLIENT_ID: value });
+    assert.deepEqual(await result.response.json(), { google_client_id: null, email_enabled: false });
+  }
   const { response } = await run(t, challenge, browser('/api/auth/challenge', { method: 'POST' }), {}, { MSIME_API_ORIGIN: API });
   assert.equal(response.status, 503, 'no challenge without a Google client');
+});
+
+test('the email challenge forwards only the normalized login target and returns its expiry', async t => {
+  const { response, calls } = await run(t, challenge, browser('/api/auth/challenge', { method: 'POST', body: { provider: 'email', target: ' Person@Example.com ' } }), { 'POST /v1/auth/challenges': Response.json({ challenge_id: 'c-email', expires_in: 300 }, { status: 201 }) }, { MSIME_API_ORIGIN: API });
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { challenge_id: 'c-email', expires_in: 300 });
+  assert.deepEqual(calls[0].body, { provider: 'email', target: 'person@example.com', purpose: 'login' });
+});
+
+test('login availability requires a valid backend provider response', async t => {
+  for (const answer of [Response.json({ providers: {} }), backendError(503, 'unavailable')]) {
+    const { response } = await run(t, authConfig, browser('/api/auth/config'), { 'GET /v1/auth/providers': answer });
+    assert.equal(response.status, 503);
+    assert.deepEqual(await response.json(), { error: 'auth_unavailable' });
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+  }
+});
+
+test('email challenges reject invalid targets, other purposes and unsupported providers before sending mail', async t => {
+  for (const body of [
+    { provider: 'email' },
+    { provider: 'email', target: 'not-an-email' },
+    { provider: 'email', target: 'person@example.com', purpose: 'bind' },
+    { provider: 'phone', target: 'example' },
+  ]) {
+    const { response, calls } = await run(t, challenge, browser('/api/auth/challenge', { method: 'POST', body }), {});
+    assert.equal(response.status, 400);
+    assert.equal(calls.length, 0);
+  }
+});
+
+test('email challenge failures preserve provider and rate limit errors', async t => {
+  for (const [status, code] of [[503, 'provider_disabled'], [429, 'rate_limit_exceeded']]) {
+    const { response, cookies } = await run(t, challenge, browser('/api/auth/challenge', { method: 'POST', body: { provider: 'email', target: 'person@example.com' } }), { 'POST /v1/auth/challenges': backendError(status, code) });
+    assert.equal(response.status, status);
+    assert.deepEqual(await response.json(), { error: code });
+    assert.deepEqual(cookies, []);
+  }
 });
 
 test('the challenge asks the backend for a Google nonce and returns only the id and nonce', async t => {

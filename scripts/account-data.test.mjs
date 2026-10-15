@@ -108,13 +108,14 @@ test('a reaction is written into every cached list row of the item, including th
   assert.equal(client.getQueryData(lists.pluginGallery), before, 'a list without the item keeps its identity, so nothing re-renders');
 });
 
-test('web sign-in is offered only when the site has a Google client, and unknown until the config answers', async t => {
+test('web sign-in is offered when either email or Google is available, and unknown until config answers', async t => {
   t.mock.method(globalThis, 'fetch', async () => Response.json({ google_client_id: null }));
   const client = new QueryClient();
   const config = await client.fetchQuery(authConfigQuery());
-  assert.deepEqual(config, { google_client_id: null });
+  assert.deepEqual(config, { google_client_id: null, email_enabled: false });
   assert.equal(webLoginAvailable(config, false), false, 'no client: no 登录');
   assert.equal(webLoginAvailable({ google_client_id: 'id.apps.googleusercontent.com' }, false), true);
+  assert.equal(webLoginAvailable({ google_client_id: null, email_enabled: true }, false), true);
   assert.equal(webLoginAvailable(undefined, false), undefined, 'still asking');
   assert.equal(webLoginAvailable(undefined, true), true, 'a failed read keeps 登录, whose dialog explains the failure');
 });
