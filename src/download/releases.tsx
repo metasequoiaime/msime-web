@@ -3,7 +3,7 @@ import { useReleasesQuery } from "../data/queries";
 import { PLATFORM_CATALOG, PLATFORM_NAMES, RELEASE_FILTERS, type ReleaseFilter } from "../data/platforms";
 import { Button, ExternalIcon, cx } from "../ui";
 import { useLocale } from "../use-locale";
-import { usePageSearch } from "../use-page-search";
+import { useSearchReady } from "../use-page-search";
 import { ReleaseCard } from "./release-card";
 import { releaseDate } from "./release-notes";
 
@@ -31,12 +31,11 @@ function RepoLink({ repo }: { repo: string }) {
 /**
  * 更新日志，下载页的最后一节（`#releases`，旧的 /releases/ 301 到这里）。
  *
- * The list comes from `/api/releases` on the client only, so the static HTML carries just the heading, the filter chips and the repository links, identical in both locales (the locale-parity test counts `main button`, `main section` and `main h2`). The filter uses its own `release` search param because `platform` already belongs to the download picker above.
+ * The list comes from `/api/releases` on the client only, so the static HTML carries just the heading, the filter chips and the repository links, identical in both locales (the locale-parity test counts `main button`, `main section` and `main h2`). The download page owns the filter: it follows the selected platform unless the visitor explicitly chooses another release filter.
  */
-export function ReleasesSection() {
+export function ReleasesSection({ filter, onSelect }: { filter: ReleaseFilter; onSelect: (value: ReleaseFilter) => void }) {
   const { t } = useLocale();
-  const { choice, update, ready } = usePageSearch();
-  const filter = choice("release", RELEASE_FILTERS, "all");
+  const ready = useSearchReady();
   // One request for every platform; the chips filter locally so each can show its count.
   const releases = useReleasesQuery("all");
   const items = releases.data?.items;
@@ -52,7 +51,7 @@ export function ReleasesSection() {
 
   const pick = (value: ReleaseFilter) => {
     setLimit(PAGE_SIZE);
-    update({ release: value === "all" ? undefined : value });
+    onSelect(value);
   };
 
   const empty = filter === "all" ? null : PLATFORM_CATALOG[filter];

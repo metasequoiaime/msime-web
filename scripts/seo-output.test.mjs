@@ -360,6 +360,14 @@ test('download actions and installation instructions share one surface without a
   }
 });
 
+test('the initial release filter follows the selected download platform in both locales', () => {
+  for (const path of ['/download/', '/zh-TW/download/']) {
+    const doc = document(path);
+    assert.match(doc.querySelector('.download-panel button[aria-pressed="true"]').textContent, /Windows/);
+    assert.equal(doc.querySelector('#releases button[aria-pressed="true"]').textContent, 'Windows');
+  }
+});
+
 test('the current macOS DMG guide describes the in-app install flow', () => {
   const macos = document('/download/').querySelector('#download-macos');
   assert.ok(macos);

@@ -3,7 +3,7 @@ import { SITE_PLATFORMS } from "../src/data/platforms.ts";
 /**
  * The retired /releases/ page redirects to the release list at the end of the download page.
  *
- * The old page filtered with `?platform=`, which on the download page belongs to the installer picker, so a valid platform moves to the list's own `?release=` filter and anything else is dropped (the list then shows every platform). Other params are kept.
+ * The old page filtered with `?platform=`, which on the download page belongs to the installer picker, so a valid platform moves to the list's own `?release=` filter and anything else is dropped. Other params are kept.
  */
 export function onRequest({ request }: { request: Request }) {
   const url = new URL(request.url);

@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useLocation } from "@tanstack/react-router";
-import { sitePlatforms } from "./data/platforms";
+import { RELEASE_FILTERS, sitePlatforms } from "./data/platforms";
 import { usePlatformsQuery, useReleasesQuery, useUpdateManifestQuery } from "./data/queries";
 import { DownloadGuide } from "./download/guide";
 import { DownloadPanel } from "./download/panel";
@@ -21,6 +21,7 @@ export function DownloadPage() {
   const { choice, update, get, ready } = usePageSearch();
   const requestedPlatform = get("platform");
   const platform = choice("platform", PLATFORMS, "windows");
+  const releaseFilter = choice("release", RELEASE_FILTERS, platform);
   // 页面自己的三平台清单。update.json 另有其主（Windows 客户端的「检查更新」），两者互不干扰。
   const platforms = usePlatformsQuery();
   const manifest = useUpdateManifestQuery();
@@ -63,13 +64,13 @@ export function DownloadPage() {
             entries={entries}
             platform={platform}
             onSelect={(value) => {
-              update({ platform: value });
+              update({ platform: value, release: undefined });
             }}
           />
           {ready && platform === "web" && <WebDemo />}
           <DownloadGuide sections={sections} platform={platform} filter={ready} />
         </div>
-        <ReleasesSection />
+        <ReleasesSection key={releaseFilter} filter={releaseFilter} onSelect={(value) => update({ release: value === platform ? undefined : value })} />
       </Container>
     </main>
   );
