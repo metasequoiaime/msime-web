@@ -35,7 +35,7 @@ export function SkinsPage() {
   const { t } = useLocale();
   usePageMeta();
   const { choice, get, update } = usePageSearch();
-  const kind = choice("kind", KINDS, "keyboard");
+  const kind = choice("kind", KINDS, "candidate");
   // Only candidate skins have categories. An unknown value in a shared URL shows every category rather than an error.
   const rawCategory = get("category");
   const category = kind === "candidate" && isCandidateSkinCategory(rawCategory) ? rawCategory : undefined;
@@ -43,7 +43,7 @@ export function SkinsPage() {
   const baseId = useId();
   const panelId = `${baseId}-panel`;
 
-  const select = (value: SkinKind) => update({ kind: value === "keyboard" ? undefined : value, category: undefined }, true);
+  const select = (value: SkinKind) => update({ kind: value === "candidate" ? undefined : value, category: undefined }, true);
   const selectCategory = (value: CandidateSkinCategory | undefined) => update({ category: value }, true);
 
   return (
