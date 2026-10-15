@@ -16,7 +16,7 @@ import { Card, Container, KeyboardIcon, LinkButton, MonitorIcon } from "./ui";
 import { usePageSearch } from "./use-page-search";
 import { useLocale } from "./use-locale";
 
-const KINDS: readonly SkinKind[] = ["keyboard", "candidate"];
+const KINDS: readonly SkinKind[] = ["candidate", "keyboard"];
 
 // `caption` names where each kind shows up, because the obvious 手机/电脑 split is wrong: keyboard skins also dress the desktop screen keyboard, and candidate skins also colour the mobile candidate bar when 使用桌面候选皮肤 is on.
 const KIND_UI: Record<SkinKind, { tab: string; caption: string; icon: typeof KeyboardIcon; hint: string; noun: string }> = {
