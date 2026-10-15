@@ -4,14 +4,6 @@ import { useLocale } from "../use-locale";
 /** 友链。图标放在 public/img/friends/ 自托管：CSP 的 img-src 不放行第三方图床。加一个项目就在这里加一项。 */
 const FRIEND_LINKS = [
   {
-    name: "Petra",
-    tag: "AI 桌宠",
-    url: "https://petra.xin/",
-    host: "petra.xin",
-    icon: "/img/friends/petra.png",
-    desc: "跨 Windows、macOS、Linux 的开源 AI 桌宠：会漫游、会躲鼠标、视线追着光标跑，还能陪你聊天、帮你打开想用的软件。",
-  },
-  {
     name: "指尖冒险 TapTapGo",
     tag: "打字练习",
     url: "https://taptapgo.yldm.ai/",
@@ -26,6 +18,14 @@ const FRIEND_LINKS = [
     host: "everyapi.ai",
     icon: "/img/friends/everyapi.svg",
     desc: "一个 API Key 接入多家供应商的 AI 模型，按用量计费，余额长期有效。",
+  },
+  {
+    name: "Petra",
+    tag: "AI 桌宠",
+    url: "https://petra.xin/",
+    host: "petra.xin",
+    icon: "/img/friends/petra.png",
+    desc: "跨 Windows、macOS、Linux 的开源 AI 桌宠：会漫游、会躲鼠标、视线追着光标跑，还能陪你聊天、帮你打开想用的软件。",
   },
 ] as const;
 
