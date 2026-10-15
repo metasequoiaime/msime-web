@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { aggregateContributors, monthlyStarHistory } from './generate-community.mjs';
+import { EXCLUDED_REPOSITORIES } from '../shared/community-aggregation.mjs';
 
 /** GitHub reports each bucket as the Unix second its week starts on. */
 const week = day => Date.parse(`${day}T00:00:00Z`) / 1000;
@@ -79,4 +80,8 @@ test('a week straddling a month boundary splits its stars, and empty weeks still
 
 test('no history at all produces no series rather than a run of empty months', () => {
   assert.deepEqual(monthlyStarHistory([]), []);
+});
+
+test('the community exclusion list covers organisation files, distribution, skins, and prototypes', () => {
+  assert.deepEqual([...EXCLUDED_REPOSITORIES], ['.github', 'homebrew-tap', 'msime-skin-example', 'msime-skins', 'pinyin_cpp', 'pinyin_python']);
 });

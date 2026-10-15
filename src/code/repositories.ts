@@ -18,7 +18,7 @@ export type RepositoryGroup = {
 /**
  * The organisation's product repositories, grouped as on the design's code page.
  *
- * The design lists the first two groups; the third adds the Homebrew tap it leaves out. The skin repositories, organisation files and early prototypes are deliberately not listed. Descriptions follow each repository's own GitHub description and README.
+ * The skin repositories, organisation files, distribution taps and early prototypes are deliberately not listed. Descriptions follow each repository's own GitHub description and README.
  */
 export const REPOSITORY_GROUPS: readonly RepositoryGroup[] = [
   {
@@ -37,12 +37,6 @@ export const REPOSITORY_GROUPS: readonly RepositoryGroup[] = [
       { name: "chinese-ime-lm", description: "面向中文输入法的语言模型：语料、n-gram 统计、字级神经模型与评测集" },
       { name: "msime-dictionary", description: "多语言词库源数据：拼音、五笔、英文、粤拼、注音、笔画、日文、韩文，以及自定义词条、候选窗翻译与专业词库，构建结果以 dict-v* Release 发布；官网“词库缺失反馈”的提交会汇总到这里的 Pull Request" },
       { name: "msime-plugins", description: "官方插件：按键音效、旋律、背景音乐、/ 指令表与打字特效，通过 CI 校验后可下载 .zip 导入" },
-    ],
-  },
-  {
-    title: "分发",
-    repositories: [
-      { name: "homebrew-tap", description: "macOS 版的 Homebrew 安装源，每次发布后自动更新" },
     ],
   },
 ];

@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-15T01:50:25.132Z",
-  "totalStars": 3693,
-  "repoCount": 14,
+  "generatedAt": "2026-10-15T01:56:48.003Z",
+  "totalStars": 3688,
+  "repoCount": 8,
   "starHistory": [
     {
       "month": "2023-10",
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 3693
+      "stars": 3688
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-15",
-          "stars": 2833
+          "stars": 2834
         }
       ]
     },
@@ -732,133 +732,23 @@
           "stars": 3
         }
       ]
-    },
-    {
-      "repo": ".github",
-      "points": [
-        {
-          "date": "2026-08-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-09-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-10-15",
-          "stars": 1
-        }
-      ]
-    },
-    {
-      "repo": "homebrew-tap",
-      "points": [
-        {
-          "date": "2026-09-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-10-15",
-          "stars": 1
-        }
-      ]
-    },
-    {
-      "repo": "msime-skin-example",
-      "points": [
-        {
-          "date": "2026-08-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-09-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-10-15",
-          "stars": 1
-        }
-      ]
-    },
-    {
-      "repo": "msime-skins",
-      "points": [
-        {
-          "date": "2026-09-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-10-15",
-          "stars": 1
-        }
-      ]
-    },
-    {
-      "repo": "pinyin_cpp",
-      "points": [
-        {
-          "date": "2026-06-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-07-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-08-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-09-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-10-15",
-          "stars": 1
-        }
-      ]
-    },
-    {
-      "repo": "pinyin_python",
-      "points": [
-        {
-          "date": "2026-06-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-07-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-08-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-09-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-10-15",
-          "stars": 1
-        }
-      ]
     }
   ],
-  "starDelta30d": 2221,
+  "starDelta30d": 2216,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 20993,
-      "repos": 13
+      "contributions": 20909,
+      "repos": 8
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1931,
-      "repos": 11
+      "contributions": 1901,
+      "repos": 7
     },
     {
       "login": "jsfaint",

@@ -5,6 +5,7 @@ export interface Contributor {
   html_url: string;
   contributions: number;
 }
+export const EXCLUDED_REPOSITORIES: ReadonlySet<string>;
 export function aggregateContributors(repositories: { repo: string; contributors: Contributor[] }[], limit?: number): {
   login: string; avatarUrl: string; url: string; contributions: number; repos: number;
 }[];

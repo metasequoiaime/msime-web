@@ -2,6 +2,16 @@
 const isBot = account =>
   account?.type === 'Bot' || /\[bot\]$/i.test(account?.login ?? '');
 
+// These repositories are organisation infrastructure, examples, or historical prototypes rather than public products. Keep them out of the site's community totals and chart.
+export const EXCLUDED_REPOSITORIES = new Set([
+  '.github',
+  'homebrew-tap',
+  'msime-skin-example',
+  'msime-skins',
+  'pinyin_cpp',
+  'pinyin_python',
+]);
+
 export function aggregateContributors(perRepository, limit = 12) {
   const totals = new Map();
 

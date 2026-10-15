@@ -3,7 +3,7 @@ import { writeFile } from 'node:fs/promises';
 // Optional static fallback for SSR and API outages. Live statistics use /api/community.
 const organisation = 'metasequoiaime';
 
-import { aggregateContributors, monthlyStarHistory, recentStars, repositoryStarSeries } from '../shared/community-aggregation.mjs';
+import { aggregateContributors, EXCLUDED_REPOSITORIES, monthlyStarHistory, recentStars, repositoryStarSeries } from '../shared/community-aggregation.mjs';
 export { aggregateContributors, monthlyStarHistory, recentStars, repositoryStarSeries } from '../shared/community-aggregation.mjs';
 
 const headers = () => {
@@ -34,7 +34,7 @@ async function getAllPages(url, perPage = 100) {
 
 async function main() {
   const repositories = (await getAllPages(`https://api.github.com/orgs/${organisation}/repos?sort=full_name`))
-    .filter(repo => !repo.fork && !repo.archived && !repo.private);
+    .filter(repo => !repo.fork && !repo.archived && !repo.private && !EXCLUDED_REPOSITORIES.has(repo.name));
 
   const starWeeks = [];
   const starSeries = [];

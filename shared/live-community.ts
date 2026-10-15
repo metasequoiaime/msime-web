@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { communitySchema } from "../src/community-data.ts";
-import { aggregateContributors, monthlyStarHistory, recentStars, repositoryStarSeries, type StarWeek } from "./community-aggregation.mjs";
+import { aggregateContributors, EXCLUDED_REPOSITORIES, monthlyStarHistory, recentStars, repositoryStarSeries, type StarWeek } from "./community-aggregation.mjs";
 
 const repositorySchema = z.object({ name: z.string().regex(/^[\w.-]+$/), fork: z.boolean(), archived: z.boolean(), private: z.boolean(), stargazers_count: z.number().int().nonnegative() });
 const contributorSchema = z.object({ login: z.string(), type: z.string(), avatar_url: z.string(), html_url: z.string(), contributions: z.number().int().nonnegative() });
@@ -23,7 +23,7 @@ export async function loadCommunity(token: string, request: typeof fetch = fetch
     }
   }
   const repositories = z.array(repositorySchema).parse(await pages("orgs/metasequoiaime/repos?sort=full_name"))
-    .filter(repo => !repo.fork && !repo.archived && !repo.private);
+    .filter(repo => !repo.fork && !repo.archived && !repo.private && !EXCLUDED_REPOSITORIES.has(repo.name));
   const perRepository = [];
   const starWeeks: StarWeek[] = [];
   const starSeries: { repo: string; stars: number; points: { date: string; stars: number }[] }[] = [];
