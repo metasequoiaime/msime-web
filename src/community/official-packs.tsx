@@ -7,6 +7,7 @@ import { LocaleLink } from "../locale-link";
 import { AnchorButton, Button, Card, DownloadIcon, ExternalIcon, Pill } from "../ui";
 import { useLocale } from "../use-locale";
 import { cardGridClass, Chips, SearchBox, StatusCard, useSearch } from "./parts";
+import { CatalogDescription, CatalogTitle } from "./card-content";
 import { PLUGIN_KIND_LABELS } from "./resource-card";
 
 /*
@@ -66,12 +67,10 @@ function OfficialStates<T>({ query, noun, repo, items, empty, children }: { quer
 function OfficialCard({ name, meta, description, pills, children, footer }: { name: string; meta: string; description: string; pills?: ReactNode; children?: ReactNode; footer: ReactNode }) {
   return (
     <Card as="li" tone="raised" className="flex min-w-0 flex-col rounded-tile px-[18px] pt-4 pb-3">
-      <div className="flex min-w-0 items-start gap-2">
-        <h3 className="m-0 min-w-0 flex-1 truncate font-heading text-base font-bold text-ink" title={name}>{name}</h3>
-        {pills}
-      </div>
-      <p className="m-0 mt-0.5 truncate text-[13px] text-muted">{meta}</p>
-      {description && <p className="m-0 mt-2 line-clamp-2 text-[13.5px] leading-[1.7] text-body [overflow-wrap:anywhere]">{description}</p>}
+      {pills && <div className="mb-3 flex min-h-6 flex-wrap gap-1.5">{pills}</div>}
+      <CatalogTitle name={name} />
+      <p className="m-0 mt-0.5 truncate text-[13px] leading-5 text-muted" title={meta}>{meta}</p>
+      <CatalogDescription description={description} />
       {children}
       <div className="mt-auto pt-3">{footer}</div>
     </Card>
@@ -105,7 +104,7 @@ function OfficialPluginCard({ pack }: { pack: OfficialPlugin }) {
         </>
       }
       footer={
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="grid grid-cols-2 items-center gap-2 [&>a:last-child]:col-span-full [&>a:last-child]:w-fit">
           {pack.download && (
             <AnchorButton variant="secondary" size="sm" href={pack.download} target="_self" aria-label={t(`下载 ${pack.name} 的 .zip`)}>
               <DownloadIcon size={15} />

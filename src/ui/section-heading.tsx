@@ -18,7 +18,7 @@ type SectionHeadingProps = {
 /** Home-page section heading: eyebrow, h2 at clamp(28px, 3.4vw, 42px), optional lead and action. */
 export function SectionHeading({ eyebrow, title, lead, as: Tag = "h2", align = "start", action, id, className }: SectionHeadingProps) {
   const text = (
-    <div className={cx("min-w-0", align === "center" && "mx-auto text-center")}>
+    <div className={cx("min-w-0", Boolean(action) && "flex-[1_1_480px]", align === "center" && "mx-auto text-center")}>
       {eyebrow && <p className="m-0 text-sm font-semibold text-accent-ink">{eyebrow}</p>}
       <Tag id={id} className={cx("m-0 font-heading text-[clamp(28px,3.4vw,42px)] leading-[1.3] font-bold text-ink [word-break:keep-all] [overflow-wrap:anywhere]", Boolean(eyebrow) && "mt-3")}>
         {title}
@@ -30,7 +30,7 @@ export function SectionHeading({ eyebrow, title, lead, as: Tag = "h2", align = "
   return (
     <div className={cx("flex flex-wrap items-end justify-between gap-x-6 gap-y-4", className)}>
       {text}
-      <div className="flex-none">{action}</div>
+      <div className="max-w-full flex-none">{action}</div>
     </div>
   );
 }

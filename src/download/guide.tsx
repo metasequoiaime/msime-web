@@ -136,7 +136,7 @@ function PlatformSection({ section, hidden, name }: { section: RenderedSection; 
         )}
       </div>
       {callouts.length > 0 && (
-        <div className="mt-[clamp(28px,4vw,48px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-4">
+        <div className="mt-[clamp(28px,4vw,48px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-stretch gap-4">
           {callouts.map((block, index) => (
             <Callout key={block.title} block={block} html={calloutHtml[index]} />
           ))}

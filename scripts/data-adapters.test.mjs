@@ -160,3 +160,22 @@ test('the seven-platform catalogue joins desktop and Android releases and keeps 
   assert.equal(android.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/platforms/android');
   assert.deepEqual(sitePlatforms().map(entry => entry.release), [null, null, null, null, null, null, null], 'renders without a manifest');
 });
+
+test('platform versions use installable manifests and independent iOS publication metadata', () => {
+  const history = [
+    { platform: 'ios', version: '0.51.5', publishedAt: '2026-10-02T19:01:18Z' },
+    { platform: 'android', version: '9.0.0', publishedAt: '2026-10-15T00:00:00Z' },
+    { platform: 'ios', version: '0.50.0', publishedAt: '2026-09-29T00:00:00Z' },
+  ];
+  for (const items of [history, [...history].reverse()]) {
+    const entries = sitePlatforms(platforms.platforms, items);
+    assert.equal(entries.find(entry => entry.id === 'android').publishedVersion, platforms.platforms.android.version);
+    const ios = entries.find(entry => entry.id === 'ios');
+    assert.equal(ios.publishedVersion, '0.51.5');
+    assert.equal(ios.release, null, 'published iOS metadata never becomes a downloadable package');
+    assert.equal(ios.href, IOS_TESTFLIGHT_URL);
+  }
+  assert.equal(sitePlatforms(undefined, history.slice(1)).find(entry => entry.id === 'ios').publishedVersion, '0.50.0');
+  assert.equal(sitePlatforms(undefined, [history[1]]).find(entry => entry.id === 'ios').publishedVersion, null, 'never borrows another platform version');
+  assert.ok(sitePlatforms().every(entry => entry.publishedVersion === null), 'missing data keeps the distribution fallback');
+});

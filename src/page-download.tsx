@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useLocation } from "@tanstack/react-router";
 import { sitePlatforms } from "./data/platforms";
-import { usePlatformsQuery, useUpdateManifestQuery } from "./data/queries";
+import { usePlatformsQuery, useReleasesQuery, useUpdateManifestQuery } from "./data/queries";
 import { DownloadGuide } from "./download/guide";
 import { DownloadPanel } from "./download/panel";
 import { ReleasesSection } from "./download/releases";
@@ -24,6 +24,7 @@ export function DownloadPage() {
   // 页面自己的三平台清单。update.json 另有其主（Windows 客户端的「检查更新」），两者互不干扰。
   const platforms = usePlatformsQuery();
   const manifest = useUpdateManifestQuery();
+  const releases = useReleasesQuery();
 
   usePageMeta();
 
@@ -37,7 +38,7 @@ export function DownloadPage() {
     if (manifest.error) console.warn("[download] failed to load update manifest:", manifest.error);
   }, [manifest.error]);
 
-  const entries = useMemo(() => sitePlatforms(platforms.data?.platforms), [platforms.data]);
+  const entries = useMemo(() => sitePlatforms(platforms.data?.platforms, releases.data?.items), [platforms.data, releases.data]);
 
   const sections = useMemo(() => {
     // 两份清单都在路上时先不渲染正文，免得先写一版「暂时无法获取」再改口

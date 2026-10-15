@@ -14,13 +14,13 @@ export const faqPlatformForGuide = (guide: GuideId): FaqPlatformId => (guide ===
 export const guideForFaqPlatform = (platform: FaqPlatformId): GuideId | null =>
   platform === "windows" || platform === "macos" || platform === "linux" || platform === "android" || platform === "ios" ? platform : null;
 
-/** Classes for the row holding the platform tabs. Below 640px the row wraps under the segmented control, so it spans the full width and its tabs share it evenly instead of wrapping one tab onto a line of its own. */
-export const platformRowClass = "flex min-w-0 flex-wrap gap-1 max-md:w-full max-md:flex-nowrap";
+/** Platform tabs sit below the section control on narrow screens, in three equal columns so all six guides fit. */
+export const platformRowClass = "flex min-w-0 flex-wrap gap-1 max-md:grid max-md:w-full max-md:grid-cols-3";
 
 /** Classes for one platform tab (design-home §5.1): 36px high, accent tint when selected. Shared by the guide links and the FAQ radio labels. */
 export const platformTabClass = (selected: boolean) =>
   cx(
-    "inline-flex h-9 min-h-0 items-center justify-center rounded-tab border-0 px-3.5 py-0 max-md:flex-1 max-md:px-1.5 text-sm leading-none font-semibold whitespace-nowrap no-underline transition-colors duration-150 pointer-coarse:h-11",
+    "inline-flex h-9 min-h-0 items-center justify-center rounded-tab border-0 px-3.5 py-0 max-md:px-1.5 text-sm leading-none font-semibold whitespace-nowrap no-underline transition-colors duration-150 pointer-coarse:h-11",
     selected ? "bg-accent-soft text-accent-ink hover:text-accent-ink" : "bg-transparent text-muted hover:text-ink"
   );
 

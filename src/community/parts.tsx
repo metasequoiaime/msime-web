@@ -145,7 +145,8 @@ export function StatusCard({ children, busy = false, compact = false }: { childr
 }
 
 /** The grid every gallery uses: as many 260px-or-wider cards as fit. */
-export const cardGridClass = "m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4 p-0";
+// Equal rows once there is room for multiple columns; stacked mobile cards keep their natural height.
+export const cardGridClass = "m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4 p-0 sm:auto-rows-fr";
 
 type Pages<T> = UseInfiniteQueryResult<InfiniteData<{ items: T[]; nextOffset: number | null; stale?: boolean }>>;
 

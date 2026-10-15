@@ -5,6 +5,7 @@ import { candidatePreviewQuery } from "../data/account";
 import type { CandidateSkin, KeyboardSkin, V1CandidateSkin, V1KeyboardSkin } from "../data/schemas";
 import { CANDIDATE_SKIN_CATEGORY_LABELS } from "../data/skin-categories";
 import { Card, Pill } from "../ui";
+import { CatalogDescription, CatalogTitle } from "../community/card-content";
 import { useLocale } from "../use-locale";
 import { mayHavePhoto } from "./keyboard-art";
 import { KeyboardSkinPreview } from "./keyboard-preview";
@@ -47,12 +48,12 @@ export function SkinCard({ preview, name, author, details, description, footer }
     <Card as="li" tone="raised" className="flex min-w-0 flex-col overflow-hidden rounded-tile">
       {preview}
       <div className="flex flex-1 flex-col px-[18px] pt-3.5 pb-3">
-        <h3 className="m-0 truncate font-heading text-base font-bold text-ink" title={name}>{name}</h3>
-        <p className="m-0 mt-0.5 truncate text-[13px] text-muted">
+        <CatalogTitle name={name} />
+        <p className="m-0 mt-0.5 truncate text-[13px] leading-5 text-muted" title={[author, details].filter(Boolean).join(" · ")}>
           {author}
           {details && ` · ${details}`}
         </p>
-        {description && <p className="m-0 mt-2 line-clamp-2 text-[13.5px] leading-[1.7] text-body [overflow-wrap:anywhere]">{description}</p>}
+        <CatalogDescription description={description} />
         <div className="mt-auto">{footer}</div>
       </div>
     </Card>
@@ -110,7 +111,7 @@ export function CandidateSkinCard({ skin, own = false }: { skin: CandidateCardSk
   return (
     <SkinCard
       preview={
-        <div className="relative grid aspect-[390/232] place-items-center bg-panel-2 p-4">
+        <div className="relative grid aspect-[390/232] min-h-0 shrink-0 place-items-center overflow-hidden bg-panel-2 p-4 [&>img]:absolute [&>img]:max-h-[calc(100%-2rem)] [&>img]:max-w-[calc(100%-2rem)]">
           {skin.category && <Pill className="absolute top-3 left-3 shadow-ring-2">{t(CANDIDATE_SKIN_CATEGORY_LABELS[skin.category])}</Pill>}
           <StatusPills skin={skin} />
           {failed ? (

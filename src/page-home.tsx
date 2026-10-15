@@ -55,7 +55,7 @@ export function HomePage() {
         </div>
         <div className="mt-[clamp(32px,4vw,48px)] grid grid-cols-1 gap-4 lg:grid-cols-3" data-reveal-stagger>
           {FEATURES.map((feature) => (
-            <Card key={feature.glyph} className="min-w-0 p-[clamp(24px,3vw,32px)]" data-reveal>
+            <Card key={feature.glyph} className="min-w-0 p-[clamp(24px,3vw,32px)] lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:gap-y-0" data-reveal>
               <div className="grid size-11 place-items-center rounded-field bg-accent-soft text-lg font-bold text-accent" aria-hidden="true">
                 {t(feature.glyph)}
               </div>
@@ -118,7 +118,7 @@ export function HomePage() {
             }
           />
         </div>
-        <ul className="m-0 mt-8 grid list-none grid-cols-2 gap-3 p-0 xl:grid-cols-3" data-reveal-stagger>
+        <ul className="m-0 mt-8 grid list-none grid-cols-2 grid-rows-[repeat(3,1fr)_auto] gap-3 p-0 xl:grid-cols-3 xl:grid-rows-[repeat(2,1fr)_auto]" data-reveal-stagger>
           {SITE_PLATFORMS.map((id) => {
             const platform = PLATFORM_CATALOG[id];
             const status = DISTRIBUTION_LABELS[platform.distribution];
@@ -126,7 +126,7 @@ export function HomePage() {
             const embedded = platform.distribution === "sdk";
             return (
               <Card as="li" key={id} className={cx("min-w-0 rounded-tile p-4 sm:p-6", embedded && "col-span-full")} data-reveal>
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
                 </div>

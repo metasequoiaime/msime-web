@@ -75,7 +75,7 @@ export function AboutPage() {
             </div>
           </section>
 
-          <div className="mt-[clamp(40px,5vw,56px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-4" data-reveal-stagger>
+          <div className="mt-[clamp(40px,5vw,56px)] grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" data-reveal-stagger>
             <Card as="section" className="rounded-tile px-7 py-[26px]" aria-labelledby="about-license" data-reveal>
               <h3 id="about-license" className="m-0 font-heading text-[19px] font-bold text-ink">
                 {t("开源许可")}
@@ -96,7 +96,7 @@ export function AboutPage() {
                 {t("获取安装包并核对 SHA256。")}
               </p>
             </Card>
-            <Card as="section" tone="muted" className="rounded-tile px-7 py-[26px]" aria-labelledby="about-community" data-reveal>
+            <Card as="section" tone="muted" className="rounded-tile px-7 py-[26px] md:col-span-2 xl:col-span-1" aria-labelledby="about-community" data-reveal>
               <h3 id="about-community" className="m-0 font-heading text-[19px] font-bold text-ink">
                 {t("社区与反馈")}
               </h3>

@@ -840,8 +840,8 @@ function Shell({ children }: { children?: ReactNode }) {
           {/* Exact: on Traditional pages the target is /zh-TW/, which every other /zh-TW/* path would otherwise match as a prefix and mark current. */}
           <Link className="flex flex-none items-center gap-2.5 text-ink no-underline hover:text-ink" to="/" activeOptions={{ exact: true, includeSearch: false }} aria-label={t("水杉输入法 首页")}>
             <LogoMark size={34} ring />
-            {/* Below 360px the wordmark plus the palette, 下载 and menu controls outgrow the bar, so the mark alone stands in (the link keeps its label). */}
-            <span className="text-[17px] font-bold tracking-[.03em] whitespace-nowrap max-[360px]:hidden">{t("水杉输入法")}</span>
+            {/* On phones the account and input controls need the wordmark's space; the home link keeps its accessible name. */}
+            <span className="hidden text-[17px] font-bold tracking-[.03em] whitespace-nowrap xs:inline">{t("水杉输入法")}</span>
           </Link>
 
           <DesktopNav />

@@ -1,4 +1,5 @@
 import type { PlatformRelease, Platforms } from "../platforms-data.ts";
+import type { ReleaseItem } from "./schemas.ts";
 
 // This module must stay free of runtime zod imports: the home page's platform cards import it, and zod is kept out of that chunk.
 
@@ -22,7 +23,7 @@ export type ReleaseFilter = (typeof RELEASE_FILTERS)[number];
 
 export const IOS_TESTFLIGHT_URL = "https://testflight.apple.com/join/bUzPvyqt";
 
-/** Android test builds are distributed through Pgyer (蒲公英), which serves a scan-or-tap install page reachable from mainland China; there is no GitHub release for Android yet. */
+/** Android test builds are distributed through Pgyer (蒲公英), alongside the APKs in GitHub Releases. */
 export const ANDROID_PGYER_URL = "https://www.pgyer.com/msime";
 
 /**
@@ -53,7 +54,7 @@ const MSIME = "https://github.com/metasequoiaime/msime";
 export const WEB_ENGINE_NPM_URL = "https://www.npmjs.com/package/@msime/web-engine";
 
 /*
- * Static facts about the seven platforms. `public/platforms.json` belongs to the release automation and only covers the three desktop platforms with GitHub packages; Android, iOS and HarmonyOS details live here instead, so the manifest's shape never has to change for them. Windows keeps its separate repository; macOS and Linux releases come from the merged `msime` repository.
+ * Static facts about the seven platforms. `public/platforms.json` belongs to the release automation and covers desktop and Android packages. iOS keeps its publication metadata separate because it has no downloadable package. Windows keeps its separate repository; the other releases come from the merged `msime` repository.
  */
 export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
   windows: {
@@ -117,14 +118,18 @@ export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
 export type SitePlatformEntry = PlatformInfo & {
   /** The current stable release from `platforms.json`; `null` for platforms without GitHub packages or when the manifest is unavailable. */
   release: PlatformRelease | null;
+  /** Latest published version, independent of whether an installable package exists. An iOS publication does not guarantee that build is available in TestFlight. */
+  publishedVersion: string | null;
 };
 
 /** All seven platforms in display order, each joined with its release from `platforms.json` when there is one. Pure: safe during SSR with seeded query data or with none. */
-export function sitePlatforms(platforms?: Partial<Platforms>): SitePlatformEntry[] {
+export function sitePlatforms(platforms?: Partial<Platforms>, releases: readonly ReleaseItem[] = []): SitePlatformEntry[] {
+  const iosRelease = releases.filter(item => item.platform === "ios").reduce<ReleaseItem | null>((latest, item) =>
+    !latest || item.publishedAt > latest.publishedAt ? item : latest, null);
   return SITE_PLATFORMS.map(id => {
     const info = PLATFORM_CATALOG[id];
     // Android 的主入口是蒲公英，但 android-v 发布里的 APK 也在清单里，下载页把它们放在蒲公英旁边。
     const release = id === "windows" || id === "macos" || id === "linux" || id === "android" ? (platforms?.[id] ?? null) : null;
-    return { ...info, release };
+    return { ...info, release, publishedVersion: release?.version ?? (id === "ios" ? iosRelease?.version ?? null : null) };
   });
 }

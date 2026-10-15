@@ -3,6 +3,7 @@ import { Reactions } from "../account/reactions";
 import type { Plugin, PluginKind, Resource } from "../data/schemas";
 import { BookIcon, Card, MusicIcon, OmegaIcon, PhraseIcon, Pill, SlashIcon, SparkleIcon, TableIcon, WaveformIcon } from "../ui";
 import { useLocale } from "../use-locale";
+import { CatalogDescription, CatalogTitle } from "./card-content";
 
 /*
  * Cards for the community items that have no picture: word packs, reply templates and plugins. Same surface, padding and footer as the skin cards, with a short text sample where the skin cards have their preview.
@@ -51,16 +52,16 @@ function TextCard({ name, icon, meta, details, description, sample, pill, footer
         {icon}
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-start gap-2">
-            <h3 className="m-0 min-w-0 flex-1 truncate font-heading text-base font-bold text-ink" title={name}>{name}</h3>
+            <div className="min-w-0 flex-1"><CatalogTitle name={name} /></div>
             {pill && <Pill tone="warn" className="flex-none">{t(pill)}</Pill>}
           </div>
-          <p className="m-0 mt-0.5 truncate text-[13px] text-muted" title={details || undefined}>
+          <p className="m-0 mt-0.5 truncate text-[13px] leading-5 text-muted" title={[meta, details].filter(Boolean).join(" · ")}>
             {meta}
             {details && <span className="sr-only">{` · ${details}`}</span>}
           </p>
         </div>
       </div>
-      {description && <p className="m-0 mt-2 line-clamp-2 text-[13.5px] leading-[1.7] text-body [overflow-wrap:anywhere]">{description}</p>}
+      <CatalogDescription description={description} />
       {sample && <p className="m-0 mt-2.5 line-clamp-3 rounded-field bg-panel-2 px-3 py-2 text-[13px] leading-[1.7] whitespace-pre-line text-body [overflow-wrap:anywhere]">{sample}</p>}
       <div className="mt-auto">{footer}</div>
     </Card>

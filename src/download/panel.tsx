@@ -56,11 +56,12 @@ const MIRROR_ACTION =
 
 /** What the tile's status says: the current version, or, kept to a word, how the platform is distributed. The details sit in the action strip and the guide below. */
 const tileStatus = (entry: SitePlatformEntry) => {
+  if (entry.publishedVersion) return `v${entry.publishedVersion}`;
   if (entry.distribution === "testflight") return "TestFlight";
   if (entry.distribution === "pgyer") return "测试版";
   if (entry.distribution === "source") return "开发中";
   if (entry.distribution === "sdk") return "npm";
-  return entry.release ? `v${entry.release.version}` : "查看发布页";
+  return "查看发布页";
 };
 
 /**
@@ -245,7 +246,10 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           {t("通过 TestFlight 安装 iOS 版")}
           <ExternalIcon />
         </a>
-        {hint}
+        <div>
+          {hint}
+          {entry.publishedVersion && <p className="m-0 text-sm leading-[1.8] text-muted">{t("显示最新公开发布版本；可安装版本以 TestFlight 为准。")}</p>}
+        </div>
       </div>
     );
   }
@@ -366,7 +370,7 @@ export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePl
           {t("更新日志")}
         </a>
       </div>
-      <div className="mt-4 grid grid-cols-3 gap-2 sm:mt-5 sm:gap-3">
+      <div className="mt-4 grid auto-rows-fr grid-cols-3 gap-2 sm:mt-5 sm:gap-3">
         {entries.map((entry) => {
           const active = entry.id === platform;
           return (
