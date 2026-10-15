@@ -266,6 +266,33 @@ test('a plain design draws flat rounded keys in its own colours', () => {
   assert.ok(art.keys[0].path.includes('Q'), 'rounded keys use the quadratic corners');
 });
 
+test('nine-key preview draws an aligned 3 by 3 group with side controls and keeps the skin design', () => {
+  for (const design of [plainDesign, photoDesign, { ...plainDesign, keyMaterial: 'paper', keyShape: 'pebble' }, { ...plainDesign, keyMaterial: 'glass', keyShape: 'capsule' }]) {
+    const parsed = keyboardSkinDesignSchema.parse(design);
+    const { keys, ...style } = keyboardArt(parsed, 'nine-key');
+    const { keys: fullKeys, ...fullStyle } = keyboardArt(parsed);
+    assert.deepEqual(style, fullStyle, 'layout changes preserve the skin palette, wallpaper and material');
+    assert.equal(keys.length, 20);
+    assert.equal(keys.filter(key => /^[A-Z]+$/.test(key.label)).map(key => key.label).join(''), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    assert.ok(!keys.some(key => key.label === 'q' || key.label === '⇧'));
+    assert.deepEqual(keys.filter(key => key.action).map(key => key.label), ['⌫', '↵']);
+    assert.ok(keys.some(key => key.label === '空格'));
+    assert.ok(keys.some(key => key.label === '分词'));
+    const grid = keys.filter(key => key.label === '@#' || /^[A-Z]+$/.test(key.label));
+    assert.equal(grid.length, 9);
+    for (let index = 0; index < grid.length; index++) {
+      assert.equal(grid[index].labelX, grid[index % 3].labelX, 'the three grid columns align');
+      assert.equal(grid[index].labelY, grid[Math.floor(index / 3) * 3].labelY, 'each grid row shares a baseline');
+    }
+    for (const key of keys) {
+      assert.ok(key.labelX > 0 && key.labelX < ART_WIDTH && key.labelY > 28 && key.labelY < ART_HEIGHT, key.label);
+      assert.equal(Boolean(key.depthPath), design.keyMaterial === 'raised');
+      assert.equal(Boolean(key.paperPath), design.keyMaterial === 'paper');
+    }
+    assert.ok(fullKeys.length > keys.length, 'the default preview still draws the full keyboard');
+  }
+});
+
 test('gradient, photo, material, border, shadow and pattern follow the design', () => {
   const art = keyboardArt(keyboardSkinDesignSchema.parse(photoDesign));
   assert.deepEqual(art.gradient, { end: skinColor(3809360), horizontal: true });

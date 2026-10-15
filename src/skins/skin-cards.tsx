@@ -7,7 +7,7 @@ import { CANDIDATE_SKIN_CATEGORY_LABELS } from "../data/skin-categories";
 import { Card, Pill } from "../ui";
 import { CatalogDescription, CatalogTitle } from "../community/card-content";
 import { useLocale } from "../use-locale";
-import { mayHavePhoto } from "./keyboard-art";
+import { mayHavePhoto, type KeyboardPreviewLayout } from "./keyboard-art";
 import { KeyboardSkinPreview } from "./keyboard-preview";
 
 /*
@@ -79,12 +79,12 @@ function Footer({ kind, skin, own }: { kind: "keyboard" | "candidate"; skin: (Ke
   return <Reactions kind={kind} id={skin.id} ratingCount={skin.ratingCount} ratingAverage={skin.ratingAverage} myRating={skin.myRating} owned={skin.owned} saved={skin.saved} saves={skin.saves} downloads={skin.downloads} />;
 }
 
-export function KeyboardSkinCard({ skin, own = false }: { skin: KeyboardCardSkin; own?: boolean }) {
+export function KeyboardSkinCard({ skin, own = false, layout }: { skin: KeyboardCardSkin; own?: boolean; layout?: KeyboardPreviewLayout }) {
   return (
     <SkinCard
       preview={
         <div className="relative">
-          <KeyboardSkinPreview className="block aspect-[390/232] h-auto w-full" design={skin.design} photoUrl={mayHavePhoto(skin.design) ? `/api/skins/keyboard/${skin.id}/photo` : undefined} />
+          <KeyboardSkinPreview className="block aspect-[390/232] h-auto w-full" design={skin.design} layout={layout} photoUrl={mayHavePhoto(skin.design) ? `/api/skins/keyboard/${skin.id}/photo` : undefined} />
           <StatusPills skin={skin} />
         </div>
       }

@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAccount } from "./account/session";
 import { cardGridClass, Chips, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch } from "./community/parts";
@@ -12,11 +12,14 @@ import { LocaleLink } from "./locale-link";
 import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";
 import { CandidateSkinCard, fromV1Candidate, fromV1Keyboard, KeyboardSkinCard, type CandidateCardSkin, type KeyboardCardSkin } from "./skins/skin-cards";
+import type { KeyboardPreviewLayout } from "./skins/keyboard-art";
 import { Card, Container, KeyboardIcon, LinkButton, MonitorIcon } from "./ui";
 import { usePageSearch } from "./use-page-search";
 import { useLocale } from "./use-locale";
 
 const KINDS: readonly SkinKind[] = ["candidate", "keyboard"];
+const PREVIEW_LAYOUTS: readonly KeyboardPreviewLayout[] = ["qwerty", "nine-key"];
+const PREVIEW_LAYOUT_LABELS = { qwerty: "全键预览", "nine-key": "九键预览" };
 
 // `caption` names where each kind shows up, because the obvious 手机/电脑 split is wrong: keyboard skins also dress the desktop screen keyboard, and candidate skins also colour the mobile candidate bar when 使用桌面候选皮肤 is on.
 const KIND_UI: Record<SkinKind, { tab: string; caption: string; icon: typeof KeyboardIcon; hint: string; noun: string }> = {
@@ -36,6 +39,7 @@ export function SkinsPage() {
   usePageMeta();
   const { choice, get, update } = usePageSearch();
   const kind = choice("kind", KINDS, "candidate");
+  const [layout, setLayout] = useState<KeyboardPreviewLayout>("qwerty");
   // Only candidate skins have categories. An unknown value in a shared URL shows every category rather than an error.
   const rawCategory = get("category");
   const category = kind === "candidate" && isCandidateSkinCategory(rawCategory) ? rawCategory : undefined;
@@ -66,10 +70,11 @@ export function SkinsPage() {
             <SearchBox label="搜索皮肤名称" maxBytes={MAX_SKIN_QUERY_BYTES} search={search} />
           </div>
           <p className="m-0 mt-4 text-sm leading-[1.75] text-muted">{t(KIND_UI[kind].hint)}</p>
+          {kind === "keyboard" && <Chips legend="键盘预览布局" values={PREVIEW_LAYOUTS} labels={PREVIEW_LAYOUT_LABELS} value={layout} onChange={value => value && setLayout(value)} all={null} />}
           {kind === "candidate" && <Chips legend="候选窗皮肤分类" values={CANDIDATE_SKIN_CATEGORIES} labels={CANDIDATE_SKIN_CATEGORY_LABELS} value={category} onChange={selectCategory} />}
           <section id={panelId} role="tabpanel" aria-labelledby={tabId(panelId, kind)} className="mt-6">
             <h2 className="sr-only">{t(KIND_UI[kind].tab)}</h2>
-            <SkinList kind={kind} query={search.query} category={category} />
+            <SkinList kind={kind} query={search.query} category={category} layout={layout} />
           </section>
           <Card tone="muted" as="section" className="mt-12 rounded-tile px-6 py-[22px]" aria-labelledby={`${baseId}-how`}>
             <h2 id={`${baseId}-how`} className="m-0 font-heading text-[15.5px] font-bold text-ink">{t("如何使用社区皮肤")}</h2>
@@ -92,7 +97,7 @@ const emptyText = (noun: string, query: string, category: CandidateSkinCategory 
   return where ? `${where}还没有公开的${noun}。` : `还没有公开的${noun}。`;
 };
 
-type ListProps = { kind: SkinKind; query: string; category?: CandidateSkinCategory };
+type ListProps = { kind: SkinKind; query: string; category?: CandidateSkinCategory; layout: KeyboardPreviewLayout };
 
 /** Waits for the session before picking a source, so a signed-in visitor does not load the public list only to replace it. */
 function SkinList(props: ListProps) {
@@ -103,9 +108,9 @@ function SkinList(props: ListProps) {
   return <PublicSkinList {...props} />;
 }
 
-const KeyboardGrid = (items: KeyboardCardSkin[]) => (
+const KeyboardGrid = (items: KeyboardCardSkin[], layout: KeyboardPreviewLayout) => (
   <ul className={cardGridClass}>
-    {items.map(item => <KeyboardSkinCard key={item.id} skin={item} />)}
+    {items.map(item => <KeyboardSkinCard key={item.id} skin={item} layout={layout} />)}
   </ul>
 );
 
@@ -115,21 +120,21 @@ const CandidateGrid = (items: CandidateCardSkin[]) => (
   </ul>
 );
 
-function PublicSkinList({ kind, query, category }: ListProps) {
+function PublicSkinList({ kind, query, category, layout }: ListProps) {
   const skins = useSkinsQuery(kind, query, category);
   const noun = KIND_UI[kind].noun;
   return (
     <PagedList<KeyboardSkin | CandidateSkin> query={skins} noun={noun} empty={emptyText(noun, query, category)}>
-      {items => (kind === "keyboard" ? KeyboardGrid(items as KeyboardSkin[]) : CandidateGrid(items as CandidateSkin[]))}
+      {items => (kind === "keyboard" ? KeyboardGrid(items as KeyboardSkin[], layout) : CandidateGrid(items as CandidateSkin[]))}
     </PagedList>
   );
 }
 
-function AccountKeyboardList({ query }: ListProps) {
+function AccountKeyboardList({ query, layout }: ListProps) {
   const skins = useInfiniteQuery(v1KeyboardSkinsQuery(query));
   return (
     <PagedList query={skins} noun="键盘皮肤" empty={emptyText("键盘皮肤", query, undefined)}>
-      {items => KeyboardGrid(items.map(fromV1Keyboard))}
+      {items => KeyboardGrid(items.map(fromV1Keyboard), layout)}
     </PagedList>
   );
 }

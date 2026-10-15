@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import type { KeyboardSkinDesign } from "../data/schemas";
-import { keyboardArt, type ArtStop } from "./keyboard-art";
+import { keyboardArt, type ArtStop, type KeyboardPreviewLayout } from "./keyboard-art";
 
 function Stops({ stops }: { stops: ArtStop[] }) {
   return stops.map(stop => <stop key={stop.offset} offset={stop.offset} stopColor={stop.color} stopOpacity={stop.opacity} />);
@@ -32,8 +32,8 @@ function Pattern({ id, pattern, color, opacity }: { id: string; pattern: number;
  *
  * `photoUrl` is tried only for designs that may carry a photo. Until it loads, or when it fails, the keyboard shows the design's own background colour or gradient, and the darkening layer that belongs to the photo is left out.
  */
-export function KeyboardSkinPreview({ design, photoUrl, className }: { design: KeyboardSkinDesign; photoUrl?: string; className?: string }) {
-  const art = keyboardArt(design);
+export function KeyboardSkinPreview({ design, photoUrl, className, layout = "qwerty" }: { design: KeyboardSkinDesign; photoUrl?: string; className?: string; layout?: KeyboardPreviewLayout }) {
+  const art = keyboardArt(design, layout);
   const unique = useId().replaceAll(":", "");
   const ids = { background: `skin-bg-${unique}`, pattern: `skin-pattern-${unique}`, shadow: `skin-shadow-${unique}`, key: `skin-key-${unique}`, action: `skin-action-${unique}` };
   const [photo, setPhoto] = useState<"loading" | "loaded" | "failed">("loading");
@@ -41,7 +41,7 @@ export function KeyboardSkinPreview({ design, photoUrl, className }: { design: K
   const fill = (action: boolean) => (art.materialStops ? `url(#${action ? ids.action : ids.key})` : action ? art.actionColor : art.keyColor);
 
   return (
-    <svg className={className} viewBox={`0 0 ${art.width} ${art.height}`} aria-hidden="true" focusable="false" style={{ fontFamily: art.fontFamily }} data-key-shape={design.keyShape ?? "rounded"} data-key-material={art.material}>
+    <svg className={className} viewBox={`0 0 ${art.width} ${art.height}`} aria-hidden="true" focusable="false" style={{ fontFamily: art.fontFamily }} data-keyboard-layout={layout} data-key-shape={design.keyShape ?? "rounded"} data-key-material={art.material}>
       <defs>
         {art.pattern !== 0 && <Pattern id={ids.pattern} pattern={art.pattern} color={art.accent} opacity={art.patternOpacity} />}
         {art.shadow && (

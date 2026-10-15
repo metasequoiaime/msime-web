@@ -3,11 +3,13 @@ import type { KeyboardSkinDesign } from "../data/schemas.ts";
 /*
  * How a community keyboard skin looks, worked out from its design alone (the backend sends no preview image).
  *
- * Ported from the msime monorepo, packages/ui/src/keyboard/: `skinColor` and `readableSkinText` from touch-keyboard-skin-design.ts, the key outlines from keyboard-shape.ts, and the drawing rules (palette, gradient, photo, pattern, material, border, shadow, labels) from screen-keyboard-preview.tsx with its touch layout (`touchKeyboardRows` in keyboard-layouts.ts). keyboard-skin-styles.ts applies the same rules to the live keyboard. The App draws on a 1100-wide canvas; this one is the size of a phone keyboard in points, so the design's point values (corner radius, border width, shadow, pattern spacing) keep their proportions in a card a few hundred pixels wide.
+ * Ported from the msime monorepo, packages/ui/src/keyboard/: `skinColor` and `readableSkinText` from touch-keyboard-skin-design.ts, the key outlines from keyboard-shape.ts, and the drawing rules (palette, gradient, photo, pattern, material, border, shadow, labels) from screen-keyboard-preview.tsx with its touch layouts (`touchKeyboardRows` and `harmonyTouchKeyboardRows.nine_key` in keyboard-layouts.ts). keyboard-skin-styles.ts applies the same rules to the live keyboard. The App draws on a 1100-wide canvas; this one is the size of a phone keyboard in points, so the design's point values (corner radius, border width, shadow, pattern spacing) keep their proportions in a card a few hundred pixels wide.
  */
 
 export const ART_WIDTH = 390;
 export const ART_HEIGHT = 232;
+
+export type KeyboardPreviewLayout = "qwerty" | "nine-key";
 
 /** Top of the first key row; the strip above carries the "水杉 IME" label in the accent colour, as in the App. */
 const TOP = 28;
@@ -26,6 +28,14 @@ const TOUCH_ROWS: LayoutKey[][] = [
   [key("", 0.5), ...letters("asdfghjkl"), key("", 0.5)],
   [key("⇧", 1.5), ...letters("zxcvbnm"), key("⌫", 1.5)],
   [key("符号", 1.5), key("中/英", 1.5), key("空格", 4.5), key("，", 1), key("↵", 1.5)],
+];
+
+/** `harmonyTouchKeyboardRows.nine_key` in the App's keyboard-layouts.ts: punctuation, a 3 × 3 letter grid and the side controls. */
+const NINE_KEY_ROWS: LayoutKey[][] = [
+  [key("，", 1.15), key("@#", 2), key("ABC", 2), key("DEF", 2), key("⌫", 1.15)],
+  [key("。", 1.15), key("GHI", 2), key("JKL", 2), key("MNO", 2), key("分词", 1.15)],
+  [key("？", 1.15), key("PQRS", 2), key("TUV", 2), key("WXYZ", 2), key("！", 1.15)],
+  [key("123", 1.25), key("空格", 4.2), key("0", 1.05), key("中/英", 1.05), key("↵", 1.6)],
 ];
 
 /** `actionKeyboardLabels`, limited to the keys of the touch layout. */
@@ -115,18 +125,19 @@ const materialStops = (material: "raised" | "glass", color: string, opacity: num
   { offset: 1, color: "#000", opacity: material === "glass" ? 0.03 : 0.1 },
 ];
 
-export function keyboardArt(design: KeyboardSkinDesign): KeyboardArt {
+export function keyboardArt(design: KeyboardSkinDesign, layout: KeyboardPreviewLayout = "qwerty"): KeyboardArt {
+  const rows = layout === "nine-key" ? NINE_KEY_ROWS : TOUCH_ROWS;
   const shape = design.keyShape ?? "rounded";
   const material = design.keyMaterial ?? "flat";
   const keyOpacity = design.keyOpacity ?? 1;
   const keyColor = skinColor(design.keyBackground);
   const actionColor = skinColor(design.actionBackground);
   const position = design.photoPosition ?? 0.5;
-  const rowHeight = (ART_HEIGHT - TOP - BOTTOM - ROW_GAP * (TOUCH_ROWS.length - 1)) / TOUCH_ROWS.length;
+  const rowHeight = (ART_HEIGHT - TOP - BOTTOM - ROW_GAP * (rows.length - 1)) / rows.length;
   const raised = material === "raised";
 
   const keys: ArtKey[] = [];
-  TOUCH_ROWS.forEach((row, rowIndex) => {
+  rows.forEach((row, rowIndex) => {
     const available = ART_WIDTH - SIDE * 2 - KEY_GAP * (row.length - 1);
     const total = row.reduce((sum, item) => sum + item.weight, 0);
     const y = TOP + rowIndex * (rowHeight + ROW_GAP);
