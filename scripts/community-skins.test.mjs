@@ -370,14 +370,14 @@ test('清单按 UTF-8 字节限长，图片数量、单图和整包均限长', (
   assert.throws(() => candidateSkinArchive({ ...pack, manifest: `${pack.manifest}#${'字'.repeat(22_000)}` }, CANDIDATE_ID));
 });
 
-test('下载通过同源会话代理 POST，保存 ZIP 并释放下载链接', async t => {
+for (const signedIn of [false, true]) test(`下载通过同源代理 POST（登录：${signedIn}），保存 ZIP 并释放下载链接`, async t => {
   const calls = [];
   const backend = async (url, init) => {
     calls.push({ url, method: init.method });
-    assert.ok(new Headers(init.headers).has('Authorization'));
+    assert.equal(new Headers(init.headers).has('Authorization'), signedIn);
     return Response.json(downloadPack());
   };
-  t.mock.method(globalThis, 'fetch', async (path, init) => proxyApi({ request: new Request(`https://msime.app${path}`, { ...init, headers: { ...init.headers, Origin: 'https://msime.app', Cookie: `${ACCESS_COOKIE}=synthetic-access-token` } }), env: {} }, backend));
+  t.mock.method(globalThis, 'fetch', async (path, init) => proxyApi({ request: new Request(`https://msime.app${path}`, { ...init, headers: { ...init.headers, Origin: 'https://msime.app', ...(signedIn ? { Cookie: `${ACCESS_COOKIE}=synthetic-access-token` } : {}) } }), env: {} }, backend));
   const link = { href: '', download: '', click: t.mock.fn(), remove: t.mock.fn() };
   const before = globalThis.document;
   globalThis.document = { createElement: () => link, body: { append: t.mock.fn() } };

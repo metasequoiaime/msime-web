@@ -148,7 +148,7 @@ Turnstile 复用站点现有 widget，所有类型的 action 都为 `words`，�
 
 页头的「登录」支持邮箱验证码和 Google 登录，与 App 走同一套 msime-backend `/v1/auth` 流程，登录的是同一个账号。邮箱验证码由后端发送，本站只转发邮箱地址和验证码，不保存邮件配置。登录后：`/skins/`、`/dictionaries/`（词库与回复模板）、`/plugins/` 的卡片可以收藏和 1–5 星评分；`/me/`（noindex，不进站点地图）管理自己的皮肤、拼音/五笔/英文词条和快捷短语、云剪贴板、收藏和昵称。
 
-候选窗皮肤卡片在广场、收藏和「我的皮肤」中提供「下载皮肤包」。未登录时打开登录入口，登录后通过现有代理 POST `/v1/community/candidate-skins/{id}/download`，沿用后端的权限与下载计数。`src/skins/candidate-download.ts` 按需加载，将清单和图片原样打成 `<package_id>.zip`，顶层为同名文件夹；解压后将文件夹复制到客户端的皮肤目录。私有作品继续只通过拥有者的账号会话下载，键盘皮肤仍在客户端应用。
+候选窗皮肤卡片在广场、收藏和「我的皮肤」中提供「下载皮肤包」。公开皮肤无需登录，通过现有同源代理 POST `/v1/community/candidate-skins/{id}/download`，由后端检查可见性；仅有效账号会话计入去重下载人数，匿名下载不计数。`src/skins/candidate-download.ts` 按需加载，将清单和图片原样打成 `<package_id>.zip`，顶层为同名文件夹；解压后将文件夹复制到客户端的皮肤目录。私有作品继续只通过拥有者的账号会话下载，键盘皮肤仍在客户端应用。
 
 ZIP 使用 [fflate 0.8.3](https://github.com/101arrowz/fflate/tree/dcb3714a6c25db3a2748641019c5277413d09714)（MIT；固定来源提交 `dcb3714a6c25db3a2748641019c5277413d09714`，npm 产物摘要见 `pnpm-lock.yaml`）。许可证原文随站点发布于 `public/licenses/fflate-MIT.txt`；分发时保留版权和许可声明。
 

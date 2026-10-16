@@ -38,7 +38,7 @@ export function candidateSkinArchive(value: unknown, expectedId: string) {
   return { filename: `${pack.package_id}.zip`, bytes: zipSync(files, { level: 0 }) };
 }
 
-/** 复用账号代理的权限校验、会话刷新与下载计数；仅用户点击后发起一次 POST。 */
+/** 复用同源代理；公开皮肤允许匿名下载，私有皮肤由后端校验拥有者会话；仅用户点击后发起一次 POST。 */
 export async function downloadCandidateSkin(id: string) {
   const skinId = communitySkinIdSchema.parse(id);
   const archive = await accountCall(`/api/v1/community/candidate-skins/${skinId}/download`, value => candidateSkinArchive(value, skinId), { method: "POST" });

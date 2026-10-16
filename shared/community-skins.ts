@@ -6,7 +6,7 @@ import { cachedJson, UpstreamUnavailable } from "./edge-cache.ts";
 import { imageExtension } from "./feedback-images.ts";
 
 /*
- * 匿名社区目录来自后端的键盘与候选窗皮肤列表，每页 20 项，按名称搜索；候选窗皮肤还支持分类。候选窗皮肤包下载走独立的账号代理，不进入这些公共缓存。
+ * 匿名社区目录来自后端的键盘与候选窗皮肤列表，每页 20 项，按名称搜索；候选窗皮肤还支持分类。候选窗皮肤包下载走同源代理，公开作品无需账号，不进入这些公共缓存。
  */
 
 export const SKIN_KINDS = ["keyboard", "candidate"] as const;

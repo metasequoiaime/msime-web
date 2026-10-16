@@ -32,7 +32,7 @@ const TAB_CAPTIONS = { keyboard: KIND_UI.keyboard.caption, candidate: KIND_UI.ca
 const TAB_ICONS = { keyboard: KIND_UI.keyboard.icon, candidate: KIND_UI.candidate.icon };
 
 /**
- * 社区皮肤：匿名访客读取公共缓存目录，登录用户通过账号代理读取自己的评分和收藏，并可下载候选窗皮肤包。键盘皮肤仍在客户端中下载应用。
+ * 社区皮肤：匿名访客读取公共缓存目录并可下载公开候选窗皮肤包，登录用户通过账号代理读取自己的评分和收藏。键盘皮肤仍在客户端中下载应用。
  */
 export function SkinsPage() {
   const { t } = useLocale();
@@ -56,7 +56,7 @@ export function SkinsPage() {
         variant="plain"
         kicker="App 创作社区"
         title="社区皮肤"
-        lead="这里展示水杉输入法用户公开发布的键盘皮肤和候选窗皮肤，按发布时间从新到旧排列。登录后可以收藏、评分，也可以直接下载电脑候选窗皮肤包。键盘皮肤请在水杉输入法中搜索名称，下载并应用。"
+        lead="这里展示水杉输入法用户公开发布的键盘皮肤和候选窗皮肤，按发布时间从新到旧排列。电脑候选窗皮肤包无需登录即可下载；登录后可以收藏、评分。键盘皮肤请在水杉输入法中搜索名称，下载并应用。"
       >
         <div className="mt-7 flex flex-wrap gap-3">
           <LinkButton to="/download/">{t("下载水杉输入法")}</LinkButton>
@@ -79,10 +79,10 @@ export function SkinsPage() {
           <Card tone="muted" as="section" className="mt-12 rounded-tile px-6 py-[22px]" aria-labelledby={`${baseId}-how`}>
             <h2 id={`${baseId}-how`} className="m-0 font-heading text-[15.5px] font-bold text-ink">{t("如何使用社区皮肤")}</h2>
             <ol className="m-0 mt-2 list-decimal pl-5 text-sm leading-[1.85] text-body">
-              <li>{t("安装水杉输入法并登录账号。")}<LocaleLink to="/download/">{t("前往下载页")}</LocaleLink></li>
-              <li>{t("电脑候选窗皮肤：登录官网，点击「下载皮肤包」，解压得到包含 skin.toml 的皮肤文件夹。")}</li>
+              <li>{t("安装水杉输入法。")}<LocaleLink to="/download/">{t("前往下载页")}</LocaleLink></li>
+              <li>{t("电脑候选窗皮肤：无需登录，点击「下载皮肤包」，解压得到包含 skin.toml 的皮肤文件夹。")}</li>
               <li>{t("在水杉输入法的主题设置中打开皮肤目录，将解压后的文件夹复制进去，再选择这款皮肤。")}</li>
-              <li>{t("键盘皮肤：在水杉输入法的「社区」中搜索名称，下载后应用。也可以在 App 中发布自己的作品。")}</li>
+              <li>{t("键盘皮肤：登录水杉输入法，在「社区」中搜索名称，下载后应用。也可以在 App 中发布自己的作品。")}</li>
             </ol>
           </Card>
         </Container>
