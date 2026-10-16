@@ -9,6 +9,7 @@ import { CatalogDescription, CatalogTitle } from "../community/card-content";
 import { useLocale } from "../use-locale";
 import { mayHavePhoto, type KeyboardPreviewLayout } from "./keyboard-art";
 import { KeyboardSkinPreview } from "./keyboard-preview";
+import { CandidateDownloadButton } from "./candidate-download-button";
 
 /*
  * The community skin cards, shared by the 社区皮肤 gallery and the 我的 page. A card is a preview, the name and author, an optional description, the download count, and a footer: the rating and favourite controls in the gallery, the work's own status in 我的.
@@ -127,7 +128,7 @@ export function CandidateSkinCard({ skin, own = false }: { skin: CandidateCardSk
       author={skin.author}
       details={[skin.version && `v${skin.version}`, skin.license].filter(Boolean).join(" · ")}
       description={skin.description}
-      footer={<Footer kind="candidate" skin={skin} own={own} />}
+      footer={<><Footer kind="candidate" skin={skin} own={own} /><CandidateDownloadButton id={skin.id} name={skin.name} /></>}
     />
   );
 }

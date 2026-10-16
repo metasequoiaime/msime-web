@@ -6,7 +6,7 @@ import { cachedJson, UpstreamUnavailable } from "./edge-cache.ts";
 import { imageExtension } from "./feedback-images.ts";
 
 /*
- * The community skin catalog of msime-backend, read without an account: `GET /v1/community/skins` (keyboard skins) and `GET /v1/community/candidate-skins` (candidate-window skins) in internal/account/community.go and community_candidate.go, 20 per page, newest first, `q` matching the name. Candidate skins also filter by `category` and return each item's category when asked with `include=category`; keyboard skins have no categories. Downloading needs a signed-in session, so the website only browses and sends visitors to the App.
+ * 匿名社区目录来自后端的键盘与候选窗皮肤列表，每页 20 项，按名称搜索；候选窗皮肤还支持分类。候选窗皮肤包下载走独立的账号代理，不进入这些公共缓存。
  */
 
 export const SKIN_KINDS = ["keyboard", "candidate"] as const;

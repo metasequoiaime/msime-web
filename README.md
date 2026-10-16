@@ -148,6 +148,10 @@ Turnstile 复用站点现有 widget，所有类型的 action 都为 `words`，�
 
 页头的「登录」支持邮箱验证码和 Google 登录，与 App 走同一套 msime-backend `/v1/auth` 流程，登录的是同一个账号。邮箱验证码由后端发送，本站只转发邮箱地址和验证码，不保存邮件配置。登录后：`/skins/`、`/dictionaries/`（词库与回复模板）、`/plugins/` 的卡片可以收藏和 1–5 星评分；`/me/`（noindex，不进站点地图）管理自己的皮肤、拼音/五笔/英文词条和快捷短语、云剪贴板、收藏和昵称。
 
+候选窗皮肤卡片在广场、收藏和「我的皮肤」中提供「下载皮肤包」。未登录时打开登录入口，登录后通过现有代理 POST `/v1/community/candidate-skins/{id}/download`，沿用后端的权限与下载计数。`src/skins/candidate-download.ts` 按需加载，将清单和图片原样打成 `<package_id>.zip`，顶层为同名文件夹；解压后将文件夹复制到客户端的皮肤目录。私有作品继续只通过拥有者的账号会话下载，键盘皮肤仍在客户端应用。
+
+ZIP 使用 [fflate 0.8.3](https://github.com/101arrowz/fflate/tree/dcb3714a6c25db3a2748641019c5277413d09714)（MIT；固定来源提交 `dcb3714a6c25db3a2748641019c5277413d09714`，npm 产物摘要见 `pnpm-lock.yaml`）。许可证原文随站点发布于 `public/licenses/fflate-MIT.txt`；分发时保留版权和许可声明。
+
 会话由 Pages Functions 持有（`shared/site-session.ts`），令牌只放在 `__Host-msime_at`（Max-Age 900）和 `__Host-msime_rt`（30 天）两个 `HttpOnly; Secure; SameSite=Lax; Path=/` cookie 里，浏览器脚本拿不到。浏览器只调同源接口：`/api/auth/config`、`/api/auth/challenge`、`/api/auth/login`、`/api/auth/logout`、`/api/me`，以及只放行 `/v1/users/me` 和 `/v1/community/` 的 `/api/v1/*` 代理（cookie 换成 `Authorization: Bearer`）。access 过期或后端 401 时用 refresh 换新并重试一次；轮换成功后即使后端随后失败（503）也会带上新 cookie，因为旧 refresh token 已经作废，留在浏览器里再被使用会让后端撤销整个会话。后端返回 409 `refresh_superseded`（另一个请求刚轮换过）时向页面返回 401 `{"error":"session_retry"}` 且不动 cookie，页面按 0.5、1、2、4 秒退避重试（共 7.5 秒，远在后端 30 秒宽限期内），仍是 `session_retry` 也不当作退出登录；refresh 被拒则清 cookie 返回 401。退出登录时 access 缺失或被后端 401 拒绝会先 refresh 一次再调用后端 logout，确保后端会话真正结束，cookie 总会清除（refresh 遇到 `session_retry` 时除外，页面会带着新 cookie 重试）。代理转发的请求体逐块读取，超过 64 KiB 立即中止。未登录访客浏览 `/plugins/` 和 `/dictionaries/` 时读取边缘缓存一分钟的 `/api/plugins`、`/api/resources`（`shared/community-catalog.ts`，与 `/api/skins/*` 同一模式），登录后才走 `/api/v1/*` 以显示自己的评分和收藏。所有 POST/PUT/PATCH/DELETE 要求 `Origin` 等于站点自身 origin。页面用 localStorage 的 `msime-account` 记一下「这个浏览器登录过」，没登录过的访客不会每页都请求 `/api/me`；它只是提示，会话以 cookie 为准。
 
 Pages 运行时变量（生产环境）：

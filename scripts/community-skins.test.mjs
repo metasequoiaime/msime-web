@@ -10,6 +10,10 @@ import { MAX_SKIN_QUERY_BYTES, skinListPath, skinsQuery } from '../src/data/quer
 import { candidateSkinSchema, keyboardSkinDesignSchema } from '../src/data/schemas.ts';
 import { CANDIDATE_SKIN_CATEGORIES, CANDIDATE_SKIN_CATEGORY_LABELS } from '../src/data/skin-categories.ts';
 import { ART_HEIGHT, ART_WIDTH, keyboardArt, keyboardKeyPath, mayHavePhoto, MONOSPACED_FONT, readableSkinText, skinColor } from '../src/skins/keyboard-art.ts';
+import { unzipSync, strFromU8 } from 'fflate';
+import { candidateSkinArchive, downloadCandidateSkin } from '../src/skins/candidate-download.ts';
+import { ApiError } from '../src/data/account.ts';
+import { proxyApi, ACCESS_COOKIE } from '../shared/site-session.ts';
 
 const ORIGIN = 'https://api.msime.app';
 const KEYBOARD_ID = 'ea041e49-e1ab-48ff-8b06-942ec9c291b9';
@@ -329,4 +333,78 @@ test('key outlines match the App for every shape', () => {
   assert.equal(keyboardKeyPath(0, 0, 40, 20, 'rounded', 30), keyboardKeyPath(0, 0, 40, 20, 'capsule', 0), 'a radius larger than half the key is clamped');
   assert.match(keyboardKeyPath(0, 0, 40, 20, 'ticket', 4), /^M0 0H40V7\.6A2\.4 2\.4 0 0 0 40 12\.4/);
   assert.match(keyboardKeyPath(0, 0, 40, 20, 'pebble', 4), /^M14 0C33\.19\d* 0 40 0\.8 40 6C40 17 36 20 27\.2/);
+});
+
+const downloadPack = () => ({
+  id: CANDIDATE_ID,
+  package_id: 'sample-skin',
+  manifest: "schema_version = 2\nid = 'sample-skin'\nname = '合成皮肤'\npreview = 'images/preview.png'\n[license]\nassets = 'CC0-1.0'\n",
+  files: { 'images/preview.png': PNG, 'background.jpg': JPEG },
+});
+
+test('候选窗皮肤 ZIP 保留皮肤目录、原始清单和每张图片', () => {
+  const pack = downloadPack();
+  const archive = candidateSkinArchive(pack, CANDIDATE_ID);
+  assert.equal(archive.filename, 'sample-skin.zip');
+  const files = unzipSync(archive.bytes);
+  assert.deepEqual(Object.keys(files).sort(), ['sample-skin/background.jpg', 'sample-skin/images/preview.png', 'sample-skin/skin.toml']);
+  assert.equal(strFromU8(files['sample-skin/skin.toml']), pack.manifest);
+  for (const [path, data] of Object.entries(pack.files)) assert.deepEqual(Buffer.from(files[`sample-skin/${path}`]), Buffer.from(data, 'base64'));
+});
+
+test('拒绝错误作品、路径穿越、绝对路径、清单覆盖和非法编码', () => {
+  for (const path of ['../image.png', '/image.png', 'images/../../image.png', 'images//image.png', 'images\\image.png', 'C:/image.png', 'skin.toml', 'script.js', '__proto__', 'a/./image.jpg']) {
+    assert.throws(() => candidateSkinArchive({ ...downloadPack(), files: { [path]: PNG } }, CANDIDATE_ID), path);
+  }
+  for (const packageId of ['..', '../sample', '/sample', 'C:sample', 'sample/child', '.hidden']) assert.throws(() => candidateSkinArchive({ ...downloadPack(), package_id: packageId }, CANDIDATE_ID));
+  assert.throws(() => candidateSkinArchive(downloadPack(), KEYBOARD_ID));
+  assert.throws(() => candidateSkinArchive({ ...downloadPack(), manifest: "id = 'other'" }, CANDIDATE_ID));
+  for (const data of ['@@@', 'AAA', '', 'AAAA\n']) assert.throws(() => candidateSkinArchive({ ...downloadPack(), files: { 'preview.png': data } }, CANDIDATE_ID));
+});
+
+test('清单按 UTF-8 字节限长，图片数量、单图和整包均限长', () => {
+  const pack = downloadPack();
+  const image = Buffer.alloc(1 << 20).toString('base64');
+  assert.doesNotThrow(() => candidateSkinArchive({ ...pack, files: { 'a.png': image, 'b.png': image } }, CANDIDATE_ID));
+  for (const files of [{}, { 'a.png': image, 'b.png': image, 'c.png': PNG }, { 'a.png': Buffer.alloc((1 << 20) + 1).toString('base64') }, { 'a.png': PNG, 'b.png': PNG, 'c.png': PNG, 'd.png': PNG }]) assert.throws(() => candidateSkinArchive({ ...pack, files }, CANDIDATE_ID));
+  assert.throws(() => candidateSkinArchive({ ...pack, manifest: `${pack.manifest}#${'字'.repeat(22_000)}` }, CANDIDATE_ID));
+});
+
+test('下载通过同源会话代理 POST，保存 ZIP 并释放下载链接', async t => {
+  const calls = [];
+  const backend = async (url, init) => {
+    calls.push({ url, method: init.method });
+    assert.ok(new Headers(init.headers).has('Authorization'));
+    return Response.json(downloadPack());
+  };
+  t.mock.method(globalThis, 'fetch', async (path, init) => proxyApi({ request: new Request(`https://msime.app${path}`, { ...init, headers: { ...init.headers, Origin: 'https://msime.app', Cookie: `${ACCESS_COOKIE}=synthetic-access-token` } }), env: {} }, backend));
+  const link = { href: '', download: '', click: t.mock.fn(), remove: t.mock.fn() };
+  const before = globalThis.document;
+  globalThis.document = { createElement: () => link, body: { append: t.mock.fn() } };
+  t.after(() => { if (before === undefined) delete globalThis.document; else globalThis.document = before; });
+  let blob;
+  t.mock.method(URL, 'createObjectURL', value => { blob = value; return 'blob:synthetic'; });
+  const revoke = t.mock.method(URL, 'revokeObjectURL', () => {});
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  await downloadCandidateSkin(CANDIDATE_ID);
+  assert.deepEqual(calls, [{ url: `${ORIGIN}/v1/community/candidate-skins/${CANDIDATE_ID}/download`, method: 'POST' }]);
+  assert.equal(blob.type, 'application/zip');
+  assert.equal(strFromU8(unzipSync(new Uint8Array(await blob.arrayBuffer()))['sample-skin/skin.toml']), downloadPack().manifest);
+  assert.equal(link.download, 'sample-skin.zip');
+  assert.equal(link.click.mock.callCount(), 1);
+  assert.equal(link.remove.mock.callCount(), 1);
+  assert.equal(revoke.mock.callCount(), 0);
+  t.mock.timers.tick(60_000);
+  assert.equal(revoke.mock.callCount(), 1);
+});
+
+test('下载权限错误或上游失败不会生成文件，也不自动重放 POST', async t => {
+  const save = t.mock.method(URL, 'createObjectURL', () => { throw new Error('must not save'); });
+  for (const status of [401, 403, 404, 429, 503]) {
+    const request = t.mock.method(globalThis, 'fetch', async () => Response.json({ error: 'download_denied' }, { status }));
+    await assert.rejects(downloadCandidateSkin(CANDIDATE_ID), error => error instanceof ApiError && error.status === status);
+    assert.equal(request.mock.callCount(), 1);
+    request.mock.restore();
+  }
+  assert.equal(save.mock.callCount(), 0);
 });
