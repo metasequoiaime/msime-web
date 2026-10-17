@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-17T13:11:39.249Z",
-  "totalStars": 3843,
+  "generatedAt": "2026-10-17T16:39:12.184Z",
+  "totalStars": 3852,
   "repoCount": 8,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 3843
+      "stars": 3852
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-17",
-          "stars": 2959
+          "stars": 2965
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-17",
-          "stars": 765
+          "stars": 768
         }
       ]
     },
@@ -734,13 +734,13 @@
       ]
     }
   ],
-  "starDelta30d": 2350,
+  "starDelta30d": 2359,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 21982,
+      "contributions": 22034,
       "repos": 8
     },
     {
@@ -807,18 +807,18 @@
       "repos": 1
     },
     {
+      "login": "Komeiji-Shiki",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/84919145?v=4",
+      "url": "https://github.com/Komeiji-Shiki",
+      "contributions": 6,
+      "repos": 1
+    },
+    {
       "login": "PLOKMCHINA",
       "avatarUrl": "https://avatars.githubusercontent.com/u/136961193?v=4",
       "url": "https://github.com/PLOKMCHINA",
       "contributions": 6,
       "repos": 2
-    },
-    {
-      "login": "chr331",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/95268655?v=4",
-      "url": "https://github.com/chr331",
-      "contributions": 5,
-      "repos": 1
     }
   ]
 }
