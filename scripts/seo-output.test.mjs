@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import { parseHTML } from 'linkedom';
 import { seoPages, pageSeo, markdownPath, SITE_ORIGIN } from '../shared/site-seo.ts';
 import { onRequest } from '../functions/docs.ts';
+import { galleryImageBaseUrl } from '../src/gallery/items.ts';
 
 const read = path => readFileSync(`dist/${path}`, 'utf8');
 const publicPages = Object.entries(seoPages).filter(([, page]) => !page.noindex);
@@ -200,7 +201,9 @@ test('the header includes 水杉娘, and 开源代码 is a GitHub button there a
   }
 });
 
-test('the gallery exposes all illustrations and full previews without JavaScript in both locales', () => {
+test('the gallery exposes R2 thumbnails and full previews without JavaScript in both locales', () => {
+  assert.match(galleryImageBaseUrl, /^https:\/\/media\.msime\.app\/gallery\/[a-f0-9]{16}\/illustrations$/);
+  assert.ok(!existsSync('dist/gallery/illustrations'), 'gallery images are served by R2, outside the Pages bundle');
   for (const prefix of ['', '/zh-TW']) {
     const doc = document(`${prefix}/gallery/`);
     const cards = [...doc.querySelectorAll('#collection figure')];
@@ -212,8 +215,9 @@ test('the gallery exposes all illustrations and full previews without JavaScript
       assert.equal(image.getAttribute('loading'), 'lazy');
       assert.ok(image.getAttribute('alt').includes('水杉娘'));
       assert.ok(card.querySelector('figcaption').textContent.trim());
-      assert.match(preview, /^\/gallery\/illustrations\/.+-1536w\.webp$/);
-      assert.ok(existsSync(`dist${preview}`), preview);
+      assert.ok(preview.startsWith(`${galleryImageBaseUrl}/`));
+      assert.ok(preview.endsWith('-1536w.webp'));
+      assert.equal(image.getAttribute('src'), preview.replace(/-1536w\.webp$/, '-480w.webp'));
     }
     assert.equal(doc.querySelectorAll('.page-hero img').length, 4);
     assert.doesNotMatch(doc.querySelector('#root').textContent, /幼年/);

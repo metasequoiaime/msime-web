@@ -1,4 +1,4 @@
-import { galleryItems } from "./items";
+import { galleryImageBaseUrl, galleryItems } from "./items";
 import { SEASONS, SEASON_NAMES } from "../season";
 
 export const GALLERY_CATEGORIES = ["poses", "expressions", "outfits", "scenes"] as const;
@@ -28,7 +28,7 @@ const seasonOf = (item: typeof galleryItems[number]): GallerySeason => {
   return SUMMER_PALETTES.has(item.path) ? "summer" : "spring";
 };
 export const GALLERY_ITEMS: readonly GalleryItem[] = galleryItems.map(item => ({ ...item, season: seasonOf(item) }));
-export const imageUrl = (item: GalleryItem, width: 480 | 1536 = 480) => `/gallery/illustrations/${item.path}-${width}w.webp`;
+export const imageUrl = (item: GalleryItem, width: 480 | 1536 = 480) => `${galleryImageBaseUrl}/${item.path}-${width}w.webp`;
 export const SEASON_PORTRAITS = [
   { label: "春", caption: "新芽初生", name: "春-站立挥手", color: "#718c49" },
   { label: "夏", caption: "绿意正浓", name: "夏-站立挥手", color: "#397d64" },
