@@ -43,6 +43,25 @@ Biome 只开了 linter，formatter 处于关闭状态——仓库既有代码尚
 
 入口 HTML 里那段读主题的内联脚本必须逐字节照抄现有页面：CSP 不含 `unsafe-inline`，`scripts/csp-hashes.mjs` 在构建时按摘要放行，改动一个字符就会多出一条需要放行的摘要。
 
+## 水杉娘画廊图片
+
+画廊图片放在 Cloudflare R2 的 `msime` 桶，通过 `https://media.msime.app/gallery/<版本>/illustrations/` 访问，不放进 Git 或 Pages 构建产物。`src/gallery/items.ts` 固定当前图片版本及条目，季节配色分类在 `src/gallery/data.ts`。
+
+导入原画需要 `cwebp`：运行 `node scripts/generate-gallery.mjs <原画目录>`。脚本把 WebP 缩略图和大图写入忽略提交的 `output/gallery/illustrations/`，生成条目以及 `output/gallery/manifest.json`（公网地址、文件大小和 SHA256）。版本目录由文件名及内容摘要生成，替换图片会得到新地址。
+
+发布页面前，先按清单上传全部图片并通过公网地址核对文件摘要。每个文件的上传命令为：
+
+```sh
+wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
+  --config workers/dl/wrangler.jsonc --remote \
+  --file "output/gallery/illustrations/<路径>" \
+  --content-type image/webp --cache-control "public, max-age=31536000, immutable"
+```
+
+旧版本图片应保留，已发布页面和预览仍可能引用它们。构建只验证图片地址和页面结构，不需要 R2 写入凭据。
+
+画廊页底部的「表情包下载」提供 Telegram（长边 512px）和 Discord（320×320）两种规格的贴纸压缩包，同样放在 R2：`https://media.msime.app/gallery/stickers/<版本>/`。素材目录需包含 `telegram/`、`discord/` 两个 PNG 文件夹和写着使用许可的 `README.md`，运行 `node scripts/generate-stickers.mjs <贴纸目录>` 打包到忽略提交的 `output/stickers/`，同时生成 `src/gallery/stickers.ts` 和 `output/stickers/manifest.json`。压缩包用 Python 的 `zipfile` 生成，中文文件名带 UTF-8 标记，Windows 解压不会乱码。上传命令同上，把路径换成 `msime/gallery/stickers/<版本>/<文件名>`，`--content-type application/zip`。
+
 ## 发布新版本
 
 不需要手工改动。`.github/workflows/update-manifest.yml` 每 30 分钟把 `public/update.json` 同步到 [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows/releases) 版本号最高且含有效 Windows 安装包的已发布 release，有变化才提交。官网下载页和输入法设置中的“检查更新”都会读取这份文件。

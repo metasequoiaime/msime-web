@@ -163,6 +163,12 @@ const skinsRoute = createRoute({
   component: lazyRouteComponent(() => import("./page-skins"), "SkinsPage"),
 });
 
+const galleryRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/gallery",
+  component: lazyRouteComponent(() => import("./page-gallery"), "GalleryPage"),
+});
+
 const dictionariesRoute = createRoute({
   getParentRoute: () => shellRoute,
   path: "/dictionaries",
@@ -196,6 +202,7 @@ const traditionalRoutes = [
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/feedback", component: lazyRouteComponent(() => import("./page-feedback"), "FeedbackPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/words", component: lazyRouteComponent(() => import("./page-words"), "WordsPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/skins", component: lazyRouteComponent(() => import("./page-skins"), "SkinsPage") }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/gallery", component: lazyRouteComponent(() => import("./page-gallery"), "GalleryPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/dictionaries", component: lazyRouteComponent(() => import("./page-dictionaries"), "DictionariesPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/plugins", component: lazyRouteComponent(() => import("./page-plugins"), "PluginsPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/me", component: lazyRouteComponent(() => import("./page-me"), "MePage") }),
@@ -208,7 +215,7 @@ const traditionalRoutes = [
 ];
 
 const routeTree = rootRoute.addChildren([
-  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, priceRoute, privacyRoute, feedbackRoute, wordsRoute, skinsRoute, dictionariesRoute, pluginsRoute, meRoute]),
+  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, priceRoute, privacyRoute, feedbackRoute, wordsRoute, skinsRoute, galleryRoute, dictionariesRoute, pluginsRoute, meRoute]),
   resumeRoute,
 ]);
 
