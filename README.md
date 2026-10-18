@@ -60,6 +60,8 @@ wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
 
 旧版本图片应保留，已发布页面和预览仍可能引用它们。构建只验证图片地址和页面结构，不需要 R2 写入凭据。
 
+画廊页底部的「表情包下载」提供 Telegram（长边 512px）和 Discord（320×320）两种规格的贴纸压缩包，同样放在 R2：`https://media.msime.app/gallery/stickers/<版本>/`。素材目录需包含 `telegram/`、`discord/` 两个 PNG 文件夹和写着使用许可的 `README.md`，运行 `node scripts/generate-stickers.mjs <贴纸目录>` 打包到忽略提交的 `output/stickers/`，同时生成 `src/gallery/stickers.ts` 和 `output/stickers/manifest.json`。压缩包用 Python 的 `zipfile` 生成，中文文件名带 UTF-8 标记，Windows 解压不会乱码。上传命令同上，把路径换成 `msime/gallery/stickers/<版本>/<文件名>`，`--content-type application/zip`。
+
 ## 发布新版本
 
 不需要手工改动。`.github/workflows/update-manifest.yml` 每 30 分钟把 `public/update.json` 同步到 [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows/releases) 版本号最高且含有效 Windows 安装包的已发布 release，有变化才提交。官网下载页和输入法设置中的“检查更新”都会读取这份文件。

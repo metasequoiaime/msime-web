@@ -3,7 +3,8 @@ import { CATEGORY_NAMES, GALLERY_CATEGORIES, GALLERY_ITEMS, GALLERY_SEASONS, ima
 import { GalleryViewer } from "./gallery/viewer";
 import { GalleryFilters } from "./gallery/filters";
 import { usePageMeta } from "./page-meta";
-import { ArrowRightIcon, Container, SearchIcon } from "./ui";
+import { stickerBaseUrl, stickerPacks } from "./gallery/stickers";
+import { ArrowRightIcon, Container, DownloadIcon, SearchIcon } from "./ui";
 import { useLocale } from "./use-locale";
 import { usePageSearch } from "./use-page-search";
 
@@ -74,6 +75,28 @@ export function GalleryPage() {
           </figure></li>)}
         </ul> : <div className="py-20 text-center"><p className="m-0 text-body">{t("没有符合筛选条件的插画，试试其他季节、分类或关键词。")}</p><button type="button" className="mt-4 min-h-11 cursor-pointer rounded-full bg-accent-soft px-5 text-sm text-accent-ink" onClick={() => { setQuery(""); update({ category: undefined, season: undefined }, false, false); }}>{t("查看全部插画")}</button></div>}
         <p className="mt-8 mb-0 text-center text-xs leading-7 text-muted">{t("点击插画可以放大欣赏。更多水杉娘的故事，慢慢收集中。")}</p>
+      </Container>
+      <Container as="section" id="stickers" className="scroll-mt-28 pt-[clamp(40px,6vw,72px)] pb-[clamp(40px,6vw,72px)]">
+        <p className="m-0 text-xs font-medium tracking-[.14em] text-accent-ink">STICKERS</p>
+        <h2 id="stickers-title" className="mt-2 mb-3 font-heading text-[26px] font-bold text-ink">{t("表情包下载")}</h2>
+        <p className="m-0 max-w-[40em] text-sm leading-7 text-body">{t(`把水杉娘带进聊天：${stickerPacks[0].count} 个表情，已抠成透明底并加了白边，按平台规格打包。`)}</p>
+        <ul className="m-0 mt-6 grid list-none gap-4 p-0 sm:grid-cols-2">
+          {stickerPacks.map(pack => <li key={pack.id} className="flex items-center justify-between gap-4 rounded-tile bg-panel px-5 py-4 shadow-hair">
+            <div className="min-w-0">
+              <p className="m-0 font-heading text-base font-bold text-ink">{pack.label}</p>
+              <p className="mt-1 mb-0 text-xs text-muted">{t(`${pack.count} 个 · ${pack.spec} · ${(pack.size / 1024 / 1024).toFixed(1)} MB`)}</p>
+            </div>
+            <a href={`${stickerBaseUrl}/${pack.file}`} download className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-btn px-5 text-sm font-semibold text-btn-fg no-underline transition-opacity hover:opacity-85" aria-label={t(`下载 ${pack.label} 表情包`)}><DownloadIcon size={16} />{t("下载")}</a>
+          </li>)}
+        </ul>
+        <div className="mt-6 rounded-tile bg-panel px-5 py-4 text-xs leading-6 text-body shadow-hair">
+          <p className="m-0 font-medium text-ink">{t("使用许可")}</p>
+          <ul className="m-0 mt-1 pl-5">
+            <li>{t("非商业使用（聊天、社区、头像、二次创作）无需申请，转载或改编请注明「水杉娘 © 水杉输入法」。")}</li>
+            <li>{t("改编后再分享，请以相同方式共享；商业用途请先联系我们，也请勿暗示你的作品是官方发布。")}</li>
+            <li>{t("这些图由 AI 辅助生成后人工筛选和处理，各地对 AI 生成图像的著作权认定不同，以上是我们的使用意愿。")}</li>
+          </ul>
+        </div>
       </Container>
     </main>
     {preview && <GalleryViewer items={preview.items} initialIndex={preview.index} onClose={() => setPreview(null)} />}

@@ -4,7 +4,8 @@ import { test } from 'node:test';
 import { parseHTML } from 'linkedom';
 import { seoPages, pageSeo, markdownPath, SITE_ORIGIN } from '../shared/site-seo.ts';
 import { onRequest } from '../functions/docs.ts';
-import { galleryImageBaseUrl } from '../src/gallery/items.ts';
+import { galleryImageBaseUrl, galleryItems } from '../src/gallery/items.ts';
+import { stickerBaseUrl, stickerPacks } from '../src/gallery/stickers.ts';
 
 const read = path => readFileSync(`dist/${path}`, 'utf8');
 const publicPages = Object.entries(seoPages).filter(([, page]) => !page.noindex);
@@ -201,13 +202,14 @@ test('the header includes 水杉娘, and 开源代码 is a GitHub button there a
   }
 });
 
-test('the gallery exposes R2 thumbnails and full previews without JavaScript in both locales', () => {
+test('the gallery exposes R2 thumbnails, full previews and sticker downloads without JavaScript in both locales', () => {
   assert.match(galleryImageBaseUrl, /^https:\/\/media\.msime\.app\/gallery\/[a-f0-9]{16}\/illustrations$/);
   assert.ok(!existsSync('dist/gallery/illustrations'), 'gallery images are served by R2, outside the Pages bundle');
+  assert.match(stickerBaseUrl, /^https:\/\/media\.msime\.app\/gallery\/stickers\/[a-f0-9]{16}$/);
   for (const prefix of ['', '/zh-TW']) {
     const doc = document(`${prefix}/gallery/`);
     const cards = [...doc.querySelectorAll('#collection figure')];
-    assert.equal(cards.length, 134);
+    assert.equal(cards.length, galleryItems.length);
     assert.equal(new Set(cards.map(card => card.querySelector('a').getAttribute('href'))).size, cards.length);
     for (const card of cards) {
       const image = card.querySelector('img');
@@ -220,6 +222,13 @@ test('the gallery exposes R2 thumbnails and full previews without JavaScript in 
       assert.equal(image.getAttribute('src'), preview.replace(/-1536w\.webp$/, '-480w.webp'));
     }
     assert.equal(doc.querySelectorAll('.page-hero img').length, 4);
+    const stickerLinks = [...doc.querySelectorAll('#stickers a[download]')];
+    assert.equal(stickerLinks.length, stickerPacks.length);
+    for (const [index, link] of stickerLinks.entries()) {
+      assert.equal(link.getAttribute('href'), `${stickerBaseUrl}/${stickerPacks[index].file}`);
+      assert.ok(link.getAttribute('href').endsWith('.zip'));
+    }
+    assert.ok(doc.querySelector('#stickers').textContent.includes('水杉娘 ©'));
     assert.doesNotMatch(doc.querySelector('#root').textContent, /幼年/);
     for (const menu of ['.nav-list', '#nav-menu']) {
       assert.equal(doc.querySelector(`${menu} a[href="${prefix}/gallery/"]`).getAttribute('aria-current'), 'page');
