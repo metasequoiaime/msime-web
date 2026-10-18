@@ -1,22 +1,22 @@
 {
-  "generatedAt": "2026-10-18T13:17:24.507Z",
+  "generatedAt": "2026-10-18T18:12:35.341Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
-      "version": "0.10.1",
-      "releaseUrl": "https://github.com/metasequoiaime/MSIME-Windows/releases/tag/v0.10.1",
-      "publishedAt": "2026-10-11T20:39:29Z",
+      "version": "0.11.0",
+      "releaseUrl": "https://github.com/metasequoiaime/MSIME-Windows/releases/tag/v0.11.0",
+      "publishedAt": "2026-10-18T17:17:05Z",
       "prerelease": false,
       "signed": true,
       "downloads": [
         {
           "label": "安装程序",
           "arch": "x64",
-          "name": "MetasequoiaIME_Setup_v0.10.1.exe",
-          "url": "https://github.com/metasequoiaime/MSIME-Windows/releases/download/v0.10.1/MetasequoiaIME_Setup_v0.10.1.exe",
-          "size": 90173264,
-          "sha256": "6bd2484516cf374b1dbd1aad4e5eabe1bdfa93af04f9d745dd8714fdbf543c0b",
-          "mirrorUrl": "https://dl.msime.app/releases/MSIME-Windows/v0.10.1/MetasequoiaIME_Setup_v0.10.1.exe"
+          "name": "MetasequoiaIME_Setup_v0.11.0.exe",
+          "url": "https://github.com/metasequoiaime/MSIME-Windows/releases/download/v0.11.0/MetasequoiaIME_Setup_v0.11.0.exe",
+          "size": 108594544,
+          "sha256": "91c0809c8eafddea29a029fe0496ee7bca87ada1e4261e535f399626633bca4f",
+          "mirrorUrl": "https://dl.msime.app/releases/MSIME-Windows/v0.11.0/MetasequoiaIME_Setup_v0.11.0.exe"
         }
       ],
       "preview": null
