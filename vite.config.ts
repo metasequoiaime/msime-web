@@ -25,6 +25,7 @@ export default defineConfig({
         feedback: resolve(projectRoot, "feedback/index.html"),
         words: resolve(projectRoot, "words/index.html"),
         skins: resolve(projectRoot, "skins/index.html"),
+        gallery: resolve(projectRoot, "gallery/index.html"),
         dictionaries: resolve(projectRoot, "dictionaries/index.html"),
         plugins: resolve(projectRoot, "plugins/index.html"),
         me: resolve(projectRoot, "me/index.html"),

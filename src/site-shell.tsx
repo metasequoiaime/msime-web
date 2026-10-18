@@ -16,7 +16,7 @@ import { HELPCODE_LABELS, HELPCODE_SCHEMES, SHUANGPIN_LAYOUTS, WEB_IME_LABELS, W
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, KeyboardIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
-  to: "/" | "/download/" | "/skins/" | "/docs/$guide/" | "/feedback/" | "/about/" | "/code/";
+  to: "/" | "/download/" | "/skins/" | "/gallery/" | "/docs/$guide/" | "/feedback/" | "/about/" | "/code/";
   label: string;
   /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
   github?: boolean;
@@ -27,6 +27,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
   { to: "/download/", label: "下载" },
   { to: "/skins/", label: "社区" },
+  { to: "/gallery/", label: "水杉娘" },
   { to: "/docs/$guide/", label: "文档" },
   { to: "/feedback/", label: "反馈" },
   { to: "/about/", label: "关于" },
@@ -771,6 +772,7 @@ function SiteFooter({ inert }: { inert: boolean }) {
           </FooterColumn>
 
           <FooterColumn title="项目">
+            <Link className={footerLink} to="/gallery/">{t("水杉娘画廊")}</Link>
             <Link className={footerLink} to="/code/">{t("开源代码")}</Link>
             <Link className={footerLink} to="/about/">{t("关于")}</Link>
             <Link className={footerLink} to="/privacy/">{t("隐私说明")}</Link>
