@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T06:58:40.987Z",
+  "generatedAt": "2026-10-19T16:46:43.654Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -23,20 +23,20 @@
     },
     "macos": {
       "repository": "metasequoiaime/msime",
-      "version": "0.53.0",
-      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.53.0",
-      "publishedAt": "2026-10-13T16:37:17Z",
+      "version": "0.54.0",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.54.0",
+      "publishedAt": "2026-10-19T16:46:20Z",
       "prerelease": false,
       "signed": null,
       "downloads": [
         {
           "label": "通用 · dmg",
           "arch": "Universal",
-          "name": "msime-macos-0.53.0-universal.dmg",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.53.0/msime-macos-0.53.0-universal.dmg",
-          "size": 119544122,
-          "sha256": "5b6fb4bcbc3004d7a250bf516b78001597a73942096e21f2891ba6c01309f636",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.53.0/msime-macos-0.53.0-universal.dmg"
+          "name": "msime-macos-0.54.0-universal.dmg",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.54.0/msime-macos-0.54.0-universal.dmg",
+          "size": 129119706,
+          "sha256": "738e9a190ca5a4445d89417bc288e875c1b0946d79378f02b58091ae1ba56b11",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.54.0/msime-macos-0.54.0-universal.dmg"
         }
       ],
       "preview": null
