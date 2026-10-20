@@ -29,6 +29,20 @@ test('download statistics validate totals and degrade independently of the insta
   }
 });
 
+test('Windows experimental releases degrade independently of stable releases and download totals', () => {
+  const experimental = { ...platforms.platforms.windows, version: '0.2.1', signed: null };
+  const withExperimental = value => ({ ...platforms, platforms: { ...platforms.platforms, windows: { ...platforms.platforms.windows, experimental: value } } });
+  const valid = platformsSchema.parse(withExperimental(experimental));
+  assert.equal(valid.platforms.windows.experimental.version, '0.2.1');
+  assert.deepEqual(valid.downloadStats, platforms.downloadStats);
+  for (const value of [undefined, null, { ...experimental, downloads: [] }, { ...experimental, releaseUrl: 'https://evil.example/release' }]) {
+    const parsed = platformsSchema.parse(withExperimental(value));
+    assert.equal(parsed.platforms.windows.experimental, null);
+    assert.equal(parsed.platforms.windows.version, platforms.platforms.windows.version);
+    assert.deepEqual(parsed.downloadStats, platforms.downloadStats);
+  }
+});
+
 test('adapters only accept same-origin paths, and site APIs only under /api/', () => {
   for (const url of ['https://evil.example/data.json', '//evil.example/data.json', 'data.json']) {
     assert.throws(() => staticSnapshot(url, identity), /same-origin/);

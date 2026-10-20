@@ -62,6 +62,8 @@ export const platformsSchema = z.object({
       prerelease: z.boolean().catch(false),
       // 预览版坏了只是预览版缺席，不拖垮正式版。
       preview: releaseSchema.nullable().catch(null),
+      // 另一条产品线的测试版，目前只有 Windows：主仓库的 Rust 版（见 scripts/generate-platforms.mjs 的 EXPERIMENTAL）。旧清单没有这个键，坏了或缺了都只是这一块不显示。
+      experimental: releaseSchema.nullable().catch(null),
     })
   ),
   /* 三个平台共用同一份词库，单独发布，所以放在 platforms 之外。 */
@@ -95,4 +97,5 @@ export type PlatformsManifest = z.infer<typeof platformsSchema>;
 export type Platforms = PlatformsManifest["platforms"];
 export type PlatformRelease = NonNullable<Platforms[ReleasePlatform]>;
 export type PreviewRelease = NonNullable<PlatformRelease["preview"]>;
+export type ExperimentalRelease = NonNullable<PlatformRelease["experimental"]>;
 export type Dictionary = NonNullable<z.infer<typeof platformsSchema>["dictionary"]>;
