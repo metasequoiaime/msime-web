@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-20T02:18:58.227Z",
+  "generatedAt": "2026-10-20T09:12:50.810Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -40,19 +40,19 @@
         }
       ],
       "preview": {
-        "version": "0.54.1-beta",
-        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.54.1-beta",
-        "publishedAt": "2026-10-20T01:34:45Z",
+        "version": "0.54.2-beta",
+        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.54.2-beta",
+        "publishedAt": "2026-10-20T09:08:02Z",
         "signed": null,
         "downloads": [
           {
             "label": "通用 · dmg",
             "arch": "Universal",
-            "name": "msime-macos-0.54.1-universal.dmg",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.54.1-beta/msime-macos-0.54.1-universal.dmg",
-            "size": 127380402,
-            "sha256": "e1440167ef6ba6da7b13ef09708e53541b8442e7f038f18d315fa3db13bfb111",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.54.1-beta/msime-macos-0.54.1-universal.dmg"
+            "name": "msime-macos-0.54.2-universal.dmg",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.54.2-beta/msime-macos-0.54.2-universal.dmg",
+            "size": 130141923,
+            "sha256": "d349decd91d59d12fad26dacfbb3187a3d1aaf81ca7cc83e904361f471fec0ed",
+            "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.54.2-beta/msime-macos-0.54.2-universal.dmg"
           }
         ]
       }
