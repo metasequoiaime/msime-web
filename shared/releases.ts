@@ -55,9 +55,12 @@ export function releasePlatforms(release: { tag_name: string; assets: { name: st
 /** `ios-v0.50.0-build.14` → `0.50.0-build.14`; `web-engine-v0.1.1` → `0.1.1`; `v0.9.1` → `0.9.1`. */
 export const tagVersion = (tag: string) => tag.replace(TAG_PREFIX, "").replace(/^v/i, "");
 
-/** Release notes without HTML comments (the release workflow's machine markers), cut to `RELEASE_BODY_LIMIT` UTF-8 bytes at a line break where one is close. */
+/** The "which one to download" table the release workflows put at the top of a release (msime's `edition_bundle.py download-guide`), markers included. Only a block with both markers is removed; a lone opening marker is an ordinary comment and the text after it stays. */
+const DOWNLOAD_GUIDE = /<!--\s*msime-download-guide\s*-->[\s\S]*?<!--\s*\/msime-download-guide\s*-->/g;
+
+/** Release notes without the download guide (the site and the apps have their own download buttons) and without HTML comments (the release workflow's machine markers), cut to `RELEASE_BODY_LIMIT` UTF-8 bytes at a line break where one is close. The guide goes first, while its markers are still there to find it. */
 export function releaseBody(raw: string | null | undefined): { body: string; truncated: boolean } {
-  const text = (raw ?? "").replace(/<!--[\s\S]*?(?:-->|$)/g, "").replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+  const text = (raw ?? "").replace(DOWNLOAD_GUIDE, "").replace(/<!--[\s\S]*?(?:-->|$)/g, "").replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
   const bytes = new TextEncoder().encode(text);
   if (bytes.length <= RELEASE_BODY_LIMIT) return { body: text, truncated: false };
   // Decoding a byte prefix can split the last character; the decoder turns the fragment into U+FFFD, which is dropped.

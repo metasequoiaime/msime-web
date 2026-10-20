@@ -85,6 +85,34 @@ test('notes lose machine comments and are cut to 8 KiB on a character boundary',
   assert.ok(lines.body.endsWith(lines.body.split('\n').at(-1)) && /- change number \d+$/.test(lines.body), 'cuts at a line break when one is close');
 });
 
+test('notes lose the download guide the release workflow puts at the top, markers and all', () => {
+  // Shaped like macos-v0.54.1-beta (two of its six table rows kept).
+  const asset = name => `https://github.com/metasequoiaime/msime/releases/download/macos-v0.54.1-beta/${name}`;
+  const guide = [
+    '<!-- msime-download-guide -->',
+    '## 下载',
+    '',
+    '大多数人下载第一行的**水杉输入法**（`msime-macos-0.54.1-universal.dmg`）就行：它是完整版，包含全部输入方案。其他版本只带其中一部分方案，可以和完整版同时安装。每个安装包都同时支持 Apple 芯片和 Intel 芯片的 Mac。',
+    '',
+    '| 版本 | 安装包 |',
+    '| --- | --- |',
+    `| **水杉输入法**（完整版，推荐） | [msime-macos-0.54.1-universal.dmg](${asset('msime-macos-0.54.1-universal.dmg')}) |`,
+    `| 水杉五笔 | [msime-macos-wubi-0.54.1-universal.dmg](${asset('msime-macos-wubi-0.54.1-universal.dmg')}) |`,
+    '',
+    '打开 DMG，把应用拖进「应用程序」，再打开它一次完成安装。`SHA256SUMS` 是这些安装包的 SHA-256 校验值。',
+    '',
+    '这是预览版，Homebrew 只提供正式版。',
+    '<!-- /msime-download-guide -->',
+  ].join('\n');
+  const notes = '## v0.54.1-beta 更新内容\n\n### 🪟 设置页：液态玻璃外观与顶部标签全面改版\n\n- 设置侧栏改为平铺菜单，去掉分类标题和组间留白，菜单较长时不用再额外滚动。(#8628, #8766)';
+  assert.deepEqual(releaseBody(`${guide}\n\n${notes}`), { body: notes, truncated: false });
+  assert.deepEqual(releaseBody(`${guide.replaceAll('\n', '\r\n')}\r\n\r\n${notes.replaceAll('\n', '\r\n')}`), { body: notes, truncated: false }, 'CRLF bodies too');
+  const [item] = normalizeRelease('msime', release('msime', 'macos-v0.54.1-beta', ['msime-macos-0.54.1-universal.dmg'], { body: `${guide}\n\n${notes}` }));
+  assert.equal(item.platform, 'macos');
+  assert.equal(item.body, notes, '/api/releases serves the notes without the guide');
+  assert.deepEqual(releaseBody('<!-- msime-download-guide -->\n## Changes\n- fix'), { body: '## Changes\n- fix', truncated: false }, 'an opening marker without its closing one removes nothing but itself');
+});
+
 test('the sweep reads all three repositories, follows one extra page and sorts newest first', async () => {
   const urls = [];
   const shifted = release('msime', 'ios-v0.50.0-build.14', ['MetasequoiaIME-v0.50.0-build.14-ios-testflight.ipa'], { published_at: '2026-09-29T00:00:00Z' });
