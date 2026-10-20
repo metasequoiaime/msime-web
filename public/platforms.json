@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-20T10:08:59.706Z",
+  "generatedAt": "2026-10-20T11:26:08.225Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -412,9 +412,9 @@
     },
     "android": {
       "repository": "metasequoiaime/msime",
-      "version": "0.4.2",
-      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/android-v0.4.2",
-      "publishedAt": "2026-10-15T12:29:26Z",
+      "version": "0.5.0",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/android-v0.5.0",
+      "publishedAt": "2026-10-20T11:23:20Z",
       "prerelease": false,
       "signed": null,
       "downloads": [
@@ -422,55 +422,55 @@
           "label": "完整版 · apk",
           "arch": "arm64",
           "name": "msime-android.apk",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.4.2/msime-android.apk",
-          "size": 123495063,
-          "sha256": "a7b91ed4556a50b61bbce579957d465152864f7d367287a9dc70ef7b0ad5dc12",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.4.2/msime-android.apk"
+          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.5.0/msime-android.apk",
+          "size": 131047864,
+          "sha256": "924d1727b9ecd1099c7a96d1acaadec4a9cfc95c8a54d2f075e21c2a0a3238a1",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.5.0/msime-android.apk"
         },
         {
           "label": "水杉拼音 · apk",
           "arch": "arm64",
           "name": "msime-android-pinyin.apk",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.4.2/msime-android-pinyin.apk",
-          "size": 123495063,
-          "sha256": "bebeaae82aaaecfd2c8b5f1609f153268f69dade5d9e21e54bc1aa930b06db35",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.4.2/msime-android-pinyin.apk"
+          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.5.0/msime-android-pinyin.apk",
+          "size": 131047864,
+          "sha256": "5b20555870aa419c14c1f7b86a467204953b68f8bd2a63def2e8f187412f0e62",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.5.0/msime-android-pinyin.apk"
         },
         {
           "label": "水杉五笔 · apk",
           "arch": "arm64",
           "name": "msime-android-wubi.apk",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.4.2/msime-android-wubi.apk",
-          "size": 150656266,
-          "sha256": "e71689fccee8b912261315e054a96f14c917ae94210a6871eb0be0fcfc4d27e0",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.4.2/msime-android-wubi.apk"
+          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.5.0/msime-android-wubi.apk",
+          "size": 158213163,
+          "sha256": "ebe2c5d4d86cd390dfc78ee7e258488ea50ace33d75232859c0aa352c5ef65f8",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.5.0/msime-android-wubi.apk"
         },
         {
           "label": "水杉日语 · apk",
           "arch": "arm64",
           "name": "msime-android-japanese.apk",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.4.2/msime-android-japanese.apk",
-          "size": 105349804,
-          "sha256": "65bed2f5464aa154f9ad0960577cdda1a814b093cfbda0dacd7d3d634f948e1c",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.4.2/msime-android-japanese.apk"
+          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.5.0/msime-android-japanese.apk",
+          "size": 112906701,
+          "sha256": "5caccb12f21ac2309bed2483eebe4dc153467692f9e87d45e3d7cc1618280a4e",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.5.0/msime-android-japanese.apk"
         },
         {
           "label": "水杉越南语 · apk",
           "arch": "arm64",
           "name": "msime-android-vietnamese.apk",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.4.2/msime-android-vietnamese.apk",
-          "size": 85496224,
-          "sha256": "40386940945bc912827248dade7f62798153632df2f50adb26170f218fd6862d",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.4.2/msime-android-vietnamese.apk"
+          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.5.0/msime-android-vietnamese.apk",
+          "size": 93053121,
+          "sha256": "ed0bf206d81ee719a9f83ec9eb6cd9d88065d348b22b0cfb24bb733c2e7e800e",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.5.0/msime-android-vietnamese.apk"
         },
         {
           "label": "水杉藏文 · apk",
           "arch": "arm64",
           "name": "msime-android-tibetan.apk",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.4.2/msime-android-tibetan.apk",
-          "size": 85496224,
-          "sha256": "d436776f504c4638257736b4798d5b642c8f28cfecb85b49cf571dd923890b64",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.4.2/msime-android-tibetan.apk"
+          "url": "https://github.com/metasequoiaime/msime/releases/download/android-v0.5.0/msime-android-tibetan.apk",
+          "size": 93053121,
+          "sha256": "e85d3957e7e66ad60957d924aee27cbd149c42b6fbe518dc0f102675101d46bb",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.5.0/msime-android-tibetan.apk"
         }
       ],
       "preview": null
