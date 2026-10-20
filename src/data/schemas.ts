@@ -174,6 +174,8 @@ export const candidateSkinSchema = z.object({
   /** The asset licence the author declared, e.g. `CC-BY-4.0`. */
   license: z.string(),
   size: count,
+  /** How many images the package holds (the preview included), which tells whether it has a decoration and a background image; absent in a copy cached before the Function kept it. */
+  fileCount: count.optional(),
   downloads: count,
   ratingCount: count,
   ratingAverage,
@@ -261,6 +263,7 @@ export const v1CandidateSkinSchema = z.object({
   version: z.string().max(64),
   license: z.object({ assets: z.string() }),
   size: count,
+  file_count: count.optional().catch(undefined),
   downloads: count,
   created_at: z.string(),
   /** A category the site does not know yet reads as `other`, as in the public list. */

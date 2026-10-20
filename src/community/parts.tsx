@@ -148,6 +148,9 @@ export function StatusCard({ children, busy = false, compact = false }: { childr
 // Equal rows once there is room for multiple columns; stacked mobile cards keep their natural height.
 export const cardGridClass = "m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4 p-0 sm:auto-rows-fr";
 
+/** The grid of the large candidate skin cards: one column, two once the page is wide enough for each card to show its preview at a useful size. */
+export const wideCardGridClass = "m-0 grid list-none grid-cols-1 gap-5 p-0 xl:auto-rows-fr xl:grid-cols-2";
+
 type Pages<T> = UseInfiniteQueryResult<InfiniteData<{ items: T[]; nextOffset: number | null; stale?: boolean }>>;
 
 /**

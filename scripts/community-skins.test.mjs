@@ -92,7 +92,7 @@ test('candidate skins are re-keyed with their asset licence and category', async
   const urls = [];
   const page = await loadCandidateSkins(ORIGIN, { offset: 0, q: '猫' }, async url => { urls.push(url); return Response.json({ skins: [backendCandidate()], has_more: false }); });
   assert.deepEqual(urls, [`${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB&include=category`], 'the category is always asked for');
-  assert.deepEqual(page, { items: [{ id: CANDIDATE_ID, name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: 'CC-BY-4.0', size: 13645, downloads: 0, ratingCount: 0, ratingAverage: 0, createdAt: '2026-10-01T06:47:24.764127Z', category: 'other' }], nextOffset: null, stale: false });
+  assert.deepEqual(page, { items: [{ id: CANDIDATE_ID, name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: 'CC-BY-4.0', size: 13645, fileCount: 3, downloads: 0, ratingCount: 0, ratingAverage: 0, createdAt: '2026-10-01T06:47:24.764127Z', category: 'other' }], nextOffset: null, stale: false });
 });
 
 test('a candidate category filter is forwarded, and a category the site does not know yet reads as other', async () => {
@@ -194,7 +194,7 @@ test('the image Functions serve decoded bytes with long caching and reject anyth
   assert.equal(photo.headers.get('X-Content-Type-Options'), 'nosniff');
   assert.deepEqual(Buffer.from(await photo.arrayBuffer()).toString('base64'), JPEG);
   await call(keyboardPhoto, `/api/skins/keyboard/${KEYBOARD_ID}/photo`, { params: { id: KEYBOARD_ID } });
-  const preview = await call(candidatePreview, `/api/skins/candidate/${CANDIDATE_ID}/preview?v=1.0.0`, { params: { id: CANDIDATE_ID } });
+  const preview = await call(candidatePreview, `/api/skins/candidate/${CANDIDATE_ID}/preview?v=1.0.0-13645`, { params: { id: CANDIDATE_ID } });
   assert.equal(preview.headers.get('Content-Type'), 'image/png');
   assert.equal(preview.headers.get('Cache-Control'), 'public, max-age=86400');
   assert.deepEqual(urls, [`${ORIGIN}/v1/community/skins/${KEYBOARD_ID}`, `${ORIGIN}/v1/community/candidate-skins/${CANDIDATE_ID}/preview`], 'the second photo request is served from the edge cache');
