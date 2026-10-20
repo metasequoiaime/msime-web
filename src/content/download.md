@@ -159,7 +159,14 @@ curl -fsSL https://msime.app/install.sh | sh
 
 #### 其他发行版
 
-用本页下载区的安装包：Debian 系用 `.deb`（`sudo apt install ./<文件名>.deb`），Fedora 等 RPM 系用 `.rpm`（`sudo dnf install ./<文件名>.rpm`）；`.tar.gz` 只适用于使用 Debian 目录布局、不经 apt 安装的系统，需要自行安装依赖。这些包不会自动更新，新版本发布后要重新下载安装。
+用本页下载区的安装包，先按系统选格式（`ldd --version` 的第一行是 glibc 版本）：
+
+- Debian 12、Ubuntu 22.04 和更新的版本，以及基于它们的发行版：`.deb`，用 `sudo apt install ./<文件名>.deb` 安装，依赖由 apt 一并装好。
+- Fedora 44：`.rpm`，用 `sudo dnf install ./<文件名>.rpm` 安装。它在 Fedora 44 上构建，其他 RPM 系没有验证过；Fedora 43 和 openSUSE 用上面的软件源。
+- glibc 2.28 到 2.34 的 Debian 系（Debian 10、Debian 11、Ubuntu 20.04、UOS 20 专业版这一类）：装不上上面的 `.deb`，用标着 glibc 2.28–2.34 的 legacy `.deb`。它只有水杉输入法（完整版）的 IBus 输入法，没有设置窗口和 Fcitx5 插件，先 `sudo apt install ibus` 再装，首次配置只能在终端运行 `msime-linux-setup --download`。
+- `.tar.gz` 和 `.deb` 是同一套文件，同样只适用于 Debian 12、Ubuntu 22.04 和更新的版本，给不经 apt 安装的场合用：没有依赖声明和卸载入口，用 `sudo tar -xzf <文件名> --strip-components=1 -C /` 解开，依赖要自行安装。它按 Debian 的库目录布局，Arch、Fedora 上的 Fcitx5 找不到它的插件。
+
+输入法框架要 IBus 1.5.20 或 Fcitx5 5.0.20 以上（legacy 包要 IBus 1.5.19 以上）；只有 fcitx 4 的系统（UOS 20、麒麟 V10 默认如此）先改用 IBus。这些包不会自动更新，新版本发布后要重新下载安装。
 
 源码在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/develop/platforms/linux)。
 
