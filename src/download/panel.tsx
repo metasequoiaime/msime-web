@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform, ReleasePlatform } from "../platform.ts";
@@ -5,16 +6,16 @@ import { useDownloadMirrorsQuery } from "../data/queries";
 import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, copyText, cx, ExternalIcon, GitHubIcon, Pill, PlatformIcon, QQIcon, useToast } from "../ui";
 import { useLocale } from "../use-locale";
 import { reportMirrorDownload } from "../../shared/download-events";
+import { describeLinuxPackage, detectArm64, pickPrimary } from "./linux-primary";
 import { groupByArch, readableSize } from "./template";
 
 /** The Windows installer is also uploaded to this QQ group's files, for visitors who cannot reach GitHub quickly; joining the group also puts them where feedback is answered. */
 const QQ_GROUP = "829919142";
 const QUARK_CODE = "gdaa";
 
-// 系统要求是产品决策，不在产物里，只能写下来。Windows 的要求选择卡上已经写成「Windows 10/11」，按钮旁不再重复。
+// 系统要求是产品决策，不在产物里，只能写下来。Windows 的要求选择卡上已经写成「Windows 10/11」，按钮旁不再重复。Linux 的系统要求随包而变，写在按钮上，按钮下面另有一行指向其他安装包（`LinuxOthers`）。
 const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
   macos: "适用于 macOS 12 及以上",
-  linux: "适用于使用 Fcitx5 或 IBus 的桌面环境",
   android: "适用于 Android 9 及以上；测试版，需允许安装未知来源应用",
   ios: "适用于 iOS 17 及以上",
   harmony: "开发中，尚未发布安装包",
@@ -91,11 +92,11 @@ function MirrorAction({ platform, version, entry, className }: { platform: Relea
   );
 }
 
-/* 主推那个之外的包，按架构分组收进折叠区。正式版和预览版各用一份。有国内镜像的包在大小前面多一个「国内镜像」链接。 */
-function MorePackages({ platform, version, downloads }: { platform: ReleasePlatform; version: string; downloads: PlatformRelease["downloads"] }) {
+/* 主推那个之外的包，按架构分组收进折叠区。正式版和预览版各用一份。有国内镜像的包在大小前面多一个「国内镜像」链接。`id` 给 Linux 按钮下那一行用，点它会展开这里。 */
+function MorePackages({ platform, version, downloads, id }: { platform: ReleasePlatform; version: string; downloads: PlatformRelease["downloads"]; id?: string }) {
   const { t } = useLocale();
   return (
-    <details className="group mt-4 rounded-group bg-panel-2 px-4 [&[open]]:pb-3">
+    <details id={id} className="group mt-4 scroll-mt-[84px] rounded-group bg-panel-2 px-4 [&[open]]:pb-3">
       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
         {t("其他安装包")}
         <ChevronDownIcon className="flex-none text-muted transition-transform group-open:rotate-180" />
@@ -133,9 +134,11 @@ function MorePackages({ platform, version, downloads }: { platform: ReleasePlatf
  *
  * 上游每次合并都会自动发一个 Pre-release，却只把人工挑过的那个标成正式版。只展示正式版，想试最新改动的人得自己去 GitHub 翻；只展示预览版，又等于把没挑过的构建推给所有人。所以两个都给，正式版占主按钮，预览版在下面明确标出来。
  */
-function PreviewPanel({ platform, preview }: { platform: ReleasePlatform; preview: PreviewRelease }) {
+function PreviewPanel({ platform, preview, arm64 }: { platform: ReleasePlatform; preview: PreviewRelease; arm64: boolean }) {
   const { t } = useLocale();
-  const [first] = preview.downloads;
+  // Linux 预览版的按钮和正式版一样按架构挑包，并说出是哪个包。
+  const { primary: first, others } = pickPrimary(platform, preview.downloads, arm64);
+  if (!first) return null;
 
   return (
     <section className="mt-6 rounded-tile p-[clamp(18px,2.4vw,24px)] shadow-ring-2" aria-label={t("预览版")}>
@@ -146,7 +149,7 @@ function PreviewPanel({ platform, preview }: { platform: ReleasePlatform; previe
           href={first.url}
           rel="noreferrer"
         >
-          {t(`下载预览版 v${preview.version}`)}
+          {t(platform === "linux" ? `下载预览版 v${preview.version} ${describeLinuxPackage(first)}` : `下载预览版 v${preview.version}`)}
         </a>
         <MirrorAction
           platform={platform}
@@ -156,7 +159,7 @@ function PreviewPanel({ platform, preview }: { platform: ReleasePlatform; previe
         />
       </div>
       <p className="m-0 mt-3 text-sm leading-[1.8] text-muted">{t("包含尚未进入正式版的改动，可能不稳定。")}</p>
-      {preview.downloads.length > 1 && <MorePackages platform={platform} version={preview.version} downloads={preview.downloads.slice(1)} />}
+      {others.length > 0 && <MorePackages platform={platform} version={preview.version} downloads={others} />}
     </section>
   );
 }
@@ -229,6 +232,52 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
   );
 }
 
+/** Whether to offer Linux's arm64 package (`detectArm64`). Asked only while Linux is selected, and false until the browser answers, so the button starts on x86_64 and its label always names the package it links to. */
+function useArm64(enabled: boolean) {
+  const [arm64, setArm64] = useState(false);
+  useEffect(() => {
+    if (!enabled) return;
+    let live = true;
+    void detectArm64().then((value) => {
+      if (live) setArm64(value);
+    });
+    return () => {
+      live = false;
+    };
+  }, [enabled]);
+  return arm64;
+}
+
+/**
+ * The line under the Linux button, for everyone its package is not for. The button can only offer one package and the page cannot tell the distribution, so this names who should look elsewhere and takes them there: 「其他安装包」 opens the list right below, 「安装方式」 jumps to the guide, whose software repositories are the only way onto Arch and openSUSE.
+ */
+function LinuxOthers({ primary, moreId }: { primary: PlatformRelease["downloads"][number]; moreId: string }) {
+  const { t } = useLocale();
+  const otherArch = primary.arch === "aarch64" ? "x86_64" : "aarch64";
+  // The corner brackets go inside the link and stay on its line, so a narrow screen never leaves one dangling at a line end.
+  const link = "cursor-pointer font-medium whitespace-nowrap text-accent-ink hover:text-ink";
+  const openMore = () => {
+    const details = document.getElementById(moreId);
+    if (!(details instanceof HTMLDetailsElement)) return;
+    details.open = true;
+    details.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    details.querySelector("summary")?.focus({ preventScroll: true });
+  };
+  return (
+    <p className="m-0 text-sm leading-[1.8] text-muted md:basis-full">
+      {t(`不是这个系统或架构？Fedora 44、Debian 10/11、Ubuntu 20.04 和 ${otherArch} 的安装包在下方`)}
+      <button type="button" className={link} aria-controls={moreId} onClick={openMore}>
+        {t("「其他安装包」")}
+      </button>
+      {t("里；Arch、openSUSE 等请用下面")}
+      <a className={link} href="#download-linux">
+        {t("「安装方式」")}
+      </a>
+      {t("中的软件源。")}
+    </p>
+  );
+}
+
 /**
  * The action strip under the tiles for the selected platform: the download button (plus the Windows mirrors) with one compatibility line, or an honest status for platforms that do not ship packages yet.
  *
@@ -236,6 +285,7 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
  */
 function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
   const { t } = useLocale();
+  const arm64 = useArm64(entry.id === "linux");
   const hintText = platformHint(entry);
   const hint = hintText ? <p className="m-0 text-sm leading-[1.8] text-muted">{t(hintText)}</p> : null;
 
@@ -321,7 +371,10 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
   }
 
   const release = entry.release;
-  const primary = release?.downloads[0];
+  // Linux 的主按钮只给一个包：完整版 deb，arm64 机器上换成 aarch64 的那个，按钮上写明是哪个包；国内镜像按钮跟着给同一个包。
+  const { primary, others } = pickPrimary(entry.id, release?.downloads ?? [], arm64);
+  const linuxPackage = entry.id === "linux" && primary ? describeLinuxPackage(primary) : null;
+  const moreId = `more-packages-${entry.id}`;
 
   return (
     <div>
@@ -331,20 +384,26 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           href={primary?.url ?? entry.href}
           rel="noreferrer"
           target={primary ? undefined : "_blank"}
-          aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name} 版 v${release.version}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
+          aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name} 版 v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
         >
           <GitHubIcon size={18} />
-          {t(primary ? "GitHub 下载" : "GitHub 发布页")}
+          {t(linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
           {!primary && <ExternalIcon />}
         </a>
         {primary && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={primary} className={MIRROR_ACTION} />}
         {entry.id === "windows" && <WindowsMirrors release={release} />}
-        {release ? hint : <p className="m-0 text-sm leading-[1.8] text-muted">{t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")}</p>}
+        {!release ? (
+          <p className="m-0 text-sm leading-[1.8] text-muted">{t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")}</p>
+        ) : linuxPackage && primary ? (
+          <LinuxOthers primary={primary} moreId={moreId} />
+        ) : (
+          hint
+        )}
       </div>
 
-      {release && release.downloads.length > 1 && <MorePackages platform={entry.id as ReleasePlatform} version={release.version} downloads={release.downloads.slice(1)} />}
+      {release && others.length > 0 && <MorePackages id={moreId} platform={entry.id as ReleasePlatform} version={release.version} downloads={others} />}
 
-      {release?.preview && <PreviewPanel platform={entry.id as ReleasePlatform} preview={release.preview} />}
+      {release?.preview && <PreviewPanel platform={entry.id as ReleasePlatform} preview={release.preview} arm64={arm64} />}
     </div>
   );
 }
