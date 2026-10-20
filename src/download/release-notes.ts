@@ -24,7 +24,7 @@ const WRAPPER_HEADINGS = new Set(["更新内容", "更新日志", "更新说明"
 const repeatsCard = (text: string, version: string) => text.includes(version) || WRAPPER_HEADINGS.has(text.toLowerCase());
 
 /**
- * Release notes as short lines (design-home §7): fenced code, rules, table dividers and images are dropped; list markers, quote markers and inline markup are stripped; table rows become "cell · cell". A line that is bold and nothing else ("**皮肤**") is a heading, and headings that repeat the card's title for `version` are dropped. The body comes from `/api/releases`, which already removed HTML comments and capped it at 8 KiB.
+ * Release notes as short lines (design-home §7): fenced code, rules, table dividers and images are dropped; list markers, quote markers and inline markup are stripped; table rows become "cell · cell". A line that is bold and nothing else ("**皮肤**") is a heading, and headings that repeat the card's title for `version` are dropped. The body comes from `/api/releases`, which already removed the download guide and HTML comments and capped it at 8 KiB.
  */
 export function noteLines(body: string, version: string): NoteLine[] {
   const lines: NoteLine[] = [];
