@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-19T23:55:57.198Z",
-  "totalStars": 3939,
+  "generatedAt": "2026-10-20T04:44:36.878Z",
+  "totalStars": 4289,
   "repoCount": 8,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 3939
+      "stars": 4289
     }
   ],
   "starSeries": [
@@ -301,8 +301,8 @@
           "stars": 1555
         },
         {
-          "date": "2026-10-19",
-          "stars": 3024
+          "date": "2026-10-20",
+          "stars": 3042
         }
       ]
     },
@@ -318,8 +318,61 @@
           "stars": 72
         },
         {
-          "date": "2026-10-19",
-          "stars": 790
+          "date": "2026-10-20",
+          "stars": 823
+        }
+      ]
+    },
+    {
+      "repo": "chinese-ime-lm",
+      "points": [
+        {
+          "date": "2025-11-30",
+          "stars": 0
+        },
+        {
+          "date": "2025-12-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-01-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-02-28",
+          "stars": 0
+        },
+        {
+          "date": "2026-03-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-04-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-05-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-06-30",
+          "stars": 0
+        },
+        {
+          "date": "2026-07-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-08-31",
+          "stars": 0
+        },
+        {
+          "date": "2026-09-30",
+          "stars": 27
+        },
+        {
+          "date": "2026-10-20",
+          "stars": 338
         }
       ]
     },
@@ -375,61 +428,8 @@
           "stars": 61
         },
         {
-          "date": "2026-10-19",
+          "date": "2026-10-20",
           "stars": 63
-        }
-      ]
-    },
-    {
-      "repo": "chinese-ime-lm",
-      "points": [
-        {
-          "date": "2025-11-30",
-          "stars": 0
-        },
-        {
-          "date": "2025-12-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-01-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-02-28",
-          "stars": 0
-        },
-        {
-          "date": "2026-03-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-04-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-05-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-06-30",
-          "stars": 0
-        },
-        {
-          "date": "2026-07-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-08-31",
-          "stars": 0
-        },
-        {
-          "date": "2026-09-30",
-          "stars": 27
-        },
-        {
-          "date": "2026-10-19",
-          "stars": 39
         }
       ]
     },
@@ -581,7 +581,7 @@
           "stars": 6
         },
         {
-          "date": "2026-10-19",
+          "date": "2026-10-20",
           "stars": 11
         }
       ]
@@ -594,7 +594,7 @@
           "stars": 1
         },
         {
-          "date": "2026-10-19",
+          "date": "2026-10-20",
           "stars": 5
         }
       ]
@@ -631,7 +631,7 @@
           "stars": 2
         },
         {
-          "date": "2026-10-19",
+          "date": "2026-10-20",
           "stars": 4
         }
       ]
@@ -728,26 +728,26 @@
           "stars": 2
         },
         {
-          "date": "2026-10-19",
+          "date": "2026-10-20",
           "stars": 3
         }
       ]
     }
   ],
-  "starDelta30d": 2431,
+  "starDelta30d": 2772,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 22622,
+      "contributions": 22670,
       "repos": 8
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1933,
+      "contributions": 1934,
       "repos": 7
     },
     {
