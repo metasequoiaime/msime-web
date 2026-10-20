@@ -63,6 +63,7 @@ const backendCandidateSkinSchema = z.object({
   version: z.string(),
   license: z.object({ assets: z.string() }),
   size: z.number(),
+  file_count: z.number().optional(),
   downloads: z.number(),
   rating_count: z.number(),
   rating_average: z.number(),
@@ -103,7 +104,7 @@ export function loadCandidateSkins(origin: string, params: SkinListParams, reque
     if (!parsed.success) return undefined;
     const skin = parsed.data;
     const category = skin.category === undefined ? {} : { category: isCandidateSkinCategory(skin.category) ? skin.category : "other" };
-    const item = candidateSkinSchema.safeParse({ id: skin.id, name: skin.name, description: skin.description, author: skin.author, version: skin.version, license: skin.license.assets, size: skin.size, downloads: skin.downloads, ratingCount: skin.rating_count, ratingAverage: skin.rating_average, createdAt: skin.created_at, ...category });
+    const item = candidateSkinSchema.safeParse({ id: skin.id, name: skin.name, description: skin.description, author: skin.author, version: skin.version, license: skin.license.assets, size: skin.size, ...(skin.file_count === undefined ? {} : { fileCount: skin.file_count }), downloads: skin.downloads, ratingCount: skin.rating_count, ratingAverage: skin.rating_average, createdAt: skin.created_at, ...category });
     return item.success ? item.data : undefined;
   }, request);
 }
@@ -171,11 +172,11 @@ export async function serveSkinList(kind: SkinKind, { request, env, waitUntil }:
   }
 }
 
-/** Optional `?v=` on a candidate preview: the package version, so a new release is a new URL for the browser and the edge alike. */
-const versionSchema = z.string().regex(/^[\w.+-]{1,64}$/);
+/** Optional `?v=` on a candidate preview: the package version and size (`candidatePreviewKey` in src/skins/candidate-card-data.ts), so a new release, or a package replaced without a new version, is a new URL for the browser and the edge alike. The version is at most 64 characters and the size at most 16 digits. */
+const versionSchema = z.string().regex(/^[\w.+-]{1,81}$/);
 
 /**
- * GET /api/skins/keyboard/<id>/photo and /api/skins/candidate/<id>/preview?v=<version>: the image bytes, so the page shows them under `img-src 'self'` without base64 in its JSON. A keyboard photo can change when its author republishes, so it is cached for an hour; a candidate preview is addressed by version and kept for a day. 404 (cached briefly) when the skin has no such image.
+ * GET /api/skins/keyboard/<id>/photo and /api/skins/candidate/<id>/preview?v=<version>: the image bytes, so the page shows them under `img-src 'self'` without base64 in its JSON. A keyboard photo can change when its author republishes, so it is cached for an hour; a candidate preview is addressed by version and package size and kept for a day. 404 (cached briefly) when the skin has no such image.
  */
 export async function serveSkinImage(kind: SkinKind, { request, env, waitUntil, params }: SkinContext): Promise<Response> {
   if (request.method !== "GET") return new Response(null, { status: 405, headers: { ...imageHeaders, "Cache-Control": "no-store", Allow: "GET" } });

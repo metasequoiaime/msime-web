@@ -3,7 +3,7 @@ import { ApiError } from "../data/account";
 import { Button, DownloadIcon, useToast } from "../ui";
 import { useLocale } from "../use-locale";
 
-export function CandidateDownloadButton({ id, name }: { id: string; name: string }) {
+export function CandidateDownloadButton({ id, name, className = "mt-3 w-full" }: { id: string; name: string; className?: string }) {
   const { t } = useLocale();
   const { show } = useToast();
   const [busy, setBusy] = useState(false);
@@ -24,7 +24,7 @@ export function CandidateDownloadButton({ id, name }: { id: string; name: string
     }
   };
   return (
-    <Button variant="secondary" size="sm" className="mt-3 w-full" disabled={busy} aria-label={t(`下载 ${name} 的皮肤包`)} onClick={() => void download()}>
+    <Button variant="secondary" size="sm" className={className} disabled={busy} aria-label={t(`下载 ${name} 的皮肤包`)} onClick={() => void download()}>
       <DownloadIcon size={15} />{t(busy ? "正在下载…" : "下载皮肤包")}
     </Button>
   );

@@ -2,7 +2,7 @@ import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-quer
 import { useEffect, useId, useState, type FormEvent, type ReactNode } from "react";
 import { Avatar } from "./account/avatar";
 import { useAccount } from "./account/session";
-import { cardGridClass, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch } from "./community/parts";
+import { cardGridClass, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch, wideCardGridClass } from "./community/parts";
 import { PluginCard, ResourceCard } from "./community/resource-card";
 import { accountCall, ApiError, clipboardQuery, dictionaryQuery, ignoreBody, MAX_DATA_QUERY_BYTES, pluginsQuery, resourcesQuery, v1CandidateSkinsQuery, v1KeyboardSkinsQuery } from "./data/account";
 import type { DictionaryEntry, DictionaryKind, Me } from "./data/schemas";
@@ -107,7 +107,7 @@ function MySkins() {
       <h3 className={cx(subheadingClass, "mt-6")}>{t("候选窗皮肤")}</h3>
       <PagedList query={candidate} noun="候选窗皮肤" empty="你还没有候选窗皮肤。" compact>
         {items => (
-          <ul className={cardGridClass}>
+          <ul className={wideCardGridClass}>
             {items.map(item => <CandidateSkinCard key={item.id} skin={fromV1Candidate(item)} own />)}
           </ul>
         )}
@@ -436,7 +436,7 @@ function SavedCandidate() {
   const items = useInfiniteQuery(v1CandidateSkinsQuery("", undefined, "saved"));
   return (
     <PagedList query={items} noun="收藏" empty={savedEmpty("candidate")} compact>
-      {rows => <ul className={cardGridClass}>{rows.map(item => <CandidateSkinCard key={item.id} skin={fromV1Candidate(item)} />)}</ul>}
+      {rows => <ul className={wideCardGridClass}>{rows.map(item => <CandidateSkinCard key={item.id} skin={fromV1Candidate(item)} />)}</ul>}
     </PagedList>
   );
 }

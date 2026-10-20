@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAccount } from "./account/session";
-import { cardGridClass, Chips, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch } from "./community/parts";
+import { cardGridClass, Chips, PagedList, SearchBox, SegmentedTabs, StatusCard, tabId, useSearch, wideCardGridClass } from "./community/parts";
 import { COMMUNITY_SECTIONS } from "./community/sections";
 import { SectionNav } from "./section-nav";
 import { v1CandidateSkinsQuery, v1KeyboardSkinsQuery } from "./data/account";
@@ -116,7 +116,7 @@ const KeyboardGrid = (items: KeyboardCardSkin[], layout: KeyboardPreviewLayout) 
 );
 
 const CandidateGrid = (items: CandidateCardSkin[]) => (
-  <ul className={cardGridClass}>
+  <ul className={wideCardGridClass}>
     {items.map(item => <CandidateSkinCard key={item.id} skin={item} />)}
   </ul>
 );
