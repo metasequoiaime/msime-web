@@ -24,13 +24,28 @@ const isNoise = name =>
   name.endsWith('.sha256') || name === 'product-manifest.json' || name === 'appcast.xml' ||
   name.includes('-update.zip') || name.includes('.xcarchive');
 
+/*
+ * 标签写的是每种包实际能装在哪里，依据是 msime 仓库 platforms/linux/README.md「生成 Linux 安装包」和发布说明里的下载指引（edition_linux.py download-guide）：
+ *
+ * - `.deb` 和 `.tar.gz` 在 Debian 12（bookworm）容器里构建，要 glibc 2.35、libstdc++ 12（GLIBCXX_3.4.30）、WebKitGTK 4.1 与 libsoup 3，所以是 Debian 12、Ubuntu 22.04 及更新的版本。
+ * - `.tar.gz` 和 `.deb` 是同一套文件，不是跨发行版的通用包：库目录是 Debian 的多架构布局 `usr/lib/<三元组>/`，Arch、Fedora 上的 Fcitx5 不会去那里加载插件；它没有依赖声明和卸载入口，只给不经 apt 安装的 Debian 系。以前标成「通用压缩包」，会把 Arch、Fedora 的用户引到一个装上也用不了的包。
+ * - `.rpm` 在 Fedora 44 容器里构建，发版时只在干净的 Fedora 44 容器里装过；openSUSE 没有验证过，那边用 OBS 软件源。
+ */
 const LINUX_PACKAGES = [
-  [/_amd64\.deb$/i, 'Debian / Ubuntu · deb', 'x86_64'],
-  [/_arm64\.deb$/i, 'Debian / Ubuntu · deb', 'aarch64'],
-  [/\.x86_64\.rpm$/i, 'Fedora / openSUSE · rpm', 'x86_64'],
-  [/\.aarch64\.rpm$/i, 'Fedora / openSUSE · rpm', 'aarch64'],
-  [/-linux-x86_64\.tar\.gz$/i, '通用压缩包 · tar.gz', 'x86_64'],
-  [/-linux-aarch64\.tar\.gz$/i, '通用压缩包 · tar.gz', 'aarch64'],
+  [/_amd64\.deb$/i, 'Debian 12+ / Ubuntu 22.04+ · deb', 'x86_64'],
+  [/_arm64\.deb$/i, 'Debian 12+ / Ubuntu 22.04+ · deb', 'aarch64'],
+  [/\.x86_64\.rpm$/i, 'Fedora 44 · rpm', 'x86_64'],
+  [/\.aarch64\.rpm$/i, 'Fedora 44 · rpm', 'aarch64'],
+  [/-linux-x86_64\.tar\.gz$/i, 'Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz', 'x86_64'],
+  [/-linux-aarch64\.tar\.gz$/i, 'Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz', 'aarch64'],
+];
+
+/*
+ * glibc 2.28 到 2.34 的 Debian 系（Debian 10/11、Ubuntu 20.04、UOS 20 专业版）装不上上面的 `.deb`，发布页另有在 Debian 10 容器里构建的 `msime-linux-legacy_<版本>_<架构>.deb`。它只有完整版、只有 IBus 输入法，没有设置窗口和 Fcitx5 插件。包名后面紧跟的是 `-legacy` 而不是版本号，完整版的规则认不到它，以前它因此不在下载页上。
+ */
+const LINUX_LEGACY = [
+  [/_amd64\.deb$/i, 'glibc 2.28–2.34（Debian 10/11、Ubuntu 20.04、UOS 20）· 仅 IBus · deb', 'x86_64'],
+  [/_arm64\.deb$/i, 'glibc 2.28–2.34（Debian 10/11、Ubuntu 20.04、UOS 20）· 仅 IBus · deb', 'aarch64'],
 ];
 
 /*
@@ -73,6 +88,7 @@ const RULES = {
   ],
   linux: [
     ...LINUX_PACKAGES.map(([suffix, label, arch]) => [linuxPackage(LINUX_FULL, suffix), label, arch]),
+    ...LINUX_LEGACY.map(([suffix, label, arch]) => [linuxPackage('msime-linux-legacy', suffix), label, arch]),
     ...LINUX_EDITIONS.flatMap(([id, name]) =>
       LINUX_PACKAGES.map(([suffix, label, arch]) => [linuxPackage(`msime-linux-${id}`, suffix), `${name} · ${label}`, arch])),
   ],
