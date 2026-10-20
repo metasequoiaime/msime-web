@@ -12,34 +12,6 @@
     }
   }
 
-  @keyframes driftA {
-    0% {
-      transform: translate(0, 0) scale(1);
-    }
-
-    50% {
-      transform: translate(18vw, 14vh) scale(1.3);
-    }
-
-    100% {
-      transform: translate(0, 0) scale(1);
-    }
-  }
-
-  @keyframes driftB {
-    0% {
-      transform: translate(0, 0) scale(1.15);
-    }
-
-    50% {
-      transform: translate(-20vw, -10vh) scale(0.9);
-    }
-
-    100% {
-      transform: translate(0, 0) scale(1.15);
-    }
-  }
-
   @keyframes pageIn {
     from {
       opacity: 0;
