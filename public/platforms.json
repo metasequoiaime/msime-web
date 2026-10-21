@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-21T11:40:48.252Z",
+  "generatedAt": "2026-10-21T12:25:51.061Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -19,7 +19,63 @@
           "mirrorUrl": "https://dl.msime.app/releases/MSIME-Windows/v0.11.1/MetasequoiaIME_Setup_v0.11.1.exe"
         }
       ],
-      "preview": null
+      "preview": null,
+      "experimental": {
+        "version": "0.3.0-beta",
+        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/windows-v0.3.0-beta",
+        "publishedAt": "2026-10-20T11:53:33Z",
+        "signed": null,
+        "downloads": [
+          {
+            "label": "完整版 · 安装程序",
+            "arch": "x64",
+            "name": "MetasequoiaIME-Full_Setup_v0.3.0.exe",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.3.0-beta/MetasequoiaIME-Full_Setup_v0.3.0.exe",
+            "size": 148636070,
+            "sha256": "9aba661a7171d9d61e5145d9dd20c0a91c8f8817ceb4b6c4b4f945c82a76b55f"
+          },
+          {
+            "label": "水杉拼音 · 安装程序",
+            "arch": "x64",
+            "name": "MetasequoiaIME-Pinyin_Setup_v0.3.0.exe",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.3.0-beta/MetasequoiaIME-Pinyin_Setup_v0.3.0.exe",
+            "size": 143269755,
+            "sha256": "bb4ac97d0f3043e48ad3f4fdc54f4daa920337068223f624997fcadde2e22dfb"
+          },
+          {
+            "label": "水杉五笔 · 安装程序",
+            "arch": "x64",
+            "name": "MetasequoiaIME-Wubi_Setup_v0.3.0.exe",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.3.0-beta/MetasequoiaIME-Wubi_Setup_v0.3.0.exe",
+            "size": 125297418,
+            "sha256": "4d75a14ef4720ffba0793b8691ef170e57b4cdd0efecf8568c22b85f4ef7d261"
+          },
+          {
+            "label": "水杉日语 · 安装程序",
+            "arch": "x64",
+            "name": "MetasequoiaIME-Japanese_Setup_v0.3.0.exe",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.3.0-beta/MetasequoiaIME-Japanese_Setup_v0.3.0.exe",
+            "size": 92364983,
+            "sha256": "902a5866a7dd935e44a221f4f3be1757beff001fbc4ff12da27bcd743c39720c"
+          },
+          {
+            "label": "水杉越南语 · 安装程序",
+            "arch": "x64",
+            "name": "MetasequoiaIME-Vietnamese_Setup_v0.3.0.exe",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.3.0-beta/MetasequoiaIME-Vietnamese_Setup_v0.3.0.exe",
+            "size": 78234898,
+            "sha256": "40e8a8b27e4287f5944b4a86e84f1d0469da9dd028dd998e68ae58608a5f9e05"
+          },
+          {
+            "label": "水杉藏文 · 安装程序",
+            "arch": "x64",
+            "name": "MetasequoiaIME-Tibetan_Setup_v0.3.0.exe",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.3.0-beta/MetasequoiaIME-Tibetan_Setup_v0.3.0.exe",
+            "size": 78232787,
+            "sha256": "749eec78da69d70433e94117016b836d16d3e3071107addb0a06d3a834aa1b07"
+          }
+        ]
+      }
     },
     "macos": {
       "repository": "metasequoiaime/msime",
@@ -55,7 +111,8 @@
             "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.54.2-beta/msime-macos-0.54.2-universal.dmg"
           }
         ]
-      }
+      },
+      "experimental": null
     },
     "linux": {
       "repository": "metasequoiaime/msime",
@@ -408,7 +465,8 @@
           "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.13.0/msime-linux-tibetan-0.13.0-linux-aarch64.tar.gz"
         }
       ],
-      "preview": null
+      "preview": null,
+      "experimental": null
     },
     "android": {
       "repository": "metasequoiaime/msime",
@@ -473,7 +531,8 @@
           "mirrorUrl": "https://dl.msime.app/releases/msime/android-v0.5.0/msime-android-tibetan.apk"
         }
       ],
-      "preview": null
+      "preview": null,
+      "experimental": null
     }
   },
   "dictionary": {
@@ -509,13 +568,13 @@
     ]
   },
   "downloadStats": {
-    "total": 51712,
+    "total": 51774,
     "platforms": {
-      "windows": 36764,
+      "windows": 36804,
       "windowsRust": 424,
-      "macos": 3697,
-      "linux": 7339,
-      "android": 3487,
+      "macos": 3709,
+      "linux": 7341,
+      "android": 3495,
       "harmony": 1
     }
   }
