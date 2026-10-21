@@ -24,10 +24,11 @@ test('download totals include stable, preview, nightly and archived packages, on
       ]),
       statsRelease([countedAsset(10, 'msime-macos-0.54.2-universal.dmg', 7)], { prerelease: true }),
       statsRelease([countedAsset(11, 'msime-android-nightly.123.apk', 1)], { tag_name: 'nightly' }),
+      statsRelease([countedAsset(12, 'msime-harmony-0.2.0-unsigned-nightly.123.1.hap', 6)], { tag_name: 'nightly' }),
     ]],
     ['metasequoiaime/MSIME-Linux', [statsRelease([countedAsset(1, 'metasequoia-ime-linux_0.8.0_arm64.deb', 40)])]],
   ]));
-  assert.deepEqual(stats, { total: 1136, platforms: { windows: 1005, macos: 45, linux: 72, android: 14 } });
+  assert.deepEqual(stats, { total: 1142, platforms: { windows: 1000, windowsRust: 5, macos: 45, linux: 72, android: 14, harmony: 6 } });
 });
 
 test('download counts exclude drafts, unpublished releases, update payloads and non-installer assets', () => {
@@ -35,6 +36,7 @@ test('download counts exclude drafts, unpublished releases, update payloads and 
     'SHA256SUMS', 'msime-android.apk.sha256', 'msime-linux-0.13.0.tar.gz',
     'msime-macos-0.54.0-dsym.zip', 'msime-macos-0.54.0-input-method.zip', 'msime-macos-0.54.0-settings.zip',
     'MetasequoiaIME-v0.47.2-macos-universal-update.zip', 'appcast-full.xml',
+    'msime-harmony-0.2.0-unsigned.hap.sha256', 'msime-harmony-0.2.0-symbols.zip',
     'msime-ios-simulator-0.52.0.tar.gz', 'msime-ios-testflight.ipa', 'msime-pinyin.db.gz', 'msime-web-engine-0.4.0.tgz',
   ];
   const stats = downloadStats(new Map([['metasequoiaime/msime', [
@@ -42,7 +44,18 @@ test('download counts exclude drafts, unpublished releases, update payloads and 
     statsRelease([countedAsset(100, 'msime-android.apk', 100)], { draft: true }),
     statsRelease([countedAsset(101, 'msime-android.apk', 100)], { published_at: null }),
   ]]]));
-  assert.deepEqual(stats, { total: 0, platforms: { windows: 0, macos: 0, linux: 0, android: 0 } });
+  assert.deepEqual(stats, { total: 0, platforms: { windows: 0, windowsRust: 0, macos: 0, linux: 0, android: 0, harmony: 0 } });
+});
+
+test('Rust Windows counts use the source repository even when old and new installers share a name', () => {
+  const name = 'MetasequoiaIME_Setup_v0.2.0.exe';
+  const stats = downloadStats(new Map([
+    ['metasequoiaime/MSIME-Windows', [statsRelease([countedAsset(1, name, 10)])]],
+    ['metasequoiaime/MSIME', [statsRelease([countedAsset(1, name, 15)]), statsRelease([countedAsset(1, name, 15)])]],
+  ]));
+  assert.equal(stats.platforms.windows, 10);
+  assert.equal(stats.platforms.windowsRust, 15);
+  assert.equal(stats.total, 25);
 });
 
 test('invalid or missing GitHub installer counters fail the sync instead of publishing a false zero', () => {

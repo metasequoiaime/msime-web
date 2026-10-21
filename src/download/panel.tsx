@@ -18,7 +18,7 @@ const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
   macos: "适用于 macOS 12 及以上",
   android: "适用于 Android 9 及以上；测试版，需允许安装未知来源应用",
   ios: "适用于 iOS 17 及以上",
-  harmony: "开发中，尚未发布安装包",
+  harmony: "开发中，暂未提供正式安装包",
 };
 
 /** macOS 的最低版本跟着安装包格式走，理由见下面 `platformHint`。 */
