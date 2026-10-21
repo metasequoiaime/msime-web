@@ -405,6 +405,27 @@ test('the initial release filter follows the selected download platform in both 
   }
 });
 
+test('both download locales expose the snapshot counts and their scope in static HTML', () => {
+  const manifest = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
+  for (const path of ['/download/', '/zh-TW/download/']) {
+    const doc = document(path);
+    const stats = doc.querySelector('.download-stats');
+    if (!manifest.downloadStats) {
+      assert.equal(stats, null, 'an older snapshot never fabricates zero downloads');
+      continue;
+    }
+    assert.ok(stats);
+    assert.deepEqual([...stats.querySelectorAll('dd')].map(node => Number(node.textContent.replaceAll(',', ''))), [manifest.downloadStats.total, ...Object.values(manifest.downloadStats.platforms)]);
+    const time = stats.querySelector('time');
+    assert.equal(time.getAttribute('datetime') ?? time.getAttribute('dateTime'), manifest.generatedAt);
+    assert.match(stats.textContent, /GitHub/);
+    assert.match(stats.textContent, /TestFlight/);
+    assert.match(stats.textContent, /nightly/);
+    assert.match(stats.textContent, /不代表安[装裝]人[数數]/);
+    assert.match(stats.textContent, /已[删刪]除/);
+  }
+});
+
 test('the current macOS DMG guide describes the in-app install flow', () => {
   const macos = document('/download/').querySelector('#download-macos');
   assert.ok(macos);

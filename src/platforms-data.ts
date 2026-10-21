@@ -40,9 +40,22 @@ const releaseSchema = z.object({
   downloads: z.array(downloadSchema).min(1),
 });
 
+/** 现存 GitHub 发行版的安装包累计下载次数，与安装人数及镜像点击分开。 */
+export const downloadStatsSchema = z.object({
+  total: z.number().int().nonnegative(),
+  platforms: z.object({
+    windows: z.number().int().nonnegative(),
+    macos: z.number().int().nonnegative(),
+    linux: z.number().int().nonnegative(),
+    android: z.number().int().nonnegative(),
+  }),
+}).refine(value => value.total === Object.values(value.platforms).reduce((sum, count) => sum + count, 0));
+
 /** 由 scripts/generate-platforms.mjs 生成：Windows、macOS、Linux 与 Android 各自的正式版，另附比它更新的预览版（没有就是 null）。 */
 export const platformsSchema = z.object({
   generatedAt: z.string(),
+  // 旧快照或损坏的统计不影响下载入口，页面在拿不到有效统计时不显示计数。
+  downloadStats: downloadStatsSchema.optional().catch(undefined),
   platforms: z.record(
     z.enum(RELEASE_PLATFORMS),
     releaseSchema.extend({

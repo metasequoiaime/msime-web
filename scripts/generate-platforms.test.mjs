@@ -1,6 +1,68 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { classifyAssets, selectRelease, signingState, versionOrder } from './generate-platforms.mjs';
+import { classifyAssets, fetchAllReleases, selectRelease, signingState, versionOrder } from './generate-platforms.mjs';
+import { downloadStats } from './download-stats.mjs';
+
+const statsRelease = (assets, extra = {}) => ({ draft: false, published_at: '2026-10-21T00:00:00Z', assets, ...extra });
+const countedAsset = (id, name, count) => ({ id, name, download_count: count });
+
+test('download totals include stable, preview, nightly and archived packages, once per asset', () => {
+  const windows = countedAsset(1, 'MetasequoiaIME_Setup_v0.11.1.exe', 1000);
+  const stats = downloadStats(new Map([
+    ['metasequoiaime/MSIME-Windows', [statsRelease([windows]), statsRelease([windows])]],
+    ['metasequoiaime/msime', [
+      statsRelease([
+        countedAsset(1, 'MetasequoiaIME-Full_Setup_v0.3.0.exe', 5),
+        countedAsset(2, 'msime-macos-0.54.0-universal.dmg', 20),
+        countedAsset(3, 'msime-macos-pinyin-0.54.0-universal.dmg', 8),
+        countedAsset(4, 'msime-linux_0.13.0_amd64.deb', 30),
+        countedAsset(5, 'msime-linux-wubi-0.13.0-linux-aarch64.tar.gz', 2),
+        countedAsset(6, 'msime-android.apk', 10),
+        countedAsset(7, 'msime-client-wubi.apk', 3),
+        countedAsset(8, 'MetasequoiaIME-v0.47.2-macos-universal-unsigned.pkg', 4),
+        countedAsset(9, 'MetasequoiaIME-v0.47.2-macos-universal.zip', 6),
+      ]),
+      statsRelease([countedAsset(10, 'msime-macos-0.54.2-universal.dmg', 7)], { prerelease: true }),
+      statsRelease([countedAsset(11, 'msime-android-nightly.123.apk', 1)], { tag_name: 'nightly' }),
+    ]],
+    ['metasequoiaime/MSIME-Linux', [statsRelease([countedAsset(1, 'metasequoia-ime-linux_0.8.0_arm64.deb', 40)])]],
+  ]));
+  assert.deepEqual(stats, { total: 1136, platforms: { windows: 1005, macos: 45, linux: 72, android: 14 } });
+});
+
+test('download counts exclude drafts, unpublished releases, update payloads and non-installer assets', () => {
+  const names = [
+    'SHA256SUMS', 'msime-android.apk.sha256', 'msime-linux-0.13.0.tar.gz',
+    'msime-macos-0.54.0-dsym.zip', 'msime-macos-0.54.0-input-method.zip', 'msime-macos-0.54.0-settings.zip',
+    'MetasequoiaIME-v0.47.2-macos-universal-update.zip', 'appcast-full.xml',
+    'msime-ios-simulator-0.52.0.tar.gz', 'msime-ios-testflight.ipa', 'msime-pinyin.db.gz', 'msime-web-engine-0.4.0.tgz',
+  ];
+  const stats = downloadStats(new Map([['metasequoiaime/msime', [
+    statsRelease(names.map((name, index) => countedAsset(index + 1, name, 100))),
+    statsRelease([countedAsset(100, 'msime-android.apk', 100)], { draft: true }),
+    statsRelease([countedAsset(101, 'msime-android.apk', 100)], { published_at: null }),
+  ]]]));
+  assert.deepEqual(stats, { total: 0, platforms: { windows: 0, macos: 0, linux: 0, android: 0 } });
+});
+
+test('invalid or missing GitHub installer counters fail the sync instead of publishing a false zero', () => {
+  for (const count of [-1, 1.5, '12', undefined, Number.MAX_SAFE_INTEGER + 1]) {
+    assert.throws(() => downloadStats(new Map([['metasequoiaime/msime', [statsRelease([countedAsset(1, 'msime-android.apk', count)])]]])), /Invalid GitHub/);
+  }
+});
+
+test('release pagination reads the complete history and refuses a partial result after failure', async () => {
+  const urls = [];
+  const first = Array.from({ length: 100 }, (_, id) => ({ id }));
+  const second = [{ id: 100 }];
+  const history = await fetchAllReleases('metasequoiaime/msime', {}, async url => {
+    urls.push(url);
+    return Response.json(url.endsWith('page=1') ? first : second);
+  });
+  assert.deepEqual(history, [...first, ...second]);
+  assert.deepEqual(urls.map(url => new URL(url).searchParams.get('page')), ['1', '2']);
+  await assert.rejects(fetchAllReleases('metasequoiaime/msime', {}, async url => url.endsWith('page=1') ? Response.json(first) : new Response(null, { status: 503 })), /HTTP 503/);
+});
 
 const asset = (name, extra = {}) => ({
   name,
