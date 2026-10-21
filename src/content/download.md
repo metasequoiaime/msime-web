@@ -119,11 +119,15 @@ sudo zypper install msime
 Arch Linux 及 Omarchy、EndeavourOS 等衍生版，软件源在 [openSUSE Build Service](https://build.opensuse.org/project/show/home:msime)，目前只有 x86_64。先信任软件源的签名公钥（指纹 `F339A91A4C77008B49101BEFF9D283EB1137FF6B`），再加入 `pacman.conf`：
 
 ```sh
-curl -fsSL https://download.opensuse.org/repositories/home:/msime/Arch/x86_64/home_msime_Arch.key | sudo pacman-key --add -
+curl -fsSL https://downloadcontent.opensuse.org/repositories/home:/msime/Arch/x86_64/home_msime_Arch.key | sudo pacman-key --add -
 sudo pacman-key --lsign-key F339A91A4C77008B49101BEFF9D283EB1137FF6B
-printf '\n[home_msime_Arch]\nServer = https://download.opensuse.org/repositories/home:/msime/Arch/$arch\n' | sudo tee -a /etc/pacman.conf
+printf '\n[home_msime_Arch]\nServer = https://downloadcontent.opensuse.org/repositories/home:/msime/Arch/$arch\n' | sudo tee -a /etc/pacman.conf
 sudo pacman -Syu msime-bin
 ```
+
+已经添加过该源的用户，请修改 `/etc/pacman.conf` 的 `[home_msime_Arch]` 节，把 `Server` 改为上面的源站地址，不要重复追加一节。重跑一键安装脚本也会迁移旧默认地址，并保留 `/etc/pacman.conf.msime-backup` 备份；自定义镜像不会被覆盖。
+
+Arch 使用 OBS 源站，避免镜像尚未同步时出现新数据库配到旧包的“PGP 签名无效”。若旧包已缓存，按 pacman 提示删除对应无效包后重试 `sudo pacman -Syu msime-bin`，保留签名校验和上述公钥指纹。
 
 卸载：`sudo pacman -R msime-bin`。
 
