@@ -93,6 +93,11 @@ main() {
 			;;
 	esac
 
+	# Arch 的数据库与包必须来自同一代；下载分流曾把新签名配给旧镜像包（msime#9173）。
+	if [ "$FAMILY" = pacman ]; then
+		BASE=https://downloadcontent.opensuse.org/repositories/home:/msime
+	fi
+
 	# 只有 Fedora 同时提供 aarch64；其余源目前只有 x86_64。先确认源里真有这个架构的包，再动系统配置。
 	case "$FAMILY:$ARCH" in
 		dnf:x86_64 | dnf:aarch64 | zypper:x86_64 | pacman:x86_64) arch_dir=$ARCH ;;
@@ -121,6 +126,14 @@ main() {
 			if ! grep -q '^\[home_msime_Arch\]' /etc/pacman.conf; then
 				# shellcheck disable=SC2016 # $arch 是给 pacman 展开的变量
 				printf '\n[home_msime_Arch]\nServer = %s/%s/$arch\n' "$BASE" "$REPO" | $SUDO tee -a /etc/pacman.conf >/dev/null
+			else
+				# 只迁移本节的旧默认地址，保留自定义镜像及其他仓库；无改动时不覆盖备份。
+				arch_source_migration='/^\[home_msime_Arch\]$/,/^\[/ {
+s|^\([[:space:]]*Server[[:space:]]*=[[:space:]]*\)https://download\.opensuse\.org/repositories/home:/msime/Arch/\$arch[[:space:]]*$|\1https://downloadcontent.opensuse.org/repositories/home:/msime/Arch/$arch|
+}'
+				if ! sed "$arch_source_migration" /etc/pacman.conf | cmp -s - /etc/pacman.conf; then
+					$SUDO sed -i.msime-backup "$arch_source_migration" /etc/pacman.conf
+				fi
 			fi
 			# Arch 不支持只刷新数据库不升级的部分升级，所以与系统一起 -Syu。
 			$SUDO pacman -Syu --noconfirm --needed msime-bin
