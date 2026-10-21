@@ -72,7 +72,7 @@ wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
 
 ### 下载统计
 
-下载页展示 GitHub 安装包的累计下载次数与 Windows 旧版、Windows Rust 新版、macOS、Linux、Android、HarmonyOS 分项。Rust Windows 按主仓库来源独立统计，包含早期与旧版同名的安装包；分项拆分不增加总数。iOS 从独立的 `testflight-stats.json` 展示 TestFlight 安装次数，首次未同步时显示「暂无公开数据」，HarmonyOS 统计 GitHub HAP 测试包下载。iOS 的未知数量不当作零，Apple 安装次数不计入 GitHub 累计下载。`scripts/generate-platforms.mjs` 在现有下载清单同步中完整分页读取 `MSIME-Windows`、`msime` 和已归档的 `MSIME-Linux` 发行版；主仓库只读取一次，下载量由 `scripts/download-stats.mjs` 按资产 ID 去重并汇总到 `public/platforms.json` 的 `downloadStats`。`sync-downloads.yml` 沿用每半小时检查、经自动 PR 和正常 CI 合入的流程，页面显示的是已发布快照的 `generatedAt`，不是实时计数。
+下载页展示 GitHub 安装包的累计下载次数与 Windows 纯净版、Windows Rust 新版、macOS、Linux、Android、HarmonyOS 分项。Rust Windows 按主仓库来源独立统计，包含早期与旧版同名的安装包；分项拆分不增加总数。iOS 从独立的 `testflight-stats.json` 展示 TestFlight 安装次数，首次未同步时显示「暂无公开数据」，HarmonyOS 统计 GitHub HAP 测试包下载。iOS 的未知数量不当作零，Apple 安装次数不计入 GitHub 累计下载。`scripts/generate-platforms.mjs` 在现有下载清单同步中完整分页读取 `MSIME-Windows`、`msime` 和已归档的 `MSIME-Linux` 发行版；主仓库只读取一次，下载量由 `scripts/download-stats.mjs` 按资产 ID 去重并汇总到 `public/platforms.json` 的 `downloadStats`。`sync-downloads.yml` 沿用每半小时检查、经自动 PR 和正常 CI 合入的流程，页面显示的是已发布快照的 `generatedAt`，不是实时计数。
 
 口径是现存正式版、预发布与 nightly 的手动安装包下载次数，不是独立用户或安装人数。包括各产品版本；排除源码、词库、校验和、符号文件、TestFlight 产物及自动更新载荷。已经删除或被替换的资产无法补回旧计数，因此总数可能下降。国内镜像、软件源、蒲公英与 TestFlight 不在此公开统计内；现有镜像点击仍单独上报给管理后台，不与 GitHub 计数相加。
 

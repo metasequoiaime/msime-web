@@ -8,9 +8,9 @@ Status: implemented
 
 ## Decision
 
-下载页在下载入口之后展示「下载与安装统计」，含累计次数和 Windows 旧版、Windows Rust 新版、macOS、Linux、Android、HarmonyOS 六项，并展示 iOS 的数据状态。统计由现有清单生成器完整分页读取 `MSIME-Windows`、`msime` 和归档的 `MSIME-Linux`，在同一份 `platforms.json` 中发布；主仓库的多平台包共用一次读取。保留现有半小时同步、自动 PR、CI 与 Pages 发布集成，不新增公开后端权限或浏览器遥测。
+下载页在下载入口之后展示「下载与安装统计」，含累计次数和 Windows 纯净版、Windows Rust 新版、macOS、Linux、Android、HarmonyOS 六项，并展示 iOS 的数据状态。统计由现有清单生成器完整分页读取 `MSIME-Windows`、`msime` 和归档的 `MSIME-Linux`，在同一份 `platforms.json` 中发布；主仓库的多平台包共用一次读取。保留现有半小时同步、自动 PR、CI 与 Pages 发布集成，不新增公开后端权限或浏览器遥测。
 
-统计按仓库与 GitHub 资产 ID 去重，覆盖正式版、预发布、nightly 及各产品版本的手动安装包，排除源码、词库、校验文件、符号和自动更新载荷。无效的计数或任一分页失败使本轮同步失败，不发布部分总数。累计次数严格等于六个数值分项之和。Windows 旧版来自 `MSIME-Windows`，Rust 新版来自 `msime`；早期 Rust 产物与旧版同名，因此按来源仓库拆分，不能只靠安装包名称区分，也不把 Rust 数值再加进旧 Windows 合计。
+统计按仓库与 GitHub 资产 ID 去重，覆盖正式版、预发布、nightly 及各产品版本的手动安装包，排除源码、词库、校验文件、符号和自动更新载荷。无效的计数或任一分页失败使本轮同步失败，不发布部分总数。累计次数严格等于六个数值分项之和。Windows 纯净版来自 `MSIME-Windows`，Rust 新版来自 `msime`；早期 Rust 产物与旧版同名，因此按来源仓库拆分，不能只靠安装包名称区分，也不把 Rust 数值再加进旧 Windows 合计。
 
 页面明确说明：下载次数不等于安装人数；国内镜像、软件源、蒲公英和 TestFlight 不计入；删除或替换资产的历史计数无法补回。显示时间沿用快照的 `generatedAt`，简繁界面与静态预渲染使用相同数据。旧快照缺字段或者统计校验失败时只隐藏统计区，不影响安装包入口。旧统计没有 `windowsRust` 时保留合并后的 Windows 数值并注明含 Rust 新版，Rust 项显示「尚未单独统计」。旧统计缺少 HarmonyOS 分项时也显示该状态，不补零。
 
