@@ -5,6 +5,7 @@ import { siteApi, SourceError, staticSnapshot, withFallback } from '../src/data/
 import { appStatsQuery, communityQuery, platformsQuery, releasesQuery, updateManifestQuery } from '../src/data/queries.ts';
 import { ANDROID_PGYER_URL, IOS_TESTFLIGHT_URL, sitePlatforms, SITE_PLATFORMS } from '../src/data/platforms.ts';
 import { communitySchema } from '../src/community-data.ts';
+import { platformsSchema } from '../src/platforms-data.ts';
 
 const read = path => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'));
 const community = read('public/community.json');
@@ -12,6 +13,21 @@ const platforms = read('public/platforms.json');
 const manifest = read('public/update.json');
 const identity = value => value;
 const run = (options, signal = new AbortController().signal, cached) => options.queryFn({ signal, queryKey: options.queryKey, meta: undefined, client: { getQueryData: () => cached } });
+
+test('download statistics validate totals and degrade independently of the installer manifest', () => {
+  const downloadStats = { total: 10, platforms: { windows: 4, macos: 3, linux: 2, android: 1 } };
+  assert.deepEqual(platformsSchema.parse({ ...platforms, downloadStats }).downloadStats, downloadStats);
+  assert.equal(platformsSchema.parse({ ...platforms, downloadStats: undefined }).downloadStats, undefined);
+  for (const invalid of [
+    { ...downloadStats, total: 11 },
+    { ...downloadStats, platforms: { ...downloadStats.platforms, linux: -1 } },
+    { total: 0, platforms: {} },
+  ]) {
+    const parsed = platformsSchema.parse({ ...platforms, downloadStats: invalid });
+    assert.equal(parsed.downloadStats, undefined);
+    assert.equal(parsed.platforms.windows.version, platforms.platforms.windows.version);
+  }
+});
 
 test('adapters only accept same-origin paths, and site APIs only under /api/', () => {
   for (const url of ['https://evil.example/data.json', '//evil.example/data.json', 'data.json']) {

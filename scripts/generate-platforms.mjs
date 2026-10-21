@@ -1,6 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { canonicalGithubUrl } from './github-url.mjs';
 import { attachMirrors, mirrorBase } from './mirror-downloads.mjs';
+import { downloadStats, DOWNLOAD_STATS_REPOSITORIES } from './download-stats.mjs';
 
 /*
  * public/platforms.json 给下载页提供三个平台各自的最新版本与安装包。
@@ -224,10 +225,10 @@ export function selectRelease(platform, releases) {
  *
  * macOS 仓库每次合并都自动发一个 Pre-release，正式版很快就被挤出第一页：取 30 条的时候，带 Latest 徽章的那个排在第 25 条，再过几天就看不到了，页面会把预览版当成正式版。
  */
-async function fetchAllReleases(repository, headers) {
+export async function fetchAllReleases(repository, headers, request = fetch) {
   const releases = [];
   for (let page = 1; ; page += 1) {
-    const response = await fetch(`https://api.github.com/repos/${repository}/releases?per_page=100&page=${page}`,
+    const response = await request(`https://api.github.com/repos/${repository}/releases?per_page=100&page=${page}`,
       { headers, signal: AbortSignal.timeout(30000) });
     if (!response.ok) throw new Error(`${repository} releases failed: HTTP ${response.status}`);
     const batch = await response.json();
@@ -272,8 +273,14 @@ async function main() {
   if (process.env.GH_TOKEN) headers.Authorization = `Bearer ${process.env.GH_TOKEN}`;
 
   const platforms = {};
+  // 主仓库同时发布多个平台，整轮只读取一次；统计另包括已归档 Linux 仓库的历史发行版。
+  const repositories = new Map();
+  for (const repository of new Set([...Object.values(SOURCES), ...DOWNLOAD_STATS_REPOSITORIES])) {
+    repositories.set(repository, await fetchAllReleases(repository, headers));
+  }
+  const stats = downloadStats(repositories);
   for (const [platform, repository] of Object.entries(SOURCES)) {
-    const selected = selectRelease(platform, await fetchAllReleases(repository, headers));
+    const selected = selectRelease(platform, repositories.get(repository));
     if (selected) platforms[platform] = { repository, ...selected };
   }
 
@@ -296,7 +303,7 @@ async function main() {
   // 配置了国内镜像时，每个包都带上镜像地址；紧接着运行的 mirror-downloads.mjs 通过镜像地址把它读一遍、核对不过的去掉 mirrorUrl。
   const mirrored = attachMirrors(platforms, mirrorBase(process.env.DOWNLOAD_MIRROR_BASE_URL));
   await writeFile(new URL('../public/platforms.json', import.meta.url),
-    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary }, null, 2)}\n`);
+    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary, downloadStats: stats }, null, 2)}\n`);
   console.log(Object.entries(platforms).map(([k, v]) => `${k} v${v.version} (${v.downloads.length} 个产物)${v.preview ? ` + 预览版 v${v.preview.version}` : ''}`).join(', '),
     dictionary ? `| 词库 ${dictionary.tag} (${dictionary.files.length} 个文件)` : '| 词库 未取到');
 }

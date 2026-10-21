@@ -70,6 +70,14 @@ wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
 
 取的是版本号最高的有效非 draft release，包含 prerelease 在内。这里不能用 `/releases/latest`，它会跳过 prerelease，而本产品目前发布的每一个 release 都是 prerelease。
 
+### 下载统计
+
+下载页展示 GitHub 安装包的累计下载次数与 Windows、macOS、Linux、Android 分项。`scripts/generate-platforms.mjs` 在现有下载清单同步中完整分页读取 `MSIME-Windows`、`msime` 和已归档的 `MSIME-Linux` 发行版；主仓库只读取一次，下载量由 `scripts/download-stats.mjs` 按资产 ID 去重并汇总到 `public/platforms.json` 的 `downloadStats`。`sync-downloads.yml` 沿用每半小时检查、经自动 PR 和正常 CI 合入的流程，页面显示的是已发布快照的 `generatedAt`，不是实时计数。
+
+口径是现存正式版、预发布与 nightly 的手动安装包下载次数，不是独立用户或安装人数。包括各产品版本；排除源码、词库、校验和、符号文件、TestFlight 产物及自动更新载荷。已经删除或被替换的资产无法补回旧计数，因此总数可能下降。国内镜像、软件源、蒲公英与 TestFlight 不在此公开统计内；现有镜像点击仍单独上报给管理后台，不与 GitHub 计数相加。
+
+旧快照没有 `downloadStats`、或者统计无效时，页面隐藏统计区，下载入口照常工作。统计没有新增访客标识、cookie、第三方脚本或浏览器上报请求；简繁页面和预渲染 HTML 共用同一份数字。
+
 ### 国内镜像（Cloudflare R2）
 
 GitHub Release 在国内下载很慢，所以下载页的安装包、客户端的资源包、语音模型和应用更新都在 `dl.msime.app` 上有一份镜像。它是 Cloudflare R2（bucket `msime`，和 `media.msime.app` 共用）前面的一个 Worker，代码在 `workers/dl/`。R2 不收流出流量费用；之前用的阿里云 OSS 香港按外网流出计费（约 0.75 元/GB），上线第二天就下载了 118 GB。没有 ICP 备案就用不了国内节点，Cloudflare 在国内没有节点，速度介于 GitHub 和 OSS 香港之间。
