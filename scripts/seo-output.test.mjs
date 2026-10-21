@@ -454,7 +454,16 @@ test('the current macOS DMG guide describes the in-app install flow', () => {
   assert.doesNotMatch(macos.textContent, /打开「应用程序」里的 MSIME。它会把输入法装进/);
 });
 
-test('static rendering shows TestFlight installs independently and degrades on an unavailable snapshot', async () => {
+test('static rendering shows TestFlight installs independently and degrades on an unavailable snapshot', async t => {
+  // 与 build-seo 使用相同的 DOM 环境，下载指南的 Markdown 渲染依赖它。
+  const dom = parseHTML('<html><head></head><body></body></html>');
+  const keys = ['document', 'Node', 'HTMLElement', 'HTMLParagraphElement', 'HTMLAnchorElement'];
+  const previous = keys.map(key => Object.getOwnPropertyDescriptor(globalThis, key));
+  t.after(() => keys.forEach((key, index) => {
+    if (previous[index]) Object.defineProperty(globalThis, key, previous[index]);
+    else delete globalThis[key];
+  }));
+  for (const key of keys) globalThis[key] = dom[key];
   const { render } = await import('../dist-ssr/entry-static.js');
   const platforms = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
   const update = JSON.parse(readFileSync('public/update.json', 'utf8'));
@@ -462,6 +471,7 @@ test('static rendering shows TestFlight installs independently and degrades on a
   for (const path of ['/download/', '/zh-TW/download/']) {
     for (const installs of [0, 123]) {
       const { html } = await render(path, { platforms, 'update-manifest': update, 'testflight-stats': { ...testflight, installs } });
+      assert.doesNotMatch(html, /data-msg=|data-stck=/);
       const doc = parseHTML(html).document;
       const rows = [...doc.querySelectorAll('.download-stats dl > div')];
       const ios = rows.find(row => row.querySelector('dt').textContent === 'iOS');
