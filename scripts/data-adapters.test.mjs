@@ -29,6 +29,19 @@ test('download statistics validate totals and degrade independently of the insta
   }
 });
 
+test('Rust Windows and Harmony counters validate their sum while accepting older snapshots', () => {
+  const combined = { total: 10, platforms: { windows: 4, macos: 3, linux: 2, android: 1 } };
+  assert.equal(platformsSchema.parse({ ...platforms, downloadStats: combined }).downloadStats.platforms.windowsRust, undefined);
+  assert.equal(platformsSchema.parse({ ...platforms, downloadStats: combined }).downloadStats.platforms.harmony, undefined);
+  const split = { total: 12, platforms: { ...combined.platforms, windows: 3, windowsRust: 1, harmony: 2 } };
+  assert.deepEqual(platformsSchema.parse({ ...platforms, downloadStats: split }).downloadStats, split);
+  for (const invalid of [{ ...split, total: 11 }, { ...split, platforms: { ...split.platforms, windowsRust: -1 } }, { ...split, platforms: { ...split.platforms, harmony: -1 } }]) {
+    const parsed = platformsSchema.parse({ ...platforms, downloadStats: invalid });
+    assert.equal(parsed.downloadStats, undefined);
+    assert.equal(parsed.platforms.windows.version, platforms.platforms.windows.version);
+  }
+});
+
 test('Windows experimental releases degrade independently of stable releases and download totals', () => {
   const experimental = { ...platforms.platforms.windows, version: '0.2.1', signed: null };
   const withExperimental = value => ({ ...platforms, platforms: { ...platforms.platforms, windows: { ...platforms.platforms.windows, experimental: value } } });

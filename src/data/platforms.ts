@@ -31,7 +31,7 @@ export const ANDROID_PGYER_URL = "https://www.pgyer.com/msime";
  * - `release`: installable packages on GitHub Releases, described by `public/platforms.json`.
  * - `testflight`: Apple's public beta only; the IPAs on GitHub are TestFlight builds, not sideloadable.
  * - `pgyer`: a test APK on Pgyer's install page, sideloaded rather than installed from a store.
- * - `source`: developed in the msime repository with no published package yet.
+ * - `source`: 尚在开发，官网暂未提供正式安装包。
  * - `sdk`: a library for developers to embed (the web engine on npm), not something end users install.
  */
 export type Distribution = "release" | "testflight" | "pgyer" | "source" | "sdk";
