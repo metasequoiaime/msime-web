@@ -4,6 +4,7 @@ import { RELEASE_FILTERS, sitePlatforms } from "./data/platforms";
 import { usePlatformsQuery, useReleasesQuery, useUpdateManifestQuery } from "./data/queries";
 import { DownloadGuide } from "./download/guide";
 import { DownloadPanel } from "./download/panel";
+import { DownloadStats } from "./download/stats";
 import { ReleasesSection } from "./download/releases";
 import { WebDemo } from "./download/web-demo";
 import { fillTemplate, parseGuide } from "./download/template";
@@ -67,6 +68,7 @@ export function DownloadPage() {
               update({ platform: value, release: undefined });
             }}
           />
+          <DownloadStats manifest={platforms.data} />
           {ready && platform === "web" && <WebDemo />}
           <DownloadGuide sections={sections} platform={platform} filter={ready} />
         </div>
