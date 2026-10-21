@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-21T05:59:50.954Z",
-  "totalStars": 4908,
+  "generatedAt": "2026-10-21T11:43:20.355Z",
+  "totalStars": 4953,
   "repoCount": 8,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 4908
+      "stars": 4953
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-21",
-          "stars": 3088
+          "stars": 3100
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-21",
-          "stars": 904
+          "stars": 914
         }
       ]
     },
@@ -372,7 +372,7 @@
         },
         {
           "date": "2026-10-21",
-          "stars": 828
+          "stars": 851
         }
       ]
     },
@@ -734,13 +734,13 @@
       ]
     }
   ],
-  "starDelta30d": 3380,
+  "starDelta30d": 3425,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 22864,
+      "contributions": 22944,
       "repos": 8
     },
     {
@@ -754,7 +754,7 @@
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 152,
+      "contributions": 153,
       "repos": 3
     },
     {
@@ -786,18 +786,18 @@
       "repos": 1
     },
     {
+      "login": "luojiyin1987",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
+      "url": "https://github.com/luojiyin1987",
+      "contributions": 26,
+      "repos": 3
+    },
+    {
       "login": "claude",
       "avatarUrl": "https://avatars.githubusercontent.com/u/81847?v=4",
       "url": "https://github.com/claude",
       "contributions": 24,
       "repos": 1
-    },
-    {
-      "login": "luojiyin1987",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
-      "url": "https://github.com/luojiyin1987",
-      "contributions": 24,
-      "repos": 3
     },
     {
       "login": "yangkx1024",
@@ -810,7 +810,7 @@
       "login": "Tokisaki-Galaxy",
       "avatarUrl": "https://avatars.githubusercontent.com/u/61621971?v=4",
       "url": "https://github.com/Tokisaki-Galaxy",
-      "contributions": 20,
+      "contributions": 21,
       "repos": 1
     },
     {
