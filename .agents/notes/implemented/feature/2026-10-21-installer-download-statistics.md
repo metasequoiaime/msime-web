@@ -8,7 +8,7 @@ Status: implemented
 
 ## Decision
 
-下载页在下载入口之后展示「GitHub 安装包下载统计」，含累计次数和 Windows 旧版、Windows Rust 新版、macOS、Linux、Android、HarmonyOS 六项，并展示 iOS 的数据状态。统计由现有清单生成器完整分页读取 `MSIME-Windows`、`msime` 和归档的 `MSIME-Linux`，在同一份 `platforms.json` 中发布；主仓库的多平台包共用一次读取。保留现有半小时同步、自动 PR、CI 与 Pages 发布集成，不新增公开后端权限或浏览器遥测。
+下载页在下载入口之后展示「下载与安装统计」，含累计次数和 Windows 旧版、Windows Rust 新版、macOS、Linux、Android、HarmonyOS 六项，并展示 iOS 的数据状态。统计由现有清单生成器完整分页读取 `MSIME-Windows`、`msime` 和归档的 `MSIME-Linux`，在同一份 `platforms.json` 中发布；主仓库的多平台包共用一次读取。保留现有半小时同步、自动 PR、CI 与 Pages 发布集成，不新增公开后端权限或浏览器遥测。
 
 统计按仓库与 GitHub 资产 ID 去重，覆盖正式版、预发布、nightly 及各产品版本的手动安装包，排除源码、词库、校验文件、符号和自动更新载荷。无效的计数或任一分页失败使本轮同步失败，不发布部分总数。累计次数严格等于六个数值分项之和。Windows 旧版来自 `MSIME-Windows`，Rust 新版来自 `msime`；早期 Rust 产物与旧版同名，因此按来源仓库拆分，不能只靠安装包名称区分，也不把 Rust 数值再加进旧 Windows 合计。
 
@@ -24,7 +24,7 @@ Status: implemented
 
 访客能在简体和繁体下载页及无 JavaScript 的静态正文中看到可核对的次数，不产生新的访客追踪。代价是下载量变化也会触发既有下载清单自动 PR；数据要等同步和 PR 发布，且现存资产删除后总数可能下降，不能声称产品全部历史下载。
 
-资产文件名是统计分类的边界。新增打包格式或产品命名时需同时更新 `scripts/download-stats.mjs` 和对应测试。统计区同时保留没有可用计数的平台：iOS 走 TestFlight，显示「暂无公开数据」；HarmonyOS 统计 GitHub 上的 HAP 测试安装包，包括 nightly 与 unsigned 包，并在计数旁明确测试包口径。未知计数不写成 0，也不参与总数；iOS 的 TestFlight 安装量不由 GitHub IPA 或模拟器产物下载推算。
+资产文件名是统计分类的边界。新增打包格式或产品命名时需同时更新 `scripts/download-stats.mjs` 和对应测试。统计区同时保留没有可用计数的平台：iOS 由[独立的 TestFlight 安装统计](2026-10-21-testflight-install-statistics.md)接收 Apple 构建指标，首次成功同步前显示「暂无公开数据」；HarmonyOS 统计 GitHub 上的 HAP 测试安装包，包括 nightly 与 unsigned 包，并在计数旁明确测试包口径。未知计数不写成 0，也不参与总数；iOS 的 TestFlight 安装量不由 GitHub IPA 或模拟器产物下载推算。
 
 ## Verification
 

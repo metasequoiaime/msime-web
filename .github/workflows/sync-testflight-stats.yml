@@ -1,0 +1,60 @@
+name: Receive TestFlight statistics
+
+on:
+  repository_dispatch:
+    types: [testflight-stats-v1]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-testflight-stats
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Propose the public TestFlight snapshot
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: main
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - name: Validate the aggregate and ignore old or unchanged events
+        id: write
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types --test scripts/testflight-stats.test.mjs
+          node --experimental-strip-types scripts/apply-testflight-stats.mjs
+          echo "changed=$(node scripts/manifest-changed.mjs public/testflight-stats.json)" >> "$GITHUB_OUTPUT"
+      - name: Require the PR automation credential
+        if: steps.write.outputs.changed == 'true'
+        env:
+          AUTOMATION_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: test -n "$AUTOMATION_TOKEN"
+      - name: Create or update the TestFlight snapshot PR
+        if: steps.write.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        id: proposal
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          add-paths: public/testflight-stats.json
+          branch: automation/testflight-stats
+          base: main
+          delete-branch: true
+          commit-message: 'chore(site): 更新 TestFlight 安装统计'
+          title: 'chore(site): 更新 TestFlight 安装统计'
+          body: '由主仓库读取 Apple 构建指标后提供的公开汇总，仅包含安装次数、构建数、覆盖日期和时间；不包含测试者资料或凭据。安装次数不计入 GitHub 下载合计。自动合并仍要求正常的构建、工作流与依赖检查。'
+      - name: Enable auto-merge behind required checks
+        if: steps.proposal.outputs.pull-request-number != '' && steps.proposal.outputs.pull-request-operation != 'closed'
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.proposal.outputs.pull-request-number }}
+          HEAD_SHA: ${{ steps.proposal.outputs.pull-request-head-sha }}
+        run: python3 scripts/enable-manifest-automerge.py --repo "$GH_REPO" --pr "$PR_NUMBER" --sha "$HEAD_SHA"

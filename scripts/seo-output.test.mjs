@@ -407,6 +407,7 @@ test('the initial release filter follows the selected download platform in both 
 
 test('both download locales expose the snapshot counts and their scope in static HTML', () => {
   const manifest = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
+  const testflight = JSON.parse(readFileSync('public/testflight-stats.json', 'utf8'));
   for (const path of ['/download/', '/zh-TW/download/']) {
     const doc = document(path);
     const stats = doc.querySelector('.download-stats');
@@ -416,13 +417,16 @@ test('both download locales expose the snapshot counts and their scope in static
     }
     assert.ok(stats);
     const values = manifest.downloadStats.platforms;
-    const expected = [manifest.downloadStats.total, values.windows, values.windowsRust, values.macos, values.linux, values.android, values.harmony].filter(value => value !== undefined);
+    const expected = [manifest.downloadStats.total, values.windows, values.windowsRust, values.macos, values.linux, values.android, values.harmony, testflight?.installs].filter(value => value !== undefined);
     assert.deepEqual([...stats.querySelectorAll('dd')].map(node => Number(node.firstChild.textContent.replaceAll(',', ''))).filter(Number.isFinite), expected);
     const rows = [...stats.querySelectorAll('dl > div')];
     assert.equal(rows.length, 8, 'total, six installer counters and the explicit iOS unavailable state');
     const ios = rows.find(row => row.querySelector('dt').textContent === 'iOS');
     assert.ok(ios, 'iOS is visible without inventing a zero');
-    assert.doesNotMatch(ios.querySelector('dd').textContent, /\d/);
+    if (testflight) {
+      assert.equal(Number(ios.querySelector('dd').firstChild.textContent.replaceAll(',', '')), testflight.installs);
+      assert.match(ios.textContent, /TestFlight/);
+    } else assert.doesNotMatch(ios.querySelector('dd').textContent, /\d/);
     const harmony = rows.find(row => row.querySelector('dt').textContent === 'HarmonyOS');
     assert.ok(harmony);
     assert.match(harmony.textContent, /GitHub HAP/);
@@ -430,6 +434,10 @@ test('both download locales expose the snapshot counts and their scope in static
     const time = stats.querySelector('time');
     assert.equal(time.getAttribute('datetime') ?? time.getAttribute('dateTime'), manifest.generatedAt);
     assert.match(stats.textContent, /GitHub/);
+    if (testflight) {
+      assert.match(stats.textContent, /不[计計]入 GitHub/);
+      assert.equal(stats.querySelectorAll('time').length, 2);
+    }
     assert.match(stats.textContent, /TestFlight/);
     assert.match(stats.textContent, /nightly/);
     assert.match(stats.textContent, /不代表安[装裝]人[数數]/);
@@ -444,4 +452,37 @@ test('the current macOS DMG guide describes the in-app install flow', () => {
   assert.match(macos.textContent, /进入设置/);
   assert.match(macos.textContent, /~/);
   assert.doesNotMatch(macos.textContent, /打开「应用程序」里的 MSIME。它会把输入法装进/);
+});
+
+test('static rendering shows TestFlight installs independently and degrades on an unavailable snapshot', async t => {
+  // 与 build-seo 使用相同的 DOM 环境，下载指南的 Markdown 渲染依赖它。
+  const dom = parseHTML('<html><head></head><body></body></html>');
+  const keys = ['document', 'Node', 'HTMLElement', 'HTMLParagraphElement', 'HTMLAnchorElement'];
+  const previous = keys.map(key => Object.getOwnPropertyDescriptor(globalThis, key));
+  t.after(() => keys.forEach((key, index) => {
+    if (previous[index]) Object.defineProperty(globalThis, key, previous[index]);
+    else delete globalThis[key];
+  }));
+  for (const key of keys) globalThis[key] = dom[key];
+  const { render } = await import('../dist-ssr/entry-static.js');
+  const platforms = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
+  const update = JSON.parse(readFileSync('public/update.json', 'utf8'));
+  const testflight = { schemaVersion: 1, generatedAt: '2026-10-21T10:00:00.000Z', installs: 123, buildCount: 2, periodStart: '2026-10-01', periodEnd: '2026-10-21' };
+  for (const path of ['/download/', '/zh-TW/download/']) {
+    for (const installs of [0, 123]) {
+      const { html } = await render(path, { platforms, 'update-manifest': update, 'testflight-stats': { ...testflight, installs } });
+      assert.doesNotMatch(html, /data-msg=|data-stck=/);
+      const doc = parseHTML(html).document;
+      const rows = [...doc.querySelectorAll('.download-stats dl > div')];
+      const ios = rows.find(row => row.querySelector('dt').textContent === 'iOS');
+      assert.equal(ios.querySelector('dd').firstChild.textContent, String(installs));
+      assert.match(ios.textContent, /TestFlight/);
+      assert.equal(rows[0].querySelector('dd').textContent, platforms.downloadStats.total.toLocaleString('en-US'));
+      assert.match(doc.querySelector('.download-stats').textContent, /不[计計]入 GitHub/);
+    }
+    const { html } = await render(path, { platforms, 'update-manifest': update, 'testflight-stats': null });
+    const doc = parseHTML(html).document;
+    const ios = [...doc.querySelectorAll('.download-stats dl > div')].find(row => row.querySelector('dt').textContent === 'iOS');
+    assert.doesNotMatch(ios.querySelector('dd').textContent, /\d/);
+  }
 });

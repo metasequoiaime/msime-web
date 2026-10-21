@@ -58,6 +58,16 @@ export const platformsQuery = () =>
 
 export const usePlatformsQuery = () => useQuery(platformsQuery());
 
+// TestFlight 与 GitHub 下载量独立发布、独立失败，不把 Apple 安装次数加进下载合计。
+export const testflightStatsSource = staticSnapshot<import("../../shared/testflight-stats.ts").TestFlightStats | null>("/testflight-stats.json", async value => (await import("../../shared/testflight-stats.ts")).parseTestFlightStats(value));
+export const testflightStatsQuery = () => queryOptions({
+  queryKey: ["testflight-stats"] as const,
+  queryFn: ({ signal }) => testflightStatsSource.load(signal),
+  staleTime: Number.POSITIVE_INFINITY,
+  retry: false,
+});
+export const useTestflightStatsQuery = () => useQuery(testflightStatsQuery());
+
 // ---- update-manifest ----
 
 /** `no-store` plus a timestamp so neither the CDN nor the browser hands back the previous release's manifest. */

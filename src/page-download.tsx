@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useLocation } from "@tanstack/react-router";
 import { RELEASE_FILTERS, sitePlatforms } from "./data/platforms";
-import { usePlatformsQuery, useReleasesQuery, useUpdateManifestQuery } from "./data/queries";
+import { usePlatformsQuery, useReleasesQuery, useTestflightStatsQuery, useUpdateManifestQuery } from "./data/queries";
 import { DownloadGuide } from "./download/guide";
 import { DownloadPanel } from "./download/panel";
 import { DownloadStats } from "./download/stats";
@@ -27,6 +27,7 @@ export function DownloadPage() {
   const platforms = usePlatformsQuery();
   const manifest = useUpdateManifestQuery();
   const releases = useReleasesQuery();
+  const testflight = useTestflightStatsQuery();
 
   usePageMeta();
 
@@ -68,7 +69,7 @@ export function DownloadPage() {
               update({ platform: value, release: undefined });
             }}
           />
-          <DownloadStats manifest={platforms.data} />
+          <DownloadStats manifest={platforms.data} testflight={testflight.data} />
           {ready && platform === "web" && <WebDemo />}
           <DownloadGuide sections={sections} platform={platform} filter={ready} />
         </div>
