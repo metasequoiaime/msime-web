@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-21T11:43:20.355Z",
-  "totalStars": 4953,
+  "generatedAt": "2026-10-21T17:08:22.772Z",
+  "totalStars": 4979,
   "repoCount": 8,
   "starHistory": [
     {
@@ -141,15 +141,15 @@
     },
     {
       "month": "2026-08",
-      "stars": 830
+      "stars": 829
     },
     {
       "month": "2026-09",
-      "stars": 1725
+      "stars": 1724
     },
     {
       "month": "2026-10",
-      "stars": 4953
+      "stars": 4979
     }
   ],
   "starSeries": [
@@ -294,15 +294,15 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 785
+          "stars": 784
         },
         {
           "date": "2026-09-30",
-          "stars": 1554
+          "stars": 1553
         },
         {
           "date": "2026-10-21",
-          "stars": 3100
+          "stars": 3107
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-21",
-          "stars": 914
+          "stars": 922
         }
       ]
     },
@@ -372,7 +372,7 @@
         },
         {
           "date": "2026-10-21",
-          "stars": 851
+          "stars": 862
         }
       ]
     },
@@ -734,13 +734,13 @@
       ]
     }
   ],
-  "starDelta30d": 3425,
+  "starDelta30d": 3452,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 22944,
+      "contributions": 23001,
       "repos": 8
     },
     {
@@ -814,10 +814,10 @@
       "repos": 1
     },
     {
-      "login": "Komeiji-Shiki",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/84919145?v=4",
-      "url": "https://github.com/Komeiji-Shiki",
-      "contributions": 6,
+      "login": "apple-ouyang",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/45086632?v=4",
+      "url": "https://github.com/apple-ouyang",
+      "contributions": 15,
       "repos": 1
     }
   ]
