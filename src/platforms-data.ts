@@ -45,11 +45,14 @@ export const downloadStatsSchema = z.object({
   total: z.number().int().nonnegative(),
   platforms: z.object({
     windows: z.number().int().nonnegative(),
+    // 旧快照的 Windows 总数含 Rust 新版，缺少分项时不能推断它为零。
+    windowsRust: z.number().int().nonnegative().optional(),
     macos: z.number().int().nonnegative(),
     linux: z.number().int().nonnegative(),
     android: z.number().int().nonnegative(),
+    harmony: z.number().int().nonnegative().optional(),
   }),
-}).refine(value => value.total === Object.values(value.platforms).reduce((sum, count) => sum + count, 0));
+}).refine(value => value.total === Object.values(value.platforms).reduce<number>((sum, count) => sum + (count ?? 0), 0));
 
 /** 由 scripts/generate-platforms.mjs 生成：Windows、macOS、Linux 与 Android 各自的正式版，另附比它更新的预览版（没有就是 null）。 */
 export const platformsSchema = z.object({

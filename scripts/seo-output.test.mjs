@@ -415,7 +415,18 @@ test('both download locales expose the snapshot counts and their scope in static
       continue;
     }
     assert.ok(stats);
-    assert.deepEqual([...stats.querySelectorAll('dd')].map(node => Number(node.textContent.replaceAll(',', ''))), [manifest.downloadStats.total, ...Object.values(manifest.downloadStats.platforms)]);
+    const values = manifest.downloadStats.platforms;
+    const expected = [manifest.downloadStats.total, values.windows, values.windowsRust, values.macos, values.linux, values.android, values.harmony].filter(value => value !== undefined);
+    assert.deepEqual([...stats.querySelectorAll('dd')].map(node => Number(node.firstChild.textContent.replaceAll(',', ''))).filter(Number.isFinite), expected);
+    const rows = [...stats.querySelectorAll('dl > div')];
+    assert.equal(rows.length, 8, 'total, six installer counters and the explicit iOS unavailable state');
+    const ios = rows.find(row => row.querySelector('dt').textContent === 'iOS');
+    assert.ok(ios, 'iOS is visible without inventing a zero');
+    assert.doesNotMatch(ios.querySelector('dd').textContent, /\d/);
+    const harmony = rows.find(row => row.querySelector('dt').textContent === 'HarmonyOS');
+    assert.ok(harmony);
+    assert.match(harmony.textContent, /GitHub HAP/);
+    assert.match(stats.textContent, /Windows（Rust 新版）/);
     const time = stats.querySelector('time');
     assert.equal(time.getAttribute('datetime') ?? time.getAttribute('dateTime'), manifest.generatedAt);
     assert.match(stats.textContent, /GitHub/);

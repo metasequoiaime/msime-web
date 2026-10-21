@@ -7,6 +7,7 @@ const INSTALLERS = [
   ['linux', /^(?:msime|metasequoia-ime)-linux[\w.-]*\.(?:deb|rpm|appimage)$/i],
   ['linux', /^(?:msime|metasequoia-ime)-linux[\w.-]*-linux-(?:x86_64|aarch64)\.tar\.gz$/i],
   ['android', /^msime-(?:android|client)[\w.-]*\.apk$/i],
+  ['harmony', /^msime-harmony-[\w.-]+\.hap$/i],
 ];
 
 export const DOWNLOAD_STATS_REPOSITORIES = [
@@ -17,14 +18,16 @@ export const DOWNLOAD_STATS_REPOSITORIES = [
 
 /** 汇总所有现存发行版（含预发布与 nightly）的安装包下载次数；分页重叠的资产按仓库和资产 ID 去重。 */
 export function downloadStats(repositories) {
-  const platforms = { windows: 0, macos: 0, linux: 0, android: 0 };
+  const platforms = { windows: 0, windowsRust: 0, macos: 0, linux: 0, android: 0, harmony: 0 };
   const seen = new Set();
   for (const [repository, releases] of repositories) {
     for (const release of releases) {
       if (release.draft || !release.published_at) continue;
       for (const asset of release.assets ?? []) {
-        const platform = INSTALLERS.find(([, pattern]) => pattern.test(asset.name))?.[0];
-        if (!platform) continue;
+        const matched = INSTALLERS.find(([, pattern]) => pattern.test(asset.name))?.[0];
+        if (!matched) continue;
+        // Rust 新版早期也用过旧版的安装包文件名，必须按来源仓库分开，不能只看文件名。
+        const platform = matched === 'windows' && repository.toLowerCase() === 'metasequoiaime/msime' ? 'windowsRust' : matched;
         const key = `${repository.toLowerCase()}/${asset.id}`;
         if (seen.has(key)) continue;
         if (!Number.isSafeInteger(asset.id) || asset.id <= 0 || !Number.isSafeInteger(asset.download_count) || asset.download_count < 0) {
