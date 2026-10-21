@@ -11,7 +11,7 @@ export function DownloadStats({ manifest, testflight }: { manifest?: PlatformsMa
   const counts: { label: string; count?: number | null; status?: string; note?: string }[] = [
     ...(stats ? [
       { label: "GitHub 累计下载", count: stats.total },
-      { label: stats.platforms.windowsRust === undefined ? "Windows（含 Rust 新版）" : "Windows（旧版）", count: stats.platforms.windows },
+      { label: stats.platforms.windowsRust === undefined ? "Windows（含 Rust 新版）" : "Windows（纯净版）", count: stats.platforms.windows },
       { label: "Windows（Rust 新版）", count: stats.platforms.windowsRust, status: "尚未单独统计" },
       ...(["macos", "linux", "android"] as const).map(platform => ({ label: PLATFORM_NAMES[platform], count: stats.platforms[platform] })),
       { label: PLATFORM_NAMES.harmony, count: stats.platforms.harmony, status: "尚未单独统计", note: "GitHub HAP 测试包" },
