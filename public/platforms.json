@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-21T15:23:06.362Z",
+  "generatedAt": "2026-10-21T19:26:38.984Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -568,13 +568,13 @@
     ]
   },
   "downloadStats": {
-    "total": 52087,
+    "total": 52293,
     "platforms": {
-      "windows": 36955,
-      "windowsRust": 454,
-      "macos": 3738,
-      "linux": 7384,
-      "android": 3555,
+      "windows": 37015,
+      "windowsRust": 478,
+      "macos": 3755,
+      "linux": 7450,
+      "android": 3594,
       "harmony": 1
     }
   }
