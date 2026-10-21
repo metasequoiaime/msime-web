@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { classifyAssets, fetchAllReleases, selectRelease, signingState, versionOrder } from './generate-platforms.mjs';
+import { classifyAssets, fetchAllReleases, selectExperimental, selectRelease, signingState, versionOrder } from './generate-platforms.mjs';
 import { downloadStats } from './download-stats.mjs';
 
 const statsRelease = (assets, extra = {}) => ({ draft: false, published_at: '2026-10-21T00:00:00Z', assets, ...extra });
@@ -382,4 +382,32 @@ test('android releases offer the full APK first and each edition after it, check
     'msime-android-wubi.apk 水杉五笔 · apk arm64',
   ]);
   assert.equal(chosen.signed, null, 'APK signing is not inferred from the file name');
+});
+
+test('the Rust Windows build from the main repository is the experimental release, never the main slot', () => {
+  const base = 'https://github.com/metasequoiaime/msime/releases';
+  const rust = (tag, prerelease, editions) => ({
+    tag_name: tag, draft: false, prerelease, published_at: '2026-10-08T15:29:08Z', html_url: `${base}/tag/${tag}`,
+    assets: editions.flatMap(id => [`MetasequoiaIME-${id}_Setup_v${tag.slice('windows-v'.length)}.exe`, `MetasequoiaIME-${id}_Setup_v${tag.slice('windows-v'.length)}.exe.sha256`])
+      .map(name => ({ name, size: 1, browser_download_url: `${base}/download/${tag}/${name}` })),
+  });
+  const releases = [
+    rust('windows-v0.2.0', true, ['Full']),
+    rust('windows-v0.2.1', true, ['Wubi', 'Full', 'Pinyin']),
+    { tag_name: 'macos-v0.54.1', draft: false, prerelease: false, published_at: '2026-10-19T00:00:00Z', html_url: `${base}/tag/macos-v0.54.1`,
+      assets: [{ name: 'msime-macos-0.54.1-universal.dmg', size: 1, browser_download_url: `${base}/download/macos-v0.54.1/msime-macos-0.54.1-universal.dmg` }] },
+  ];
+
+  const chosen = selectExperimental('windows', releases);
+  assert.equal(chosen.version, '0.2.1');
+  assert.equal(chosen.signed, null);
+  assert.equal(chosen.prerelease, undefined);
+  assert.deepEqual(chosen.downloads.map(d => d.label), ['完整版 · 安装程序', '水杉拼音 · 安装程序', '水杉五笔 · 安装程序']);
+  assert.equal(selectExperimental('macos', releases), null);
+  assert.equal(selectExperimental('windows', []), null);
+  assert.equal(selectExperimental('windows', [{ ...releases[1], draft: true }]), null);
+  assert.equal(selectExperimental('windows', [{ ...releases[1], assets: [] }]), null);
+  assert.equal(selectExperimental('windows', [...releases, rust('windows-v0.2.2', false, ['Full'])]).version, '0.2.2');
+  // MSIME-Windows 的规则认不出主仓库的安装包，它们不会混进正式版。
+  assert.deepEqual(classifyAssets('windows', releases[1].assets), []);
 });

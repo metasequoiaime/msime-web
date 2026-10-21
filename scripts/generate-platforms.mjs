@@ -96,6 +96,21 @@ const RULES = {
 };
 
 /*
+ * 主仓库按版本表打出的 Rust 版 Windows（release-windows.yml，以 windows-v<版本> 发布）。它还不稳定，不建议主力使用，所以不顶替 MSIME-Windows：主按钮、版本号和客户端读的 update.json 仍然来自 MSIME-Windows，它作为「新版测试版」单独列在 Windows 下面。两者可以同时安装（msime 仓库 platforms/windows/README.md），装它不会动到正在用的那一份。
+ *
+ * 文件名是 MetasequoiaIME-<版本>_Setup_v<版本号>.exe，与 MSIME-Windows 的 MetasequoiaIME_Setup_v… 不同，各自的规则互不误认。完整版排第一做主推，其余版本名字取自 LINUX_EDITIONS（同一张版本表）。
+ */
+const EXPERIMENTAL = {
+  windows: {
+    repository: 'metasequoiaime/msime',
+    rules: [
+      [/^MetasequoiaIME-Full_Setup_v[\w.-]+\.exe$/i, '完整版 · 安装程序', 'x64'],
+      ...LINUX_EDITIONS.map(([id, name]) => [new RegExp(`^MetasequoiaIME-${id}_Setup_v[\\w.-]+\\.exe$`, 'i'), `${name} · 安装程序`, 'x64']),
+    ],
+  },
+};
+
+/*
  * tag 规则：可选的平台前缀（macOS 仓库的 `macos-v…`）、可选的 `v`、三到四段数字，再加一个可选的后缀（`-build.11`、`-beta.1`）。
  *
  * 以前这里只收纯数字 tag，理由是和 update.json 保持一致：上游发过 v0.6.2-beta，update.json 拒掉了，这份却收了，于是同一页上下载按钮说 v0.6.2-beta、正文说 v0.5.4。现在正式版和预览版在页面上分开展示、各自标明，那个矛盾不再出现；而 macOS 仓库已经只发带 `-build.N` 后缀的 tag，连带 Latest 徽章的正式版也是，继续只收纯数字 tag 会让 macOS 永远停在最后一个纯数字版本上。
@@ -135,15 +150,14 @@ const sha256Of = asset =>
     ? asset.digest.slice('sha256:'.length)
     : null;
 
-export function classifyAssets(platform, assets) {
-  const rules = RULES[platform] ?? [];
+export function classifyAssets(platform, assets, { repository = SOURCES[platform], rules = RULES[platform] ?? [] } = {}) {
   const downloads = [];
 
   for (const [pattern, label, arch] of rules) {
     for (const asset of assets) {
       if (isNoise(asset.name) || !pattern.test(asset.name)) continue;
-      const url = canonicalGithubUrl(SOURCES[platform], asset.browser_download_url);
-      if (!url?.startsWith(`https://github.com/${SOURCES[platform]}/releases/download/`)) continue;
+      const url = canonicalGithubUrl(repository, asset.browser_download_url);
+      if (!url?.startsWith(`https://github.com/${repository}/releases/download/`)) continue;
       downloads.push({
         label,
         arch,
@@ -177,13 +191,13 @@ export const signingState = (platform, downloads) => {
   return declares && downloads.every(entry => declares(entry.name)) ? true : null;
 };
 
-const toRelease = (platform, release) => {
+const toRelease = (platform, release, source = {}) => {
   const match = releaseTag(platform).exec(String(release.tag_name ?? ''));
   if (release.draft !== false || !release.published_at || !match) return null;
-  const downloads = classifyAssets(platform, release.assets ?? []);
+  const downloads = classifyAssets(platform, release.assets ?? [], source);
   if (!downloads.length) return null;
   // 产物地址已经按仓库校验过，发布页地址没有理由松一档 —— 页面上「发布说明与校验值」就指向它。
-  const releaseUrl = canonicalGithubUrl(SOURCES[platform], release.html_url);
+  const releaseUrl = canonicalGithubUrl(source.repository ?? SOURCES[platform], release.html_url);
   if (!releaseUrl) return null;
   return {
     version: match[1],
@@ -218,6 +232,21 @@ export function selectRelease(platform, releases) {
   const newer = eligible.find(release => release.prerelease && versionOrder(release.version, stable.version) < 0);
   const preview = newer ? (({ prerelease, ...rest }) => rest)(newer) : null;
   return { ...stable, preview };
+}
+
+/*
+ * 新版测试版取最高的版本，正式版和 Pre-release 都算：它整体就是测试版，上游的 Pre-release 标记不改变这一点。
+ *
+ * 签名状态一律写「不知道」：NAME_DECLARES_SIGNING 的约定只对 MSIME-Windows 的流水线成立，主仓库的 Windows 安装包没有承诺过这个约定。
+ */
+export function selectExperimental(platform, releases) {
+  const source = EXPERIMENTAL[platform];
+  if (!source) return null;
+  const [newest] = releases.map(release => toRelease(platform, release, source)).filter(Boolean)
+    .sort((left, right) => versionOrder(left.version, right.version));
+  if (!newest) return null;
+  const { prerelease: _prerelease, ...rest } = newest;
+  return { ...rest, signed: null };
 }
 
 /*
@@ -275,13 +304,16 @@ async function main() {
   const platforms = {};
   // 主仓库同时发布多个平台，整轮只读取一次；统计另包括已归档 Linux 仓库的历史发行版。
   const repositories = new Map();
-  for (const repository of new Set([...Object.values(SOURCES), ...DOWNLOAD_STATS_REPOSITORIES])) {
+  for (const repository of new Set([...Object.values(SOURCES), ...Object.values(EXPERIMENTAL).map(source => source.repository), ...DOWNLOAD_STATS_REPOSITORIES])) {
     repositories.set(repository, await fetchAllReleases(repository, headers));
   }
   const stats = downloadStats(repositories);
   for (const [platform, repository] of Object.entries(SOURCES)) {
     const selected = selectRelease(platform, repositories.get(repository));
-    if (selected) platforms[platform] = { repository, ...selected };
+    if (!selected) continue;
+    // 新版测试版与统计复用同一份发布列表；没有可识别的测试安装包时只隐藏这一块。
+    const experimental = EXPERIMENTAL[platform] ? selectExperimental(platform, repositories.get(EXPERIMENTAL[platform].repository)) : null;
+    platforms[platform] = { repository, ...selected, experimental };
   }
 
   // 每个平台都是下载页的固定桌面分支。上游暂时没有可识别产物时，不能把该键静默删掉：
@@ -304,7 +336,7 @@ async function main() {
   const mirrored = attachMirrors(platforms, mirrorBase(process.env.DOWNLOAD_MIRROR_BASE_URL));
   await writeFile(new URL('../public/platforms.json', import.meta.url),
     `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary, downloadStats: stats }, null, 2)}\n`);
-  console.log(Object.entries(platforms).map(([k, v]) => `${k} v${v.version} (${v.downloads.length} 个产物)${v.preview ? ` + 预览版 v${v.preview.version}` : ''}`).join(', '),
+  console.log(Object.entries(platforms).map(([k, v]) => `${k} v${v.version} (${v.downloads.length} 个产物)${v.preview ? ` + 预览版 v${v.preview.version}` : ''}${v.experimental ? ` + 新版测试版 v${v.experimental.version}` : ''}`).join(', '),
     dictionary ? `| 词库 ${dictionary.tag} (${dictionary.files.length} 个文件)` : '| 词库 未取到');
 }
 

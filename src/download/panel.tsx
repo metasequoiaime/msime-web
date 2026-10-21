@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { SitePlatformEntry } from "../data/platforms.ts";
-import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
+import type { ExperimentalRelease, PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform, ReleasePlatform } from "../platform.ts";
 import { useDownloadMirrorsQuery } from "../data/queries";
 import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, copyText, cx, ExternalIcon, GitHubIcon, Pill, PlatformIcon, QQIcon, useToast } from "../ui";
@@ -133,23 +133,37 @@ function MorePackages({ platform, version, downloads, id }: { platform: ReleaseP
  * 比正式版更新的预览版，和正式版并列展示。
  *
  * 上游每次合并都会自动发一个 Pre-release，却只把人工挑过的那个标成正式版。只展示正式版，想试最新改动的人得自己去 GitHub 翻；只展示预览版，又等于把没挑过的构建推给所有人。所以两个都给，正式版占主按钮，预览版在下面明确标出来。
+ *
+ * Windows 的新版测试版（主仓库的 Rust 版，`release.experimental`）也用这块，换上自己的名字和提醒。
  */
-function PreviewPanel({ platform, preview, arm64 }: { platform: ReleasePlatform; preview: PreviewRelease; arm64: boolean }) {
+function PreviewPanel({
+  platform,
+  preview,
+  arm64,
+  kind = "预览版",
+  note = "包含尚未进入正式版的改动，可能不稳定。",
+}: {
+  platform: ReleasePlatform;
+  preview: PreviewRelease | ExperimentalRelease;
+  arm64: boolean;
+  kind?: string;
+  note?: string;
+}) {
   const { t } = useLocale();
   // Linux 预览版的按钮和正式版一样按架构挑包，并说出是哪个包。
   const { primary: first, others } = pickPrimary(platform, preview.downloads, arm64);
   if (!first) return null;
 
   return (
-    <section className="mt-6 rounded-tile p-[clamp(18px,2.4vw,24px)] shadow-ring-2" aria-label={t("预览版")}>
+    <section className="mt-6 rounded-tile p-[clamp(18px,2.4vw,24px)] shadow-ring-2" aria-label={t(kind)}>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <Pill tone="warn">{t("预览版")}</Pill>
+        <Pill tone="warn">{t(kind)}</Pill>
         <a
           className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
           href={first.url}
           rel="noreferrer"
         >
-          {t(platform === "linux" ? `下载预览版 v${preview.version} ${describeLinuxPackage(first)}` : `下载预览版 v${preview.version}`)}
+          {t(platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`)}
         </a>
         <MirrorAction
           platform={platform}
@@ -158,7 +172,7 @@ function PreviewPanel({ platform, preview, arm64 }: { platform: ReleasePlatform;
           className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
         />
       </div>
-      <p className="m-0 mt-3 text-sm leading-[1.8] text-muted">{t("包含尚未进入正式版的改动，可能不稳定。")}</p>
+      <p className="m-0 mt-3 text-sm leading-[1.8] text-muted">{t(note)}</p>
       {others.length > 0 && <MorePackages platform={platform} version={preview.version} downloads={others} />}
     </section>
   );
@@ -404,6 +418,16 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
       {release && others.length > 0 && <MorePackages id={moreId} platform={entry.id as ReleasePlatform} version={release.version} downloads={others} />}
 
       {release?.preview && <PreviewPanel platform={entry.id as ReleasePlatform} preview={release.preview} arm64={arm64} />}
+
+      {release?.experimental && (
+        <PreviewPanel
+          platform={entry.id as ReleasePlatform}
+          preview={release.experimental}
+          arm64={arm64}
+          kind="新版测试版"
+          note="用 Rust 重写的新版 Windows 输入法，不稳定，不建议主力使用。可以和上面的正式版同时安装，互不影响。"
+        />
+      )}
     </div>
   );
 }
