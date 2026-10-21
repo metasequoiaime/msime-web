@@ -11,6 +11,7 @@ REQUIRED = {'Build', 'Workflow validation', 'Dependency review'}
 ALLOWED = {
     'automation/downloads': frozenset({'public/update.json', 'public/platforms.json'}),
     'automation/community-snapshot': frozenset({'public/community.json'}),
+    'automation/testflight-stats': frozenset({'public/testflight-stats.json'}),
 }
 BRANCH = 'automation/downloads'
 

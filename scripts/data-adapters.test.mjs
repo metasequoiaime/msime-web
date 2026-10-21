@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { siteApi, SourceError, staticSnapshot, withFallback } from '../src/data/source.ts';
-import { appStatsQuery, communityQuery, platformsQuery, releasesQuery, updateManifestQuery } from '../src/data/queries.ts';
+import { appStatsQuery, communityQuery, platformsQuery, releasesQuery, testflightStatsQuery, updateManifestQuery } from '../src/data/queries.ts';
 import { ANDROID_PGYER_URL, IOS_TESTFLIGHT_URL, sitePlatforms, SITE_PLATFORMS } from '../src/data/platforms.ts';
 import { communitySchema } from '../src/community-data.ts';
 import { platformsSchema } from '../src/platforms-data.ts';
@@ -54,6 +54,21 @@ test('Windows experimental releases degrade independently of stable releases and
     assert.equal(parsed.platforms.windows.version, platforms.platforms.windows.version);
     assert.deepEqual(parsed.downloadStats, platforms.downloadStats);
   }
+});
+
+test('TestFlight snapshot uses its own static query and rejects bad data without replacing GitHub totals', async t => {
+  const stats = { schemaVersion: 1, generatedAt: '2026-10-21T10:00:00.000Z', installs: 20, buildCount: 2, periodStart: '2026-10-01', periodEnd: '2026-10-21' };
+  assert.deepEqual(testflightStatsQuery().queryKey, ['testflight-stats']);
+  t.mock.method(globalThis, 'fetch', async url => {
+    assert.equal(url, '/testflight-stats.json');
+    return Response.json(stats);
+  });
+  assert.deepEqual(await run(testflightStatsQuery()), stats);
+  t.mock.method(globalThis, 'fetch', async () => Response.json(null));
+  assert.equal(await run(testflightStatsQuery()), null);
+  t.mock.method(globalThis, 'fetch', async () => Response.json({ ...stats, installs: -1 }));
+  await assert.rejects(run(testflightStatsQuery()));
+  assert.equal(platformsSchema.parse(platforms).downloadStats.total, platforms.downloadStats.total);
 });
 
 test('adapters only accept same-origin paths, and site APIs only under /api/', () => {

@@ -72,11 +72,19 @@ wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
 
 ### 下载统计
 
-下载页展示 GitHub 安装包的累计下载次数与 Windows 旧版、Windows Rust 新版、macOS、Linux、Android、HarmonyOS 分项。Rust Windows 按主仓库来源独立统计，包含早期与旧版同名的安装包；分项拆分不增加总数。iOS 展示「暂无公开数据」（通过 TestFlight 分发），HarmonyOS 统计 GitHub HAP 测试包下载。iOS 的未知数量不当作零。`scripts/generate-platforms.mjs` 在现有下载清单同步中完整分页读取 `MSIME-Windows`、`msime` 和已归档的 `MSIME-Linux` 发行版；主仓库只读取一次，下载量由 `scripts/download-stats.mjs` 按资产 ID 去重并汇总到 `public/platforms.json` 的 `downloadStats`。`sync-downloads.yml` 沿用每半小时检查、经自动 PR 和正常 CI 合入的流程，页面显示的是已发布快照的 `generatedAt`，不是实时计数。
+下载页展示 GitHub 安装包的累计下载次数与 Windows 旧版、Windows Rust 新版、macOS、Linux、Android、HarmonyOS 分项。Rust Windows 按主仓库来源独立统计，包含早期与旧版同名的安装包；分项拆分不增加总数。iOS 从独立的 `testflight-stats.json` 展示 TestFlight 安装次数，首次未同步时显示「暂无公开数据」，HarmonyOS 统计 GitHub HAP 测试包下载。iOS 的未知数量不当作零，Apple 安装次数不计入 GitHub 累计下载。`scripts/generate-platforms.mjs` 在现有下载清单同步中完整分页读取 `MSIME-Windows`、`msime` 和已归档的 `MSIME-Linux` 发行版；主仓库只读取一次，下载量由 `scripts/download-stats.mjs` 按资产 ID 去重并汇总到 `public/platforms.json` 的 `downloadStats`。`sync-downloads.yml` 沿用每半小时检查、经自动 PR 和正常 CI 合入的流程，页面显示的是已发布快照的 `generatedAt`，不是实时计数。
 
 口径是现存正式版、预发布与 nightly 的手动安装包下载次数，不是独立用户或安装人数。包括各产品版本；排除源码、词库、校验和、符号文件、TestFlight 产物及自动更新载荷。已经删除或被替换的资产无法补回旧计数，因此总数可能下降。国内镜像、软件源、蒲公英与 TestFlight 不在此公开统计内；现有镜像点击仍单独上报给管理后台，不与 GitHub 计数相加。
 
 旧快照没有 `downloadStats`、或者统计无效时，页面隐藏统计区，下载入口照常工作。旧快照缺少 `windowsRust` 分项时，Windows 标注含 Rust 新版；Rust 或 HarmonyOS 缺分项时显示「尚未单独统计」，防止伪造零值或重复加总。统计没有新增访客标识、cookie、第三方脚本或浏览器上报请求；简繁页面和预渲染 HTML 共用同一份数字。
+
+### iOS TestFlight 安装统计
+
+主仓库 `msime` 的 `sync-testflight-stats.yml` 复用现有 Apple 授权，计划每小时 17、47 分读取有效 iOS 构建的 `betaBuildUsages`，将 `installCount` 合计、构建数、指标覆盖日期和生成时间通过 `testflight-stats-v1` 事件发送给本站。GitHub cron 可能延迟，可在主仓库手动运行同名统计 workflow；不需要触发 iOS 发布。
+
+本站的同名接收 workflow 校验汇总、忽略迟到或未变化的数据，只允许 `automation/testflight-stats` 自动 PR 修改 `public/testflight-stats.json`，正常 CI 通过后自动合并发布。Apple 私钥仅在主仓库 Actions 环境使用，不复制到本站。API 失败或数据无效时保留旧快照，首次成功前文件为 `null`。
+
+Apple 返回的可用构建安装次数不等于独立人数或全部历史安装量，页面独立显示其更新时间和覆盖日期，不与 GitHub 文件下载次数相加。协议字段为 `schemaVersion: 1`、`generatedAt`、`installs`、`buildCount`、`periodStart`、`periodEnd`，不包含测试者资料或构建原始响应。
 
 ### 国内镜像（Cloudflare R2）
 

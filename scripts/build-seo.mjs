@@ -30,7 +30,7 @@ for (const path of pages) {
   const html = parseHTML(translatedTemplates[path] ?? (guide ? docsTemplate : readFileSync(`${dist}/${template}`, 'utf8')));
   const document = html.document;
   // The features page reads the dictionary release from platforms.json, so it is seeded too and its dictionary block is in the static HTML.
-  const data = basePath === '/download/' ? { platforms: JSON.parse(readFileSync('public/platforms.json')), 'update-manifest': JSON.parse(readFileSync('public/update.json')) } : basePath === '/features/' ? { platforms: JSON.parse(readFileSync('public/platforms.json')) } : basePath === '/' ? { community: JSON.parse(readFileSync('public/community.json')) } : {};
+  const data = basePath === '/download/' ? { platforms: JSON.parse(readFileSync('public/platforms.json')), 'update-manifest': JSON.parse(readFileSync('public/update.json')), 'testflight-stats': JSON.parse(readFileSync('public/testflight-stats.json')) } : basePath === '/features/' ? { platforms: JSON.parse(readFileSync('public/platforms.json')) } : basePath === '/' ? { community: JSON.parse(readFileSync('public/community.json')) } : {};
   const { html: body, bootstrap } = await render(path === '/404/' ? '/__not-found__/' : path, data);
   if (!body.includes('<h1') || body.includes('data-msg=') || body.includes('data-stck=')) throw new Error(`Static render failed for ${path}: ${body.slice(body.indexOf('data-msg='), body.indexOf('data-msg=') + 500)}`);
   document.getElementById('root').innerHTML = body;
