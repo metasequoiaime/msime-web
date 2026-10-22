@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-22T13:11:47.046Z",
-  "totalStars": 5017,
+  "generatedAt": "2026-10-22T18:09:55.464Z",
+  "totalStars": 5027,
   "repoCount": 8,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 5017
+      "stars": 5027
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-22",
-          "stars": 3127
+          "stars": 3131
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-22",
-          "stars": 933
+          "stars": 936
         }
       ]
     },
@@ -372,7 +372,7 @@
         },
         {
           "date": "2026-10-22",
-          "stars": 869
+          "stars": 872
         }
       ]
     },
@@ -734,13 +734,13 @@
       ]
     }
   ],
-  "starDelta30d": 3459,
+  "starDelta30d": 3469,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 23142,
+      "contributions": 23206,
       "repos": 8
     },
     {
@@ -758,17 +758,17 @@
       "repos": 3
     },
     {
+      "login": "Tokisaki-Galaxy",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/61621971?v=4",
+      "url": "https://github.com/Tokisaki-Galaxy",
+      "contributions": 51,
+      "repos": 1
+    },
+    {
       "login": "CuartPyaw",
       "avatarUrl": "https://avatars.githubusercontent.com/u/142556778?v=4",
       "url": "https://github.com/CuartPyaw",
       "contributions": 43,
-      "repos": 1
-    },
-    {
-      "login": "Tokisaki-Galaxy",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/61621971?v=4",
-      "url": "https://github.com/Tokisaki-Galaxy",
-      "contributions": 41,
       "repos": 1
     },
     {
@@ -782,7 +782,7 @@
       "login": "apple-ouyang",
       "avatarUrl": "https://avatars.githubusercontent.com/u/45086632?v=4",
       "url": "https://github.com/apple-ouyang",
-      "contributions": 32,
+      "contributions": 37,
       "repos": 1
     },
     {
