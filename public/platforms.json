@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-22T02:30:15.453Z",
+  "generatedAt": "2026-10-22T02:41:52.334Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -568,25 +568,15 @@
     ]
   },
   "downloadStats": {
-    "total": 52509,
+    "total": 52533,
     "platforms": {
-      "windows": 37089,
-      "windowsRust": 483,
+      "windows": 37107,
+      "windowsRust": 488,
       "macos": 3778,
       "linux": 7535,
-      "android": 3624,
+      "android": 3625,
       "harmony": 0
     }
-  },
-  "mirrorDownloadStats": {
-    "total": 6975,
-    "platforms": {
-      "android": 532,
-      "linux": 388,
-      "macos": 788,
-      "windows": 5267
-    },
-    "generatedAt": "2026-10-22T02:30:15.410695Z"
   },
   "downloadHistory": [
     {
@@ -2603,13 +2593,13 @@
       "repository": "metasequoiaime/msime",
       "id": 659125467,
       "name": "msime-android.apk",
-      "download_count": 485
+      "download_count": 486
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 659193576,
       "name": "MetasequoiaIME-Full_Setup_v0.3.0.exe",
-      "download_count": 119
+      "download_count": 123
     },
     {
       "repository": "metasequoiaime/msime",
@@ -2627,7 +2617,7 @@
       "repository": "metasequoiaime/msime",
       "id": 659193600,
       "name": "MetasequoiaIME-Tibetan_Setup_v0.3.0.exe",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
@@ -3725,12 +3715,22 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 655453588,
       "name": "MetasequoiaIME_Setup_v0.11.1.exe",
-      "download_count": 2482
+      "download_count": 2500
     }
   ],
+  "mirrorDownloadStats": {
+    "total": 6978,
+    "platforms": {
+      "android": 532,
+      "linux": 388,
+      "macos": 788,
+      "windows": 5270
+    },
+    "generatedAt": "2026-10-22T02:41:51.874912Z"
+  },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-22T02:37:49.952Z",
-    "total": 4085,
+    "generatedAt": "2026-10-22T02:41:51.527Z",
+    "total": 4086,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -3738,7 +3738,7 @@
       },
       {
         "id": "5a4b727841661c3fc60e10d1820be47471b4a5f29d0c835dfd74883de4bd981f",
-        "downloads": 157
+        "downloads": 158
       },
       {
         "id": "6e8db9e2b3aa76ddecaa021be47d2d0f7be17e01bc5fadccc326ab0665296342",
