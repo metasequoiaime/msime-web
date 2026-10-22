@@ -577,5 +577,15 @@
       "android": 3601,
       "harmony": 0
     }
+  },
+  "mirrorDownloadStats": {
+    "total": 6937,
+    "platforms": {
+      "android": 532,
+      "linux": 386,
+      "macos": 784,
+      "windows": 5235
+    },
+    "generatedAt": "2026-10-22T00:35:59.666867Z"
   }
 }
