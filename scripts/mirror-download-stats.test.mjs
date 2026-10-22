@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { mirrorDownloadStatsSchema, latestMirrorDownloadStats, loadMirrorDownloadStats } from '../shared/mirror-download-stats.ts';
 import { mirrorDownloadPlatform } from '../shared/download-events.ts';
 import { onRequest } from '../functions/api/download-stats.ts';
@@ -12,6 +13,14 @@ const memoryCache = () => {
   return { stored, match: async key => stored.get(key.url)?.clone(), put: async (key, value) => { stored.set(key.url, value); } };
 };
 const get = (env = {}, method = 'GET', waitUntil = () => {}) => onRequest({ request: new Request('https://msime.app/api/download-stats', { method }), env, waitUntil });
+
+test('Cloudflare 将镜像累计接口及尾斜杠路径交给 Pages Function', () => {
+  const routes = JSON.parse(readFileSync(new URL('../public/_routes.json', import.meta.url), 'utf8'));
+  for (const path of ['/api/download-stats', '/api/download-stats/']) {
+    assert.ok(routes.include.includes(path), `${path} 必须进入 Functions 路由`);
+    assert.ok(!routes.exclude.includes(path));
+  }
+});
 
 test('累计镜像数据守恒、保留未知平台，真实零值与不可用分开', async () => {
   const urls = [];
