@@ -142,12 +142,15 @@ function PreviewPanel({
   arm64,
   kind = "预览版",
   note = "包含尚未进入正式版的改动，可能不稳定。",
+  heading = false,
 }: {
   platform: ReleasePlatform;
   preview: PreviewRelease | ExperimentalRelease;
   arm64: boolean;
   kind?: string;
   note?: string;
+  /** 用 h3 标题说明这是另一条版本线，胶囊只作补充。目前只有 Windows 的新版测试版这么做。 */
+  heading?: boolean;
 }) {
   const { t } = useLocale();
   // Linux 预览版的按钮和正式版一样按架构挑包，并说出是哪个包。
@@ -156,8 +159,14 @@ function PreviewPanel({
 
   return (
     <section className="mt-6 rounded-tile p-[clamp(18px,2.4vw,24px)] shadow-ring-2" aria-label={t(kind)}>
+      {heading && (
+        <header className="mb-3.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <h3 className="m-0 font-heading text-[17px] leading-[1.4] font-bold text-ink">{t(kind)}</h3>
+          <Pill tone="warn">{t("不稳定")}</Pill>
+        </header>
+      )}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <Pill tone="warn">{t(kind)}</Pill>
+        {!heading && <Pill tone="warn">{t(kind)}</Pill>}
         <a
           className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
           href={first.url}
@@ -427,6 +436,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           arm64={arm64}
           kind="新版测试版"
           note="用 Rust 重写的新版 Windows 输入法，不稳定，不建议主力使用。可以和上面的正式版同时安装，互不影响。"
+          heading
         />
       )}
     </div>
