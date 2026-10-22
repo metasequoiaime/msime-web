@@ -2,6 +2,8 @@
 
 Status: implemented
 
+本文的浏览器镜像采集、当前附件重算及 iOS 不进入总量的决定，相关部分由[补齐下载累计的可采集缺口](2026-10-22-complete-download-counts.md)替代；原始决定与验证记录保留。
+
 ## Problem
 
 iOS 的 TestFlight 安装次数需要 Apple 授权，官网现有 GitHub 下载统计没有该来源，直接把未知数显示成零或与 GitHub 文件下载合并会误导访客。

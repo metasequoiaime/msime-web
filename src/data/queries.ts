@@ -58,7 +58,7 @@ export const platformsQuery = () =>
 
 export const usePlatformsQuery = () => useQuery(platformsQuery());
 
-// TestFlight 与 GitHub 下载量独立发布、独立失败，不把 Apple 安装次数加进下载合计。
+// TestFlight 独立发布和读取，展示时将 Apple 安装次数并入全平台累计。
 export const testflightStatsSource = staticSnapshot<import("../../shared/testflight-stats.ts").TestFlightStats | null>("/testflight-stats.json", async value => (await import("../../shared/testflight-stats.ts")).parseTestFlightStats(value));
 export const testflightStatsQuery = () => queryOptions({
   queryKey: ["testflight-stats"] as const,

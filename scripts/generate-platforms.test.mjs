@@ -1,10 +1,25 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { classifyAssets, fetchAllReleases, selectExperimental, selectRelease, signingState, versionOrder } from './generate-platforms.mjs';
-import { downloadStats } from './download-stats.mjs';
+import { downloadSnapshot, downloadStats } from './download-stats.mjs';
 
 const statsRelease = (assets, extra = {}) => ({ draft: false, published_at: '2026-10-21T00:00:00Z', assets, ...extra });
 const countedAsset = (id, name, count) => ({ id, name, download_count: count });
+
+test('附件删除或换 ID 后保留历史，同一附件重复读取只更新累计值', () => {
+  const repository = 'metasequoiaime/msime';
+  const releases = assets => new Map([[repository, [statsRelease(assets)]]]);
+  const first = downloadSnapshot(releases([countedAsset(1, 'msime-android.apk', 10)]));
+  const second = downloadSnapshot(releases([countedAsset(1, 'msime-android.apk', 15)]), first.downloadHistory);
+  assert.equal(second.downloadStats.total, 15);
+  const replaced = downloadSnapshot(releases([countedAsset(2, 'msime-android.apk', 3)]), second.downloadHistory);
+  assert.equal(replaced.downloadStats.total, 18);
+  assert.equal(downloadSnapshot(releases([]), replaced.downloadHistory).downloadStats.total, 18);
+  assert.deepEqual(downloadSnapshot(releases([countedAsset(2, 'msime-android.apk', 3)]), replaced.downloadHistory), replaced);
+  assert.equal(downloadSnapshot(releases([countedAsset(2, 'msime-android.apk', 1)]), replaced.downloadHistory).downloadStats.total, 18);
+  assert.throws(() => downloadSnapshot(releases([]), {}), /Invalid GitHub/);
+  assert.throws(() => downloadSnapshot(releases([]), [{ repository, ...countedAsset(1, 'msime-android.apk', -1) }]), /Invalid GitHub/);
+});
 
 test('download totals include stable, preview, nightly and archived packages, once per asset', () => {
   const windows = countedAsset(1, 'MetasequoiaIME_Setup_v0.11.1.exe', 1000);

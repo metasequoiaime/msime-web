@@ -16,29 +16,44 @@ export const DOWNLOAD_STATS_REPOSITORIES = [
   'metasequoiaime/MSIME-Linux',
 ];
 
+/** 官网与镜像共用产品包分类，资源、源码和符号不计入安装包累计。 */
+export function installerPlatform(repository, name) {
+  if (!DOWNLOAD_STATS_REPOSITORIES.some(value => value.toLowerCase() === repository.toLowerCase())) return null;
+  const platform = INSTALLERS.find(([, pattern]) => pattern.test(name))?.[0];
+  return platform === 'windows' && repository.toLowerCase() === 'metasequoiaime/msime' ? 'windowsRust' : platform ?? null;
+}
+
 /** 汇总所有现存发行版（含预发布与 nightly）的安装包下载次数；分页重叠的资产按仓库和资产 ID 去重。 */
-export function downloadStats(repositories) {
+export function downloadSnapshot(repositories, history = []) {
   const platforms = { windows: 0, windowsRust: 0, macos: 0, linux: 0, android: 0, harmony: 0 };
-  const seen = new Set();
+  if (!Array.isArray(history)) throw new Error('Invalid GitHub download history');
+  const seen = new Map();
+  const keep = (repository, asset) => {
+    if (typeof repository !== 'string' || typeof asset.name !== 'string') throw new Error('Invalid GitHub download history');
+    const platform = installerPlatform(repository, asset.name);
+    if (!platform) return;
+    if (!Number.isSafeInteger(asset.id) || asset.id <= 0 || !Number.isSafeInteger(asset.download_count) || asset.download_count < 0) {
+      throw new Error(`Invalid GitHub download counter (${repository})`);
+    }
+    const key = `${repository.toLowerCase()}/${asset.id}`;
+    const previous = seen.get(key);
+    if (!previous || previous.download_count < asset.download_count) seen.set(key, { repository: repository.toLowerCase(), id: asset.id, name: asset.name, download_count: asset.download_count });
+  };
+  for (const entry of history) keep(entry.repository, entry);
   for (const [repository, releases] of repositories) {
     for (const release of releases) {
       if (release.draft || !release.published_at) continue;
       for (const asset of release.assets ?? []) {
-        const matched = INSTALLERS.find(([, pattern]) => pattern.test(asset.name))?.[0];
-        if (!matched) continue;
-        // Rust 新版早期也用过旧版的安装包文件名，必须按来源仓库分开，不能只看文件名。
-        const platform = matched === 'windows' && repository.toLowerCase() === 'metasequoiaime/msime' ? 'windowsRust' : matched;
-        const key = `${repository.toLowerCase()}/${asset.id}`;
-        if (seen.has(key)) continue;
-        if (!Number.isSafeInteger(asset.id) || asset.id <= 0 || !Number.isSafeInteger(asset.download_count) || asset.download_count < 0) {
-          throw new Error(`Invalid GitHub download counter (${repository})`);
-        }
-        seen.add(key);
-        platforms[platform] += asset.download_count;
+        keep(repository, asset);
       }
     }
   }
+  const downloadHistory = [...seen.values()].sort((a, b) => a.repository.localeCompare(b.repository) || a.id - b.id);
+  for (const asset of downloadHistory) platforms[installerPlatform(asset.repository, asset.name)] += asset.download_count;
   const total = Object.values(platforms).reduce((sum, count) => sum + count, 0);
   if (!Number.isSafeInteger(total)) throw new Error('GitHub download counter overflow');
-  return { total, platforms };
+  return { downloadStats: { total, platforms }, downloadHistory };
 }
+
+/** 保留原调用方接口，清单生成器另外保存附件历史。 */
+export const downloadStats = repositories => downloadSnapshot(repositories).downloadStats;

@@ -1,8 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mirrorDownloadEvent, reportMirrorDownload, TELEMETRY_EVENTS_URL } from '../shared/download-events.ts';
+import { mirrorDownloadEvent, reportMirrorDownload, serverCountsMirror, TELEMETRY_EVENTS_URL } from '../shared/download-events.ts';
 
 const download = { platform: 'windows', version: '0.9.3', artifact: 'MetasequoiaIME_Setup_v0.9.3.exe' };
+
+test('本站文件镜像由服务器计数，外部网盘仍使用浏览器点击记录', () => {
+  for (const url of ['https://dl.msime.app/releases/msime/v1/msime-android.apk', 'https://dl.msime.app/gh/https://github.com/metasequoiaime/msime/releases/download/v1/msime-android.apk']) assert.equal(serverCountsMirror(url), true);
+  for (const url of [undefined, 'invalid', 'https://pan.quark.cn/s/example', 'https://example.test/releases/a', 'https://dl.msime.app.evil.test/releases/a']) assert.equal(serverCountsMirror(url), false);
+});
 
 test('a mirror click is an anonymous cn-mirror download of the Windows installer', () => {
   assert.deepEqual(mirrorDownloadEvent(download, 'f0c1e2d3-a4b5-4c6d-8e7f-001122334455'), {

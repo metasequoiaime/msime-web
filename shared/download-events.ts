@@ -1,10 +1,18 @@
 /**
- * Download counts for the mirrors in China. GitHub Release downloads are counted by msime-backend from its release snapshots and installed apps report themselves, so the only downloads the website reports are clicks on a mirror link (the dl.msime.app copy of any desktop package, or the Lanzou link for the Windows installer), as `kind=download` with `channel=cn-mirror`. The GitHub buttons report nothing: counting them here would count the same download twice.
- *
- * The event is anonymous: a fresh random id per click, no install id, no cookie. `POST /v1/telemetry/events` needs no credentials, and `https://api.msime.app` is already in the page's `connect-src`.
+ * 官网为外部网盘和其他镜像记录匿名点击；dl.msime.app 的安装包由服务器保存事件并重试投递。
+ * GitHub 使用发行附件计数，不再由官网重复上报。事件不包含安装 ID、Cookie 或访问者资料。
  */
 
 export const TELEMETRY_EVENTS_URL = "https://api.msime.app/v1/telemetry/events";
+
+/** 本站镜像由文件服务器记录，浏览器再报一次会把同一个下载重复累计。 */
+export function serverCountsMirror(value: string | undefined): boolean {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.origin === "https://dl.msime.app" && (url.pathname.startsWith("/releases/") || url.pathname.startsWith("/gh/"));
+  } catch { return false; }
+}
 
 /** Rust 版与纯净版都叫 Windows，按真实包地址标记产品，保留现有事件协议。 */
 export const mirrorDownloadPlatform = (platform: string, url: string) =>

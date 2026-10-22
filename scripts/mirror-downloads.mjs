@@ -67,7 +67,7 @@ async function publiclyServed(entry, request) {
 
 /** 从镜像地址整份读一遍：Worker 借这次 GET 从 GitHub 取来存下。边读边算 sha256，大小和校验值都要和清单对上。 */
 async function fetchThroughMirror(entry, request) {
-  const response = await request(entry.mirrorUrl, { signal: AbortSignal.timeout(10 * 60_000) });
+  const response = await request(entry.mirrorUrl, { headers: { 'X-MSIME-Mirror-Check': '1' }, signal: AbortSignal.timeout(10 * 60_000) });
   if (!response.ok || !response.body) throw new Error(`${entry.name}: ${entry.mirrorUrl} answered HTTP ${response.status}`);
   const hash = createHash('sha256');
   let size = 0;

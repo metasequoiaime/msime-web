@@ -2,6 +2,8 @@
 
 Status: implemented
 
+本文的浏览器镜像采集、当前附件重算及 iOS 不进入总量的决定，相关部分由[补齐下载累计的可采集缺口](2026-10-22-complete-download-counts.md)替代；原始决定与验证记录保留。
+
 本文「国内镜像不计入」的口径由[累计下载包含国内镜像](../bug-fix/2026-10-22-total-downloads-include-mirrors.md)取代；GitHub 资产分类、分页去重和清单发布机制继续适用。
 
 ## Problem

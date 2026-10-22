@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { canonicalGithubUrl } from './github-url.mjs';
 import { attachMirrors, mirrorBase } from './mirror-downloads.mjs';
-import { downloadStats, DOWNLOAD_STATS_REPOSITORIES } from './download-stats.mjs';
+import { downloadSnapshot, DOWNLOAD_STATS_REPOSITORIES } from './download-stats.mjs';
 
 /*
  * public/platforms.json 给下载页提供三个平台各自的最新版本与安装包。
@@ -307,9 +307,20 @@ async function main() {
   for (const repository of new Set([...Object.values(SOURCES), ...Object.values(EXPERIMENTAL).map(source => source.repository), ...DOWNLOAD_STATS_REPOSITORIES])) {
     repositories.set(repository, await fetchAllReleases(repository, headers));
   }
-  const stats = downloadStats(repositories);
   const { loadMirrorDownloadStats, mirrorDownloadStatsSchema } = await import('../shared/mirror-download-stats.ts');
   const previous = JSON.parse(await readFile(new URL('../public/platforms.json', import.meta.url), 'utf8'));
+  const { downloadStats: stats, downloadHistory } = downloadSnapshot(repositories, previous.downloadHistory);
+  const { pgyerDownloadStatsSchema } = await import('../shared/pgyer-download-stats.ts');
+  let pgyerDownloadStats = pgyerDownloadStatsSchema.optional().parse(previous.pgyerDownloadStats);
+  if (process.env.PGYER_API_KEY) {
+    const { loadPgyerDownloadStats } = await import('./pgyer-download-stats.mjs');
+    try {
+      pgyerDownloadStats = await loadPgyerDownloadStats(process.env.PGYER_API_KEY, pgyerDownloadStats);
+    } catch (error) {
+      if (!pgyerDownloadStats) throw error;
+      console.warn('蒲公英统计暂不可用，保留最近成功快照。');
+    }
+  }
   let mirrorDownloadStats = mirrorDownloadStatsSchema.optional().parse(previous.mirrorDownloadStats);
   try {
     mirrorDownloadStats = await loadMirrorDownloadStats('https://api.msime.app');
@@ -344,7 +355,7 @@ async function main() {
   // 配置了国内镜像时，每个包都带上镜像地址；紧接着运行的 mirror-downloads.mjs 通过镜像地址把它读一遍、核对不过的去掉 mirrorUrl。
   const mirrored = attachMirrors(platforms, mirrorBase(process.env.DOWNLOAD_MIRROR_BASE_URL));
   await writeFile(new URL('../public/platforms.json', import.meta.url),
-    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary, downloadStats: stats, mirrorDownloadStats }, null, 2)}\n`);
+    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary, downloadStats: stats, downloadHistory, mirrorDownloadStats, pgyerDownloadStats }, null, 2)}\n`);
   console.log(Object.entries(platforms).map(([k, v]) => `${k} v${v.version} (${v.downloads.length} 个产物)${v.preview ? ` + 预览版 v${v.preview.version}` : ''}${v.experimental ? ` + 新版测试版 v${v.experimental.version}` : ''}`).join(', '),
     dictionary ? `| 词库 ${dictionary.tag} (${dictionary.files.length} 个文件)` : '| 词库 未取到');
 }

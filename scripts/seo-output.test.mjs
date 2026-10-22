@@ -416,9 +416,10 @@ test('both download locales expose the snapshot counts and their scope in static
       continue;
     }
     assert.ok(stats);
-    const values = Object.fromEntries(Object.entries(manifest.downloadStats.platforms).map(([key, count]) => [key, count + (manifest.mirrorDownloadStats.platforms[key] ?? 0)]));
+    const pgyer = manifest.pgyerDownloadStats;
+    const values = Object.fromEntries(Object.entries(manifest.downloadStats.platforms).map(([key, count]) => [key, count + (manifest.mirrorDownloadStats.platforms[key] ?? 0) + (key === 'android' ? pgyer?.total ?? 0 : 0)]));
     const other = manifest.mirrorDownloadStats.total - Object.keys(values).reduce((sum, key) => sum + (manifest.mirrorDownloadStats.platforms[key] ?? 0), 0);
-    const expected = [manifest.downloadStats.total + manifest.mirrorDownloadStats.total, values.windows, values.windowsRust, values.macos, values.linux, values.android, values.harmony, ...(other ? [other] : []), testflight?.installs].filter(value => value !== undefined);
+    const expected = [manifest.downloadStats.total + manifest.mirrorDownloadStats.total + (testflight?.installs ?? 0) + (pgyer?.total ?? 0), values.windows, values.windowsRust, values.macos, values.linux, values.android, values.harmony, ...(other ? [other] : []), testflight?.installs].filter(value => value !== undefined);
     assert.deepEqual([...stats.querySelectorAll('dd')].map(node => Number(node.firstChild.textContent.replaceAll(',', ''))).filter(Number.isFinite), expected);
     const rows = [...stats.querySelectorAll('dl > div')];
     assert.equal(rows.length, other ? 9 : 8);
@@ -433,10 +434,10 @@ test('both download locales expose the snapshot counts and their scope in static
     assert.match(harmony.textContent, /HAP/);
     assert.match(stats.textContent, /Windows（Rust 新版）/);
     const time = stats.querySelector('time');
-    assert.equal(time.getAttribute('datetime') ?? time.getAttribute('dateTime'), manifest.generatedAt < manifest.mirrorDownloadStats.generatedAt ? manifest.generatedAt : manifest.mirrorDownloadStats.generatedAt);
+    assert.equal(time.getAttribute('datetime') ?? time.getAttribute('dateTime'), [manifest.generatedAt, manifest.mirrorDownloadStats.generatedAt, ...(testflight ? [testflight.generatedAt] : []), ...(pgyer ? [pgyer.generatedAt] : [])].sort((a, b) => Date.parse(a) - Date.parse(b))[0]);
     assert.match(stats.textContent, /[国國][内內](?:[镜鏡]像|映象)/);
     if (testflight) {
-      assert.match(stats.textContent, /不[计計]入累[计計]下[载載]/);
+      assert.match(stats.textContent, /[并並][计計]入累[计計]下[载載]/);
       assert.equal(stats.querySelectorAll('time').length, 2);
     }
     assert.match(stats.textContent, /TestFlight/);
@@ -455,7 +456,7 @@ test('the current macOS DMG guide describes the in-app install flow', () => {
   assert.doesNotMatch(macos.textContent, /打开「应用程序」里的 MSIME。它会把输入法装进/);
 });
 
-test('static rendering shows TestFlight installs independently and degrades on an unavailable snapshot', async t => {
+test('iOS 安装量加入全平台累计，未知状态与真实零分开', async t => {
   // 与 build-seo 使用相同的 DOM 环境，下载指南的 Markdown 渲染依赖它。
   const dom = parseHTML('<html><head></head><body></body></html>');
   const keys = ['document', 'Node', 'HTMLElement', 'HTMLParagraphElement', 'HTMLAnchorElement'];
@@ -467,6 +468,7 @@ test('static rendering shows TestFlight installs independently and degrades on a
   for (const key of keys) globalThis[key] = dom[key];
   const { render } = await import('../dist-ssr/entry-static.js');
   const platforms = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
+  platforms.pgyerDownloadStats = { generatedAt: '2026-10-22T00:00:00.000Z', total: 9, builds: [{ id: 'a'.repeat(64), downloads: 9 }] };
   platforms.mirrorDownloadStats = { total: 20, platforms: { windows: 7, windowsRust: 3, macos: 10 }, generatedAt: '2026-10-22T00:00:00Z' };
   const update = JSON.parse(readFileSync('public/update.json', 'utf8'));
   const testflight = { schemaVersion: 1, generatedAt: '2026-10-21T10:00:00.000Z', installs: 123, buildCount: 2, periodStart: '2026-10-01', periodEnd: '2026-10-21' };
@@ -479,8 +481,12 @@ test('static rendering shows TestFlight installs independently and degrades on a
       const ios = rows.find(row => row.querySelector('dt').textContent === 'iOS');
       assert.equal(ios.querySelector('dd').firstChild.textContent, String(installs));
       assert.match(ios.textContent, /TestFlight/);
-      assert.equal(rows[0].querySelector('dd').textContent, (platforms.downloadStats.total + 20).toLocaleString('en-US'));
-      assert.match(doc.querySelector('.download-stats').textContent, /不[计計]入累[计計]下[载載]/);
+      assert.equal(rows[0].querySelector('dd').textContent, (platforms.downloadStats.total + 20 + 9 + installs).toLocaleString('en-US'));
+      const android = rows.find(row => row.querySelector('dt').textContent === 'Android');
+      assert.equal(android.querySelector('dd').firstChild.textContent, (platforms.downloadStats.platforms.android + 9).toLocaleString('en-US'));
+      assert.match(doc.querySelector('.download-stats').textContent, /[并並][计計]入累[计計]下[载載]/);
+      const numeric = rows.map(row => Number(row.querySelector('dd').firstChild.textContent.replaceAll(',', '')));
+      assert.equal(numeric[0], numeric.slice(1).reduce((sum, count) => sum + count, 0));
     }
     const { html } = await render(path, { platforms, 'update-manifest': update, 'testflight-stats': null });
     const doc = parseHTML(html).document;
@@ -511,7 +517,7 @@ test('简繁下载累计包含镜像，各平台相加且实时与快照不重�
       { saved: { ...mirror, total: 0, platforms: {} }, live: undefined, expected: [210, 10, 20, 30, 40, 50, 60] },
       { saved: undefined, live: undefined, expected: [] },
     ]) {
-      const data = { platforms: { ...manifest, downloadStats: github, mirrorDownloadStats: scenario.saved }, 'update-manifest': update, 'testflight-stats': null };
+      const data = { platforms: { ...manifest, downloadStats: github, mirrorDownloadStats: scenario.saved, pgyerDownloadStats: undefined }, 'update-manifest': update, 'testflight-stats': null };
       if (scenario.live) data['mirror-download-stats'] = scenario.live;
       const { html } = await render(path, data);
       assert.doesNotMatch(html, /data-msg=|data-stck=/);
