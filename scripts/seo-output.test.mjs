@@ -411,16 +411,17 @@ test('both download locales expose the snapshot counts and their scope in static
   for (const path of ['/download/', '/zh-TW/download/']) {
     const doc = document(path);
     const stats = doc.querySelector('.download-stats');
-    if (!manifest.downloadStats) {
-      assert.equal(stats, null, 'an older snapshot never fabricates zero downloads');
+    if (!manifest.downloadStats || !manifest.mirrorDownloadStats) {
+      if (manifest.downloadStats) assert.match(stats.textContent, /[统統][计計][暂暫]不可用/);
       continue;
     }
     assert.ok(stats);
-    const values = manifest.downloadStats.platforms;
-    const expected = [manifest.downloadStats.total, values.windows, values.windowsRust, values.macos, values.linux, values.android, values.harmony, testflight?.installs].filter(value => value !== undefined);
+    const values = Object.fromEntries(Object.entries(manifest.downloadStats.platforms).map(([key, count]) => [key, count + (manifest.mirrorDownloadStats.platforms[key] ?? 0)]));
+    const other = manifest.mirrorDownloadStats.total - Object.keys(values).reduce((sum, key) => sum + (manifest.mirrorDownloadStats.platforms[key] ?? 0), 0);
+    const expected = [manifest.downloadStats.total + manifest.mirrorDownloadStats.total, values.windows, values.windowsRust, values.macos, values.linux, values.android, values.harmony, ...(other ? [other] : []), testflight?.installs].filter(value => value !== undefined);
     assert.deepEqual([...stats.querySelectorAll('dd')].map(node => Number(node.firstChild.textContent.replaceAll(',', ''))).filter(Number.isFinite), expected);
     const rows = [...stats.querySelectorAll('dl > div')];
-    assert.equal(rows.length, 8, 'total, six installer counters and the explicit iOS unavailable state');
+    assert.equal(rows.length, other ? 9 : 8);
     const ios = rows.find(row => row.querySelector('dt').textContent === 'iOS');
     assert.ok(ios, 'iOS is visible without inventing a zero');
     if (testflight) {
@@ -429,17 +430,17 @@ test('both download locales expose the snapshot counts and their scope in static
     } else assert.doesNotMatch(ios.querySelector('dd').textContent, /\d/);
     const harmony = rows.find(row => row.querySelector('dt').textContent === 'HarmonyOS');
     assert.ok(harmony);
-    assert.match(harmony.textContent, /GitHub HAP/);
+    assert.match(harmony.textContent, /HAP/);
     assert.match(stats.textContent, /Windows（Rust 新版）/);
     const time = stats.querySelector('time');
-    assert.equal(time.getAttribute('datetime') ?? time.getAttribute('dateTime'), manifest.generatedAt);
-    assert.match(stats.textContent, /GitHub/);
+    assert.equal(time.getAttribute('datetime') ?? time.getAttribute('dateTime'), manifest.generatedAt < manifest.mirrorDownloadStats.generatedAt ? manifest.generatedAt : manifest.mirrorDownloadStats.generatedAt);
+    assert.match(stats.textContent, /[国國][内內](?:[镜鏡]像|映象)/);
     if (testflight) {
-      assert.match(stats.textContent, /不[计計]入 GitHub/);
+      assert.match(stats.textContent, /不[计計]入累[计計]下[载載]/);
       assert.equal(stats.querySelectorAll('time').length, 2);
     }
     assert.match(stats.textContent, /TestFlight/);
-    assert.match(stats.textContent, /nightly/);
+    assert.doesNotMatch(stats.textContent, /不含[国國][内內][镜鏡]像/);
     assert.match(stats.textContent, /不代表安[装裝]人[数數]/);
     assert.match(stats.textContent, /已[删刪]除/);
   }
@@ -466,6 +467,7 @@ test('static rendering shows TestFlight installs independently and degrades on a
   for (const key of keys) globalThis[key] = dom[key];
   const { render } = await import('../dist-ssr/entry-static.js');
   const platforms = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
+  platforms.mirrorDownloadStats = { total: 20, platforms: { windows: 7, windowsRust: 3, macos: 10 }, generatedAt: '2026-10-22T00:00:00Z' };
   const update = JSON.parse(readFileSync('public/update.json', 'utf8'));
   const testflight = { schemaVersion: 1, generatedAt: '2026-10-21T10:00:00.000Z', installs: 123, buildCount: 2, periodStart: '2026-10-01', periodEnd: '2026-10-21' };
   for (const path of ['/download/', '/zh-TW/download/']) {
@@ -477,12 +479,47 @@ test('static rendering shows TestFlight installs independently and degrades on a
       const ios = rows.find(row => row.querySelector('dt').textContent === 'iOS');
       assert.equal(ios.querySelector('dd').firstChild.textContent, String(installs));
       assert.match(ios.textContent, /TestFlight/);
-      assert.equal(rows[0].querySelector('dd').textContent, platforms.downloadStats.total.toLocaleString('en-US'));
-      assert.match(doc.querySelector('.download-stats').textContent, /不[计計]入 GitHub/);
+      assert.equal(rows[0].querySelector('dd').textContent, (platforms.downloadStats.total + 20).toLocaleString('en-US'));
+      assert.match(doc.querySelector('.download-stats').textContent, /不[计計]入累[计計]下[载載]/);
     }
     const { html } = await render(path, { platforms, 'update-manifest': update, 'testflight-stats': null });
     const doc = parseHTML(html).document;
     const ios = [...doc.querySelectorAll('.download-stats dl > div')].find(row => row.querySelector('dt').textContent === 'iOS');
     assert.doesNotMatch(ios.querySelector('dd').textContent, /\d/);
+  }
+});
+
+test('简繁下载累计包含镜像，各平台相加且实时与快照不重复计数', async t => {
+  const dom = parseHTML('<html><head></head><body></body></html>');
+  const keys = ['document', 'Node', 'HTMLElement', 'HTMLParagraphElement', 'HTMLAnchorElement'];
+  const previous = keys.map(key => Object.getOwnPropertyDescriptor(globalThis, key));
+  t.after(() => keys.forEach((key, index) => {
+    if (previous[index]) Object.defineProperty(globalThis, key, previous[index]);
+    else delete globalThis[key];
+  }));
+  for (const key of keys) globalThis[key] = dom[key];
+  const { render } = await import('../dist-ssr/entry-static.js');
+  const manifest = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
+  const update = JSON.parse(readFileSync('public/update.json', 'utf8'));
+  const github = { total: 210, platforms: { windows: 10, windowsRust: 20, macos: 30, linux: 40, android: 50, harmony: 60 } };
+  const mirror = { total: 28, platforms: { windows: 1, windowsRust: 2, macos: 3, linux: 4, android: 5, harmony: 6, future: 7 }, generatedAt: '2026-10-22T00:00:00Z' };
+  for (const path of ['/download/', '/zh-TW/download/']) {
+    for (const scenario of [
+      { saved: mirror, live: undefined, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
+      { saved: { ...mirror, total: 0, platforms: {}, generatedAt: '2026-10-21T00:00:00Z' }, live: { ...mirror, stale: false }, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
+      { saved: mirror, live: { ...mirror, total: 0, platforms: {}, generatedAt: '2026-10-21T00:00:00Z', stale: true }, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
+      { saved: { ...mirror, total: 0, platforms: {} }, live: undefined, expected: [210, 10, 20, 30, 40, 50, 60] },
+      { saved: undefined, live: undefined, expected: [] },
+    ]) {
+      const data = { platforms: { ...manifest, downloadStats: github, mirrorDownloadStats: scenario.saved }, 'update-manifest': update, 'testflight-stats': null };
+      if (scenario.live) data['mirror-download-stats'] = scenario.live;
+      const { html } = await render(path, data);
+      assert.doesNotMatch(html, /data-msg=|data-stck=/);
+      const stats = parseHTML(html).document.querySelector('.download-stats');
+      const numeric = [...stats.querySelectorAll('dd')].map(node => Number(node.firstChild.textContent.replaceAll(',', ''))).filter(Number.isFinite);
+      assert.deepEqual(numeric, scenario.expected);
+      assert.doesNotMatch(stats.textContent, /GitHub [累積累计]+下[载載]|不含[国國][内內][镜鏡]像/);
+      if (!scenario.saved && !scenario.live) assert.match(stats.textContent, /[统統][计計][暂暫]不可用/);
+    }
   }
 });

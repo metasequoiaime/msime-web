@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { canonicalGithubUrl } from './github-url.mjs';
 import { attachMirrors, mirrorBase } from './mirror-downloads.mjs';
 import { downloadStats, DOWNLOAD_STATS_REPOSITORIES } from './download-stats.mjs';
@@ -308,6 +308,15 @@ async function main() {
     repositories.set(repository, await fetchAllReleases(repository, headers));
   }
   const stats = downloadStats(repositories);
+  const { loadMirrorDownloadStats, mirrorDownloadStatsSchema } = await import('../shared/mirror-download-stats.ts');
+  const previous = JSON.parse(await readFile(new URL('../public/platforms.json', import.meta.url), 'utf8'));
+  let mirrorDownloadStats = mirrorDownloadStatsSchema.optional().parse(previous.mirrorDownloadStats);
+  try {
+    mirrorDownloadStats = await loadMirrorDownloadStats('https://api.msime.app');
+  } catch (error) {
+    if (!mirrorDownloadStats) throw error;
+    console.warn('镜像统计暂不可用，保留最近成功快照。');
+  }
   for (const [platform, repository] of Object.entries(SOURCES)) {
     const selected = selectRelease(platform, repositories.get(repository));
     if (!selected) continue;
@@ -335,7 +344,7 @@ async function main() {
   // 配置了国内镜像时，每个包都带上镜像地址；紧接着运行的 mirror-downloads.mjs 通过镜像地址把它读一遍、核对不过的去掉 mirrorUrl。
   const mirrored = attachMirrors(platforms, mirrorBase(process.env.DOWNLOAD_MIRROR_BASE_URL));
   await writeFile(new URL('../public/platforms.json', import.meta.url),
-    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary, downloadStats: stats }, null, 2)}\n`);
+    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary, downloadStats: stats, mirrorDownloadStats }, null, 2)}\n`);
   console.log(Object.entries(platforms).map(([k, v]) => `${k} v${v.version} (${v.downloads.length} 个产物)${v.preview ? ` + 预览版 v${v.preview.version}` : ''}${v.experimental ? ` + 新版测试版 v${v.experimental.version}` : ''}`).join(', '),
     dictionary ? `| 词库 ${dictionary.tag} (${dictionary.files.length} 个文件)` : '| 词库 未取到');
 }

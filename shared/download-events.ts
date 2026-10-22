@@ -6,8 +6,12 @@
 
 export const TELEMETRY_EVENTS_URL = "https://api.msime.app/v1/telemetry/events";
 
+/** Rust 版与纯净版都叫 Windows，按真实包地址标记产品，保留现有事件协议。 */
+export const mirrorDownloadPlatform = (platform: string, url: string) =>
+  platform === "windows" && /^https:\/\/github\.com\/metasequoiaime\/msime\/releases\/download\//i.test(url) ? "windows-rust" : platform;
+
 export type MirrorDownload = {
-  /** The desktop platform the package is for: `windows`, `macos` or `linux`. */
+  /** 安装包平台；Rust Windows 用 windows-rust，与纯净版区分。 */
   platform: string;
   /** The release version the mirror is offered for, e.g. `0.9.3`. */
   version: string;
