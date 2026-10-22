@@ -72,11 +72,13 @@ wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
 
 ### 下载统计
 
-下载页统一展示「累计下载」和各平台下载量：GitHub 安装包累计下载与国内镜像的全部历史点击相加，国内镜像必须计入总量。iOS 继续展示独立的 TestFlight 安装次数，不与文件下载相加。Windows 纯净版与 Rust 新版保留分项；新的 Rust 镜像事件按真实包仓库标记为 `windows-rust`，旧 Windows 事件缺少仓库信息，无法精确还原过去 Rust 镜像的分项。
+下载页统一展示「累计下载」和各平台下载量：GitHub 安装包累计、国内镜像历史与新的文件请求计数，蒲公英 Android 各版本累计，以及 iOS 的 TestFlight 安装次数相加，各平台分项之和等于总数。Windows 纯净版与 Rust 新版保留分项；新的 Rust 镜像事件按真实包仓库标记为 `windows-rust`，旧 Windows 事件缺少仓库信息，无法精确还原过去 Rust 镜像的分项。
 
 `/api/download-stats` 代理后端公开只读的 `/v1/site/download-stats`，每分钟刷新，失联时保留最近成功缓存。`scripts/generate-platforms.mjs` 继续完整分页统计 GitHub 安装包，并把镜像汇总存入 `platforms.json` 的 `mirrorDownloadStats`，简繁静态 HTML 和浏览器共用同一合计口径。快照与实时镜像计数只取较新的一份，不重复相加；缺少完整镜像数据时不将 GitHub 部分数冒充总数。镜像值为零只有在接口成功返回零时才成立，未知平台镜像计数仍进入总数并列入「其他下载」。
 
-清单保留现有每半小时同步、自动 PR、CI 与 Pages 发布流程；只有获取时间变化时不发空 PR。镜像汇总首次失败使本轮同步失败，之后失败保留最近成功快照，不清零。GitHub 统计现存正式版、预发布和 nightly 手动安装包，排除源码、词库、符号、校验和与自动更新载荷。下载次数不是独立用户或安装人数，镜像点击不是完成下载次数。没有历史计数的软件源、蒲公英以及已删除安装包无法补回。
+清单保留现有每半小时同步、自动 PR、CI 与 Pages 发布流程；只有获取时间变化时不发空 PR。镜像汇总首次失败使本轮同步失败，之后失败保留最近成功快照，不清零。GitHub 统计正式版、预发布和 nightly 手动安装包，按仓库和附件 ID 在同一清单的 `downloadHistory` 中保留已经取得的累计值；同一附件重复读取只更新最高累计值，不重复相加。删除或替换附件后仍保留已记录历史。源码、词库、符号、校验和与自动更新载荷不计入安装包数。下载次数不是独立用户或安装人数，文件响应与点击也不代表完成下载。没有历史计数的软件源以及此前已删除且未保存的安装包无法补回。
+
+蒲公英读取仓库 Secret `PGYER_API_KEY`，通过短链接 `msime` 定位 Android 应用，完整分页获取 `/apiv2/app/builds` 实际返回的 `buildDownloadCount`，按版本标识的 SHA-256 摘要保留最高累计到同一清单的 `pgyerDownloadStats`，加入 Android 分项和统一总数。接口文档尚未列出该字段，若未来缺失或分页异常则拒绝新快照，保留最近成功数据，不把 `todayDownloadCount` 当累计。首次读取之前已删除的版本无法补回；`PGYER_USER_KEY` 不参与只读统计，凭据不进入公开清单。沿用每半小时同步与正常自动 PR。
 
 ### iOS TestFlight 安装统计
 
@@ -84,7 +86,7 @@ wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
 
 本站的同名接收 workflow 校验汇总、忽略迟到或未变化的数据，只允许 `automation/testflight-stats` 自动 PR 修改 `public/testflight-stats.json`，正常 CI 通过后自动合并发布。Apple 私钥仅在主仓库 Actions 环境使用，不复制到本站。API 失败或数据无效时保留旧快照，首次成功前文件为 `null`。
 
-Apple 返回的可用构建安装次数不等于独立人数或全部历史安装量，页面独立显示其更新时间和覆盖日期，不与 GitHub 文件下载次数相加。协议字段为 `schemaVersion: 1`、`generatedAt`、`installs`、`buildCount`、`periodStart`、`periodEnd`，不包含测试者资料或构建原始响应。
+Apple 返回的可用构建安装次数不等于独立人数或全部历史安装量，页面保留其更新时间和覆盖日期，并将已取得的安装次数加入全平台累计。协议字段为 `schemaVersion: 1`、`generatedAt`、`installs`、`buildCount`、`periodStart`、`periodEnd`，不包含测试者资料或构建原始响应。
 
 ### 国内镜像（Cloudflare R2）
 
@@ -97,7 +99,9 @@ GitHub Release 在国内下载很慢，所以下载页的安装包、客户端�
 
 R2 里没有的对象由 Worker 在第一次 GET 时从 GitHub 取来存下，之后都从 R2 读；HEAD 不会触发回源。只放行这些地址，其余一律 403：`metasequoiaime` 的 msime-dictionary、chinese-ime-lm、msime、MSIME-Windows、msime-plugins 与 `k2-fsa/sherpa-onnx` 的 `releases/download/`，以及 `raw.githubusercontent.com` 上的 `metasequoiaime/msime-engine/` 和 `metasequoiaime/msime-dictionary/`。缓存不会重新校验，所以只有内容不再变化的地址才能走镜像：发布资产，以及钉在提交上的 raw 文件；客户端的资源包、语音模型和应用更新都按锁文件或校验值核对，镜像出错时退回原地址。官方词库包的链接因此钉在每一轮读到的提交上。镜像不设自动清理：R2 存储很便宜，而且 `metasequoiaime/msime-plugins` 仓库已经不在了，`gh/` 下它的九个插件包只剩镜像里这一份（2026-10-11 从 OSS 原样拷过来的），清掉就再也取不回来。
 
-下载页：仓库变量 `DOWNLOAD_MIRROR_BASE_URL`（现为 `https://dl.msime.app`）是总开关，不设置时页面和以前一样。设置后 `sync-downloads.yml` 每一轮都给 `public/platforms.json` 的每个包写上 `mirrorUrl`，并在提 PR 之前通过镜像地址把它读一遍，核对大小和 SHA256：镜像里没有的包借这次读取存进 R2，用户点下去不会是等 GitHub 的第一次。这一步不上传，也不需要任何凭据。之后每轮只对公网地址发 HEAD 请求。某个包核对不过时，它暂时只保留 GitHub 下载，发布不受影响，这一轮 workflow 会标红。下载页在 GitHub 按钮旁边显示「国内镜像下载」，「其他安装包」里的每一项也带一个「国内镜像」链接；点击会以 `channel=cn-mirror` 上报下载次数（`shared/download-events.ts`）。
+下载页：仓库变量 `DOWNLOAD_MIRROR_BASE_URL`（现为 `https://dl.msime.app`）是总开关，不设置时页面和以前一样。设置后 `sync-downloads.yml` 每一轮都给 `public/platforms.json` 的每个包写上 `mirrorUrl`，并在提 PR 之前通过镜像地址把它读一遍，核对大小和 SHA256：镜像里没有的包借这次读取存进 R2，用户点下去不会是等 GitHub 的第一次。这一步不上传，也不需要任何凭据。之后每轮只对公网地址发 HEAD 请求。某个包核对不过时，它暂时只保留 GitHub 下载，发布不受影响，这一轮 workflow 会标红。下载页在 GitHub 按钮旁边显示「国内镜像下载」，「其他安装包」里的每一项也带一个「国内镜像」链接；本站镜像的安装包由 Worker 记录成功起始 GET，官网不再重复上报点击；外部网盘及其他镜像继续以 `channel=cn-mirror` 记录点击。
+
+统计：Worker 将匿名下载事件写入 R2 的私有 `download-events/pending/` 发件箱，每分钟最多投递 100 条到现有后端遥测接口。后端确认 202 后才删除，网络失败和限流保留原 ID 重试，后台唯一键负责去重；不保存访问者地址、Cookie 或请求头。HEAD、非起始 Range、失败响应和带 `X-MSIME-Mirror-Check: 1` 的自动预热不计数。安装包响应使用 `no-store`，让后续实际网络下载经过服务器。原浏览器缓存中的旧页面可能在迁移窗口继续发送旧点击，不能据此推算或扣除历史。R2 写入失败只记录错误码，不阻断用户下载。
 
 部署：Worker 不走 CI，改了 `workers/dl/` 之后在该目录运行 `wrangler deploy`（Cloudflare 账号 Metasequoiaime@gmail.com's Account）。`dl.msime.app` 是 Worker 的自定义域名，证书由 Cloudflare 管理。
 

@@ -33,3 +33,11 @@ test('镜像统计只有获取时间变化时不创建空 PR，计数变化仍�
   assert.equal(differsBeyondTimestamp(JSON.stringify(before), JSON.stringify(next)), false);
   assert.equal(differsBeyondTimestamp(JSON.stringify(before), JSON.stringify({ ...next, mirrorDownloadStats: { ...next.mirrorDownloadStats, total: 3, platforms: { windows: 3 } } })), true);
 });
+
+test('蒲公英只有查询时间变化不发空 PR，新累计仍发布', () => {
+  const before = { generatedAt: 'old', pgyerDownloadStats: { generatedAt: 'old', total: 2, builds: [{ id: 'synthetic', downloads: 2 }] } };
+  const next = { ...before, generatedAt: 'new', pgyerDownloadStats: { ...before.pgyerDownloadStats, generatedAt: 'new' } };
+  assert.equal(differsBeyondTimestamp(JSON.stringify(before), JSON.stringify(next)), false);
+  next.pgyerDownloadStats.total = 3;
+  assert.equal(differsBeyondTimestamp(JSON.stringify(before), JSON.stringify(next)), true);
+});

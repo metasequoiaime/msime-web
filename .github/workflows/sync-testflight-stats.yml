@@ -49,7 +49,7 @@ jobs:
           delete-branch: true
           commit-message: 'chore(site): 更新 TestFlight 安装统计'
           title: 'chore(site): 更新 TestFlight 安装统计'
-          body: '由主仓库读取 Apple 构建指标后提供的公开汇总，仅包含安装次数、构建数、覆盖日期和时间；不包含测试者资料或凭据。安装次数不计入 GitHub 下载合计。自动合并仍要求正常的构建、工作流与依赖检查。'
+          body: '由主仓库读取 Apple 构建指标后提供的公开汇总，仅包含安装次数、构建数、覆盖日期和时间；不包含测试者资料或凭据。安装次数计入官网累计下载和 iOS 分项。自动合并仍要求正常的构建、工作流与依赖检查。'
       - name: Enable auto-merge behind required checks
         if: steps.proposal.outputs.pull-request-number != '' && steps.proposal.outputs.pull-request-operation != 'closed'
         env:

@@ -2,6 +2,8 @@
 
 Status: implemented
 
+本文的浏览器镜像采集、当前附件重算及 iOS 不进入总量的决定，相关部分由[补齐下载累计的可采集缺口](../feature/2026-10-22-complete-download-counts.md)替代；原始决定与验证记录保留。
+
 ## Problem
 
 官网已上报国内镜像点击，却把它排除在「累计下载」之外。维护者要求统计总下载，不允许按来源排除镜像。[原安装包统计决定](../feature/2026-10-21-installer-download-statistics.md)的渠道排除口径因此被本决定替代。

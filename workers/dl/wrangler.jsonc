@@ -7,5 +7,6 @@
   "workers_dev": false,
   "routes": [{ "pattern": "dl.msime.app", "custom_domain": true }],
   "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "msime" }],
+  "triggers": { "crons": ["* * * * *"] },
   "observability": { "enabled": true }
 }

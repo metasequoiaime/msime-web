@@ -10,6 +10,8 @@
  * 之前是阿里云 OSS 香港 + 镜像回源规则，按外网流出计费，上线一天就是 118 GB、85 元。R2 不收流出费用。
  */
 
+import { flushDownloads, recordDownload } from './download-stats.mjs';
+
 /** 放行的 GitHub 地址前缀，和之前 OSS 的 bucket policy 与回源规则逐条对应。 */
 export const ALLOWED_ORIGINS = [
   'https://github.com/metasequoiaime/msime-dictionary/releases/download/',
@@ -113,6 +115,7 @@ async function serve(env, key, request) {
 }
 
 export default {
+  async scheduled(_event, env) { await flushDownloads(env); },
   async fetch(request, env) {
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405, headers: { allow: 'GET, HEAD' } });
     const key = objectKey(new URL(request.url).pathname);
@@ -129,10 +132,10 @@ export default {
     }
 
     const cached = await serve(env, key, request);
-    if (cached) return cached;
+    if (cached) return recordDownload(request, cached, url, env);
     const filled = await fill(env, key, url);
     if (filled === 'missing') return new Response('Not found', { status: 404 });
-    if (filled instanceof Response) return filled;
-    return (await serve(env, key, request)) ?? new Response('Not found', { status: 404 });
+    if (filled instanceof Response) return recordDownload(request, filled, url, env);
+    return recordDownload(request, (await serve(env, key, request)) ?? new Response('Not found', { status: 404 }), url, env);
   },
 };

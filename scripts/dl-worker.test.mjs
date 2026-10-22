@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 import worker, { BUFFER_LIMIT, objectKey, originFor } from '../workers/dl/index.mjs';
+import { DOWNLOAD_OUTBOX, flushDownloads } from '../workers/dl/download-stats.mjs';
 
 const DICTIONARY = 'https://github.com/metasequoiaime/msime-dictionary/releases/download/dict-v2.0.14/msime-pinyin.db';
 const ENGINE_RAW = 'https://raw.githubusercontent.com/metasequoiaime/msime-engine/a9b9f092219505166c927843762b650d1e0e501d/handwriting/models/handwriting-zh_CN.model';
@@ -63,7 +64,7 @@ function fakeBucket(initial = {}) {
       const stored = objects.get(key);
       if (!stored) return null;
       const header = range?.get('range');
-      if (!header) return { ...view(key, stored), body: new Blob([stored.body]).stream() };
+      if (!header) return { ...view(key, stored), body: new Blob([stored.body]).stream(), json: async () => JSON.parse(new TextDecoder().decode(stored.body)) };
       const [, start, end] = /^bytes=(\d+)-(\d+)$/.exec(header);
       const slice = stored.body.slice(Number(start), Number(end) + 1);
       // Like R2, the unused range field is present and undefined.
@@ -74,6 +75,8 @@ function fakeBucket(initial = {}) {
       this.puts.push(key);
       objects.set(key, { body: bytes, httpMetadata });
     },
+    async list({ prefix, limit }) { return { objects: [...objects.keys()].filter(key => key.startsWith(prefix)).slice(0, limit).map(key => ({ key })) }; },
+    async delete(key) { objects.delete(key); },
   };
 }
 
@@ -164,4 +167,76 @@ test('an upstream answer without Content-Length is buffered and stored when it i
   assert.equal(await response.text(), 'model');
   assert.deepEqual(env.BUCKET.puts, [`gh/${ENGINE_RAW}`]);
   assert.ok(BUFFER_LIMIT >= 32 * 1024 * 1024, 'the largest pinned raw file (26 MB handwriting model) still fits');
+});
+
+test('直接下载由镜像保存匿名事件，失败上报保留发件箱并复用事件 ID 重试', async () => {
+  const key = 'releases/msime/windows-v0.3.0/MetasequoiaIME-Full_Setup_v0.3.0.exe';
+  const env = { BUCKET: fakeBucket({ [key]: '0123456789' }) };
+  fakeGitHub({});
+  const response = await get(env, `/${key}`);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.equal(await response.text(), '0123456789');
+  const [pending] = (await env.BUCKET.list({ prefix: DOWNLOAD_OUTBOX, limit: 100 })).objects;
+  const event = await (await env.BUCKET.get(pending.key)).json();
+  assert.equal(event.platform, 'windows-rust');
+  assert.equal(event.channel, 'cn-mirror');
+  assert.deepEqual(Object.keys(event).sort(), ['artifact', 'channel', 'id', 'kind', 'platform', 'version']);
+  const requests = [];
+  const deliver = async (url, init) => {
+    assert.equal(url, 'https://api.msime.app/v1/telemetry/events');
+    requests.push(JSON.parse(init.body));
+    return new Response(null, { status: requests.length === 1 ? 503 : 202 });
+  };
+  await flushDownloads(env, deliver);
+  assert.equal(env.BUCKET.objects.has(pending.key), true);
+  await flushDownloads(env, deliver);
+  assert.equal(env.BUCKET.objects.has(pending.key), false);
+  assert.deepEqual(requests, [event, event]);
+  await flushDownloads(env, deliver);
+  assert.equal(requests.length, 2);
+});
+
+test('镜像只记成功的起始 GET，不记 HEAD、续传、预热、资源或错误响应', async () => {
+  const key = 'releases/msime/android-v0.1.0/msime-android.apk';
+  const env = { BUCKET: fakeBucket({ [key]: '0123456789', [`gh/${DICTIONARY}`]: 'dictionary' }) };
+  fakeGitHub({});
+  await get(env, `/${key}`, { method: 'HEAD' });
+  await get(env, `/${key}`, { headers: { range: 'bytes=2-5' } });
+  await get(env, `/${key}`, { headers: { 'x-msime-mirror-check': '1' } });
+  await get(env, `/gh/${DICTIONARY}`);
+  await get(env, '/releases/msime/android-v0.2.0/msime-android.apk');
+  assert.equal((await env.BUCKET.list({ prefix: DOWNLOAD_OUTBOX, limit: 100 })).objects.length, 0);
+  const start = await get(env, `/${key}`, { headers: { range: 'bytes=0-5' } });
+  assert.equal(start.status, 206);
+  assert.equal((await env.BUCKET.list({ prefix: DOWNLOAD_OUTBOX, limit: 100 })).objects.length, 1);
+  const scheduledEnv = { BUCKET: fakeBucket() };
+  await worker.scheduled({}, scheduledEnv);
+});
+
+test('发件箱网络错误或限流不删事件，并限制每轮最多投递 100 条', async () => {
+  const env = { BUCKET: fakeBucket() };
+  for (let index = 0; index < 105; index += 1) await env.BUCKET.put(`${DOWNLOAD_OUTBOX}${index}.json`, JSON.stringify({ id: index }), { httpMetadata: {} });
+  let calls = 0;
+  await flushDownloads(env, async () => { calls += 1; throw new TypeError('synthetic network'); });
+  assert.equal(calls, 100);
+  assert.equal(env.BUCKET.objects.size, 105);
+  await flushDownloads(env, async () => new Response(null, { status: 429 }));
+  assert.equal(env.BUCKET.objects.size, 105);
+  await flushDownloads(env, async () => new Response(null, { status: 202 }));
+  assert.equal(env.BUCKET.objects.size, 5);
+});
+
+test('统计持久化失败不阻断安装包响应，只记录固定错误码', async t => {
+  const key = 'releases/msime/android-v0.1.0/msime-android.apk';
+  const env = { BUCKET: fakeBucket({ [key]: 'synthetic-installer' }) };
+  env.BUCKET.put = async () => { throw new Error('synthetic storage unavailable'); };
+  const errors = [];
+  const original = console.error;
+  console.error = (...values) => errors.push(values);
+  t.after(() => { console.error = original; });
+  const response = await get(env, `/${key}`);
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), 'synthetic-installer');
+  assert.deepEqual(errors, [['download_count_persist_failed']]);
 });
