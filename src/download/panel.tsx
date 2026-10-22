@@ -187,6 +187,10 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
   const { t } = useLocale();
   const { show } = useToast();
   const lanzouUrl = useDownloadMirrorsQuery().data?.lanzouUrl;
+  const reportWindowsMirror = () => {
+    const installer = release?.downloads[0];
+    if (release && installer) reportMirrorDownload({ platform: "windows", version: release.version, artifact: installer.name });
+  };
 
   return (
     <div className="flex flex-wrap gap-3">
@@ -207,7 +211,7 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
       <div className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2 rounded-btn bg-panel px-3 py-2 text-[15px] leading-snug font-semibold whitespace-nowrap text-ink shadow-ring-2 sm:gap-2.5 sm:px-5 md:flex-none">
         <CloudDownloadIcon size={20} className="flex-none" />
         <div>
-          <a className="flex items-center gap-2 text-ink no-underline hover:text-accent-ink" href={`https://pan.quark.cn/s/50f95054d569?pwd=${QUARK_CODE}`} target="_blank" rel="noreferrer">
+          <a className="flex items-center gap-2 text-ink no-underline hover:text-accent-ink" href={`https://pan.quark.cn/s/50f95054d569?pwd=${QUARK_CODE}`} target="_blank" rel="noreferrer" onClick={reportWindowsMirror}>
             {t("夸克网盘下载")}
             <ExternalIcon className="flex-none text-accent-ink" />
           </a>
@@ -232,10 +236,7 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
           href={lanzouUrl}
           target="_blank"
           rel="noreferrer"
-          onClick={() => {
-            const installer = release?.downloads[0];
-            if (release && installer) reportMirrorDownload({ platform: "windows", version: release.version, artifact: installer.name });
-          }}
+          onClick={reportWindowsMirror}
         >
           <CloudDownloadIcon size={20} className="flex-none" />
           {t("蓝奏云盘")}
