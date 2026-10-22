@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useLocation } from "@tanstack/react-router";
 import { RELEASE_FILTERS, sitePlatforms } from "./data/platforms";
-import { usePlatformsQuery, useReleasesQuery, useTestflightStatsQuery, useUpdateManifestQuery } from "./data/queries";
+import { useMirrorDownloadStatsQuery, usePlatformsQuery, useReleasesQuery, useTestflightStatsQuery, useUpdateManifestQuery } from "./data/queries";
 import { DownloadGuide } from "./download/guide";
 import { DownloadPanel } from "./download/panel";
 import { DownloadStats } from "./download/stats";
@@ -28,6 +28,7 @@ export function DownloadPage() {
   const manifest = useUpdateManifestQuery();
   const releases = useReleasesQuery();
   const testflight = useTestflightStatsQuery();
+  const mirrorStats = useMirrorDownloadStatsQuery();
 
   usePageMeta();
 
@@ -69,7 +70,7 @@ export function DownloadPage() {
               update({ platform: value, release: undefined });
             }}
           />
-          <DownloadStats manifest={platforms.data} testflight={testflight.data} />
+          <DownloadStats manifest={platforms.data} testflight={testflight.data} mirror={mirrorStats.data} mirrorUnavailable={mirrorStats.isError || mirrorStats.data?.stale} />
           {ready && platform === "web" && <WebDemo />}
           <DownloadGuide sections={sections} platform={platform} filter={ready} />
         </div>

@@ -68,6 +68,20 @@ export const testflightStatsQuery = () => queryOptions({
 });
 export const useTestflightStatsQuery = () => useQuery(testflightStatsQuery());
 
+// 镜像汇总与清单快照相加，失败时由页面保留清单里的最近成功统计。
+export const mirrorDownloadStatsSource = siteApi<import("../../shared/mirror-download-stats.ts").MirrorDownloadStats & { stale: boolean }>("/api/download-stats", async value => {
+  const { mirrorDownloadStatsSchema } = await import("../../shared/mirror-download-stats.ts");
+  return mirrorDownloadStatsSchema.safeExtend({ stale: (await import("zod")).z.boolean() }).parse(value);
+});
+export const mirrorDownloadStatsQuery = () => queryOptions({
+  queryKey: ["mirror-download-stats"] as const,
+  queryFn: ({ signal }) => mirrorDownloadStatsSource.load(signal),
+  staleTime: 60_000,
+  refetchInterval: 60_000,
+  retry: false,
+});
+export const useMirrorDownloadStatsQuery = () => useQuery(mirrorDownloadStatsQuery());
+
 // ---- update-manifest ----
 
 /** `no-store` plus a timestamp so neither the CDN nor the browser hands back the previous release's manifest. */

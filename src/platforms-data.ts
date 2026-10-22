@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { mirrorDownloadStatsSchema } from "../shared/mirror-download-stats.ts";
 import { staticSnapshot } from "./data/source.ts";
 import { RELEASE_PLATFORMS, type ReleasePlatform } from "./platform.ts";
 
@@ -40,7 +41,7 @@ const releaseSchema = z.object({
   downloads: z.array(downloadSchema).min(1),
 });
 
-/** 现存 GitHub 发行版的安装包累计下载次数，与安装人数及镜像点击分开。 */
+/** 现存 GitHub 发行版的安装包累计下载次数，与镜像计数相加后作为累计下载展示。 */
 export const downloadStatsSchema = z.object({
   total: z.number().int().nonnegative(),
   platforms: z.object({
@@ -59,6 +60,7 @@ export const platformsSchema = z.object({
   generatedAt: z.string(),
   // 旧快照或损坏的统计不影响下载入口，页面在拿不到有效统计时不显示计数。
   downloadStats: downloadStatsSchema.optional().catch(undefined),
+  mirrorDownloadStats: mirrorDownloadStatsSchema.optional().catch(undefined),
   platforms: z.record(
     z.enum(RELEASE_PLATFORMS),
     releaseSchema.extend({

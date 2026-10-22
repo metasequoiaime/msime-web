@@ -72,11 +72,11 @@ wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
 
 ### 下载统计
 
-下载页展示 GitHub 安装包的累计下载次数与 Windows 纯净版、Windows Rust 新版、macOS、Linux、Android、HarmonyOS 分项。Rust Windows 按主仓库来源独立统计，包含早期与旧版同名的安装包；分项拆分不增加总数。iOS 从独立的 `testflight-stats.json` 展示 TestFlight 安装次数，首次未同步时显示「暂无公开数据」，HarmonyOS 统计 GitHub HAP 测试包下载。iOS 的未知数量不当作零，Apple 安装次数不计入 GitHub 累计下载。`scripts/generate-platforms.mjs` 在现有下载清单同步中完整分页读取 `MSIME-Windows`、`msime` 和已归档的 `MSIME-Linux` 发行版；主仓库只读取一次，下载量由 `scripts/download-stats.mjs` 按资产 ID 去重并汇总到 `public/platforms.json` 的 `downloadStats`。`sync-downloads.yml` 沿用每半小时检查、经自动 PR 和正常 CI 合入的流程，页面显示的是已发布快照的 `generatedAt`，不是实时计数。
+下载页统一展示「累计下载」和各平台下载量：GitHub 安装包累计下载与国内镜像的全部历史点击相加，国内镜像必须计入总量。iOS 继续展示独立的 TestFlight 安装次数，不与文件下载相加。Windows 纯净版与 Rust 新版保留分项；新的 Rust 镜像事件按真实包仓库标记为 `windows-rust`，旧 Windows 事件缺少仓库信息，无法精确还原过去 Rust 镜像的分项。
 
-口径是现存正式版、预发布与 nightly 的手动安装包下载次数，不是独立用户或安装人数。包括各产品版本；排除源码、词库、校验和、符号文件、TestFlight 产物及自动更新载荷。已经删除或被替换的资产无法补回旧计数，因此总数可能下降。国内镜像、软件源、蒲公英与 TestFlight 不在此公开统计内；现有镜像点击仍单独上报给管理后台，不与 GitHub 计数相加。
+`/api/download-stats` 代理后端公开只读的 `/v1/site/download-stats`，每分钟刷新，失联时保留最近成功缓存。`scripts/generate-platforms.mjs` 继续完整分页统计 GitHub 安装包，并把镜像汇总存入 `platforms.json` 的 `mirrorDownloadStats`，简繁静态 HTML 和浏览器共用同一合计口径。快照与实时镜像计数只取较新的一份，不重复相加；缺少完整镜像数据时不将 GitHub 部分数冒充总数。镜像值为零只有在接口成功返回零时才成立，未知平台镜像计数仍进入总数并列入「其他下载」。
 
-旧快照没有 `downloadStats`、或者统计无效时，页面隐藏统计区，下载入口照常工作。旧快照缺少 `windowsRust` 分项时，Windows 标注含 Rust 新版；Rust 或 HarmonyOS 缺分项时显示「尚未单独统计」，防止伪造零值或重复加总。统计没有新增访客标识、cookie、第三方脚本或浏览器上报请求；简繁页面和预渲染 HTML 共用同一份数字。
+清单保留现有每半小时同步、自动 PR、CI 与 Pages 发布流程；只有获取时间变化时不发空 PR。镜像汇总首次失败使本轮同步失败，之后失败保留最近成功快照，不清零。GitHub 统计现存正式版、预发布和 nightly 手动安装包，排除源码、词库、符号、校验和与自动更新载荷。下载次数不是独立用户或安装人数，镜像点击不是完成下载次数。没有历史计数的软件源、蒲公英以及已删除安装包无法补回。
 
 ### iOS TestFlight 安装统计
 

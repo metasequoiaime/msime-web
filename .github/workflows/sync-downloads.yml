@@ -45,6 +45,12 @@ jobs:
         with:
           node-version: 22
 
+      # 镜像统计与官网共用 Zod 校验，生成清单前安装锁定的运行时依赖。
+      - name: Install manifest validation dependencies
+        run: |
+          corepack enable
+          pnpm install --prod --frozen-lockfile
+
       - name: Validate and regenerate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -53,7 +59,7 @@ jobs:
           set -euo pipefail
           node --test scripts/generate-update.test.mjs scripts/generate-platforms.test.mjs scripts/manifest-changed.test.mjs
           node scripts/generate-update.mjs
-          node scripts/generate-platforms.mjs
+          node --experimental-strip-types scripts/generate-platforms.mjs
 
       - name: Fill and check the download mirror
         id: mirror

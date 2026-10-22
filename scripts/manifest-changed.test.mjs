@@ -26,3 +26,10 @@ test('a missing or unreadable previous manifest proposes the change rather than 
   assert.equal(differsBeyondTimestamp('not json', manifest('2026-09-20T00:00:00.000Z', 1554)), true);
   assert.equal(differsBeyondTimestamp(manifest('2026-09-20T00:00:00.000Z', 1554), 'truncated {'), true);
 });
+
+test('镜像统计只有获取时间变化时不创建空 PR，计数变化仍发布', () => {
+  const before = { generatedAt: 'old', mirrorDownloadStats: { generatedAt: 'old', total: 2, platforms: { windows: 2 } } };
+  const next = { ...before, generatedAt: 'new', mirrorDownloadStats: { ...before.mirrorDownloadStats, generatedAt: 'new' } };
+  assert.equal(differsBeyondTimestamp(JSON.stringify(before), JSON.stringify(next)), false);
+  assert.equal(differsBeyondTimestamp(JSON.stringify(before), JSON.stringify({ ...next, mirrorDownloadStats: { ...next.mirrorDownloadStats, total: 3, platforms: { windows: 3 } } })), true);
+});

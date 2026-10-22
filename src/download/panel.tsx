@@ -5,7 +5,7 @@ import type { Platform, ReleasePlatform } from "../platform.ts";
 import { useDownloadMirrorsQuery } from "../data/queries";
 import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, copyText, cx, ExternalIcon, GitHubIcon, Pill, PlatformIcon, QQIcon, useToast } from "../ui";
 import { useLocale } from "../use-locale";
-import { reportMirrorDownload } from "../../shared/download-events";
+import { mirrorDownloadPlatform, reportMirrorDownload } from "../../shared/download-events";
 import { describeLinuxPackage, detectArm64, pickPrimary } from "./linux-primary";
 import { groupByArch, readableSize } from "./template";
 
@@ -75,9 +75,9 @@ const TILE =
 const TILE_NAME = "text-sm leading-snug font-semibold [overflow-wrap:break-word] sm:text-lg lg:text-[20px]";
 const TILE_STATUS = "text-[12.5px] leading-snug font-medium text-accent-ink tabular-nums [overflow-wrap:anywhere] sm:text-sm";
 
-/** A click on the mirror copy is counted as a cn-mirror download (shared/download-events.ts); GitHub downloads are counted by the backend. */
+/** 镜像点击计入 cn-mirror，Rust Windows 依据包地址区分产品；GitHub 使用资产计数，不重复上报。 */
 const reportMirror = (platform: ReleasePlatform, version: string, entry: PlatformRelease["downloads"][number]) => () => {
-  reportMirrorDownload({ platform, version, artifact: entry.name });
+  reportMirrorDownload({ platform: mirrorDownloadPlatform(platform, entry.url), version, artifact: entry.name });
 };
 
 /** The mirror copy of the selected package, beside the GitHub button. Left out when the manifest carries no mirror. */

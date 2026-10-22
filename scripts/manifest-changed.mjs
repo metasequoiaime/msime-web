@@ -17,6 +17,8 @@ import { readFileSync } from 'node:fs';
 export function differsBeyondTimestamp(previous, next) {
   const strip = (value) => {
     const { generatedAt, ...rest } = JSON.parse(value);
+    // 镜像查询时间也会每轮改变，只有计数变化才需要发布新的下载清单。
+    if (rest.mirrorDownloadStats) delete rest.mirrorDownloadStats.generatedAt;
     return JSON.stringify(rest);
   };
   // A missing or unparseable side is a change worth proposing, not a reason to swallow the run.
