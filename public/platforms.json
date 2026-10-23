@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-23T07:43:18.732Z",
+  "generatedAt": "2026-10-23T07:46:56.431Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -568,13 +568,13 @@
     ]
   },
   "downloadStats": {
-    "total": 54327,
+    "total": 54335,
     "platforms": {
-      "windows": 37746,
+      "windows": 37750,
       "windowsRust": 779,
-      "macos": 3990,
-      "linux": 7936,
-      "android": 3875,
+      "macos": 3991,
+      "linux": 7938,
+      "android": 3876,
       "harmony": 1
     }
   },
@@ -721,7 +721,7 @@
       "repository": "metasequoiaime/msime",
       "id": 612297887,
       "name": "msime-linux-japanese-0.10.0-linux-x86_64.tar.gz",
-      "download_count": 2
+      "download_count": 3
     },
     {
       "repository": "metasequoiaime/msime",
@@ -2071,7 +2071,7 @@
       "repository": "metasequoiaime/msime",
       "id": 658815802,
       "name": "msime-macos-0.54.2-universal.dmg",
-      "download_count": 217
+      "download_count": 218
     },
     {
       "repository": "metasequoiaime/msime",
@@ -2407,7 +2407,7 @@
       "repository": "metasequoiaime/msime",
       "id": 658944792,
       "name": "msime-linux_0.13.0_amd64.deb",
-      "download_count": 184
+      "download_count": 185
     },
     {
       "repository": "metasequoiaime/msime",
@@ -2593,7 +2593,7 @@
       "repository": "metasequoiaime/msime",
       "id": 659125467,
       "name": "msime-android.apk",
-      "download_count": 617
+      "download_count": 618
     },
     {
       "repository": "metasequoiaime/msime",
@@ -3901,21 +3901,21 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 655453588,
       "name": "MetasequoiaIME_Setup_v0.11.1.exe",
-      "download_count": 3130
+      "download_count": 3134
     }
   ],
   "mirrorDownloadStats": {
-    "total": 7775,
+    "total": 7784,
     "platforms": {
       "android": 650,
-      "linux": 415,
+      "linux": 416,
       "macos": 843,
-      "windows": 5867
+      "windows": 5875
     },
-    "generatedAt": "2026-10-23T07:43:18.155152Z"
+    "generatedAt": "2026-10-23T07:46:55.965973Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-23T07:43:17.666Z",
+    "generatedAt": "2026-10-23T07:46:55.489Z",
     "total": 4221,
     "builds": [
       {
