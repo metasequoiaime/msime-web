@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-23T04:54:12.083Z",
-  "totalStars": 5041,
+  "generatedAt": "2026-10-23T10:01:10.891Z",
+  "totalStars": 5055,
   "repoCount": 8,
   "starHistory": [
     {
@@ -149,7 +149,7 @@
     },
     {
       "month": "2026-10",
-      "stars": 5041
+      "stars": 5055
     }
   ],
   "starSeries": [
@@ -302,7 +302,7 @@
         },
         {
           "date": "2026-10-23",
-          "stars": 3139
+          "stars": 3144
         }
       ]
     },
@@ -319,7 +319,7 @@
         },
         {
           "date": "2026-10-23",
-          "stars": 940
+          "stars": 947
         }
       ]
     },
@@ -372,7 +372,7 @@
         },
         {
           "date": "2026-10-23",
-          "stars": 874
+          "stars": 876
         }
       ]
     },
@@ -734,13 +734,13 @@
       ]
     }
   ],
-  "starDelta30d": 3470,
+  "starDelta30d": 3484,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 23343,
+      "contributions": 23395,
       "repos": 8
     },
     {
@@ -761,7 +761,7 @@
       "login": "Tokisaki-Galaxy",
       "avatarUrl": "https://avatars.githubusercontent.com/u/61621971?v=4",
       "url": "https://github.com/Tokisaki-Galaxy",
-      "contributions": 72,
+      "contributions": 82,
       "repos": 2
     },
     {
@@ -772,18 +772,18 @@
       "repos": 1
     },
     {
+      "login": "apple-ouyang",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/45086632?v=4",
+      "url": "https://github.com/apple-ouyang",
+      "contributions": 40,
+      "repos": 1
+    },
+    {
       "login": "metasequoiaime-dev",
       "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
       "url": "https://github.com/metasequoiaime-dev",
       "contributions": 39,
       "repos": 3
-    },
-    {
-      "login": "apple-ouyang",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/45086632?v=4",
-      "url": "https://github.com/apple-ouyang",
-      "contributions": 37,
-      "repos": 1
     },
     {
       "login": "Neptrue-Lin",
@@ -807,16 +807,16 @@
       "repos": 3
     },
     {
-      "login": "claude",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/81847?v=4",
-      "url": "https://github.com/claude",
-      "contributions": 24,
-      "repos": 1
-    },
-    {
       "login": "yangkx1024",
       "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
       "url": "https://github.com/yangkx1024",
+      "contributions": 25,
+      "repos": 1
+    },
+    {
+      "login": "claude",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/81847?v=4",
+      "url": "https://github.com/claude",
       "contributions": 24,
       "repos": 1
     }
