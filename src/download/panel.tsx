@@ -57,6 +57,9 @@ const MIRROR_ACTION =
 
 /** What the tile's status says: the current version, or, kept to a word, how the platform is distributed. The details sit in the action strip and the guide below. */
 const tileStatus = (entry: SitePlatformEntry) => {
+  if (entry.id === "windows" && entry.publishedVersion && entry.release?.experimental) {
+    return `v${entry.publishedVersion} / v${entry.release.experimental.version}`;
+  }
   if (entry.publishedVersion) return `v${entry.publishedVersion}`;
   if (entry.distribution === "testflight") return "TestFlight";
   if (entry.distribution === "pgyer") return "测试版";
@@ -134,7 +137,7 @@ function MorePackages({ platform, version, downloads, id }: { platform: ReleaseP
  *
  * 上游每次合并都会自动发一个 Pre-release，却只把人工挑过的那个标成正式版。只展示正式版，想试最新改动的人得自己去 GitHub 翻；只展示预览版，又等于把没挑过的构建推给所有人。所以两个都给，正式版占主按钮，预览版在下面明确标出来。
  *
- * Windows 的新版测试版（主仓库的 Rust 版，`release.experimental`）也用这块，换上自己的名字和提醒。
+ * Windows 的 Rust 新版（主仓库的 `release.experimental`）也用这块，换上自己的名字和说明。
  */
 function PreviewPanel({
   platform,
@@ -149,7 +152,7 @@ function PreviewPanel({
   arm64: boolean;
   kind?: string;
   note?: string;
-  /** 用 h3 标题说明这是另一条版本线，胶囊只作补充。目前只有 Windows 的新版测试版这么做。 */
+  /** 用 h3 标题说明这是另一条版本线，目前只有 Windows 的 Rust 新版这么做。 */
   heading?: boolean;
 }) {
   const { t } = useLocale();
@@ -162,7 +165,6 @@ function PreviewPanel({
       {heading && (
         <header className="mb-3.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
           <h3 className="m-0 font-heading text-[17px] leading-[1.4] font-bold text-ink">{t(kind)}</h3>
-          <Pill tone="warn">{t("不稳定")}</Pill>
         </header>
       )}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
@@ -408,10 +410,10 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           href={primary?.url ?? entry.href}
           rel="noreferrer"
           target={primary ? undefined : "_blank"}
-          aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name} 版 v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
+          aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name}${entry.id === "windows" ? " 正式版" : " 版"} v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
         >
           <GitHubIcon size={18} />
-          {t(linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
+          {t(entry.id === "windows" && primary && release ? `下载正式版 v${release.version}` : linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
           {!primary && <ExternalIcon />}
         </a>
         {primary && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={primary} className={MIRROR_ACTION} />}
@@ -434,8 +436,8 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           platform={entry.id as ReleasePlatform}
           preview={release.experimental}
           arm64={arm64}
-          kind="新版测试版"
-          note="用 Rust 重写的新版 Windows 输入法，不稳定，不建议主力使用。可以和上面的正式版同时安装，互不影响。"
+          kind="Rust 新版"
+          note="用 Rust 重写的新版 Windows 输入法。可以和上面的正式版同时安装，互不影响。"
           heading
         />
       )}
