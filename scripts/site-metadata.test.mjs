@@ -24,7 +24,7 @@ const NOINDEX = ['/resume/', '/me/'];
 
 test('the SEO registry includes every entry page', () => {
   for (const path of ['/', ...pageDirectories()]) assert.ok(seoPages[path], path);
-  assert.equal(Object.keys(seoPages).filter(path => path.startsWith('/docs/') && path !== '/docs/').length, 6);
+  assert.equal(Object.keys(seoPages).filter(path => path.startsWith('/docs/') && path !== '/docs/').length, 7);
 });
 
 test('pages excluded from the sitemap actually say so in their own markup', () => {
