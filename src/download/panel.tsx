@@ -18,7 +18,7 @@ const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
   macos: "适用于 macOS 12 及以上",
   android: "适用于 Android 9 及以上；测试版，需允许安装未知来源应用",
   ios: "适用于 iOS 17 及以上",
-  harmony: "开发中，暂未提供正式安装包",
+  harmony: "适用于 HarmonyOS 5 及以上；需手动安装 HAP",
 };
 
 /** macOS 的最低版本跟着安装包格式走，理由见下面 `platformHint`。 */
@@ -448,7 +448,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 /**
  * 页面顶部的下载入口（design-home §6「选择卡」），也是整页的标题区：页面不再有单独的页头，h1 就在这里，平台卡片和下载按钮在首屏内。
  *
- * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台是安装包，iOS 是 TestFlight，Android 是蒲公英上的测试版，HarmonyOS 如实说明还在开发、只能从源码构建，Web 是给网站开发者接入的 npm 包。桌面平台的安装包在配置了国内镜像（dl.msime.app）时，GitHub 按钮旁边多一个「国内镜像下载」；QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的按钮之后。
+ * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台与 HarmonyOS 是 GitHub 安装包，iOS 是 TestFlight，Android 是蒲公英上的测试版，Web 是给网站开发者接入的 npm 包。桌面平台的安装包在配置了国内镜像（dl.msime.app）时，GitHub 按钮旁边多一个「国内镜像下载」；QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的按钮之后。
  *
  * `.download-panel` is a test hook: the static HTML must show the Windows version inside it.
  */

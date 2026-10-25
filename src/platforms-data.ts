@@ -56,7 +56,7 @@ export const downloadStatsSchema = z.object({
   }),
 }).refine(value => value.total === Object.values(value.platforms).reduce<number>((sum, count) => sum + (count ?? 0), 0));
 
-/** 由 scripts/generate-platforms.mjs 生成：Windows、macOS、Linux 与 Android 各自的正式版，另附比它更新的预览版（没有就是 null）。 */
+/** 由 scripts/generate-platforms.mjs 生成：Windows、macOS、Linux、Android 与 HarmonyOS 各自的正式版，另附比它更新的预览版（没有就是 null）。 */
 export const platformsSchema = z.object({
   generatedAt: z.string(),
   // 旧快照或损坏的统计不影响下载入口，页面在拿不到有效统计时不显示计数。
@@ -73,7 +73,7 @@ export const platformsSchema = z.object({
       experimental: releaseSchema.nullable().catch(null),
     })
   ),
-  /* 三个平台共用同一份词库，单独发布，所以放在 platforms 之外。 */
+  /* 各平台共用同一份词库，单独发布，所以放在 platforms 之外。 */
   dictionary: z
     .object({
       tag: z.string(),

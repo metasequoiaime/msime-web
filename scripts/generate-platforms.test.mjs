@@ -412,6 +412,25 @@ test('android releases offer the full APK first and each edition after it, check
   assert.equal(chosen.signed, null, 'APK signing is not inferred from the file name');
 });
 
+test('HarmonyOS releases offer the HAP and exclude the checksum list', () => {
+  const names = ['msime-harmony-0.2.0.hap', 'SHA256SUMS', 'msime-harmony-0.2.0.hap.sha256'];
+  const assets = names.map(name => asset(name, {
+    browser_download_url: `https://github.com/metasequoiaime/msime/releases/download/harmony-v0.2.0/${name}`,
+  }));
+  const chosen = selectRelease('harmony', [{
+    tag_name: 'harmony-v0.2.0', draft: false, prerelease: false,
+    published_at: '2026-10-25T14:48:25Z',
+    html_url: 'https://github.com/metasequoiaime/msime/releases/tag/harmony-v0.2.0',
+    assets,
+  }]);
+  assert.equal(chosen.version, '0.2.0');
+  assert.equal(chosen.releaseUrl, 'https://github.com/metasequoiaime/msime/releases/tag/harmony-v0.2.0');
+  assert.deepEqual(chosen.downloads.map(d => `${d.name} ${d.label} ${d.arch}`), [
+    'msime-harmony-0.2.0.hap HarmonyOS · HAP arm64-v8a',
+  ]);
+  assert.equal(chosen.signed, null, 'HAP signing is not inferred from the file name');
+});
+
 test('the Rust Windows build from the main repository is the experimental release, never the main slot', () => {
   const base = 'https://github.com/metasequoiaime/msime/releases';
   const rust = (tag, prerelease, editions) => ({

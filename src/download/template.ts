@@ -95,7 +95,7 @@ export const readableSize = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(
  * 之前正文和面板都是手写清单（「提供 .deb、.rpm 和 .tar.gz 三种包」「支持 x86_64 与 aarch64」）。发布流水线哪天多出一种包或砍掉一种架构，这些句子不会跟着变，页面就开始说谎 —— 和手写签名结论是同一类毛病。
  */
 const FORMAT_OF = (name: string) => {
-  const match = /\.(deb|rpm|pkg|zip|exe|tar\.gz)$/i.exec(name);
+  const match = /\.(deb|rpm|pkg|zip|exe|hap|tar\.gz)$/i.exec(name);
   return match ? match[1].toLowerCase() : null;
 };
 
