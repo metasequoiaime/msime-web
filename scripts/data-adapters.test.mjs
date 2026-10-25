@@ -83,6 +83,8 @@ test('首页统计只取 platforms.json 的统计字段', async t => {
     downloadStats: platforms.downloadStats,
     mirrorDownloadStats: platforms.mirrorDownloadStats,
     pgyerDownloadStats: platforms.pgyerDownloadStats,
+    npmDownloadStats: platforms.npmDownloadStats,
+    windows7Available: Boolean(platforms.platforms.windows.windows7),
   });
 });
 

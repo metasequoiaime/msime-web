@@ -57,12 +57,20 @@ export const downloadStatsSchema = z.object({
     windows: z.number().int().nonnegative(),
     // 旧快照的 Windows 总数含 Rust 新版，缺少分项时不能推断它为零。
     windowsRust: z.number().int().nonnegative().optional(),
+    windows7: z.number().int().nonnegative().optional(),
     macos: z.number().int().nonnegative(),
     linux: z.number().int().nonnegative(),
     android: z.number().int().nonnegative(),
     harmony: z.number().int().nonnegative().optional(),
   }),
 }).refine(value => value.total === Object.values(value.platforms).reduce<number>((sum, count) => sum + (count ?? 0), 0));
+
+export const npmDownloadStatsSchema = z.object({
+  generatedAt: z.string(),
+  downloads: z.number().int().nonnegative(),
+  periodStart: z.string(),
+  periodEnd: z.string(),
+});
 
 /** 由 scripts/generate-platforms.mjs 生成：Windows、macOS、Linux、Android 与 HarmonyOS 各自的正式版，另附比它更新的预览版（没有就是 null）。 */
 export const platformsSchema = z.object({
@@ -71,6 +79,7 @@ export const platformsSchema = z.object({
   downloadStats: downloadStatsSchema.optional().catch(undefined),
   mirrorDownloadStats: mirrorDownloadStatsSchema.optional().catch(undefined),
   pgyerDownloadStats: pgyerDownloadStatsSchema.optional().catch(undefined),
+  npmDownloadStats: npmDownloadStatsSchema.optional().catch(undefined),
   platforms: z.record(
     z.enum(RELEASE_PLATFORMS),
     releaseSchema.extend({
@@ -112,7 +121,9 @@ export const fetchPlatforms = () => manifestSource.load();
 
 export type PlatformsManifest = z.infer<typeof platformsSchema>;
 /** 首页统计卡需要的清单子集，不把完整发行包列表塞进首页的静态 HTML。 */
-export type DownloadStatsManifest = Pick<PlatformsManifest, "generatedAt" | "downloadStats" | "mirrorDownloadStats" | "pgyerDownloadStats">;
+export type DownloadStatsManifest = Pick<PlatformsManifest, "generatedAt" | "downloadStats" | "mirrorDownloadStats" | "pgyerDownloadStats" | "npmDownloadStats"> & {
+  windows7Available?: boolean;
+};
 export type Platforms = PlatformsManifest["platforms"];
 export type PlatformRelease = NonNullable<Platforms[ReleasePlatform]>;
 export type PreviewRelease = NonNullable<PlatformRelease["preview"]>;

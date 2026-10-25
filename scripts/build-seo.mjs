@@ -36,6 +36,8 @@ for (const path of pages) {
     downloadStats: platformSnapshot.downloadStats,
     mirrorDownloadStats: platformSnapshot.mirrorDownloadStats,
     pgyerDownloadStats: platformSnapshot.pgyerDownloadStats,
+    npmDownloadStats: platformSnapshot.npmDownloadStats,
+    windows7Available: Boolean(platformSnapshot.platforms.windows.windows7),
   };
   const data = basePath === '/download/' ? { platforms: platformSnapshot, 'update-manifest': JSON.parse(readFileSync('public/update.json')), 'testflight-stats': JSON.parse(readFileSync('public/testflight-stats.json')) } : basePath === '/features/' ? { platforms: platformSnapshot } : basePath === '/' ? { community: JSON.parse(readFileSync('public/community.json')), 'download-stats': statsSnapshot, 'testflight-stats': JSON.parse(readFileSync('public/testflight-stats.json')) } : {};
   const { html: body, bootstrap } = await render(path === '/404/' ? '/__not-found__/' : path, data);

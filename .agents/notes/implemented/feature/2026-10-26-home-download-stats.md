@@ -8,7 +8,7 @@ Status: implemented
 
 ## Decision
 
-首页的「六个平台原生体验，网页也能用」区块和下载统计共用一个白色的 `home-platforms-shell` 外层卡片。每个平台卡片内直接显示对应的下载或安装数字，Windows 同时显示纯净版与 Rust 新版；总下载显示在同一表面底部。平台项不再使用独立卡片表面，下载页保留下载入口和安装说明，不再重复展示统计卡。首页使用 `download-stats` 查询，只从同一份 `public/platforms.json` 提取生成时间、GitHub、镜像和蒲公英统计字段，并沿用 TestFlight 快照。
+首页的「六个平台原生体验，网页也能用」区块和下载统计共用一个白色的 `home-platforms-shell` 外层卡片。每个平台卡片内直接显示对应的下载或安装数字，Windows 拆成纯净版、Rust 新版和 Windows 7；Web 显示 `@msime/web-engine` npm 近一年下载量；总下载显示在同一表面底部。平台项不再使用独立卡片表面，下载页保留下载入口和安装说明，不再重复展示统计卡。首页使用 `download-stats` 查询，只从同一份 `public/platforms.json` 提取生成时间、GitHub、镜像、蒲公英和 npm 统计字段，并沿用 TestFlight 快照。Windows 7 尚未发布时只显示状态，不把零值误当成有效下载量。
 
 `scripts/build-seo.mjs` 为首页注入精简统计快照和 TestFlight 快照，因此无 JavaScript 的首页静态 HTML 也显示完整数字，不复制发行包列表。精简查询与完整 `platforms` 查询使用不同的 TanStack Query key，避免首页误把不完整对象当成下载清单。
 
@@ -22,4 +22,4 @@ Status: implemented
 
 ## Verification
 
-新增适配器测试确认 `download-stats` 查询只返回统计字段；静态页面测试确认简体和繁体首页的平台卡片显示对应数字且只有一个外层卡片。清单、适配器和生成器相关测试 57 项通过，Biome lint 通过，`git diff --check` 通过。完整 TypeScript 检查仍受仓库现有 `vendor/MSIME-Docs` 未检出和 `src/markdown.ts` 的既有错误阻塞，未将其混入本次改动；完整构建交由 PR CI 验证。
+新增适配器测试确认 `download-stats` 查询只返回统计字段；生成器测试覆盖 Win7 包按仓库归类和 npm API 成功、无效响应；静态页面测试确认简体和繁体首页的平台卡片显示对应数字且只有一个外层卡片。相关测试、Biome lint 和 `git diff --check` 通过。完整 TypeScript 检查仍受仓库现有 `vendor/MSIME-Docs` 未检出和 `src/markdown.ts` 的既有错误阻塞，未将其混入本次改动；完整构建交由 PR CI 验证。
