@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T06:02:19.297Z",
+  "generatedAt": "2026-10-25T06:03:50.672Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -3630,6 +3630,48 @@
       "download_count": 0
     },
     {
+      "repository": "metasequoiaime/msime",
+      "id": 674244769,
+      "name": "msime-harmony-0.2.0-unsigned-nightly.40164019651.1.hap",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 674245130,
+      "name": "MetasequoiaIME-Pinyin_Setup_v0.3.0-nightly.40164019651.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 674245131,
+      "name": "MetasequoiaIME-Tibetan_Setup_v0.3.0-nightly.40164019651.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 674245132,
+      "name": "MetasequoiaIME-Japanese_Setup_v0.3.0-nightly.40164019651.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 674245133,
+      "name": "MetasequoiaIME-Full_Setup_v0.3.0-nightly.40164019651.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 674245134,
+      "name": "MetasequoiaIME-Vietnamese_Setup_v0.3.0-nightly.40164019651.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 674245196,
+      "name": "MetasequoiaIME-Wubi_Setup_v0.3.0-nightly.40164019651.1.exe",
+      "download_count": 0
+    },
+    {
       "repository": "metasequoiaime/msime-linux",
       "id": 545412939,
       "name": "metasequoia-ime-linux-0.2.0-Linux.rpm",
@@ -4466,10 +4508,10 @@
       "macos": 903,
       "windows": 6438
     },
-    "generatedAt": "2026-10-25T06:02:18.817173Z"
+    "generatedAt": "2026-10-25T06:03:50.136582Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-25T06:02:18.325Z",
+    "generatedAt": "2026-10-25T06:03:49.662Z",
     "total": 4418,
     "builds": [
       {
