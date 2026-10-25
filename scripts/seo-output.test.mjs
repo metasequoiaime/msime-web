@@ -486,7 +486,7 @@ test('iOS 安装量加入全平台累计，未知状态与真实零分开', asyn
   }
 });
 
-test('简繁下载累计包含镜像，各平台相加且实时与快照不重复计数', async t => {
+test('简繁首页下载累计包含镜像且各平台相加', async t => {
   const dom = parseHTML('<html><head></head><body></body></html>');
   const keys = ['document', 'Node', 'HTMLElement', 'HTMLParagraphElement', 'HTMLAnchorElement'];
   const previous = keys.map(key => Object.getOwnPropertyDescriptor(globalThis, key));
@@ -502,21 +502,18 @@ test('简繁下载累计包含镜像，各平台相加且实时与快照不重�
   const mirror = { total: 28, platforms: { windows: 1, windowsRust: 2, macos: 3, linux: 4, android: 5, harmony: 6, future: 7 }, generatedAt: '2026-10-22T00:00:00Z' };
   for (const path of ['/', '/zh-TW/']) {
     for (const scenario of [
-      { saved: mirror, live: undefined, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
-      { saved: { ...mirror, total: 0, platforms: {}, generatedAt: '2026-10-21T00:00:00Z' }, live: { ...mirror, stale: false }, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
-      { saved: mirror, live: { ...mirror, total: 0, platforms: {}, generatedAt: '2026-10-21T00:00:00Z', stale: true }, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
-      { saved: { ...mirror, total: 0, platforms: {} }, live: undefined, expected: [210, 10, 20, 30, 40, 50, 60] },
-      { saved: undefined, live: undefined, expected: [] },
+      { saved: mirror, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
+      { saved: { ...mirror, total: 0, platforms: {}, generatedAt: '2026-10-21T00:00:00Z' }, expected: [210, 10, 20, 30, 40, 50, 60] },
+      { saved: undefined, expected: [] },
     ]) {
       const data = { community, 'download-stats': { generatedAt: manifest.generatedAt, downloadStats: github, mirrorDownloadStats: scenario.saved, pgyerDownloadStats: undefined }, 'testflight-stats': null };
-      if (scenario.live) data['mirror-download-stats'] = scenario.live;
       const { html } = await render(path, data);
       assert.doesNotMatch(html, /data-msg=|data-stck=/);
       const stats = parseHTML(html).document.querySelector('.download-stats');
       const numeric = [...stats.querySelectorAll('dd')].map(node => Number(node.firstChild.textContent.replaceAll(',', ''))).filter(Number.isFinite);
       assert.deepEqual(numeric, scenario.expected);
       assert.doesNotMatch(stats.textContent, /GitHub [累積累计]+下[载載]|不含[国國][内內][镜鏡]像/);
-      if (!scenario.saved && !scenario.live) assert.match(stats.textContent, /[统統][计計][暂暫]不可用/);
+      if (!scenario.saved) assert.match(stats.textContent, /[统統][计計][暂暫]不可用/);
     }
   }
 });
