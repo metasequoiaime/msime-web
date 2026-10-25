@@ -367,7 +367,7 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
         </div>
         <div className="flex flex-none flex-wrap gap-3">
           <AnchorButton variant="secondary" href={entry.href}>
-            {t("npm 包")}
+            {t("npm 包")}{entry.publishedVersion && ` v${entry.publishedVersion}`}
             <ExternalIcon />
           </AnchorButton>
           <AnchorButton variant="secondary" href={entry.sourceUrl}>

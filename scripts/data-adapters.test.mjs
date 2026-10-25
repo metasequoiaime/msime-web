@@ -242,3 +242,23 @@ test('platform versions use installable manifests and independent iOS publicatio
   assert.equal(sitePlatforms(undefined, [history[1]]).find(entry => entry.id === 'ios').publishedVersion, null, 'never borrows another platform version');
   assert.ok(sitePlatforms().every(entry => entry.publishedVersion === null), 'missing data keeps the distribution fallback');
 });
+
+test('Web versions follow the latest stable publication independently of installable manifests', () => {
+  const history = [
+    { platform: 'web', version: '1.2.0', publishedAt: '2026-10-02T00:00:00Z', prerelease: false },
+    { platform: 'web', version: '2.0.0-alpha', publishedAt: '2026-10-15T00:00:00Z', prerelease: true },
+    { platform: 'android', version: '9.0.0', publishedAt: '2026-10-16T00:00:00Z', prerelease: false },
+    { platform: 'web', version: '1.1.0', publishedAt: '2026-09-29T00:00:00Z', prerelease: false },
+  ];
+  for (const items of [history, [...history].reverse()]) {
+    for (const manifest of [platforms.platforms, undefined]) {
+      const web = sitePlatforms(manifest, items).find(entry => entry.id === 'web');
+      assert.equal(web.publishedVersion, '1.2.0');
+      assert.equal(web.release, null, 'npm publication never becomes an installable package');
+      assert.equal(web.href, 'https://www.npmjs.com/package/@msime/web-engine');
+    }
+  }
+  for (const items of [[], [history[1]], [history[2]], history.slice(1, 3)]) {
+    assert.equal(sitePlatforms(platforms.platforms, items).find(entry => entry.id === 'web').publishedVersion, null, 'missing stable Web releases keep the npm fallback');
+  }
+});
