@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T16:46:30.018Z",
+  "generatedAt": "2026-10-25T16:52:20.514Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -534,14 +534,14 @@
     ]
   },
   "downloadStats": {
-    "total": 57547,
+    "total": 57551,
     "platforms": {
-      "windows": 38958,
+      "windows": 38960,
       "windowsRust": 1265,
       "macos": 4351,
       "linux": 8729,
-      "android": 4221,
-      "harmony": 23
+      "android": 4222,
+      "harmony": 24
     }
   },
   "downloadHistory": [
@@ -2559,7 +2559,7 @@
       "repository": "metasequoiaime/msime",
       "id": 659125467,
       "name": "msime-android.apk",
-      "download_count": 803
+      "download_count": 804
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4089,7 +4089,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675297343,
       "name": "msime-harmony-0.2.0.hap",
-      "download_count": 8
+      "download_count": 9
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4953,7 +4953,7 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 655453588,
       "name": "MetasequoiaIME_Setup_v0.11.1.exe",
-      "download_count": 4314
+      "download_count": 4316
     },
     {
       "repository": "metasequoiaime/msime-windows",
@@ -4971,11 +4971,11 @@
       "macos": 932,
       "windows": 6557
     },
-    "generatedAt": "2026-10-25T16:46:29.569464Z"
+    "generatedAt": "2026-10-25T16:52:20.049136Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-25T16:46:29.174Z",
-    "total": 4477,
+    "generatedAt": "2026-10-25T16:52:19.482Z",
+    "total": 4480,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -4983,7 +4983,7 @@
       },
       {
         "id": "5a4b727841661c3fc60e10d1820be47471b4a5f29d0c835dfd74883de4bd981f",
-        "downloads": 521
+        "downloads": 523
       },
       {
         "id": "6e8db9e2b3aa76ddecaa021be47d2d0f7be17e01bc5fadccc326ab0665296342",
@@ -4999,7 +4999,7 @@
       },
       {
         "id": "c7bacbd70a07968678d9be493e1126ec4b4579a9c645ca340fab0d0dfa013a71",
-        "downloads": 1215
+        "downloads": 1216
       },
       {
         "id": "cedc4bf87e8d651d8aa97f3eb46bc86cef27b545ea84337cff42544885a85469",
