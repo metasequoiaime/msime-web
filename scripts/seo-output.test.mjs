@@ -444,6 +444,8 @@ test('首页两种语言把统计数字放进对应的平台卡片', () => {
     assert.ok(shell.querySelector('[data-platform="windowsRust"] strong'));
     assert.equal(shell.querySelector('[data-platform="windows7"] strong'), null);
     assert.equal(shell.querySelector('[data-platform="web"] strong')?.textContent, '1,706');
+    assert.ok(shell.querySelector('[data-platform="web"] a'));
+    assert.doesNotMatch(shell.querySelector('[data-platform="web"]').textContent, /把输入法嵌进你的网页/);
     assert.ok(summary.querySelector('strong'));
     assert.match(shell.textContent, /六个平台|六個平台|六個平臺/);
   }

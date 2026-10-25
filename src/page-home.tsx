@@ -146,16 +146,18 @@ export function HomePage() {
                 <h3 className="m-0 mt-4 text-[17px] font-bold text-ink sm:mt-5 sm:min-h-[3.5rem] sm:text-[22px]">{t(item.name)}</h3>
                 {count !== undefined && windows7Available && (
                   <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2">
-                    <div><strong className="block text-[clamp(24px,2.8vw,34px)] leading-none font-bold text-ink tabular-nums">{count.toLocaleString("en-US")}</strong><span className="mt-1 block text-xs text-muted">{t(item.statKey === "ios" ? "含 TestFlight 安装次数" : item.statKey === "web" ? "npm 近一年下载" : "累计下载")}</span></div>
+                    <div><strong className="block text-[clamp(24px,2.8vw,34px)] leading-none font-bold text-ink tabular-nums">{count.toLocaleString("en-US")}</strong><span className="mt-1 block text-xs text-muted">
+                      {t(item.statKey === "ios" ? "含 TestFlight 安装次数" : item.statKey === "web" ? "npm 近一年下载" : "累计下载")}
+                      {embedded && (
+                        <>
+                          {" · "}
+                          <LocaleLink to="/download/" search={{ platform: "web" }} className="font-semibold text-accent-ink no-underline hover:text-ink">
+                            {t("接入方式 →")}
+                          </LocaleLink>
+                        </>
+                      )}
+                    </span></div>
                   </div>
-                )}
-                {embedded && (
-                  <p className="m-0 mt-2 text-[15px] leading-[1.8] text-body">
-                    {t("把输入法嵌进你的网页：全拼、双拼、五笔在访客的浏览器里运行，不需要安装，也不经过服务器。")}{" "}
-                    <LocaleLink to="/download/" search={{ platform: "web" }} className="font-semibold text-accent-ink no-underline hover:text-ink">
-                      {t("接入方式 →")}
-                    </LocaleLink>
-                  </p>
                 )}
               </li>
             );
