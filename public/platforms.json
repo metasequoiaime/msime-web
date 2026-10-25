@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T16:16:17.868Z",
+  "generatedAt": "2026-10-25T16:23:07.509Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -533,11 +533,11 @@
     ]
   },
   "downloadStats": {
-    "total": 57486,
+    "total": 57495,
     "platforms": {
-      "windows": 38953,
+      "windows": 38957,
       "windowsRust": 1264,
-      "macos": 4344,
+      "macos": 4349,
       "linux": 8685,
       "android": 4217,
       "harmony": 23
@@ -1988,7 +1988,7 @@
       "repository": "metasequoiaime/msime",
       "id": 656828545,
       "name": "msime-macos-0.54.0-universal.dmg",
-      "download_count": 1233
+      "download_count": 1235
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4118,7 +4118,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675481085,
       "name": "msime-macos-0.55.0-universal.dmg",
-      "download_count": 0
+      "download_count": 3
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4952,7 +4952,7 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 655453588,
       "name": "MetasequoiaIME_Setup_v0.11.1.exe",
-      "download_count": 4309
+      "download_count": 4313
     },
     {
       "repository": "metasequoiaime/msime-windows",
@@ -4962,17 +4962,17 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 8852,
+    "total": 8853,
     "platforms": {
-      "android": 857,
+      "android": 858,
       "linux": 507,
       "macos": 932,
       "windows": 6556
     },
-    "generatedAt": "2026-10-25T16:16:17.442743Z"
+    "generatedAt": "2026-10-25T16:23:07.053834Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-25T16:16:16.983Z",
+    "generatedAt": "2026-10-25T16:23:06.587Z",
     "total": 4476,
     "builds": [
       {
