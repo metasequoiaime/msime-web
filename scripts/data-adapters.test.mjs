@@ -6,6 +6,7 @@ import { appStatsQuery, communityQuery, platformsQuery, releasesQuery, testfligh
 import { ANDROID_PGYER_URL, IOS_TESTFLIGHT_URL, sitePlatforms, SITE_PLATFORMS } from '../src/data/platforms.ts';
 import { communitySchema } from '../src/community-data.ts';
 import { platformsSchema } from '../src/platforms-data.ts';
+import { downloadChoices } from '../src/download/windows.ts';
 
 const read = path => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'));
 const community = read('public/community.json');
@@ -261,4 +262,31 @@ test('Web versions follow the latest stable publication independently of install
   for (const items of [[], [history[1]], [history[2]], history.slice(1, 3)]) {
     assert.equal(sitePlatforms(platforms.platforms, items).find(entry => entry.id === 'web').publishedVersion, null, 'missing stable Web releases keep the npm fallback');
   }
+});
+
+test('九个下载入口保持独立 Windows 版本、下载来源和缺失状态', () => {
+  const base = 'https://github.com/metasequoiaime/msime/releases';
+  const win7Name = 'MetasequoiaIME-Full_Setup_v1.0.0_win7_x64.exe';
+  const win7 = { version: '1.0.0', releaseUrl: `${base}/tag/windows7-v1.0.0`, publishedAt: '2026-10-26T00:00:00Z', signed: null,
+    downloads: [{ name: win7Name, label: '完整版 · x64 · 安装程序', arch: 'x64', url: `${base}/download/windows7-v1.0.0/${win7Name}`, size: 1, sha256: null }] };
+  const withWin7 = value => platformsSchema.parse({ ...platforms, platforms: { ...platforms.platforms, windows: { ...platforms.platforms.windows, windows7: value } } });
+  const manifest = withWin7(win7);
+  const choices = downloadChoices(sitePlatforms(manifest.platforms));
+  assert.equal(choices.length, 9);
+  assert.deepEqual(choices.slice(0, 3).map(entry => entry.windowsVariant), ['pure', 'online', 'win7']);
+  assert.deepEqual(choices.slice(0, 3).map(entry => entry.name), ['Windows 10/11（纯净版）', 'Windows 10/11（联网版）', 'Windows 7']);
+  assert.equal(choices[0].publishedVersion, manifest.platforms.windows.version);
+  assert.equal(choices[1].publishedVersion, manifest.platforms.windows.experimental.version);
+  assert.equal(choices[1].release.downloads[0].url, manifest.platforms.windows.experimental.downloads[0].url);
+  assert.equal(choices[2].publishedVersion, '1.0.0');
+  assert.equal(choices[2].release.downloads[0].url, win7.downloads[0].url);
+  for (const invalid of [undefined, null, { ...win7, downloads: [] }, platforms.platforms.windows, { ...win7, downloads: [{ ...win7.downloads[0], arch: 'arm64' }] }]) {
+    const entries = downloadChoices(sitePlatforms(withWin7(invalid).platforms));
+    assert.equal(entries[2].publishedVersion, null);
+    assert.equal(entries[2].release, null, '不能用现代安装包替代 Windows 7 包');
+    assert.equal(entries[0].publishedVersion, manifest.platforms.windows.version);
+  }
+  const missing = downloadChoices(sitePlatforms());
+  assert.equal(missing.length, 9);
+  assert.ok(missing.slice(0, 3).every(entry => entry.release === null && entry.publishedVersion === null));
 });
