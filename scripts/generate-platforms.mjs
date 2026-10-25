@@ -263,7 +263,8 @@ export function selectWindows7(releases) {
       `${label} · ${arch} · 安装程序`, arch,
     ]));
     const selected = toRelease('windows7', release, { repository: 'metasequoiaime/msime', rules });
-    return selected && selected.downloads.every(item => item.url === `https://github.com/metasequoiaime/msime/releases/download/windows7-v${version}/${item.name}`) ? selected : null;
+    if (!selected || !selected.downloads.every(item => item.url === `https://github.com/metasequoiaime/msime/releases/download/windows7-v${version}/${item.name}`)) return null;
+    return selected;
   }).filter(Boolean).sort((left, right) => versionOrder(left.version, right.version));
   const selected = eligible[0];
   if (!selected) return null;
