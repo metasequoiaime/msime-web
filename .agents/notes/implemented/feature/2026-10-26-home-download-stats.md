@@ -8,7 +8,7 @@ Status: implemented
 
 ## Decision
 
-统计卡放在首页的「六个平台原生体验，网页也能用」区块之后。首页的平台区和统计区共用 `home-platforms-shell` 外层卡片，统计区用顶部内分隔线融入同一表面，不再形成两个相邻的大卡片。下载页保留下载入口和安装说明，不再重复展示统计卡。首页使用 `download-stats` 查询，只从同一份 `public/platforms.json` 提取生成时间、GitHub、镜像和蒲公英统计字段，并沿用 TestFlight 快照。
+统计卡放在首页的「六个平台原生体验，网页也能用」区块之后。首页的平台区和统计区共用一个白色的 `home-platforms-shell` 外层卡片，统计区用顶部内分隔线融入同一表面，不再形成两个相邻的大卡片。下载页保留下载入口和安装说明，不再重复展示统计卡。首页使用 `download-stats` 查询，只从同一份 `public/platforms.json` 提取生成时间、GitHub、镜像和蒲公英统计字段，并沿用 TestFlight 快照。
 
 `scripts/build-seo.mjs` 为首页注入精简统计快照和 TestFlight 快照，因此无 JavaScript 的首页静态 HTML 也显示完整数字，不复制发行包列表。精简查询与完整 `platforms` 查询使用不同的 TanStack Query key，避免首页误把不完整对象当成下载清单。
 
