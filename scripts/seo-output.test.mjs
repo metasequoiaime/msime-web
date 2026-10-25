@@ -437,7 +437,7 @@ test('首页两种语言把统计数字放进对应的平台卡片', () => {
     assert.equal(doc.querySelectorAll('.download-stats').length, 0);
     assert.equal(shell.querySelectorAll('[data-platform]').length, 9);
     assert.match(shell.querySelector('ul').className, /(?:^| )lg:grid-cols-5(?: |$)/);
-    assert.doesNotMatch(shell.querySelector('[data-platform="web"]').className, /(?:^| )col-span-full(?: |$)/);
+    assert.match(shell.querySelector('[data-platform="web"]').className, /(?:^| )lg:col-span-2(?: |$)/);
     for (const id of ['windows', 'macos', 'linux', 'android', 'ios', 'harmony']) {
       assert.ok(shell.querySelector(`[data-platform="${id}"] strong`), `${id} has a displayed count`);
     }

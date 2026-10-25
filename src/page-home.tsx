@@ -138,7 +138,7 @@ export function HomePage() {
             const status = item.id === "windows7" && windows7Available ? DISTRIBUTION_LABELS.release : item.status;
             const count = item.statKey === "ios" ? downloadStats.iosDownloads : item.statKey === "web" ? downloadStats.npm?.downloads : downloadStats.stats?.platforms[item.statKey];
             return (
-              <li key={item.id} className="min-w-0 p-4 sm:p-6" data-platform={item.id} data-reveal>
+              <li key={item.id} className={cx("min-w-0 p-4 sm:p-6", embedded && "lg:col-span-2")} data-platform={item.id} data-reveal>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
