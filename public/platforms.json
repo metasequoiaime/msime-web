@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T17:52:06.608Z",
+  "generatedAt": "2026-10-25T17:55:53.485Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -550,13 +550,13 @@
     ]
   },
   "downloadStats": {
-    "total": 57660,
+    "total": 57665,
     "platforms": {
-      "windows": 38968,
+      "windows": 38970,
       "windowsRust": 1269,
       "windows7": 0,
       "macos": 4357,
-      "linux": 8805,
+      "linux": 8808,
       "android": 4237,
       "harmony": 24
     }
@@ -4460,13 +4460,13 @@
       "repository": "metasequoiaime/msime",
       "id": 675680717,
       "name": "msime-linux-0.14.0-1.aarch64.rpm",
-      "download_count": 1
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 675680719,
       "name": "msime-linux-0.14.0-1.x86_64.rpm",
-      "download_count": 1
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4562,7 +4562,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675680923,
       "name": "msime-linux-tibetan-0.14.0-linux-aarch64.tar.gz",
-      "download_count": 0
+      "download_count": 1
     },
     {
       "repository": "metasequoiaime/msime",
@@ -5432,7 +5432,7 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 655453588,
       "name": "MetasequoiaIME_Setup_v0.11.1.exe",
-      "download_count": 4324
+      "download_count": 4326
     },
     {
       "repository": "metasequoiaime/msime-windows",
@@ -5456,10 +5456,10 @@
       "macos": 934,
       "windows": 6559
     },
-    "generatedAt": "2026-10-25T17:52:05.885371Z"
+    "generatedAt": "2026-10-25T17:55:52.715958Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-25T17:52:05.686Z",
+    "generatedAt": "2026-10-25T17:55:52.285Z",
     "total": 4483,
     "builds": [
       {
@@ -5501,7 +5501,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-10-25T17:52:05.992Z",
+    "generatedAt": "2026-10-25T17:55:53.024Z",
     "downloads": 1706,
     "periodStart": "2025-10-25",
     "periodEnd": "2026-10-25"
