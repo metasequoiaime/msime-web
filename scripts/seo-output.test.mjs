@@ -433,7 +433,7 @@ test('首页两种语言把统计数字放进对应的平台卡片', () => {
     assert.ok(summary);
     assert.match(shell.className, /(?:^| )bg-panel(?: |$)/);
     assert.doesNotMatch(shell.className, /(?:^| )bg-panel-2(?: |$)/);
-    assert.equal([...shell.querySelectorAll('ul > li')].filter(item => /(?:^| )bg-panel(?: |$)/.test(item.className)).length, 0);
+    assert.equal([...shell.querySelectorAll('ul > li')].filter(item => /(?:^| )bg-panel-2(?: |$)/.test(item.className)).length, 9);
     assert.equal(doc.querySelectorAll('.download-stats').length, 0);
     assert.equal(shell.querySelectorAll('[data-platform]').length, 9);
     assert.match(shell.querySelector('ul').className, /(?:^| )lg:grid-cols-5(?: |$)/);
