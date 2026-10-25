@@ -143,7 +143,7 @@ export function HomePage() {
                   <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
                 </div>
-                <h3 className="m-0 mt-4 text-[17px] font-bold text-ink sm:mt-5 sm:text-[22px]">{t(item.name)}</h3>
+                <h3 className="m-0 mt-4 text-[17px] font-bold text-ink sm:mt-5 sm:min-h-[3.5rem] sm:text-[22px]">{t(item.name)}</h3>
                 {count !== undefined && windows7Available && (
                   <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2">
                     <div><strong className="block text-[clamp(24px,2.8vw,34px)] leading-none font-bold text-ink tabular-nums">{count.toLocaleString("en-US")}</strong><span className="mt-1 block text-xs text-muted">{t(item.statKey === "ios" ? "含 TestFlight 安装次数" : item.statKey === "web" ? "npm 近一年下载" : "累计下载")}</span></div>
