@@ -107,7 +107,7 @@ export function HomePage() {
       </Container>
 
       <Container as="section" width="page" className={SECTION_SPACING}>
-        <Card as="section" tone="muted" className="home-platforms-shell rounded-panel p-[clamp(16px,3.4vw,40px)] shadow-feature">
+        <Card as="section" className="home-platforms-shell rounded-panel p-[clamp(16px,3.4vw,40px)] shadow-feature">
           <div data-reveal>
             <SectionHeading
               id="home-platforms"
