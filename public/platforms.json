@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T05:21:56.090Z",
+  "generatedAt": "2026-10-25T05:48:32.068Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -528,13 +528,13 @@
     ]
   },
   "downloadStats": {
-    "total": 56808,
+    "total": 56818,
     "platforms": {
-      "windows": 38704,
-      "windowsRust": 1164,
+      "windows": 38708,
+      "windowsRust": 1167,
       "macos": 4232,
       "linux": 8546,
-      "android": 4151,
+      "android": 4154,
       "harmony": 11
     }
   },
@@ -2553,7 +2553,7 @@
       "repository": "metasequoiaime/msime",
       "id": 659125467,
       "name": "msime-android.apk",
-      "download_count": 763
+      "download_count": 766
     },
     {
       "repository": "metasequoiaime/msime",
@@ -3039,7 +3039,7 @@
       "repository": "metasequoiaime/msime",
       "id": 668360231,
       "name": "MetasequoiaIME-Full_Setup_v0.3.0.exe",
-      "download_count": 371
+      "download_count": 372
     },
     {
       "repository": "metasequoiaime/msime",
@@ -3423,7 +3423,7 @@
       "repository": "metasequoiaime/msime",
       "id": 673375347,
       "name": "MetasequoiaIME-Full_Setup_v0.3.0-nightly.40129368605.1.exe",
-      "download_count": 2
+      "download_count": 4
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4275,22 +4275,22 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 655453588,
       "name": "MetasequoiaIME_Setup_v0.11.1.exe",
-      "download_count": 4063
+      "download_count": 4067
     }
   ],
   "mirrorDownloadStats": {
-    "total": 8582,
+    "total": 8589,
     "platforms": {
       "android": 808,
       "linux": 444,
-      "macos": 902,
-      "windows": 6428
+      "macos": 903,
+      "windows": 6434
     },
-    "generatedAt": "2026-10-25T05:21:55.510391Z"
+    "generatedAt": "2026-10-25T05:48:31.607348Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-25T05:21:55.187Z",
-    "total": 4416,
+    "generatedAt": "2026-10-25T05:48:31.058Z",
+    "total": 4417,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -4314,7 +4314,7 @@
       },
       {
         "id": "c7bacbd70a07968678d9be493e1126ec4b4579a9c645ca340fab0d0dfa013a71",
-        "downloads": 1207
+        "downloads": 1208
       },
       {
         "id": "cedc4bf87e8d651d8aa97f3eb46bc86cef27b545ea84337cff42544885a85469",
