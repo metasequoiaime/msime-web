@@ -461,11 +461,11 @@ test('iOS 安装量加入全平台累计，未知状态与真实零分开', asyn
   const platforms = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
   platforms.pgyerDownloadStats = { generatedAt: '2026-10-22T00:00:00.000Z', total: 9, builds: [{ id: 'a'.repeat(64), downloads: 9 }] };
   platforms.mirrorDownloadStats = { total: 20, platforms: { windows: 7, windowsRust: 3, macos: 10 }, generatedAt: '2026-10-22T00:00:00Z' };
-  const update = JSON.parse(readFileSync('public/update.json', 'utf8'));
+  const community = JSON.parse(readFileSync('public/community.json', 'utf8'));
   const testflight = { schemaVersion: 1, generatedAt: '2026-10-21T10:00:00.000Z', installs: 123, buildCount: 2, periodStart: '2026-10-01', periodEnd: '2026-10-21' };
-  for (const path of ['/download/', '/zh-TW/download/']) {
+  for (const path of ['/', '/zh-TW/']) {
     for (const installs of [0, 123]) {
-      const { html } = await render(path, { platforms, 'update-manifest': update, 'testflight-stats': { ...testflight, installs } });
+      const { html } = await render(path, { community, 'download-stats': platforms, 'testflight-stats': { ...testflight, installs } });
       assert.doesNotMatch(html, /data-msg=|data-stck=/);
       const doc = parseHTML(html).document;
       const rows = [...doc.querySelectorAll('.download-stats dl > div')];
@@ -479,7 +479,7 @@ test('iOS 安装量加入全平台累计，未知状态与真实零分开', asyn
       const numeric = rows.map(row => Number(row.querySelector('dd').firstChild.textContent.replaceAll(',', '')));
       assert.equal(numeric[0], numeric.slice(1).reduce((sum, count) => sum + count, 0));
     }
-    const { html } = await render(path, { platforms, 'update-manifest': update, 'testflight-stats': null });
+    const { html } = await render(path, { community, 'download-stats': platforms, 'testflight-stats': null });
     const doc = parseHTML(html).document;
     const ios = [...doc.querySelectorAll('.download-stats dl > div')].find(row => row.querySelector('dt').textContent === 'iOS');
     assert.doesNotMatch(ios.querySelector('dd').textContent, /\d/);
@@ -497,10 +497,10 @@ test('简繁下载累计包含镜像，各平台相加且实时与快照不重�
   for (const key of keys) globalThis[key] = dom[key];
   const { render } = await import('../dist-ssr/entry-static.js');
   const manifest = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
-  const update = JSON.parse(readFileSync('public/update.json', 'utf8'));
+  const community = JSON.parse(readFileSync('public/community.json', 'utf8'));
   const github = { total: 210, platforms: { windows: 10, windowsRust: 20, macos: 30, linux: 40, android: 50, harmony: 60 } };
   const mirror = { total: 28, platforms: { windows: 1, windowsRust: 2, macos: 3, linux: 4, android: 5, harmony: 6, future: 7 }, generatedAt: '2026-10-22T00:00:00Z' };
-  for (const path of ['/download/', '/zh-TW/download/']) {
+  for (const path of ['/', '/zh-TW/']) {
     for (const scenario of [
       { saved: mirror, live: undefined, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
       { saved: { ...mirror, total: 0, platforms: {}, generatedAt: '2026-10-21T00:00:00Z' }, live: { ...mirror, stale: false }, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
@@ -508,7 +508,7 @@ test('简繁下载累计包含镜像，各平台相加且实时与快照不重�
       { saved: { ...mirror, total: 0, platforms: {} }, live: undefined, expected: [210, 10, 20, 30, 40, 50, 60] },
       { saved: undefined, live: undefined, expected: [] },
     ]) {
-      const data = { platforms: { ...manifest, downloadStats: github, mirrorDownloadStats: scenario.saved, pgyerDownloadStats: undefined }, 'update-manifest': update, 'testflight-stats': null };
+      const data = { community, 'download-stats': { generatedAt: manifest.generatedAt, downloadStats: github, mirrorDownloadStats: scenario.saved, pgyerDownloadStats: undefined }, 'testflight-stats': null };
       if (scenario.live) data['mirror-download-stats'] = scenario.live;
       const { html } = await render(path, data);
       assert.doesNotMatch(html, /data-msg=|data-stck=/);
