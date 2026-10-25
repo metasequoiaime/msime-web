@@ -5,5 +5,5 @@ import { DownloadStats } from "../download/stats";
 export function HomeDownloadStats() {
   const stats = useDownloadStatsQuery();
   const testflight = useTestflightStatsQuery();
-  return <DownloadStats manifest={stats.data} testflight={testflight.data} mirror={stats.data?.mirrorDownloadStats} />;
+  return <DownloadStats manifest={stats.data} testflight={testflight.data} mirror={stats.data?.mirrorDownloadStats} embedded />;
 }

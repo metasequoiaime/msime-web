@@ -463,14 +463,14 @@ test('both download locales expose the snapshot counts and their scope in static
 test('首页两种语言在平台区之后展示下载与安装统计', () => {
   for (const path of ['/', '/zh-TW/']) {
     const doc = document(path);
-    const stats = doc.querySelector('.download-stats');
+    const shell = doc.querySelector('.home-platforms-shell');
+    const stats = shell?.querySelector('.download-stats');
+    assert.ok(shell);
     assert.ok(stats);
     assert.equal(doc.querySelectorAll('.download-stats').length, 1);
     assert.match(stats.textContent, /下载|下載/);
     assert.match(stats.textContent, /Windows/);
-    const platformSection = doc.querySelector('#home-platforms')?.closest('section');
-    const statsSection = stats.closest('section');
-    assert.ok(platformSection && statsSection && (platformSection.compareDocumentPosition(statsSection) & 4));
+    assert.match(shell.textContent, /六个平台|六個平台/);
   }
 });
 
