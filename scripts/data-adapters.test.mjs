@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { siteApi, SourceError, staticSnapshot, withFallback } from '../src/data/source.ts';
-import { appStatsQuery, communityQuery, platformsQuery, releasesQuery, testflightStatsQuery, updateManifestQuery } from '../src/data/queries.ts';
+import { appStatsQuery, communityQuery, downloadStatsQuery, platformsQuery, releasesQuery, testflightStatsQuery, updateManifestQuery } from '../src/data/queries.ts';
 import { ANDROID_PGYER_URL, IOS_TESTFLIGHT_URL, sitePlatforms, SITE_PLATFORMS } from '../src/data/platforms.ts';
 import { communitySchema } from '../src/community-data.ts';
 import { platformsSchema } from '../src/platforms-data.ts';
@@ -70,6 +70,20 @@ test('TestFlight snapshot uses its own static query and rejects bad data without
   t.mock.method(globalThis, 'fetch', async () => Response.json({ ...stats, installs: -1 }));
   await assert.rejects(run(testflightStatsQuery()));
   assert.equal(platformsSchema.parse(platforms).downloadStats.total, platforms.downloadStats.total);
+});
+
+test('首页统计只取 platforms.json 的统计字段', async t => {
+  assert.deepEqual(downloadStatsQuery().queryKey, ['download-stats']);
+  t.mock.method(globalThis, 'fetch', async url => {
+    assert.equal(url, '/platforms.json');
+    return Response.json(platforms);
+  });
+  assert.deepEqual(await run(downloadStatsQuery()), {
+    generatedAt: platforms.generatedAt,
+    downloadStats: platforms.downloadStats,
+    mirrorDownloadStats: platforms.mirrorDownloadStats,
+    pgyerDownloadStats: platforms.pgyerDownloadStats,
+  });
 });
 
 test('adapters only accept same-origin paths, and site APIs only under /api/', () => {

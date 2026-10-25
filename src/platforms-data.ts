@@ -111,6 +111,8 @@ const manifestSource = staticSnapshot("/platforms.json", value => platformsSchem
 export const fetchPlatforms = () => manifestSource.load();
 
 export type PlatformsManifest = z.infer<typeof platformsSchema>;
+/** 首页统计卡需要的清单子集，不把完整发行包列表塞进首页的静态 HTML。 */
+export type DownloadStatsManifest = Pick<PlatformsManifest, "generatedAt" | "downloadStats" | "mirrorDownloadStats" | "pgyerDownloadStats">;
 export type Platforms = PlatformsManifest["platforms"];
 export type PlatformRelease = NonNullable<Platforms[ReleasePlatform]>;
 export type PreviewRelease = NonNullable<PlatformRelease["preview"]>;
