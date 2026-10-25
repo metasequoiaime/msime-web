@@ -503,7 +503,7 @@ test('首页平台卡片按平台显示镜像合并后的累计值', async t => 
   for (const path of ['/', '/zh-TW/']) {
     for (const scenario of [
       { saved: mirror, expected: [238, 11, 22, 33, 44, 55, 66] },
-      { saved: { ...mirror, total: 0, platforms: {}, generatedAt: '2026-10-21T00:00:00Z' }, expected: [210, 10, 20, 30, 40, 50] },
+      { saved: { ...mirror, total: 0, platforms: {}, generatedAt: '2026-10-21T00:00:00Z' }, expected: [210, 10, 20, 30, 40, 50, 60] },
       { saved: undefined, expected: [] },
     ]) {
       const data = { community, 'download-stats': { generatedAt: manifest.generatedAt, downloadStats: github, mirrorDownloadStats: scenario.saved, pgyerDownloadStats: undefined }, 'testflight-stats': null };
