@@ -118,7 +118,7 @@ export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
 export type SitePlatformEntry = PlatformInfo & {
   /** The current stable release from `platforms.json`; `null` for platforms without GitHub packages or when the manifest is unavailable. */
   release: PlatformRelease | null;
-  /** Latest published version, independent of whether an installable package exists. An iOS publication does not guarantee that build is available in TestFlight. */
+  /** 最新发布版本，不要求存在安装包。Web 只显示正式发布；iOS 发布不保证对应构建仍可在 TestFlight 获取。 */
   publishedVersion: string | null;
 };
 
@@ -126,10 +126,13 @@ export type SitePlatformEntry = PlatformInfo & {
 export function sitePlatforms(platforms?: Partial<Platforms>, releases: readonly ReleaseItem[] = []): SitePlatformEntry[] {
   const iosRelease = releases.filter(item => item.platform === "ios").reduce<ReleaseItem | null>((latest, item) =>
     !latest || item.publishedAt > latest.publishedAt ? item : latest, null);
+  const webRelease = releases.filter(item => item.platform === "web" && !item.prerelease).reduce<ReleaseItem | null>((latest, item) =>
+    !latest || item.publishedAt > latest.publishedAt ? item : latest, null);
   return SITE_PLATFORMS.map(id => {
     const info = PLATFORM_CATALOG[id];
     // Android 的主入口是蒲公英，但 android-v 发布里的 APK 也在清单里；HarmonyOS 的 HAP 直接来自 harmony-v 发布。
     const release = id === "windows" || id === "macos" || id === "linux" || id === "android" || id === "harmony" ? (platforms?.[id] ?? null) : null;
-    return { ...info, release, publishedVersion: release?.version ?? (id === "ios" ? iosRelease?.version ?? null : null) };
+    const publication = id === "ios" ? iosRelease : id === "web" ? webRelease : null;
+    return { ...info, release, publishedVersion: release?.version ?? publication?.version ?? null };
   });
 }
