@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T16:09:22.431Z",
+  "generatedAt": "2026-10-25T16:16:17.868Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -39,39 +39,23 @@
     },
     "macos": {
       "repository": "metasequoiaime/msime",
-      "version": "0.54.0",
-      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.54.0",
-      "publishedAt": "2026-10-19T16:46:20Z",
+      "version": "0.55.0",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.55.0",
+      "publishedAt": "2026-10-25T16:10:09Z",
       "prerelease": false,
       "signed": null,
       "downloads": [
         {
           "label": "通用 · dmg",
           "arch": "Universal",
-          "name": "msime-macos-0.54.0-universal.dmg",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.54.0/msime-macos-0.54.0-universal.dmg",
-          "size": 129119706,
-          "sha256": "738e9a190ca5a4445d89417bc288e875c1b0946d79378f02b58091ae1ba56b11",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.54.0/msime-macos-0.54.0-universal.dmg"
+          "name": "msime-macos-0.55.0-universal.dmg",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.55.0/msime-macos-0.55.0-universal.dmg",
+          "size": 137055483,
+          "sha256": "ec02b0ac63fe8844d2cb0f435d09359298aabae70815ba71e77a910a7b1932af",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.55.0/msime-macos-0.55.0-universal.dmg"
         }
       ],
-      "preview": {
-        "version": "0.54.2-beta",
-        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.54.2-beta",
-        "publishedAt": "2026-10-20T09:08:02Z",
-        "signed": null,
-        "downloads": [
-          {
-            "label": "通用 · dmg",
-            "arch": "Universal",
-            "name": "msime-macos-0.54.2-universal.dmg",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.54.2-beta/msime-macos-0.54.2-universal.dmg",
-            "size": 130141923,
-            "sha256": "d349decd91d59d12fad26dacfbb3187a3d1aaf81ca7cc83e904361f471fec0ed",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.54.2-beta/msime-macos-0.54.2-universal.dmg"
-          }
-        ]
-      },
+      "preview": null,
       "experimental": null
     },
     "linux": {
@@ -549,12 +533,12 @@
     ]
   },
   "downloadStats": {
-    "total": 57480,
+    "total": 57486,
     "platforms": {
-      "windows": 38952,
+      "windows": 38953,
       "windowsRust": 1264,
       "macos": 4344,
-      "linux": 8680,
+      "linux": 8685,
       "android": 4217,
       "harmony": 23
     }
@@ -4107,6 +4091,42 @@
       "download_count": 8
     },
     {
+      "repository": "metasequoiaime/msime",
+      "id": 675481080,
+      "name": "msime-macos-tibetan-0.55.0-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 675481082,
+      "name": "msime-macos-pinyin-0.55.0-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 675481083,
+      "name": "msime-macos-japanese-0.55.0-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 675481084,
+      "name": "msime-macos-vietnamese-0.55.0-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 675481085,
+      "name": "msime-macos-0.55.0-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 675481424,
+      "name": "msime-macos-wubi-0.55.0-universal.dmg",
+      "download_count": 0
+    },
+    {
       "repository": "metasequoiaime/msime-linux",
       "id": 545412939,
       "name": "metasequoia-ime-linux-0.2.0-Linux.rpm",
@@ -4128,7 +4148,7 @@
       "repository": "metasequoiaime/msime-linux",
       "id": 545566512,
       "name": "metasequoia-ime-linux-0.2.2-linux-aarch64.tar.gz",
-      "download_count": 1
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime-linux",
@@ -4140,7 +4160,7 @@
       "repository": "metasequoiaime/msime-linux",
       "id": 545567359,
       "name": "metasequoia-ime-linux-0.2.2-linux-x86_64.tar.gz",
-      "download_count": 1
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime-linux",
@@ -4170,7 +4190,7 @@
       "repository": "metasequoiaime/msime-linux",
       "id": 545594199,
       "name": "metasequoia-ime-linux-0.2.3-linux-x86_64.tar.gz",
-      "download_count": 1
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime-linux",
@@ -4182,7 +4202,7 @@
       "repository": "metasequoiaime/msime-linux",
       "id": 545594219,
       "name": "metasequoia-ime-linux-0.2.3-linux-aarch64.tar.gz",
-      "download_count": 1
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime-linux",
@@ -4194,7 +4214,7 @@
       "repository": "metasequoiaime/msime-linux",
       "id": 545610899,
       "name": "metasequoia-ime-linux-0.3.0-linux-x86_64.tar.gz",
-      "download_count": 1
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime-linux",
@@ -4932,7 +4952,7 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 655453588,
       "name": "MetasequoiaIME_Setup_v0.11.1.exe",
-      "download_count": 4308
+      "download_count": 4309
     },
     {
       "repository": "metasequoiaime/msime-windows",
@@ -4942,18 +4962,18 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 8849,
+    "total": 8852,
     "platforms": {
-      "android": 855,
+      "android": 857,
       "linux": 507,
-      "macos": 931,
+      "macos": 932,
       "windows": 6556
     },
-    "generatedAt": "2026-10-25T16:09:21.742996Z"
+    "generatedAt": "2026-10-25T16:16:17.442743Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-25T16:09:21.248Z",
-    "total": 4475,
+    "generatedAt": "2026-10-25T16:16:16.983Z",
+    "total": 4476,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -4961,7 +4981,7 @@
       },
       {
         "id": "5a4b727841661c3fc60e10d1820be47471b4a5f29d0c835dfd74883de4bd981f",
-        "downloads": 519
+        "downloads": 520
       },
       {
         "id": "6e8db9e2b3aa76ddecaa021be47d2d0f7be17e01bc5fadccc326ab0665296342",
