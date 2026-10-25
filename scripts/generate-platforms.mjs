@@ -18,6 +18,8 @@ const SOURCES = {
   linux: 'metasequoiaime/msime',
   // Android 的主入口仍是蒲公英测试版，这里取 android-v 发布里的 APK，下载页在蒲公英旁边给出 GitHub 和国内镜像两个直接下载。
   android: 'metasequoiaime/msime',
+  // HarmonyOS 的 HAP 由独立的 harmony-v 发布提供，下载页直接给出 GitHub 安装包。
+  harmony: 'metasequoiaime/msime',
 };
 
 /** 校验和、构建溯源清单和自动更新用的载荷都不该出现在「下载」按钮上。 */
@@ -87,6 +89,7 @@ const RULES = {
     [/^msime-android\.apk$/i, '完整版 · apk', 'arm64'],
     ...LINUX_EDITIONS.map(([id, name]) => [new RegExp(`^msime-android-${id}\\.apk$`, 'i'), `${name} · apk`, 'arm64']),
   ],
+  harmony: [[/^msime-harmony-\d+\.\d+\.\d+\.hap$/i, 'HarmonyOS · HAP', 'arm64-v8a']],
   linux: [
     ...LINUX_PACKAGES.map(([suffix, label, arch]) => [linuxPackage(LINUX_FULL, suffix), label, arch]),
     ...LINUX_LEGACY.map(([suffix, label, arch]) => [linuxPackage('msime-linux-legacy', suffix), label, arch]),

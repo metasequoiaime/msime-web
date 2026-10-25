@@ -124,7 +124,7 @@ test('release data stays valid without an iOS artifact', async (t) => {
   assert.equal(manifest.platforms.ios, undefined);
   t.mock.method(globalThis, 'fetch', async () => Response.json(manifest));
   const result = await fetchPlatforms();
-  assert.deepEqual(Object.keys(result.platforms).sort(), ['android', 'linux', 'macos', 'windows']);
+  assert.deepEqual(Object.keys(result.platforms).sort(), ['android', 'harmony', 'linux', 'macos', 'windows']);
 });
 
 test('a broken preview drops only the preview, never the stable release beside it', async (t) => {

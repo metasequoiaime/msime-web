@@ -202,7 +202,7 @@ test('the seven-platform catalogue joins desktop and Android releases and keeps 
   assert.deepEqual(entries.map(entry => entry.id), [...SITE_PLATFORMS]);
   assert.deepEqual(entries.map(entry => entry.id), ['windows', 'macos', 'linux', 'android', 'ios', 'harmony', 'web']);
   for (const entry of entries) {
-    if (['windows', 'macos', 'linux', 'android'].includes(entry.id)) assert.equal(entry.release?.version, platforms.platforms[entry.id].version);
+    if (['windows', 'macos', 'linux', 'android', 'harmony'].includes(entry.id)) assert.equal(entry.release?.version, platforms.platforms[entry.id].version);
     else assert.equal(entry.release, null);
     assert.ok(entry.href.startsWith('https://github.com/metasequoiaime/') || entry.href === IOS_TESTFLIGHT_URL || entry.href === ANDROID_PGYER_URL || entry.href === 'https://www.npmjs.com/package/@msime/web-engine');
   }
@@ -216,6 +216,11 @@ test('the seven-platform catalogue joins desktop and Android releases and keeps 
   assert.equal(android.distribution, 'pgyer');
   assert.equal(android.href, 'https://www.pgyer.com/msime');
   assert.equal(android.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/platforms/android');
+  const harmony = entries.find(entry => entry.id === 'harmony');
+  assert.equal(harmony.distribution, 'release');
+  assert.equal(harmony.release.version, platforms.platforms.harmony.version);
+  assert.equal(harmony.href, 'https://github.com/metasequoiaime/msime/releases');
+  assert.equal(harmony.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/platforms/harmony');
   assert.deepEqual(sitePlatforms().map(entry => entry.release), [null, null, null, null, null, null, null], 'renders without a manifest');
 });
 

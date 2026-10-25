@@ -493,6 +493,26 @@
       ],
       "preview": null,
       "experimental": null
+    },
+    "harmony": {
+      "repository": "metasequoiaime/msime",
+      "version": "0.2.0",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/harmony-v0.2.0",
+      "publishedAt": "2026-10-25T14:48:25Z",
+      "prerelease": false,
+      "signed": null,
+      "downloads": [
+        {
+          "label": "HarmonyOS · HAP",
+          "arch": "arm64-v8a",
+          "name": "msime-harmony-0.2.0.hap",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/harmony-v0.2.0/msime-harmony-0.2.0.hap",
+          "size": 328655000,
+          "sha256": "b92589f0f64939f28ba72a7dce972dc6653d00f25f8e7d176302ad981d0e79c6"
+        }
+      ],
+      "preview": null,
+      "experimental": null
     }
   },
   "dictionary": {

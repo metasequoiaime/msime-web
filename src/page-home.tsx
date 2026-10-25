@@ -25,7 +25,7 @@ const FEATURES = [
   },
 ] as const;
 
-/** How each platform reaches users today, shown as a small tag on its card. Android and HarmonyOS have no published package yet; Web is a package developers embed in their own pages. */
+/** How each platform reaches users today, shown as a small tag on its card. Web is a package developers embed in their own pages. */
 const DISTRIBUTION_LABELS: Record<Distribution, { label: string; tone: "accent" | "neutral" }> = {
   release: { label: "可下载", tone: "accent" },
   testflight: { label: "TestFlight", tone: "accent" },

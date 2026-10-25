@@ -10,7 +10,7 @@ import { HeroDemo } from "./hero-demo";
 import { type HeroFrame, LANGUAGES, SCHEMES, type SchemeId, useHeroCycle } from "./hero-cycle";
 
 /**
- * 首屏的「下载」按钮：认出访客的系统就换成该平台的标志，带着 `?platform=` 去下载页的对应平台，那里列着 GitHub 之外的各个下载途径；iOS 直接去 TestFlight，Android 直接去蒲公英。还没发布安装包的平台（HarmonyOS）退回普通的「下载」。静态 HTML 和水合前的第一次渲染都是指向 /download/ 的普通「下载」，认不出系统时也退回它，所以预渲染出来的页面与水合结果一致。
+ * 首屏的「下载」按钮：认出访客的系统就换成该平台的标志，带着 `?platform=` 去下载页的对应平台，那里列着 GitHub 之外的各个下载途径；iOS 直接去 TestFlight，Android 直接去蒲公英。静态 HTML 和水合前的第一次渲染都是指向 /download/ 的普通「下载」，认不出系统时也退回它，所以预渲染出来的页面与水合结果一致。
  */
 function HeroDownloadButton() {
   const { t } = useLocale();

@@ -54,7 +54,7 @@ const MSIME = "https://github.com/metasequoiaime/msime";
 export const WEB_ENGINE_NPM_URL = "https://www.npmjs.com/package/@msime/web-engine";
 
 /*
- * Static facts about the seven platforms. `public/platforms.json` belongs to the release automation and covers desktop and Android packages. iOS keeps its publication metadata separate because it has no downloadable package. Windows keeps its separate repository; the other releases come from the merged `msime` repository.
+ * Static facts about the seven platforms. `public/platforms.json` belongs to the release automation and covers desktop, Android, and HarmonyOS packages. iOS keeps its publication metadata separate because it has no downloadable package. Windows keeps its separate repository; the other releases come from the merged `msime` repository.
  */
 export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
   windows: {
@@ -101,8 +101,8 @@ export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
     id: "harmony",
     name: PLATFORM_NAMES.harmony,
     host: "InputMethodExtensionAbility，NAPI 调 host-api",
-    distribution: "source",
-    href: `${MSIME}/tree/develop/platforms/harmony`,
+    distribution: "release",
+    href: `${MSIME}/releases`,
     sourceUrl: `${MSIME}/tree/develop/platforms/harmony`,
   },
   web: {
@@ -128,8 +128,8 @@ export function sitePlatforms(platforms?: Partial<Platforms>, releases: readonly
     !latest || item.publishedAt > latest.publishedAt ? item : latest, null);
   return SITE_PLATFORMS.map(id => {
     const info = PLATFORM_CATALOG[id];
-    // Android 的主入口是蒲公英，但 android-v 发布里的 APK 也在清单里，下载页把它们放在蒲公英旁边。
-    const release = id === "windows" || id === "macos" || id === "linux" || id === "android" ? (platforms?.[id] ?? null) : null;
+    // Android 的主入口是蒲公英，但 android-v 发布里的 APK 也在清单里；HarmonyOS 的 HAP 直接来自 harmony-v 发布。
+    const release = id === "windows" || id === "macos" || id === "linux" || id === "android" || id === "harmony" ? (platforms?.[id] ?? null) : null;
     return { ...info, release, publishedVersion: release?.version ?? (id === "ios" ? iosRelease?.version ?? null : null) };
   });
 }

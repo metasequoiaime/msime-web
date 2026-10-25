@@ -222,15 +222,15 @@ TestFlight 的每个构建有效期为 90 天，到期前在 TestFlight 中更�
 
 ## HarmonyOS
 
-### 开发状态
+### 安装与启用
 
-HarmonyOS 版正在 [msime 仓库](https://github.com/metasequoiaime/msime/tree/develop/platforms/harmony)中开发，基于 InputMethodExtensionAbility，目前还没有发布安装包，也没有上架应用市场。
+HarmonyOS 版已经发布 HAP 测试包，可以在本页上方选择 HarmonyOS，点击 GitHub 下载按钮获取当前版本。安装 HAP 后打开水杉输入法，按引导到系统设置中启用它，并切换为当前输入法。
 
-发布安装包后，这里会给出下载入口。
+当前版本通过 GitHub Releases 分发，尚未上架应用市场。安装包带有 SHA256 校验值，下载后请以对应的 [HarmonyOS Release](https://github.com/metasequoiaime/msime/releases) 说明为准。
 
 ### 从源码构建
 
-源码和构建脚本都在 msime 仓库的 `platforms/harmony` 目录。构建需要 DevEco Studio 提供的 OpenHarmony NDK 与 `hvigorw`，步骤见该目录 README 的「本地构建」一节。开发中的构建不保证稳定，遇到问题欢迎到[Bug 与需求反馈](/feedback/)反馈。
+源码和构建脚本都在 msime 仓库的 `platforms/harmony` 目录。构建需要 DevEco Studio 提供的 OpenHarmony NDK 与 `hvigorw`，步骤见该目录 README 的「本地构建」一节。测试包尚未上架应用市场，遇到问题欢迎到[Bug 与需求反馈](/feedback/)反馈。
 
 ## Web
 
