@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T16:52:20.514Z",
+  "generatedAt": "2026-10-25T16:55:24.132Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -534,13 +534,13 @@
     ]
   },
   "downloadStats": {
-    "total": 57551,
+    "total": 57554,
     "platforms": {
       "windows": 38960,
       "windowsRust": 1265,
-      "macos": 4351,
+      "macos": 4353,
       "linux": 8729,
-      "android": 4222,
+      "android": 4223,
       "harmony": 24
     }
   },
@@ -2559,7 +2559,7 @@
       "repository": "metasequoiaime/msime",
       "id": 659125467,
       "name": "msime-android.apk",
-      "download_count": 804
+      "download_count": 805
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4119,7 +4119,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675481085,
       "name": "msime-macos-0.55.0-universal.dmg",
-      "download_count": 4
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4963,18 +4963,18 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 8869,
+    "total": 8874,
     "platforms": {
-      "android": 858,
+      "android": 861,
       "harmony": 11,
       "linux": 511,
-      "macos": 932,
-      "windows": 6557
+      "macos": 933,
+      "windows": 6558
     },
-    "generatedAt": "2026-10-25T16:52:20.049136Z"
+    "generatedAt": "2026-10-25T16:55:23.71346Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-25T16:52:19.482Z",
+    "generatedAt": "2026-10-25T16:55:23.088Z",
     "total": 4480,
     "builds": [
       {
