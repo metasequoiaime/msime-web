@@ -468,7 +468,9 @@ test('首页两种语言在平台区之后展示下载与安装统计', () => {
     assert.equal(doc.querySelectorAll('.download-stats').length, 1);
     assert.match(stats.textContent, /下载|下載/);
     assert.match(stats.textContent, /Windows/);
-    assert.ok(doc.querySelector('#home-platforms')?.compareDocumentPosition(stats) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const platformSection = doc.querySelector('#home-platforms')?.closest('section');
+    const statsSection = stats.closest('section');
+    assert.ok(platformSection && statsSection && (platformSection.compareDocumentPosition(statsSection) & 4));
   }
 });
 
