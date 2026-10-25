@@ -4,9 +4,7 @@ import type { DownloadStatsManifest } from "../platforms-data";
 import { PLATFORM_NAMES } from "../data/platforms";
 import { useLocale } from "../use-locale";
 
-/** 下载累计值包含全部已取得的下载计数，镜像快照与实时汇总只取最新一份，避免重复相加。 */
-export function DownloadStats({ manifest, testflight, mirror, mirrorUnavailable, embedded = false }: { manifest?: DownloadStatsManifest; testflight?: TestFlightStats | null; mirror?: MirrorDownloadStats; mirrorUnavailable?: boolean; embedded?: boolean }) {
-  const { t } = useLocale();
+export function resolveDownloadStats(manifest?: DownloadStatsManifest, testflight?: TestFlightStats | null, mirror?: MirrorDownloadStats) {
   const github = manifest?.downloadStats;
   const pgyer = manifest?.pgyerDownloadStats;
   const mirrorStats = latestMirrorDownloadStats(manifest?.mirrorDownloadStats, mirror);
@@ -17,6 +15,13 @@ export function DownloadStats({ manifest, testflight, mirror, mirrorUnavailable,
   } : undefined;
   const otherDownloads = stats && mirrorStats ? mirrorStats.total - Object.keys(github?.platforms ?? {}).reduce((sum, platform) => sum + (mirrorStats.platforms[platform] ?? 0), 0) - (mirrorStats.platforms.ios ?? 0) : 0;
   const updatedAt = manifest && mirrorStats ? [manifest.generatedAt, mirrorStats.generatedAt, ...(testflight ? [testflight.generatedAt] : []), ...(pgyer ? [pgyer.generatedAt] : [])].sort((a, b) => Date.parse(a) - Date.parse(b))[0] : undefined;
+  return { github, pgyer, mirrorStats, iosDownloads, stats, otherDownloads, updatedAt };
+}
+
+/** 下载累计值包含全部已取得的下载计数，镜像快照与实时汇总只取最新一份，避免重复相加。 */
+export function DownloadStats({ manifest, testflight, mirror, mirrorUnavailable, embedded = false }: { manifest?: DownloadStatsManifest; testflight?: TestFlightStats | null; mirror?: MirrorDownloadStats; mirrorUnavailable?: boolean; embedded?: boolean }) {
+  const { t } = useLocale();
+  const { github, pgyer, mirrorStats, iosDownloads, stats, otherDownloads, updatedAt } = resolveDownloadStats(manifest, testflight, mirror);
   if (!github && !testflight) return null;
   const counts: { label: string; count?: number | null; status?: string; note?: string }[] = [
     ...(stats ? [

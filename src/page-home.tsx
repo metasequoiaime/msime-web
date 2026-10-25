@@ -1,7 +1,7 @@
 import { CommunitySection } from "./community-section";
 import { PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution } from "./data/platforms";
 import { HomeHero } from "./home/hero";
-import { HomeDownloadStats } from "./home/download-stats";
+import { useHomeDownloadStats } from "./home/download-stats";
 import { LocaleLink } from "./locale-link";
 import { usePageMeta } from "./page-meta";
 import { useLocale } from "./use-locale";
@@ -43,6 +43,7 @@ const SECTION_SPACING = "pt-[clamp(80px,10vw,128px)]";
 
 export function HomePage() {
   const { t } = useLocale();
+  const downloadStats = useHomeDownloadStats();
   usePageMeta();
   useReveal();
 
@@ -126,13 +127,21 @@ export function HomePage() {
             const status = DISTRIBUTION_LABELS[platform.distribution];
             // Web 不是装在系统里的输入法，单独占一整行，排在六个原生平台之后，两列和三列时原生平台都正好排满。
             const embedded = platform.distribution === "sdk";
+            const count = id === "ios" ? downloadStats.iosDownloads : id === "web" ? undefined : downloadStats.stats?.platforms[id];
+            const windowsRustCount = id === "windows" ? downloadStats.stats?.platforms.windowsRust : undefined;
             return (
-              <li key={id} className={cx("min-w-0 p-4 sm:p-6", embedded && "col-span-full")} data-reveal>
+              <li key={id} className={cx("min-w-0 p-4 sm:p-6", embedded && "col-span-full")} data-platform={id} data-reveal>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
                 </div>
                 <h3 className="m-0 mt-4 text-[17px] font-bold text-ink sm:mt-5 sm:text-[22px]">{platform.name}</h3>
+                {(count !== undefined || windowsRustCount !== undefined) && (
+                  <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2">
+                    {count !== undefined && <div><strong className="block text-[clamp(24px,2.8vw,34px)] leading-none font-bold text-ink tabular-nums">{count.toLocaleString("en-US")}</strong><span className="mt-1 block text-xs text-muted">{t(id === "ios" ? "含 TestFlight 安装次数" : id === "windows" ? "Windows（纯净版）" : "累计下载")}</span></div>}
+                    {windowsRustCount !== undefined && <div><strong className="block text-[clamp(20px,2.4vw,28px)] leading-none font-bold text-ink tabular-nums">{windowsRustCount.toLocaleString("en-US")}</strong><span className="mt-1 block text-xs text-muted">{t("Windows（Rust 新版）")}</span></div>}
+                  </div>
+                )}
                 {embedded && (
                   <p className="m-0 mt-2 text-[15px] leading-[1.8] text-body">
                     {t("把输入法嵌进你的网页：全拼、双拼、五笔在访客的浏览器里运行，不需要安装，也不经过服务器。")}{" "}
@@ -145,7 +154,12 @@ export function HomePage() {
             );
           })}
           </ul>
-          <HomeDownloadStats />
+          {downloadStats.stats && (
+            <div className="mt-8 border-t border-ink/12 pt-6" data-download-summary>
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1"><span className="text-sm text-muted">{t("累计下载")}</span><strong className="text-[clamp(26px,3vw,38px)] leading-none font-bold text-ink tabular-nums">{downloadStats.stats.total.toLocaleString("en-US")}</strong></div>
+              <p className="m-0 mt-3 text-[13px] leading-[1.8] text-muted">{t("累计下载包含已采集的各平台安装包、国内镜像、蒲公英和 iOS 安装次数，不代表安装人数或全部完成下载。")}</p>
+            </div>
+          )}
         </Card>
       </Container>
 
