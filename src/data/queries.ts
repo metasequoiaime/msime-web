@@ -63,6 +63,8 @@ const toDownloadStats = (manifest: PlatformsManifest): DownloadStatsManifest => 
   downloadStats: manifest.downloadStats,
   mirrorDownloadStats: manifest.mirrorDownloadStats,
   pgyerDownloadStats: manifest.pgyerDownloadStats,
+  npmDownloadStats: manifest.npmDownloadStats,
+  windows7Available: Boolean(manifest.platforms.windows.windows7),
 });
 
 /** 首页只需要统计字段，仍从同一份 platforms.json 读取，避免复制一份下载清单。 */

@@ -263,7 +263,7 @@ export function selectWindows7(releases) {
       `${label} · ${arch} · 安装程序`, arch,
     ]));
     const selected = toRelease('windows7', release, { repository: 'metasequoiaime/msime', rules });
-    if (!selected || !selected.downloads.every(item => item.url === `https://github.com/metasequoiaime/msime/releases/download/windows7-v${version}/${item.name}`)) return null;
+    if (!selected?.downloads.every(item => item.url === `https://github.com/metasequoiaime/msime/releases/download/windows7-v${version}/${item.name}`)) return null;
     return selected;
   }).filter(Boolean).sort((left, right) => versionOrder(left.version, right.version));
   const selected = eligible[0];
@@ -287,6 +287,17 @@ export async function fetchAllReleases(repository, headers, request = fetch) {
     releases.push(...batch);
     if (batch.length < 100) return releases;
   }
+}
+
+/** 读取 npm 包最近一年的公开下载量，失败时由调用方保留上一份快照。 */
+export async function fetchNpmDownloadStats(request = fetch, now = new Date()) {
+  const periodEnd = now.toISOString().slice(0, 10);
+  const periodStart = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const response = await request(`https://api.npmjs.org/downloads/point/${periodStart}:${periodEnd}/@msime%2fweb-engine`, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(30000) });
+  if (!response.ok) throw new Error(`npm downloads failed: HTTP ${response.status}`);
+  const body = await response.json();
+  if (!Number.isSafeInteger(body.downloads) || body.downloads < 0) throw new Error('Invalid npm download counter');
+  return { generatedAt: now.toISOString(), downloads: body.downloads, periodStart, periodEnd };
 }
 
 /*
@@ -351,6 +362,13 @@ async function main() {
     if (!mirrorDownloadStats) throw error;
     console.warn('镜像统计暂不可用，保留最近成功快照。');
   }
+  let npmDownloadStats = previous.npmDownloadStats;
+  try {
+    npmDownloadStats = await fetchNpmDownloadStats();
+  } catch (error) {
+    if (!npmDownloadStats) console.warn(`npm 下载统计暂不可用：${error.message}`);
+    else console.warn(`npm 下载统计暂不可用，保留最近成功快照：${error.message}`);
+  }
   for (const [platform, repository] of Object.entries(SOURCES)) {
     const selected = selectRelease(platform, repositories.get(repository));
     if (!selected) continue;
@@ -379,7 +397,7 @@ async function main() {
   // 配置了国内镜像时，每个包都带上镜像地址；紧接着运行的 mirror-downloads.mjs 通过镜像地址把它读一遍、核对不过的去掉 mirrorUrl。
   const mirrored = attachMirrors(platforms, mirrorBase(process.env.DOWNLOAD_MIRROR_BASE_URL));
   await writeFile(new URL('../public/platforms.json', import.meta.url),
-    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary, downloadStats: stats, downloadHistory, mirrorDownloadStats, pgyerDownloadStats }, null, 2)}\n`);
+    `${JSON.stringify({ generatedAt: new Date().toISOString(), platforms: mirrored, dictionary, downloadStats: stats, downloadHistory, mirrorDownloadStats, pgyerDownloadStats, npmDownloadStats }, null, 2)}\n`);
   console.log(Object.entries(platforms).map(([k, v]) => `${k} v${v.version} (${v.downloads.length} 个产物)${v.preview ? ` + 预览版 v${v.preview.version}` : ''}${v.experimental ? ` + 新版测试版 v${v.experimental.version}` : ''}`).join(', '),
     dictionary ? `| 词库 ${dictionary.tag} (${dictionary.files.length} 个文件)` : '| 词库 未取到');
 }

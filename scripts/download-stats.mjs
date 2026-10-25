@@ -1,5 +1,6 @@
 // 只统计可安装的产品包：源码、词库、符号和自动更新载荷不属于手动下载安装包。
 const INSTALLERS = [
+  ['windows7', /^MetasequoiaIME-[\w]+_Setup_v[\w.-]+_win7_(?:x86|x64)\.exe$/i],
   ['windows', /^MetasequoiaIME(?:-[\w]+)?_Setup_v[\w.-]+\.exe$/i],
   ['macos', /^msime-macos-(?:[a-z]+-)?\d[\w.-]*\.dmg$/i],
   ['macos', /^MetasequoiaIME-[\w.-]+-macos-universal[\w-]*\.pkg$/i],
@@ -20,12 +21,13 @@ export const DOWNLOAD_STATS_REPOSITORIES = [
 export function installerPlatform(repository, name) {
   if (!DOWNLOAD_STATS_REPOSITORIES.some(value => value.toLowerCase() === repository.toLowerCase())) return null;
   const platform = INSTALLERS.find(([, pattern]) => pattern.test(name))?.[0];
+  if (platform === 'windows7') return repository.toLowerCase() === 'metasequoiaime/msime' ? platform : null;
   return platform === 'windows' && repository.toLowerCase() === 'metasequoiaime/msime' ? 'windowsRust' : platform ?? null;
 }
 
 /** 汇总所有现存发行版（含预发布与 nightly）的安装包下载次数；分页重叠的资产按仓库和资产 ID 去重。 */
 export function downloadSnapshot(repositories, history = []) {
-  const platforms = { windows: 0, windowsRust: 0, macos: 0, linux: 0, android: 0, harmony: 0 };
+  const platforms = { windows: 0, windowsRust: 0, windows7: 0, macos: 0, linux: 0, android: 0, harmony: 0 };
   if (!Array.isArray(history)) throw new Error('Invalid GitHub download history');
   const seen = new Map();
   const keep = (repository, asset) => {

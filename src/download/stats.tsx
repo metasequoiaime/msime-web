@@ -15,7 +15,7 @@ export function resolveDownloadStats(manifest?: DownloadStatsManifest, testfligh
   } : undefined;
   const otherDownloads = stats && mirrorStats ? mirrorStats.total - Object.keys(github?.platforms ?? {}).reduce((sum, platform) => sum + (mirrorStats.platforms[platform] ?? 0), 0) - (mirrorStats.platforms.ios ?? 0) : 0;
   const updatedAt = manifest && mirrorStats ? [manifest.generatedAt, mirrorStats.generatedAt, ...(testflight ? [testflight.generatedAt] : []), ...(pgyer ? [pgyer.generatedAt] : [])].sort((a, b) => Date.parse(a) - Date.parse(b))[0] : undefined;
-  return { github, pgyer, mirrorStats, iosDownloads, stats, otherDownloads, updatedAt };
+  return { github, pgyer, npm: manifest?.npmDownloadStats, windows7Available: manifest?.windows7Available, mirrorStats, iosDownloads, stats, otherDownloads, updatedAt };
 }
 
 /** 下载累计值包含全部已取得的下载计数，镜像快照与实时汇总只取最新一份，避免重复相加。 */

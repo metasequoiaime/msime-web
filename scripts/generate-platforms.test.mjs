@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { classifyAssets, fetchAllReleases, selectExperimental, selectRelease, selectWindows7, signingState, versionOrder } from './generate-platforms.mjs';
+import { classifyAssets, fetchAllReleases, fetchNpmDownloadStats, selectExperimental, selectRelease, selectWindows7, signingState, versionOrder } from './generate-platforms.mjs';
 import { downloadSnapshot, downloadStats } from './download-stats.mjs';
 
 const statsRelease = (assets, extra = {}) => ({ draft: false, published_at: '2026-10-21T00:00:00Z', assets, ...extra });
@@ -43,7 +43,7 @@ test('download totals include stable, preview, nightly and archived packages, on
     ]],
     ['metasequoiaime/MSIME-Linux', [statsRelease([countedAsset(1, 'metasequoia-ime-linux_0.8.0_arm64.deb', 40)])]],
   ]));
-  assert.deepEqual(stats, { total: 1142, platforms: { windows: 1000, windowsRust: 5, macos: 45, linux: 72, android: 14, harmony: 6 } });
+  assert.deepEqual(stats, { total: 1142, platforms: { windows: 1000, windowsRust: 5, windows7: 0, macos: 45, linux: 72, android: 14, harmony: 6 } });
 });
 
 test('download counts exclude drafts, unpublished releases, update payloads and non-installer assets', () => {
@@ -59,7 +59,18 @@ test('download counts exclude drafts, unpublished releases, update payloads and 
     statsRelease([countedAsset(100, 'msime-android.apk', 100)], { draft: true }),
     statsRelease([countedAsset(101, 'msime-android.apk', 100)], { published_at: null }),
   ]]]));
-  assert.deepEqual(stats, { total: 0, platforms: { windows: 0, windowsRust: 0, macos: 0, linux: 0, android: 0, harmony: 0 } });
+  assert.deepEqual(stats, { total: 0, platforms: { windows: 0, windowsRust: 0, windows7: 0, macos: 0, linux: 0, android: 0, harmony: 0 } });
+});
+
+test('Windows 7 installers are counted only from the dedicated msime repository', () => {
+  const win7 = countedAsset(20, 'MetasequoiaIME-Full_Setup_v1.2.0_win7_x64.exe', 12);
+  const stats = downloadStats(new Map([
+    ['metasequoiaime/msime', [statsRelease([win7])]],
+    ['metasequoiaime/MSIME-Windows', [statsRelease([win7, countedAsset(21, 'MetasequoiaIME_Setup_v1.2.0.exe', 8)])]],
+  ]));
+  assert.equal(stats.platforms.windows7, 12);
+  assert.equal(stats.platforms.windows, 8);
+  assert.equal(stats.total, 20);
 });
 
 test('Rust Windows counts use the source repository even when old and new installers share a name', () => {
@@ -90,6 +101,19 @@ test('release pagination reads the complete history and refuses a partial result
   assert.deepEqual(history, [...first, ...second]);
   assert.deepEqual(urls.map(url => new URL(url).searchParams.get('page')), ['1', '2']);
   await assert.rejects(fetchAllReleases('metasequoiaime/msime', {}, async url => url.endsWith('page=1') ? Response.json(first) : new Response(null, { status: 503 })), /HTTP 503/);
+});
+
+test('npm 下载统计读取近一年计数并拒绝无效响应', async () => {
+  const now = new Date('2026-10-26T12:34:56.000Z');
+  let requested;
+  const stats = await fetchNpmDownloadStats(async (url, options) => {
+    requested = { url, options };
+    return Response.json({ downloads: 1706 });
+  }, now);
+  assert.equal(requested.url, 'https://api.npmjs.org/downloads/point/2025-10-26:2026-10-26/@msime%2fweb-engine');
+  assert.equal(requested.options.headers.Accept, 'application/json');
+  assert.deepEqual(stats, { generatedAt: now.toISOString(), downloads: 1706, periodStart: '2025-10-26', periodEnd: '2026-10-26' });
+  await assert.rejects(fetchNpmDownloadStats(async () => Response.json({ downloads: -1 }), now), /Invalid npm download counter/);
 });
 
 const asset = (name, extra = {}) => ({

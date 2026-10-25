@@ -1,5 +1,5 @@
 import { CommunitySection } from "./community-section";
-import { PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution } from "./data/platforms";
+import { PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution, type SitePlatform } from "./data/platforms";
 import { HomeHero } from "./home/hero";
 import { useHomeDownloadStats } from "./home/download-stats";
 import { LocaleLink } from "./locale-link";
@@ -34,6 +34,13 @@ const DISTRIBUTION_LABELS: Record<Distribution, { label: string; tone: "accent" 
   source: { label: "开发中", tone: "neutral" },
   sdk: { label: "开发者接入", tone: "accent" },
 };
+
+const HOME_PLATFORM_ITEMS = [
+  { id: "windows", catalogId: "windows", name: "Windows 10/11（纯净版）", statKey: "windows", status: DISTRIBUTION_LABELS.release },
+  { id: "windowsRust", catalogId: "windows", name: "Windows 10/11（Rust 新版）", statKey: "windowsRust", status: DISTRIBUTION_LABELS.pgyer },
+  { id: "windows7", catalogId: "windows", name: "Windows 7", statKey: "windows7", status: { label: "尚未发布", tone: "neutral" as const } },
+  ...SITE_PLATFORMS.filter(id => id !== "windows").map(id => ({ id, catalogId: id, name: PLATFORM_CATALOG[id].name, statKey: id, status: DISTRIBUTION_LABELS[PLATFORM_CATALOG[id].distribution] })),
+] as const;
 
 /** The privacy banner's grove (viewBox 0 0 1200 400), drawn in the banner's glow colour. */
 const BANNER_FAR: GroveTree[] = [[560, 247, 0.9], [640, 264, 0.8], [760, 230, 1], [880, 256, 0.85], [1000, 222, 1.05], [1120, 247, 0.9]];
@@ -121,34 +128,36 @@ export function HomePage() {
               }
             />
           </div>
-        <ul className="m-0 mt-8 grid list-none grid-cols-2 grid-rows-[repeat(3,1fr)_auto] gap-3 p-0 xl:grid-cols-3 xl:grid-rows-[repeat(2,1fr)_auto]" data-reveal-stagger>
-          {SITE_PLATFORMS.map((id) => {
+        <ul className="m-0 mt-8 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-5" data-reveal-stagger>
+          {HOME_PLATFORM_ITEMS.map((item) => {
+            const id = item.catalogId as SitePlatform;
             const platform = PLATFORM_CATALOG[id];
-            const status = DISTRIBUTION_LABELS[platform.distribution];
-            // Web 不是装在系统里的输入法，单独占一整行，排在六个原生平台之后，两列和三列时原生平台都正好排满。
+            // Web 不是装在系统里的输入法，但仍作为平台项参与统一网格。
             const embedded = platform.distribution === "sdk";
-            const count = id === "ios" ? downloadStats.iosDownloads : id === "web" ? undefined : downloadStats.stats?.platforms[id];
-            const windowsRustCount = id === "windows" ? downloadStats.stats?.platforms.windowsRust : undefined;
+            const windows7Available = item.id !== "windows7" || downloadStats.windows7Available === true;
+            const status = item.id === "windows7" && windows7Available ? DISTRIBUTION_LABELS.release : item.status;
+            const count = item.statKey === "ios" ? downloadStats.iosDownloads : item.statKey === "web" ? downloadStats.npm?.downloads : downloadStats.stats?.platforms[item.statKey];
             return (
-              <li key={id} className={cx("min-w-0 p-4 sm:p-6", embedded && "col-span-full")} data-platform={id} data-reveal>
+              <li key={item.id} className={cx("min-w-0 rounded-tile bg-panel-2 p-4 shadow-hair sm:p-6", embedded && "lg:col-span-2")} data-platform={item.id} data-reveal>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
                 </div>
-                <h3 className="m-0 mt-4 text-[17px] font-bold text-ink sm:mt-5 sm:text-[22px]">{platform.name}</h3>
-                {(count !== undefined || windowsRustCount !== undefined) && (
+                <h3 className="m-0 mt-4 text-[17px] font-bold text-ink sm:mt-5 sm:min-h-[3.5rem] sm:text-[22px]">{t(item.name)}</h3>
+                {count !== undefined && windows7Available && (
                   <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2">
-                    {count !== undefined && <div><strong className="block text-[clamp(24px,2.8vw,34px)] leading-none font-bold text-ink tabular-nums">{count.toLocaleString("en-US")}</strong><span className="mt-1 block text-xs text-muted">{t(id === "ios" ? "含 TestFlight 安装次数" : id === "windows" ? "Windows（纯净版）" : "累计下载")}</span></div>}
-                    {windowsRustCount !== undefined && <div><strong className="block text-[clamp(20px,2.4vw,28px)] leading-none font-bold text-ink tabular-nums">{windowsRustCount.toLocaleString("en-US")}</strong><span className="mt-1 block text-xs text-muted">{t("Windows（Rust 新版）")}</span></div>}
+                    <div><strong className="block text-[clamp(24px,2.8vw,34px)] leading-none font-bold text-ink tabular-nums">{count.toLocaleString("en-US")}</strong><span className="mt-1 block text-xs text-muted">
+                      {t(item.statKey === "ios" ? "含 TestFlight 安装次数" : item.statKey === "web" ? "npm 近一年下载" : "累计下载")}
+                      {embedded && (
+                        <>
+                          {" · "}
+                          <LocaleLink to="/download/" search={{ platform: "web" }} className="font-semibold text-accent-ink no-underline hover:text-ink">
+                            {t("接入方式 →")}
+                          </LocaleLink>
+                        </>
+                      )}
+                    </span></div>
                   </div>
-                )}
-                {embedded && (
-                  <p className="m-0 mt-2 text-[15px] leading-[1.8] text-body">
-                    {t("把输入法嵌进你的网页：全拼、双拼、五笔在访客的浏览器里运行，不需要安装，也不经过服务器。")}{" "}
-                    <LocaleLink to="/download/" search={{ platform: "web" }} className="font-semibold text-accent-ink no-underline hover:text-ink">
-                      {t("接入方式 →")}
-                    </LocaleLink>
-                  </p>
                 )}
               </li>
             );

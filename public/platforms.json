@@ -5470,5 +5470,11 @@
         "downloads": 8
       }
     ]
+  },
+  "npmDownloadStats": {
+    "generatedAt": "2026-10-26T00:00:00.000Z",
+    "downloads": 1706,
+    "periodStart": "2025-10-23",
+    "periodEnd": "2026-10-22"
   }
 }

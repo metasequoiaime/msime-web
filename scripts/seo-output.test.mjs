@@ -433,12 +433,19 @@ test('首页两种语言把统计数字放进对应的平台卡片', () => {
     assert.ok(summary);
     assert.match(shell.className, /(?:^| )bg-panel(?: |$)/);
     assert.doesNotMatch(shell.className, /(?:^| )bg-panel-2(?: |$)/);
-    assert.equal([...shell.querySelectorAll('ul > li')].filter(item => /(?:^| )bg-panel(?: |$)/.test(item.className)).length, 0);
+    assert.equal([...shell.querySelectorAll('ul > li')].filter(item => /(?:^| )bg-panel-2(?: |$)/.test(item.className)).length, 9);
     assert.equal(doc.querySelectorAll('.download-stats').length, 0);
-    assert.equal(shell.querySelectorAll('[data-platform]').length, 7);
+    assert.equal(shell.querySelectorAll('[data-platform]').length, 9);
+    assert.match(shell.querySelector('ul').className, /(?:^| )lg:grid-cols-5(?: |$)/);
+    assert.match(shell.querySelector('[data-platform="web"]').className, /(?:^| )lg:col-span-2(?: |$)/);
     for (const id of ['windows', 'macos', 'linux', 'android', 'ios', 'harmony']) {
       assert.ok(shell.querySelector(`[data-platform="${id}"] strong`), `${id} has a displayed count`);
     }
+    assert.ok(shell.querySelector('[data-platform="windowsRust"] strong'));
+    assert.equal(shell.querySelector('[data-platform="windows7"] strong'), null);
+    assert.equal(shell.querySelector('[data-platform="web"] strong')?.textContent, '1,706');
+    assert.ok(shell.querySelector('[data-platform="web"] a'));
+    assert.doesNotMatch(shell.querySelector('[data-platform="web"]').textContent, /把输入法嵌进你的网页/);
     assert.ok(summary.querySelector('strong'));
     assert.match(shell.textContent, /六个平台|六個平台|六個平臺/);
   }
@@ -513,7 +520,7 @@ test('首页平台卡片按平台显示镜像合并后的累计值', async t => 
       }
       assert.equal(Number(summary.querySelector('strong').textContent.replaceAll(',', '')), scenario.expected[0]);
       const values = Object.fromEntries(['windows', 'macos', 'linux', 'android', 'harmony'].map(platform => [platform, Number(doc.querySelector(`[data-platform="${platform}"] strong`).textContent.replaceAll(',', ''))]));
-      assert.deepEqual([values.windows, Number(doc.querySelector('[data-platform="windows"] strong + span').parentElement.nextElementSibling?.querySelector('strong')?.textContent?.replaceAll(',', '') ?? 0), values.macos, values.linux, values.android, values.harmony], scenario.expected.slice(1));
+      assert.deepEqual([values.windows, Number(doc.querySelector('[data-platform="windowsRust"] strong')?.textContent?.replaceAll(',', '') ?? 0), values.macos, values.linux, values.android, values.harmony], scenario.expected.slice(1));
     }
   }
 });
