@@ -128,17 +128,17 @@ export function HomePage() {
               }
             />
           </div>
-        <ul className="m-0 mt-8 grid list-none grid-cols-2 gap-3 p-0 xl:grid-cols-3" data-reveal-stagger>
+        <ul className="m-0 mt-8 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-5" data-reveal-stagger>
           {HOME_PLATFORM_ITEMS.map((item) => {
             const id = item.catalogId as SitePlatform;
             const platform = PLATFORM_CATALOG[id];
-            // Web 不是装在系统里的输入法，单独占一整行，排在六个原生平台之后，两列和三列时原生平台都正好排满。
+            // Web 不是装在系统里的输入法，但仍作为平台项参与统一网格。
             const embedded = platform.distribution === "sdk";
             const windows7Available = item.id !== "windows7" || downloadStats.windows7Available === true;
             const status = item.id === "windows7" && windows7Available ? DISTRIBUTION_LABELS.release : item.status;
             const count = item.statKey === "ios" ? downloadStats.iosDownloads : item.statKey === "web" ? downloadStats.npm?.downloads : downloadStats.stats?.platforms[item.statKey];
             return (
-              <li key={item.id} className={cx("min-w-0 p-4 sm:p-6", embedded && "col-span-full")} data-platform={item.id} data-reveal>
+              <li key={item.id} className="min-w-0 p-4 sm:p-6" data-platform={item.id} data-reveal>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
