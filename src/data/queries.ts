@@ -1,12 +1,12 @@
 import { infiniteQueryOptions, queryOptions, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import type { PlatformsManifest } from "../platforms-data.ts";
+import type { DownloadStatsManifest, PlatformsManifest } from "../platforms-data.ts";
 import type { ReleaseFilter } from "./platforms.ts";
 import type { AppStats, CandidateSkins, Community, DownloadMirrors, KeyboardSkins, Notices, OfficialDictionaries, OfficialPlugins, Releases, UpdateManifest } from "./schemas.ts";
 import type { CandidateSkinCategory } from "./skin-categories.ts";
 import { siteApi, staticSnapshot, withFallback } from "./source.ts";
 
 /*
- * TanStack Query option factories, one per resource. The query keys `community`, `platforms` and `update-manifest` are a contract with `scripts/build-seo.mjs`, which seeds exactly those keys into prerendered pages; renaming one silently drops the data from static HTML. Every query function returns the resource itself (never a `Loaded` wrapper) because seeded data has the plain resource shape.
+ * TanStack Query option factories, one per resource. The query keys `community`, `platforms`, `download-stats`, `testflight-stats` and `update-manifest` are a contract with `scripts/build-seo.mjs`, which seeds exactly those keys into prerendered pages; renaming one silently drops the data from static HTML. Every query function returns the resource itself (never a `Loaded` wrapper) because seeded data has the plain resource shape.
  */
 
 // Schemas load on first fetch rather than at import, so zod is not part of the entry chunk. Seeded pages never call these during hydration.
@@ -57,6 +57,22 @@ export const platformsQuery = () =>
   });
 
 export const usePlatformsQuery = () => useQuery(platformsQuery());
+
+const toDownloadStats = (manifest: PlatformsManifest): DownloadStatsManifest => ({
+  generatedAt: manifest.generatedAt,
+  downloadStats: manifest.downloadStats,
+  mirrorDownloadStats: manifest.mirrorDownloadStats,
+  pgyerDownloadStats: manifest.pgyerDownloadStats,
+});
+
+/** 首页只需要统计字段，仍从同一份 platforms.json 读取，避免复制一份下载清单。 */
+export const downloadStatsQuery = () => queryOptions({
+  queryKey: ["download-stats"] as const,
+  queryFn: ({ signal }) => platformsSource.load(signal).then(toDownloadStats),
+  staleTime: Number.POSITIVE_INFINITY,
+  retry: 1,
+});
+export const useDownloadStatsQuery = () => useQuery(downloadStatsQuery());
 
 // TestFlight 独立发布和读取，展示时将 Apple 安装次数并入全平台累计。
 export const testflightStatsSource = staticSnapshot<import("../../shared/testflight-stats.ts").TestFlightStats | null>("/testflight-stats.json", async value => (await import("../../shared/testflight-stats.ts")).parseTestFlightStats(value));

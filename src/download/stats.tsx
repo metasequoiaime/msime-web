@@ -1,11 +1,11 @@
 import { latestMirrorDownloadStats, type MirrorDownloadStats } from "../../shared/mirror-download-stats";
 import type { TestFlightStats } from "../../shared/testflight-stats";
-import type { PlatformsManifest } from "../platforms-data";
+import type { DownloadStatsManifest } from "../platforms-data";
 import { PLATFORM_NAMES } from "../data/platforms";
 import { useLocale } from "../use-locale";
 
 /** 下载累计值包含全部已取得的下载计数，镜像快照与实时汇总只取最新一份，避免重复相加。 */
-export function DownloadStats({ manifest, testflight, mirror, mirrorUnavailable }: { manifest?: PlatformsManifest; testflight?: TestFlightStats | null; mirror?: MirrorDownloadStats; mirrorUnavailable?: boolean }) {
+export function DownloadStats({ manifest, testflight, mirror, mirrorUnavailable }: { manifest?: DownloadStatsManifest; testflight?: TestFlightStats | null; mirror?: MirrorDownloadStats; mirrorUnavailable?: boolean }) {
   const { t } = useLocale();
   const github = manifest?.downloadStats;
   const pgyer = manifest?.pgyerDownloadStats;

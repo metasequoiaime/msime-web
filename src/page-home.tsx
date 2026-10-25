@@ -1,6 +1,7 @@
 import { CommunitySection } from "./community-section";
 import { PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution } from "./data/platforms";
 import { HomeHero } from "./home/hero";
+import { HomeDownloadStats } from "./home/download-stats";
 import { LocaleLink } from "./locale-link";
 import { usePageMeta } from "./page-meta";
 import { useLocale } from "./use-locale";
@@ -143,6 +144,10 @@ export function HomePage() {
             );
           })}
         </ul>
+      </Container>
+
+      <Container as="section" width="page" className={SECTION_SPACING}>
+        <HomeDownloadStats />
       </Container>
 
       <CommunitySection />
