@@ -418,45 +418,9 @@ test('简繁下载页展示九个入口，Windows 版本分开且旧链接默认
   }
 });
 
-test('both download locales expose the snapshot counts and their scope in static HTML', () => {
-  const manifest = JSON.parse(readFileSync('public/platforms.json', 'utf8'));
-  const testflight = JSON.parse(readFileSync('public/testflight-stats.json', 'utf8'));
+test('下载页不重复展示首页的下载与安装统计', () => {
   for (const path of ['/download/', '/zh-TW/download/']) {
-    const doc = document(path);
-    const stats = doc.querySelector('.download-stats');
-    if (!manifest.downloadStats || !manifest.mirrorDownloadStats) {
-      if (manifest.downloadStats) assert.match(stats.textContent, /[统統][计計][暂暫]不可用/);
-      continue;
-    }
-    assert.ok(stats);
-    const pgyer = manifest.pgyerDownloadStats;
-    const values = Object.fromEntries(Object.entries(manifest.downloadStats.platforms).map(([key, count]) => [key, count + (manifest.mirrorDownloadStats.platforms[key] ?? 0) + (key === 'android' ? pgyer?.total ?? 0 : 0)]));
-    const other = manifest.mirrorDownloadStats.total - Object.keys(values).reduce((sum, key) => sum + (manifest.mirrorDownloadStats.platforms[key] ?? 0), 0);
-    const expected = [manifest.downloadStats.total + manifest.mirrorDownloadStats.total + (testflight?.installs ?? 0) + (pgyer?.total ?? 0), values.windows, values.windowsRust, values.macos, values.linux, values.android, values.harmony, ...(other ? [other] : []), testflight?.installs].filter(value => value !== undefined);
-    assert.deepEqual([...stats.querySelectorAll('dd')].map(node => Number(node.firstChild.textContent.replaceAll(',', ''))).filter(Number.isFinite), expected);
-    const rows = [...stats.querySelectorAll('dl > div')];
-    assert.equal(rows.length, other ? 9 : 8);
-    const ios = rows.find(row => row.querySelector('dt').textContent === 'iOS');
-    assert.ok(ios, 'iOS is visible without inventing a zero');
-    if (testflight) {
-      assert.equal(Number(ios.querySelector('dd').firstChild.textContent.replaceAll(',', '')), testflight.installs);
-      assert.match(ios.textContent, /TestFlight/);
-    } else assert.doesNotMatch(ios.querySelector('dd').textContent, /\d/);
-    const harmony = rows.find(row => row.querySelector('dt').textContent === 'HarmonyOS');
-    assert.ok(harmony);
-    assert.match(harmony.textContent, /HAP/);
-    assert.match(stats.textContent, /Windows（Rust 新版）/);
-    const time = stats.querySelector('time');
-    assert.equal(time.getAttribute('datetime') ?? time.getAttribute('dateTime'), [manifest.generatedAt, manifest.mirrorDownloadStats.generatedAt, ...(testflight ? [testflight.generatedAt] : []), ...(pgyer ? [pgyer.generatedAt] : [])].sort((a, b) => Date.parse(a) - Date.parse(b))[0]);
-    assert.match(stats.textContent, /[国國][内內](?:[镜鏡]像|映象)/);
-    if (testflight) {
-      assert.match(stats.textContent, /[并並][计計]入累[计計]下[载載]/);
-      assert.equal(stats.querySelectorAll('time').length, 2);
-    }
-    assert.match(stats.textContent, /TestFlight/);
-    assert.doesNotMatch(stats.textContent, /不含[国國][内內][镜鏡]像/);
-    assert.match(stats.textContent, /不代表安[装裝]人[数數]/);
-    assert.match(stats.textContent, /已[删刪]除/);
+    assert.equal(document(path).querySelector('.download-stats'), null);
   }
 });
 
