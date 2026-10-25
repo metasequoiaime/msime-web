@@ -470,7 +470,7 @@ test('首页两种语言在平台区之后展示下载与安装统计', () => {
     assert.equal(doc.querySelectorAll('.download-stats').length, 1);
     assert.match(stats.textContent, /下载|下載/);
     assert.match(stats.textContent, /Windows/);
-    assert.match(shell.textContent, /六个平台|六個平台/);
+    assert.match(shell.textContent, /六个平台|六個平台|六個平臺/);
   }
 });
 
