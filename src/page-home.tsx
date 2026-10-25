@@ -107,18 +107,19 @@ export function HomePage() {
       </Container>
 
       <Container as="section" width="page" className={SECTION_SPACING}>
-        <div data-reveal>
-          <SectionHeading
-            id="home-platforms"
-            title={t("六个平台原生体验，网页也能用")}
-            lead={t("五个平台共用 Rust 输入引擎；Windows 正式版仍独立开发，基于同一引擎的新版正在预发布。同一个引擎编译成 WebAssembly，可以嵌进任何网页。")}
-            action={
-              <LinkButton to="/download/" variant="soft">
-                {t("前往下载页 →")}
-              </LinkButton>
-            }
-          />
-        </div>
+        <Card as="section" tone="muted" className="home-platforms-shell rounded-panel p-[clamp(16px,3.4vw,40px)] shadow-feature">
+          <div data-reveal>
+            <SectionHeading
+              id="home-platforms"
+              title={t("六个平台原生体验，网页也能用")}
+              lead={t("五个平台共用 Rust 输入引擎；Windows 正式版仍独立开发，基于同一引擎的新版正在预发布。同一个引擎编译成 WebAssembly，可以嵌进任何网页。")}
+              action={
+                <LinkButton to="/download/" variant="soft">
+                  {t("前往下载页 →")}
+                </LinkButton>
+              }
+            />
+          </div>
         <ul className="m-0 mt-8 grid list-none grid-cols-2 grid-rows-[repeat(3,1fr)_auto] gap-3 p-0 xl:grid-cols-3 xl:grid-rows-[repeat(2,1fr)_auto]" data-reveal-stagger>
           {SITE_PLATFORMS.map((id) => {
             const platform = PLATFORM_CATALOG[id];
@@ -143,11 +144,9 @@ export function HomePage() {
               </Card>
             );
           })}
-        </ul>
-      </Container>
-
-      <Container as="section" width="page" className={SECTION_SPACING}>
-        <HomeDownloadStats />
+          </ul>
+          <HomeDownloadStats />
+        </Card>
       </Container>
 
       <CommunitySection />

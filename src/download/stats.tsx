@@ -5,7 +5,7 @@ import { PLATFORM_NAMES } from "../data/platforms";
 import { useLocale } from "../use-locale";
 
 /** 下载累计值包含全部已取得的下载计数，镜像快照与实时汇总只取最新一份，避免重复相加。 */
-export function DownloadStats({ manifest, testflight, mirror, mirrorUnavailable }: { manifest?: DownloadStatsManifest; testflight?: TestFlightStats | null; mirror?: MirrorDownloadStats; mirrorUnavailable?: boolean }) {
+export function DownloadStats({ manifest, testflight, mirror, mirrorUnavailable, embedded = false }: { manifest?: DownloadStatsManifest; testflight?: TestFlightStats | null; mirror?: MirrorDownloadStats; mirrorUnavailable?: boolean; embedded?: boolean }) {
   const { t } = useLocale();
   const github = manifest?.downloadStats;
   const pgyer = manifest?.pgyerDownloadStats;
@@ -31,7 +31,7 @@ export function DownloadStats({ manifest, testflight, mirror, mirrorUnavailable 
   ];
 
   return (
-    <section className="download-stats rounded-panel bg-panel p-[clamp(20px,3vw,32px)] shadow-ring-2" aria-labelledby="download-stats-title">
+    <section className={embedded ? "download-stats mt-8 pt-8 shadow-divider-t-2" : "download-stats rounded-panel bg-panel p-[clamp(20px,3vw,32px)] shadow-ring-2"} aria-labelledby="download-stats-title">
       <h2 id="download-stats-title" className="m-0 text-lg font-semibold text-ink">{t("下载与安装统计")}</h2>
       <dl className="m-0 mt-5 grid grid-cols-2 gap-x-5 gap-y-4 sm:grid-cols-4">
         {counts.map(({ label, count, status, note }, index) => (
