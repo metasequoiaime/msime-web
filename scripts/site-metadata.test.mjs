@@ -96,6 +96,9 @@ test('lightweight guide query validation accepts only known scalar values', () =
 test('download query validation preserves the selected platform and release filter', () => {
   assert.deepEqual(downloadSearchSchema({ platform: 'linux', release: 'linux', unrelated: 'ignored' }), { platform: 'linux', release: 'linux' });
   assert.deepEqual(downloadSearchSchema({ platform: 'ios' }), { platform: 'ios' });
+  for (const windows of ['pure', 'online', 'win7']) assert.deepEqual(downloadSearchSchema({ platform: 'windows', windows }), { platform: 'windows', windows });
+  for (const windows of ['unknown', ['online'], {}, null]) assert.deepEqual(downloadSearchSchema({ platform: 'windows', windows }), { platform: 'windows' });
+  assert.deepEqual(downloadSearchSchema({ platform: 'linux', windows: 'online' }), { platform: 'linux' });
   for (const search of [
     { platform: '__proto__' },
     { platform: ['linux'] },

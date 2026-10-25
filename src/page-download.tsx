@@ -7,6 +7,7 @@ import { DownloadPanel } from "./download/panel";
 import { DownloadStats } from "./download/stats";
 import { ReleasesSection } from "./download/releases";
 import { WebDemo } from "./download/web-demo";
+import { downloadChoices, WINDOWS_VARIANTS } from "./download/windows";
 import { fillTemplate, parseGuide } from "./download/template";
 import { usePageMeta } from "./page-meta";
 import { detectPlatform, PLATFORMS, type Platform } from "./platform";
@@ -22,6 +23,7 @@ export function DownloadPage() {
   const { choice, update, get, ready } = usePageSearch();
   const requestedPlatform = get("platform");
   const platform = choice("platform", PLATFORMS, "windows");
+  const windowsVariant = choice("windows", WINDOWS_VARIANTS, "pure");
   const releaseFilter = choice("release", RELEASE_FILTERS, platform);
   // 页面自己的三平台清单。update.json 另有其主（Windows 客户端的「检查更新」），两者互不干扰。
   const platforms = usePlatformsQuery();
@@ -43,6 +45,7 @@ export function DownloadPage() {
   }, [manifest.error]);
 
   const entries = useMemo(() => sitePlatforms(platforms.data?.platforms, releases.data?.items), [platforms.data, releases.data]);
+  const selectedWindows = useMemo(() => downloadChoices(entries).find(entry => entry.windowsVariant === windowsVariant), [entries, windowsVariant]);
 
   const sections = useMemo(() => {
     // 两份清单都在路上时先不渲染正文，免得先写一版「暂时无法获取」再改口
@@ -66,13 +69,14 @@ export function DownloadPage() {
           <DownloadPanel
             entries={entries}
             platform={platform}
-            onSelect={(value) => {
-              update({ platform: value, release: undefined });
+            windowsVariant={windowsVariant}
+            onSelect={(value, variant) => {
+              update({ platform: value, windows: variant === "pure" ? undefined : variant, release: undefined });
             }}
           />
           <DownloadStats manifest={platforms.data} testflight={testflight.data} mirror={mirrorStats.data} mirrorUnavailable={mirrorStats.isError || mirrorStats.data?.stale} />
           {ready && platform === "web" && <WebDemo />}
-          <DownloadGuide sections={sections} platform={platform} filter={ready} />
+          <DownloadGuide sections={sections} platform={platform} filter={ready} windowsEntry={selectedWindows} />
         </div>
         <ReleasesSection key={releaseFilter} filter={releaseFilter} onSelect={(value) => update({ release: value === platform ? undefined : value })} />
       </Container>
