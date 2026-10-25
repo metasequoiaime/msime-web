@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { SitePlatformEntry } from "../data/platforms.ts";
-import type { ExperimentalRelease, PlatformRelease, PreviewRelease } from "../platforms-data.ts";
+import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform, ReleasePlatform } from "../platform.ts";
 import { useDownloadMirrorsQuery } from "../data/queries";
 import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, copyText, cx, ExternalIcon, GitHubIcon, Pill, PlatformIcon, QQIcon, useToast } from "../ui";
@@ -8,6 +8,7 @@ import { useLocale } from "../use-locale";
 import { mirrorDownloadPlatform, reportMirrorDownload, serverCountsMirror } from "../../shared/download-events";
 import { describeLinuxPackage, detectArm64, pickPrimary } from "./linux-primary";
 import { groupByArch, readableSize } from "./template";
+import { downloadChoices, type DownloadEntry, type WindowsVariant } from "./windows";
 
 /** The Windows installer is also uploaded to this QQ group's files, for visitors who cannot reach GitHub quickly; joining the group also puts them where feedback is answered. */
 const QQ_GROUP = "829919142";
@@ -26,7 +27,6 @@ const macosMinimum = (entry: SitePlatformEntry) => (entry.release?.downloads.som
 
 /** 选择卡上的平台名带上系统要求，免得在下面的提示里再找一遍 */
 const tileName = (entry: SitePlatformEntry) => {
-  if (entry.id === "windows") return "Windows 10/11";
   if (entry.id === "macos") return `macOS ${macosMinimum(entry)}+`;
   if (entry.id === "ios") return "iOS 17+";
   if (entry.id === "android") return "Android 9+";
@@ -55,12 +55,10 @@ const PRIMARY_ACTION =
 const MIRROR_ACTION =
   "inline-flex min-h-[52px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-btn bg-panel px-3 py-2 text-left text-[15px] leading-snug font-semibold whitespace-nowrap text-ink no-underline sm:gap-2.5 sm:px-5 shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink md:flex-none";
 
-/** What the tile's status says: the current version, or, kept to a word, how the platform is distributed. The details sit in the action strip and the guide below. */
-const tileStatus = (entry: SitePlatformEntry) => {
-  if (entry.id === "windows" && entry.publishedVersion && entry.release?.experimental) {
-    return `v${entry.publishedVersion} / v${entry.release.experimental.version}`;
-  }
+/** 选择卡显示该入口自己的版本，专用 Windows 包尚未公开发布时明确标记。 */
+const tileStatus = (entry: DownloadEntry) => {
   if (entry.publishedVersion) return `v${entry.publishedVersion}`;
+  if (entry.windowsVariant === "win7") return "暂未发布";
   if (entry.distribution === "testflight") return "TestFlight";
   if (entry.distribution === "pgyer") return "测试版";
   if (entry.distribution === "source") return "开发中";
@@ -69,7 +67,7 @@ const tileStatus = (entry: SitePlatformEntry) => {
 };
 
 /**
- * The seven platform tiles, three to a row: desktop on the first row, mobile on the second, and Web alone on a third row across the full width, since it is embedded in pages rather than installed. On a phone a third of the panel is too narrow for mark, name and status side by side, so the tile stacks them centred; from `sm` up the mark sits on the left and the status follows the name on the same line, wrapping under it only when the column is too narrow.
+ * 九个下载入口每行三张，前三张分别对应 Windows 纯净版、联网版和 Windows 7。手机上图标、名称和版本纵向排列；较宽屏幕上横向排列，宽度不足时允许名称和版本换行。
  *
  * The status uses the body font, not `font-mono`: JetBrains Mono is not bundled, and where it is missing the monospace fallback on Windows is a serif face.
  */
@@ -137,7 +135,7 @@ function MorePackages({ platform, version, downloads, id }: { platform: ReleaseP
  *
  * 上游每次合并都会自动发一个 Pre-release，却只把人工挑过的那个标成正式版。只展示正式版，想试最新改动的人得自己去 GitHub 翻；只展示预览版，又等于把没挑过的构建推给所有人。所以两个都给，正式版占主按钮，预览版在下面明确标出来。
  *
- * Windows 的 Rust 新版（主仓库的 `release.experimental`）也用这块，换上自己的名字和说明。
+ * Windows 联网版有独立选择卡，不再使用此预览版区域。
  */
 function PreviewPanel({
   platform,
@@ -145,15 +143,12 @@ function PreviewPanel({
   arm64,
   kind = "预览版",
   note = "包含尚未进入正式版的改动，可能不稳定。",
-  heading = false,
 }: {
   platform: ReleasePlatform;
-  preview: PreviewRelease | ExperimentalRelease;
+  preview: PreviewRelease;
   arm64: boolean;
   kind?: string;
   note?: string;
-  /** 用 h3 标题说明这是另一条版本线，目前只有 Windows 的 Rust 新版这么做。 */
-  heading?: boolean;
 }) {
   const { t } = useLocale();
   // Linux 预览版的按钮和正式版一样按架构挑包，并说出是哪个包。
@@ -162,13 +157,8 @@ function PreviewPanel({
 
   return (
     <section className="mt-6 rounded-tile p-[clamp(18px,2.4vw,24px)] shadow-ring-2" aria-label={t(kind)}>
-      {heading && (
-        <header className="mb-3.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-          <h3 className="m-0 font-heading text-[17px] leading-[1.4] font-bold text-ink">{t(kind)}</h3>
-        </header>
-      )}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        {!heading && <Pill tone="warn">{t(kind)}</Pill>}
+        <Pill tone="warn">{t(kind)}</Pill>
         <a
           className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
           href={first.url}
@@ -309,10 +299,10 @@ function LinuxOthers({ primary, moreId }: { primary: PlatformRelease["downloads"
  *
  * File name, architecture, size, signature and checksums are deliberately not repeated here: they live in the release notes and the install guide below, and listing them next to the button only pushed it out of view.
  */
-function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
+function PlatformAction({ entry }: { entry: DownloadEntry }) {
   const { t } = useLocale();
   const arm64 = useArm64(entry.id === "linux");
-  const hintText = platformHint(entry);
+  const hintText = entry.windowsVariant === "online" ? "联网版当前为新版测试版本，可能不稳定；可与纯净版同时安装。" : entry.windowsVariant === "win7" ? (entry.release ? "适用于 Windows 7 SP1；请按系统架构选择 x64 或 x86 安装包。" : "Windows 7 专用安装包尚未公开发布，发布后会在此提供下载。") : platformHint(entry);
   const hint = hintText ? <p className="m-0 text-sm leading-[1.8] text-muted">{t(hintText)}</p> : null;
 
   if (entry.distribution === "testflight") {
@@ -410,15 +400,15 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
           href={primary?.url ?? entry.href}
           rel="noreferrer"
           target={primary ? undefined : "_blank"}
-          aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name}${entry.id === "windows" ? " 正式版" : " 版"} v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
+          aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name}${entry.windowsVariant === "pure" ? " 正式版" : " 版"} v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}${entry.windowsVariant === "win7" ? ` ${primary.arch}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
         >
           <GitHubIcon size={18} />
-          {t(entry.id === "windows" && primary && release ? `下载正式版 v${release.version}` : linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
+          {t(entry.windowsVariant && primary && release ? `下载${entry.windowsVariant === "pure" ? "纯净版" : entry.windowsVariant === "online" ? "联网版" : "Windows 7 版"} v${release.version}${entry.windowsVariant === "win7" ? `（${primary.arch}）` : ""}` : linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
           {!primary && <ExternalIcon />}
         </a>
         {primary && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={primary} className={MIRROR_ACTION} />}
-        {entry.id === "windows" && <WindowsMirrors release={release} />}
-        {!release ? (
+        {entry.windowsVariant === "pure" && <WindowsMirrors release={release} />}
+        {!release && entry.windowsVariant !== "win7" ? (
           <p className="m-0 text-sm leading-[1.8] text-muted">{t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")}</p>
         ) : linuxPackage && primary ? (
           <LinuxOthers primary={primary} moreId={moreId} />
@@ -431,16 +421,6 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 
       {release?.preview && <PreviewPanel platform={entry.id as ReleasePlatform} preview={release.preview} arm64={arm64} />}
 
-      {release?.experimental && (
-        <PreviewPanel
-          platform={entry.id as ReleasePlatform}
-          preview={release.experimental}
-          arm64={arm64}
-          kind="Rust 新版"
-          note="用 Rust 重写的新版 Windows 输入法。可以和上面的正式版同时安装，互不影响。"
-          heading
-        />
-      )}
     </div>
   );
 }
@@ -448,13 +428,14 @@ function PlatformAction({ entry }: { entry: SitePlatformEntry }) {
 /**
  * 页面顶部的下载入口（design-home §6「选择卡」），也是整页的标题区：页面不再有单独的页头，h1 就在这里，平台卡片和下载按钮在首屏内。
  *
- * 七个平台都是可选的卡片，按 UA 猜到的那个只是默认选中（不会猜成 Web）；选中后下面给出这个平台真实可用的入口：桌面平台与 HarmonyOS 是 GitHub 安装包，iOS 是 TestFlight，Android 是蒲公英上的测试版，Web 是给网站开发者接入的 npm 包。桌面平台的安装包在配置了国内镜像（dl.msime.app）时，GitHub 按钮旁边多一个「国内镜像下载」；QQ 群文件和蓝奏云盘只有 Windows 安装包，放在 Windows 的按钮之后。
+ * 七个平台展示为九个入口，Windows 的三个版本各自选择。按 UA 选择平台，Windows 缺省选择纯净版。QQ、夸克与蓝奏云盘仅属于纯净版，不能跟着其他 Windows 入口展示。
  *
  * `.download-panel` is a test hook: the static HTML must show the Windows version inside it.
  */
-export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePlatformEntry[]; platform: Platform; onSelect: (platform: Platform) => void }) {
+export function DownloadPanel({ entries, platform, windowsVariant, onSelect }: { entries: SitePlatformEntry[]; platform: Platform; windowsVariant: WindowsVariant; onSelect: (platform: Platform, windowsVariant?: WindowsVariant) => void }) {
   const { t } = useLocale();
-  const selected = entries.find((entry) => entry.id === platform) ?? entries[0];
+  const choices = downloadChoices(entries);
+  const selected = choices.find((entry) => entry.id === platform && (entry.id !== "windows" || entry.windowsVariant === windowsVariant)) ?? choices[0];
 
   return (
     <section className="download-panel m-0 rounded-panel bg-panel p-[clamp(16px,3.4vw,40px)] shadow-feature" aria-labelledby="download-title">
@@ -467,21 +448,25 @@ export function DownloadPanel({ entries, platform, onSelect }: { entries: SitePl
         </a>
       </div>
       <div className="mt-4 grid auto-rows-fr grid-cols-3 gap-2 sm:mt-5 sm:gap-3">
-        {entries.map((entry) => {
-          const active = entry.id === platform;
+        {choices.map((entry) => {
+          const active = entry === selected;
           return (
             <button
-              key={entry.id}
+              key={entry.windowsVariant ?? entry.id}
               type="button"
               aria-pressed={active}
               onClick={() => {
-                onSelect(entry.id);
+                onSelect(entry.id, entry.windowsVariant);
               }}
-              className={cx(TILE, "cursor-pointer", entry.distribution === "sdk" && "col-span-full sm:justify-center", active ? "bg-accent-soft shadow-ring-accent" : "bg-panel-2 hover:bg-accent-soft")}
+              className={cx(TILE, "cursor-pointer", active ? "bg-accent-soft shadow-ring-accent" : "bg-panel-2 hover:bg-accent-soft")}
             >
               <PlatformIcon platform={entry.id} className="flex-none" />
               <span className="flex min-w-0 flex-col items-center gap-x-2.5 sm:flex-row sm:flex-wrap sm:items-baseline">
-                <span className={TILE_NAME}>{t(tileName(entry))}</span>
+                <span className={TILE_NAME}>
+                  {entry.windowsVariant === "pure" || entry.windowsVariant === "online" ? (
+                    <>Windows 10/11<span className="block text-xs whitespace-nowrap sm:inline sm:[font-size:inherit]">{t(entry.windowsVariant === "pure" ? "（纯净版）" : "（联网版）")}</span></>
+                  ) : t(tileName(entry))}
+                </span>
                 <span className={TILE_STATUS}>{t(tileStatus(entry))}</span>
               </span>
             </button>

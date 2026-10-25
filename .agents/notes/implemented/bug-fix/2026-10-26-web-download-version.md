@@ -12,6 +12,8 @@ Status: implemented
 
 Web 保持 SDK 分发方式及原 npm 链接，不加入安装包清单。iOS 的 TestFlight 版本选择规则保持原状。检索现有笔记后，安装包入口和下载统计笔记不涉及 Web 版本来源，均无关，原地保留。
 
+[Windows 分版选择](../feature/2026-10-26-windows-download-choices.md)扩展选择卡数量，继续沿用本篇的 Web 版本来源及 npm 按钮展示规则。
+
 ## Alternatives considered
 
 使用本站依赖的 `@msime/web-engine` 版本无需读取发布历史，但它只代表网站在线演示所用版本，不能代表对外发布的最新版本，因此不采用。

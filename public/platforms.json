@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T16:32:05.847Z",
+  "generatedAt": "2026-10-25T16:31:12.093Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -533,12 +533,12 @@
     ]
   },
   "downloadStats": {
-    "total": 57520,
+    "total": 57514,
     "platforms": {
       "windows": 38957,
       "windowsRust": 1265,
       "macos": 4350,
-      "linux": 8708,
+      "linux": 8702,
       "android": 4217,
       "harmony": 23
     }
@@ -2360,13 +2360,13 @@
       "repository": "metasequoiaime/msime",
       "id": 658944781,
       "name": "msime-linux-wubi_0.13.0_amd64.deb",
-      "download_count": 35
+      "download_count": 34
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 658944790,
       "name": "msime-linux-wubi_0.13.0_arm64.deb",
-      "download_count": 36
+      "download_count": 34
     },
     {
       "repository": "metasequoiaime/msime",
@@ -2444,7 +2444,7 @@
       "repository": "metasequoiaime/msime",
       "id": 658944982,
       "name": "msime-linux-wubi-0.13.0-1.aarch64.rpm",
-      "download_count": 33
+      "download_count": 32
     },
     {
       "repository": "metasequoiaime/msime",
@@ -2516,7 +2516,7 @@
       "repository": "metasequoiaime/msime",
       "id": 658945251,
       "name": "msime-linux-wubi-0.13.0-linux-aarch64.tar.gz",
-      "download_count": 30
+      "download_count": 28
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4970,10 +4970,10 @@
       "macos": 932,
       "windows": 6557
     },
-    "generatedAt": "2026-10-25T16:32:05.448649Z"
+    "generatedAt": "2026-10-25T16:31:11.595101Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-25T16:32:04.868Z",
+    "generatedAt": "2026-10-25T16:31:11.140Z",
     "total": 4476,
     "builds": [
       {

@@ -7,6 +7,7 @@ import { cx } from "../ui";
 import { useInternalLinks } from "../use-internal-links";
 import { useLocale } from "../use-locale";
 import { type GuideBlock, type GuideSection, splitTabs } from "./template";
+import type { DownloadEntry } from "./windows";
 
 type Tone = "warn" | "safe" | "note";
 
@@ -151,7 +152,7 @@ function PlatformSection({ section, hidden, name }: { section: RenderedSection; 
  *
  * Every platform's section is always rendered, so the static HTML (and its markdown export) carries the whole guide, including the iOS TestFlight instructions the SEO test looks for. After hydration only the selected platform's section stays visible, plus the closing privacy note.
  */
-export function DownloadGuide({ sections, platform, filter }: { sections: GuideSection[] | null; platform: Platform; filter: boolean }) {
+export function DownloadGuide({ sections, platform, filter, windowsEntry }: { sections: GuideSection[] | null; platform: Platform; filter: boolean; windowsEntry?: DownloadEntry }) {
   const { t, tw, path } = useLocale();
   const articleRef = useRef<HTMLElement>(null);
   useInternalLinks(articleRef);
@@ -168,9 +169,18 @@ export function DownloadGuide({ sections, platform, filter }: { sections: GuideS
 
   return (
     <article id="download-content" ref={articleRef} aria-live="polite" className="grid min-w-0 gap-[clamp(40px,5vw,64px)]">
+      {filter && platform === "windows" && windowsEntry && windowsEntry.windowsVariant !== "pure" && (
+        <section aria-labelledby="windows-variant-guide-title">
+          <h2 id="windows-variant-guide-title" className="m-0 font-heading text-2xl leading-[1.4] font-bold text-ink">{t(`安装说明（${windowsEntry.name}）`)}</h2>
+          <p className="m-0 mt-3.5 text-[15px] leading-[1.9] text-body">
+            {t(windowsEntry.release ? "下载并运行所选版本的安装程序，按提示完成安装，再用 Win + Space 切换输入法。升级要求和校验值见该版本的发布说明。" : "该版本尚未提供公开安装包，发布后会在此提供下载和安装说明。")}
+          </p>
+          <a className="mt-3 inline-block text-accent-ink hover:text-ink" href={windowsEntry.release?.releaseUrl ?? windowsEntry.href} target="_blank" rel="noreferrer">{t("查看发布说明")}</a>
+        </section>
+      )}
       {rendered?.map((section, index) =>
         section.platform ? (
-          <PlatformSection key={section.heading} section={section} name={PLATFORM_LABELS[section.platform]} hidden={filter && section.platform !== platform} />
+          <PlatformSection key={section.heading} section={section} name={section.platform === "windows" ? "Windows 10/11（纯净版）" : PLATFORM_LABELS[section.platform]} hidden={filter && (section.platform !== platform || (section.platform === "windows" && (windowsEntry?.windowsVariant ?? "pure") !== "pure"))} />
         ) : (
           <section key={section.heading} aria-labelledby={`download-note-${index}`} className="rounded-tile bg-panel-2 p-[clamp(22px,3vw,32px)]">
             <h2 id={`download-note-${index}`} className="m-0 font-heading text-xl leading-[1.4] font-bold text-ink">

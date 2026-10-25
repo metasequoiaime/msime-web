@@ -6,6 +6,10 @@ Status: implemented
 
 官网 Windows 下载入口来自 `MSIME-Windows`，主仓库 `msime` 发布的 Rust 重写版安装包无法从下载页找到。两条产品线的版本号不具有可比较性，Rust 版仍不稳定，不能直接替代正式版。
 
+## 当前适用范围
+
+[Windows 分版选择](2026-10-26-windows-download-choices.md)保留本篇的数据来源、独立版本序列与未知签名规则，以独立「联网版」选择卡替代原先在同一 Windows 卡片内展示 Rust 新版测试区域的决定。以下保留该入口最初建立时的约束与取舍。
+
 ## Decision
 
 清单在 `platforms.windows.experimental` 独立保存主仓库版本最高、包含可识别安装包的 Windows 发布，正式发布和预发布均可进入此槽位。完整版排在前面，其他版本沿用统一的版本名称。下载页复用预览版展示组件，标注「新版测试版」和不建议主力使用的提醒。
