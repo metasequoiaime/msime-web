@@ -424,18 +424,22 @@ test('下载页不重复展示首页的下载与安装统计', () => {
   }
 });
 
-test('首页两种语言在平台区之后展示下载与安装统计', () => {
+test('首页两种语言把统计数字放进对应的平台卡片', () => {
   for (const path of ['/', '/zh-TW/']) {
     const doc = document(path);
     const shell = doc.querySelector('.home-platforms-shell');
-    const stats = shell?.querySelector('.download-stats');
+    const summary = shell?.querySelector('[data-download-summary]');
     assert.ok(shell);
-    assert.ok(stats);
+    assert.ok(summary);
     assert.match(shell.className, /(?:^| )bg-panel(?: |$)/);
     assert.doesNotMatch(shell.className, /(?:^| )bg-panel-2(?: |$)/);
-    assert.equal(doc.querySelectorAll('.download-stats').length, 1);
-    assert.match(stats.textContent, /下载|下載/);
-    assert.match(stats.textContent, /Windows/);
+    assert.equal([...shell.querySelectorAll('ul > li')].filter(item => /(?:^| )bg-panel(?: |$)/.test(item.className)).length, 0);
+    assert.equal(doc.querySelectorAll('.download-stats').length, 0);
+    assert.equal(shell.querySelectorAll('[data-platform]').length, 7);
+    for (const id of ['windows', 'macos', 'linux', 'android', 'ios', 'harmony']) {
+      assert.ok(shell.querySelector(`[data-platform="${id}"] strong`), `${id} has a displayed count`);
+    }
+    assert.ok(summary.querySelector('strong'));
     assert.match(shell.textContent, /六个平台|六個平台|六個平臺/);
   }
 });
@@ -449,8 +453,7 @@ test('the current macOS DMG guide describes the in-app install flow', () => {
   assert.doesNotMatch(macos.textContent, /打开「应用程序」里的 MSIME。它会把输入法装进/);
 });
 
-test('iOS 安装量加入全平台累计，未知状态与真实零分开', async t => {
-  // 与 build-seo 使用相同的 DOM 环境，下载指南的 Markdown 渲染依赖它。
+test('iOS 安装量放入首页 iOS 平台卡片', async t => {
   const dom = parseHTML('<html><head></head><body></body></html>');
   const keys = ['document', 'Node', 'HTMLElement', 'HTMLParagraphElement', 'HTMLAnchorElement'];
   const previous = keys.map(key => Object.getOwnPropertyDescriptor(globalThis, key));
@@ -468,27 +471,19 @@ test('iOS 安装量加入全平台累计，未知状态与真实零分开', asyn
   for (const path of ['/', '/zh-TW/']) {
     for (const installs of [0, 123]) {
       const { html } = await render(path, { community, 'download-stats': platforms, 'testflight-stats': { ...testflight, installs } });
-      assert.doesNotMatch(html, /data-msg=|data-stck=/);
       const doc = parseHTML(html).document;
-      const rows = [...doc.querySelectorAll('.download-stats dl > div')];
-      const ios = rows.find(row => row.querySelector('dt').textContent === 'iOS');
-      assert.equal(ios.querySelector('dd').firstChild.textContent, String(installs));
+      const ios = doc.querySelector('[data-platform="ios"]');
+      assert.equal(ios.querySelector('strong').textContent, String(installs));
       assert.match(ios.textContent, /TestFlight/);
-      assert.equal(rows[0].querySelector('dd').textContent, (platforms.downloadStats.total + 20 + 9 + installs).toLocaleString('en-US'));
-      const android = rows.find(row => row.querySelector('dt').textContent === 'Android');
-      assert.equal(android.querySelector('dd').firstChild.textContent, (platforms.downloadStats.platforms.android + 9).toLocaleString('en-US'));
-      assert.match(doc.querySelector('.download-stats').textContent, /[并並][计計]入累[计計]下[载載]/);
-      const numeric = rows.map(row => Number(row.querySelector('dd').firstChild.textContent.replaceAll(',', '')));
-      assert.equal(numeric[0], numeric.slice(1).reduce((sum, count) => sum + count, 0));
+      assert.equal(doc.querySelector('[data-download-summary] strong').textContent, (platforms.downloadStats.total + 20 + 9 + installs).toLocaleString('en-US'));
     }
     const { html } = await render(path, { community, 'download-stats': platforms, 'testflight-stats': null });
-    const doc = parseHTML(html).document;
-    const ios = [...doc.querySelectorAll('.download-stats dl > div')].find(row => row.querySelector('dt').textContent === 'iOS');
-    assert.doesNotMatch(ios.querySelector('dd').textContent, /\d/);
+    const ios = parseHTML(html).document.querySelector('[data-platform="ios"]');
+    assert.doesNotMatch(ios.textContent, /\d/);
   }
 });
 
-test('简繁首页下载累计包含镜像且各平台相加', async t => {
+test('首页平台卡片按平台显示镜像合并后的累计值', async t => {
   const dom = parseHTML('<html><head></head><body></body></html>');
   const keys = ['document', 'Node', 'HTMLElement', 'HTMLParagraphElement', 'HTMLAnchorElement'];
   const previous = keys.map(key => Object.getOwnPropertyDescriptor(globalThis, key));
@@ -504,18 +499,21 @@ test('简繁首页下载累计包含镜像且各平台相加', async t => {
   const mirror = { total: 28, platforms: { windows: 1, windowsRust: 2, macos: 3, linux: 4, android: 5, harmony: 6, future: 7 }, generatedAt: '2026-10-22T00:00:00Z' };
   for (const path of ['/', '/zh-TW/']) {
     for (const scenario of [
-      { saved: mirror, expected: [238, 11, 22, 33, 44, 55, 66, 7] },
+      { saved: mirror, expected: [238, 11, 22, 33, 44, 55, 66] },
       { saved: { ...mirror, total: 0, platforms: {}, generatedAt: '2026-10-21T00:00:00Z' }, expected: [210, 10, 20, 30, 40, 50, 60] },
       { saved: undefined, expected: [] },
     ]) {
       const data = { community, 'download-stats': { generatedAt: manifest.generatedAt, downloadStats: github, mirrorDownloadStats: scenario.saved, pgyerDownloadStats: undefined }, 'testflight-stats': null };
       const { html } = await render(path, data);
-      assert.doesNotMatch(html, /data-msg=|data-stck=/);
-      const stats = parseHTML(html).document.querySelector('.download-stats');
-      const numeric = [...stats.querySelectorAll('dd')].map(node => Number(node.firstChild.textContent.replaceAll(',', ''))).filter(Number.isFinite);
-      assert.deepEqual(numeric, scenario.expected);
-      assert.doesNotMatch(stats.textContent, /GitHub [累積累计]+下[载載]|不含[国國][内內][镜鏡]像/);
-      if (!scenario.saved) assert.match(stats.textContent, /[统統][计計][暂暫]不可用/);
+      const doc = parseHTML(html).document;
+      const summary = doc.querySelector('[data-download-summary]');
+      if (!scenario.saved) {
+        assert.equal(summary, null);
+        continue;
+      }
+      assert.equal(Number(summary.querySelector('strong').textContent.replaceAll(',', '')), scenario.expected[0]);
+      const values = Object.fromEntries(['windows', 'macos', 'linux', 'android', 'harmony'].map(platform => [platform, Number(doc.querySelector(`[data-platform="${platform}"] strong`).textContent.replaceAll(',', ''))]));
+      assert.deepEqual([values.windows, Number(doc.querySelector('[data-platform="windows"] strong + span').parentElement.nextElementSibling?.querySelector('strong')?.textContent?.replaceAll(',', '') ?? 0), values.macos, values.linux, values.android, values.harmony], scenario.expected.slice(1));
     }
   }
 });
