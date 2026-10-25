@@ -127,7 +127,7 @@ export function HomePage() {
             // Web 不是装在系统里的输入法，单独占一整行，排在六个原生平台之后，两列和三列时原生平台都正好排满。
             const embedded = platform.distribution === "sdk";
             return (
-              <Card as="li" key={id} className={cx("min-w-0 rounded-tile p-4 sm:p-6", embedded && "col-span-full")} data-reveal>
+              <li key={id} className={cx("min-w-0 p-4 sm:p-6", embedded && "col-span-full")} data-reveal>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
@@ -141,7 +141,7 @@ export function HomePage() {
                     </LocaleLink>
                   </p>
                 )}
-              </Card>
+              </li>
             );
           })}
           </ul>

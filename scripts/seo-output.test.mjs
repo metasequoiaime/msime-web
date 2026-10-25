@@ -433,6 +433,7 @@ test('首页两种语言在平台区之后展示下载与安装统计', () => {
     assert.ok(stats);
     assert.match(shell.className, /(?:^| )bg-panel(?: |$)/);
     assert.doesNotMatch(shell.className, /(?:^| )bg-panel-2(?: |$)/);
+    assert.equal([...shell.querySelectorAll('ul > li')].filter(item => /(?:^| )bg-panel(?: |$)/.test(item.className)).length, 0);
     assert.equal(doc.querySelectorAll('.download-stats').length, 1);
     assert.match(stats.textContent, /下载|下載/);
     assert.match(stats.textContent, /Windows/);
