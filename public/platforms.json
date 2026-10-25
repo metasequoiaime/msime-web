@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T08:12:09.739Z",
+  "generatedAt": "2026-10-25T08:24:39.276Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -528,13 +528,13 @@
     ]
   },
   "downloadStats": {
-    "total": 56985,
+    "total": 56994,
     "platforms": {
-      "windows": 38779,
-      "windowsRust": 1190,
-      "macos": 4245,
+      "windows": 38783,
+      "windowsRust": 1191,
+      "macos": 4248,
       "linux": 8591,
-      "android": 4168,
+      "android": 4169,
       "harmony": 12
     }
   },
@@ -1983,7 +1983,7 @@
       "repository": "metasequoiaime/msime",
       "id": 656828545,
       "name": "msime-macos-0.54.0-universal.dmg",
-      "download_count": 1154
+      "download_count": 1157
     },
     {
       "repository": "metasequoiaime/msime",
@@ -2553,7 +2553,7 @@
       "repository": "metasequoiaime/msime",
       "id": 659125467,
       "name": "msime-android.apk",
-      "download_count": 772
+      "download_count": 773
     },
     {
       "repository": "metasequoiaime/msime",
@@ -3039,7 +3039,7 @@
       "repository": "metasequoiaime/msime",
       "id": 668360231,
       "name": "MetasequoiaIME-Full_Setup_v0.3.0.exe",
-      "download_count": 391
+      "download_count": 392
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4497,21 +4497,21 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 655453588,
       "name": "MetasequoiaIME_Setup_v0.11.1.exe",
-      "download_count": 4137
+      "download_count": 4141
     }
   ],
   "mirrorDownloadStats": {
-    "total": 8631,
+    "total": 8640,
     "platforms": {
-      "android": 814,
-      "linux": 451,
-      "macos": 908,
-      "windows": 6458
+      "android": 816,
+      "linux": 456,
+      "macos": 909,
+      "windows": 6459
     },
-    "generatedAt": "2026-10-25T08:12:09.246703Z"
+    "generatedAt": "2026-10-25T08:24:38.821403Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-25T08:12:08.750Z",
+    "generatedAt": "2026-10-25T08:24:38.331Z",
     "total": 4434,
     "builds": [
       {
