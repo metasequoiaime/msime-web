@@ -42,6 +42,14 @@ const releaseSchema = z.object({
   downloads: z.array(downloadSchema).min(1),
 });
 
+const windows7ReleaseSchema = releaseSchema.refine(release => {
+  const base = `https://github.com/metasequoiaime/msime/releases`;
+  return release.releaseUrl === `${base}/tag/windows7-v${release.version}` && release.downloads.every(entry =>
+    ["x64", "x86"].includes(entry.arch) && /^MetasequoiaIME-[A-Za-z]+_Setup_v/.test(entry.name) &&
+    entry.name.endsWith(`_Setup_v${release.version}_win7_${entry.arch}.exe`) &&
+    entry.url === `${base}/download/windows7-v${release.version}/${entry.name}`);
+});
+
 /** 已记录 GitHub 发行附件的累计，与镜像、蒲公英及 Apple 安装次数合计展示。 */
 export const downloadStatsSchema = z.object({
   total: z.number().int().nonnegative(),
@@ -71,6 +79,8 @@ export const platformsSchema = z.object({
       preview: releaseSchema.nullable().catch(null),
       // 另一条产品线的测试版，目前只有 Windows：主仓库的 Rust 版（见 scripts/generate-platforms.mjs 的 EXPERIMENTAL）。旧清单没有这个键，坏了或缺了都只是这一块不显示。
       experimental: releaseSchema.nullable().catch(null),
+      // Windows 7 只读取专用正式发布；缺失或损坏时不能回退现代 Windows 安装包。
+      windows7: windows7ReleaseSchema.nullable().catch(null),
     })
   ),
   /* 各平台共用同一份词库，单独发布，所以放在 platforms 之外。 */

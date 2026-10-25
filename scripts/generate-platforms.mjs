@@ -252,6 +252,25 @@ export function selectExperimental(platform, releases) {
   return { ...rest, signed: null };
 }
 
+/** Windows 7 只收专用正式 tag 和同版本安装包，不回退现代 Windows 或其他仓库的包。 */
+export function selectWindows7(releases) {
+  const eligible = releases.filter(release => /^windows7-v/.test(release.tag_name ?? '') && release.prerelease === false).map(release => {
+    const version = releaseTag('windows7').exec(release.tag_name)?.[1];
+    if (!version) return null;
+    const editions = [['Full', '完整版'], ...LINUX_EDITIONS];
+    const rules = editions.flatMap(([id, label]) => ['x64', 'x86'].map(arch => [
+      { test: name => name.toLowerCase() === `MetasequoiaIME-${id}_Setup_v${version}_win7_${arch}.exe`.toLowerCase() },
+      `${label} · ${arch} · 安装程序`, arch,
+    ]));
+    const selected = toRelease('windows7', release, { repository: 'metasequoiaime/msime', rules });
+    return selected && selected.downloads.every(item => item.url === `https://github.com/metasequoiaime/msime/releases/download/windows7-v${version}/${item.name}`) ? selected : null;
+  }).filter(Boolean).sort((left, right) => versionOrder(left.version, right.version));
+  const selected = eligible[0];
+  if (!selected) return null;
+  const { prerelease: _prerelease, ...rest } = selected;
+  return rest;
+}
+
 /*
  * 取全部 release，而不是第一页。
  *
@@ -337,6 +356,7 @@ async function main() {
     // 新版测试版与统计复用同一份发布列表；没有可识别的测试安装包时只隐藏这一块。
     const experimental = EXPERIMENTAL[platform] ? selectExperimental(platform, repositories.get(EXPERIMENTAL[platform].repository)) : null;
     platforms[platform] = { repository, ...selected, experimental };
+    if (platform === 'windows') platforms[platform].windows7 = selectWindows7(repositories.get('metasequoiaime/msime'));
   }
 
   // 每个平台都是下载页的固定桌面分支。上游暂时没有可识别产物时，不能把该键静默删掉：

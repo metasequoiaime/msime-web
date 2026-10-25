@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { classifyAssets, fetchAllReleases, selectExperimental, selectRelease, signingState, versionOrder } from './generate-platforms.mjs';
+import { classifyAssets, fetchAllReleases, selectExperimental, selectRelease, selectWindows7, signingState, versionOrder } from './generate-platforms.mjs';
 import { downloadSnapshot, downloadStats } from './download-stats.mjs';
 
 const statsRelease = (assets, extra = {}) => ({ draft: false, published_at: '2026-10-21T00:00:00Z', assets, ...extra });
@@ -457,4 +457,29 @@ test('the Rust Windows build from the main repository is the experimental releas
   assert.equal(selectExperimental('windows', [...releases, rust('windows-v0.2.2', false, ['Full'])]).version, '0.2.2');
   // MSIME-Windows 的规则认不出主仓库的安装包，它们不会混进正式版。
   assert.deepEqual(classifyAssets('windows', releases[1].assets), []);
+});
+
+test('Windows 7 只选择版本一致的专用正式包，现代包、预发布与其他仓库不能混入', () => {
+  const base = 'https://github.com/metasequoiaime/msime/releases';
+  const win7 = (version, names = ['Full', 'Wubi'].flatMap(edition => ['x86', 'x64'].map(arch => `MetasequoiaIME-${edition}_Setup_v${version}_win7_${arch}.exe`))) => ({
+    tag_name: `windows7-v${version}`, draft: false, prerelease: false,
+    published_at: '2026-10-26T00:00:00Z', html_url: `${base}/tag/windows7-v${version}`,
+    assets: names.map(name => asset(name, { browser_download_url: `${base}/download/windows7-v${version}/${name}` })),
+  });
+  const current = win7('1.2.0');
+  for (const releases of [[win7('1.1.0'), current], [current, win7('1.1.0')]]) {
+    const selected = selectWindows7(releases);
+    assert.equal(selected.version, '1.2.0');
+    assert.deepEqual(selected.downloads.map(item => item.arch), ['x64', 'x86', 'x64', 'x86']);
+    assert.match(selected.downloads[0].name, /-Full_/);
+    assert.equal(selected.signed, null);
+    assert.equal(selectExperimental('windows', releases), null);
+  }
+  for (const releases of [[], [{ ...current, draft: true }], [{ ...current, prerelease: true }],
+    [{ ...current, tag_name: 'windows-v1.2.0' }],
+    [win7('1.2.0', ['MetasequoiaIME-Full_Setup_v1.2.0.exe'])],
+    [win7('1.2.0', ['MetasequoiaIME-Full_Setup_v1.1.0_win7_x64.exe'])],
+    [{ ...current, assets: current.assets.map(item => ({ ...item, browser_download_url: item.browser_download_url.replace('/download/windows7-v1.2.0/', '/download/windows-v1.2.0/') })) }],
+    [{ ...current, assets: current.assets.map(item => ({ ...item, browser_download_url: item.browser_download_url.replace('/msime/', '/MSIME-Windows/') })) }],
+  ]) assert.equal(selectWindows7(releases), null);
 });
