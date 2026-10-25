@@ -4,11 +4,11 @@ import { useLocale } from "../use-locale";
 import { cx } from "../ui";
 
 /** Guides published from MSIME-Docs. The FAQ's platform radios use their own ids (`src/page-faq.tsx`); these helpers translate between the two. */
-export type GuideId = "windows" | "macos" | "macos-voice" | "linux" | "android" | "ios";
+export type GuideId = "windows" | "macos" | "macos-voice" | "linux" | "android" | "ios" | "cli-mcp";
 export type FaqPlatformId = "windows" | "macos" | "linux" | "ios" | "android";
 
 /** The FAQ platform a guide belongs to: the macOS voice guide is still macOS. */
-export const faqPlatformForGuide = (guide: GuideId): FaqPlatformId => (guide === "macos-voice" ? "macos" : guide);
+export const faqPlatformForGuide = (guide: GuideId): FaqPlatformId => (guide === "macos-voice" ? "macos" : guide === "cli-mcp" ? "windows" : guide);
 
 /** The guide for an FAQ platform, or null when MSIME-Docs has no guide for it yet. */
 export const guideForFaqPlatform = (platform: FaqPlatformId): GuideId | null =>

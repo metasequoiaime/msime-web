@@ -1,7 +1,7 @@
 import { traditionalPages, traditionalPath, isTraditional } from "./locales.ts";
 export const SITE_ORIGIN = "https://msime.app";
 export const SITE_NAME = "水杉输入法";
-export const GUIDE_NAMES = { windows: "Windows", macos: "macOS", "macos-voice": "macOS 语音", linux: "Linux", android: "Android", ios: "iOS" } as const;
+export const GUIDE_NAMES = { windows: "Windows", macos: "macOS", "macos-voice": "macOS 语音", linux: "Linux", android: "Android", ios: "iOS", "cli-mcp": "CLI / MCP" } as const;
 export const seoPages: Record<string, { title: string; description: string; noindex?: boolean; canonicalPath?: string }> = {
   "/": { title: "水杉输入法 MSIME｜开源中文输入法", description: "水杉输入法（MSIME）是开源中文输入法，面向 Windows、macOS、Linux、Android、iOS 与 HarmonyOS 开发，也能嵌入网页使用，支持全拼、双拼、五笔，候选词旁直接显示译文。查看下载、使用指南与常见问题。" },
   "/features/": { title: "功能与界面｜水杉输入法", description: "以 Windows 版为例，查看水杉输入法的候选窗、皮肤、词库与输入功能，了解设置方法和实际界面。" },
@@ -29,6 +29,7 @@ const GUIDE_SEO: Record<keyof typeof GUIDE_NAMES, { title: string; description: 
   linux: { title: "Linux 安装与使用指南｜水杉输入法", description: "Linux 版水杉输入法指南：安装与首次配置、Fcitx5 与 IBus 启用、输入与快捷键、辅助码设置、数据升级与故障排查。" },
   android: { title: "Android 安装与使用指南｜水杉输入法", description: "Android 版水杉输入法指南：下载与各版本、启用键盘、升级、中英文切换、9 键与 26 键、浮动键盘、外接键盘与语音输入。" },
   ios: { title: "iOS 安装与使用指南｜水杉输入法", description: "iOS 版水杉输入法指南：TestFlight 安装与更新、启用键盘、输入方案与辅助码、皮肤与键盘、词库导入、完全访问和反馈。" },
+  "cli-mcp": { title: "命令行与 MCP｜水杉输入法", description: "使用水杉输入法桌面版 CLI 查询候选、驱动完整输入会话，并配置 MCP 接入 AI 助手。" },
 };
 for (const [id, page] of Object.entries(GUIDE_SEO)) seoPages[`/docs/${id}/`] = page;
 for (const [path, page] of Object.entries(traditionalPages)) seoPages[traditionalPath(path)] = path === "/docs/" ? { ...page, canonicalPath: "/zh-TW/docs/windows/" } : page;

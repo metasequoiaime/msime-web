@@ -14,6 +14,7 @@ import iosGuide from "../vendor/MSIME-Docs/guides/ios.md?raw";
 import macosGuide from "../vendor/MSIME-Docs/guides/macos.md?raw";
 import macosVoiceGuide from "../vendor/MSIME-Docs/guides/macos-voice.md?raw";
 import windowsGuide from "../vendor/MSIME-Docs/guides/windows.md?raw";
+import cliMcpGuide from "../vendor/MSIME-Docs/guides/cli-mcp.md?raw";
 import { renderContent } from "./markdown";
 import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";
@@ -33,6 +34,7 @@ const GUIDES = [
   { id: "linux", label: "Linux", file: "linux.md", source: linuxGuide, heading: "Linux 使用指南", lead: "在 Linux 上安装水杉输入法并完成首次配置，在 Fcitx5 或 IBus 中启用，配置输入与辅助码、联网功能与桌面工具，以及数据、升级和故障排查。" },
   { id: "android", label: "Android", file: "android.md", source: androidGuide, heading: "Android 使用指南", lead: "下载适合的版本并启用水杉键盘，了解升级、中英文切换、9 键与 26 键、浮动键盘、外接键盘和语音输入。" },
   { id: "ios", label: "iOS", file: "ios.md", source: iosGuide, heading: "iOS 使用指南", lead: "通过 TestFlight 安装并启用水杉键盘，了解输入方案与辅助码、皮肤与键盘、词库导入、完全访问和反馈方式。" },
+  { id: "cli-mcp", label: "CLI / MCP", file: "cli-mcp.md", source: cliMcpGuide, heading: "命令行与 MCP", lead: "使用桌面版命令行查询候选、驱动完整输入会话，并把 MCP 服务接入 AI 助手。" },
 ] as const;
 
 const GUIDE_IDS = GUIDES.map((guide) => guide.id);
@@ -53,7 +55,7 @@ export function DocsPage() {
 
   const guide = useMemo(() => GUIDES.find((candidate) => candidate.id === guideId) ?? GUIDES[0], [guideId]);
   const content = useMemo(() => {
-    const translated = { windows: windowsGuideTw, macos: macosGuideTw, "macos-voice": macosVoiceGuideTw, linux: linuxGuideTw, android: androidGuideTw, ios: iosGuideTw };
+    const translated = { windows: windowsGuideTw, macos: macosGuideTw, "macos-voice": macosVoiceGuideTw, linux: linuxGuideTw, android: androidGuideTw, ios: iosGuideTw, "cli-mcp": cliMcpGuide };
     const rendered = renderContent(tw ? translated[guide.id] : guide.source, { localePath: path });
     const linked = linkGuideCrossReferences(rendered.bodyHtml, GUIDE_IDS, tw ? "/zh-TW" : "");
     return { ...rendered, ...withHeadingIds(linked) };
