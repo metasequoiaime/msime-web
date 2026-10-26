@@ -442,8 +442,11 @@ test('首页两种语言把统计数字放进对应的平台卡片', () => {
       assert.ok(shell.querySelector(`[data-platform="${id}"] strong`), `${id} has a displayed count`);
     }
     assert.ok(shell.querySelector('[data-platform="windowsRust"] strong'));
-    assert.equal(shell.querySelector('[data-platform="windows7"] strong'), null);
-    assert.equal(shell.querySelector('[data-platform="web"] strong')?.textContent, '1,706');
+    // 期望值取自这次构建的清单：发版和统计刷新会改变它，写死的数字会让下载清单的自动 PR 一直挂着。
+    const manifest = JSON.parse(read('platforms.json'));
+    // Windows 7 只在清单里有正式发布时才显示数字。比较布尔值：断言失败时 node 会把整个 DOM 节点展开打印，曾把 CI 执行机的内存撑满。
+    assert.equal(Boolean(shell.querySelector('[data-platform="windows7"] strong')), Boolean(manifest.platforms.windows.windows7));
+    assert.equal(shell.querySelector('[data-platform="web"] strong')?.textContent, manifest.npmDownloadStats.downloads.toLocaleString('en-US'));
     assert.ok(shell.querySelector('[data-platform="web"] a'));
     assert.doesNotMatch(shell.querySelector('[data-platform="web"]').textContent, /把输入法嵌进你的网页/);
     assert.ok(summary.querySelector('strong'));
