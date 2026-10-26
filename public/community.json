@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-26T15:09:28.890Z",
+  "generatedAt": "2026-10-26T20:29:36.800Z",
   "totalStars": 5175,
   "repoCount": 8,
   "starHistory": [
@@ -372,7 +372,7 @@
         },
         {
           "date": "2026-10-26",
-          "stars": 886
+          "stars": 887
         }
       ]
     },
@@ -587,19 +587,6 @@
       ]
     },
     {
-      "repo": "msime-cloud",
-      "points": [
-        {
-          "date": "2026-09-30",
-          "stars": 1
-        },
-        {
-          "date": "2026-10-26",
-          "stars": 5
-        }
-      ]
-    },
-    {
       "repo": "msime-web",
       "points": [
         {
@@ -633,6 +620,19 @@
         {
           "date": "2026-10-26",
           "stars": 5
+        }
+      ]
+    },
+    {
+      "repo": "msime-cloud",
+      "points": [
+        {
+          "date": "2026-09-30",
+          "stars": 1
+        },
+        {
+          "date": "2026-10-26",
+          "stars": 4
         }
       ]
     },
@@ -740,7 +740,7 @@
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 24379,
+      "contributions": 24383,
       "repos": 8
     },
     {
