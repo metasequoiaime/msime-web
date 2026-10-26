@@ -1,7 +1,6 @@
 import { zipSync } from "fflate";
 import { parse } from "smol-toml";
 import { z } from "zod";
-import { accountCall } from "../data/account.ts";
 import { communitySkinIdSchema } from "../data/schemas.ts";
 
 // 与客户端 candidate_community 的传输上限一致；打包时不改变清单和图片内容。
@@ -34,24 +33,7 @@ export function candidateSkinArchive(value: unknown, expectedId: string) {
     if (!bytes.length || bytes.length > MAX_FILE_BYTES || total > MAX_PACKAGE_BYTES) throw new Error("Candidate skin package too large");
     files[`${pack.package_id}/${path}`] = bytes;
   }
-  // 图片已经压缩，使用 ZIP 的存储模式，避免在主线程重复压缩。
+  // 图片已经压缩，使用 ZIP 的存储模式，避免在下载请求里重复压缩。
   return { filename: `${pack.package_id}.zip`, bytes: zipSync(files, { level: 0 }) };
 }
 
-/** 复用同源代理；公开皮肤允许匿名下载，私有皮肤由后端校验拥有者会话；仅用户点击后发起一次 POST。 */
-export async function downloadCandidateSkin(id: string) {
-  const skinId = communitySkinIdSchema.parse(id);
-  const archive = await accountCall(`/api/v1/community/candidate-skins/${skinId}/download`, value => candidateSkinArchive(value, skinId), { method: "POST" });
-  const url = URL.createObjectURL(new Blob([archive.bytes], { type: "application/zip" }));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = archive.filename;
-  document.body.append(link);
-  try {
-    link.click();
-  } finally {
-    link.remove();
-    // 留出浏览器接管下载的时间，随后释放内存。
-    setTimeout(() => URL.revokeObjectURL(url), 60_000);
-  }
-}
