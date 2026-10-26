@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-26T04:55:52.802Z",
+  "generatedAt": "2026-10-26T05:07:42.959Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -498,19 +498,19 @@
         }
       ],
       "preview": {
-        "version": "0.2.1-beta",
-        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/harmony-v0.2.1-beta",
-        "publishedAt": "2026-10-25T17:51:36Z",
+        "version": "0.3.0-beta",
+        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/harmony-v0.3.0-beta",
+        "publishedAt": "2026-10-26T05:06:09Z",
         "signed": null,
         "downloads": [
           {
             "label": "HarmonyOS · HAP",
             "arch": "arm64-v8a",
-            "name": "msime-harmony-0.2.1.hap",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/harmony-v0.2.1-beta/msime-harmony-0.2.1.hap",
-            "size": 198432013,
-            "sha256": "c2f1c4b9e48a53f9524fc638e72856c9ff071fa81afee25fcf95d3b742b1a6e3",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/harmony-v0.2.1-beta/msime-harmony-0.2.1.hap"
+            "name": "msime-harmony-0.3.0.hap",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/harmony-v0.3.0-beta/msime-harmony-0.3.0.hap",
+            "size": 198466906,
+            "sha256": "06c655a3f75673a24d8efe04fd723fe112d90fbdb8e5eee433a73fd968f49dbc",
+            "mirrorUrl": "https://dl.msime.app/releases/msime/harmony-v0.3.0-beta/msime-harmony-0.3.0.hap"
           }
         ]
       },
@@ -550,14 +550,14 @@
     ]
   },
   "downloadStats": {
-    "total": 58424,
+    "total": 58454,
     "platforms": {
-      "windows": 39319,
-      "windowsRust": 1334,
+      "windows": 39329,
+      "windowsRust": 1335,
       "windows7": 0,
-      "macos": 4426,
-      "linux": 8948,
-      "android": 4351,
+      "macos": 4427,
+      "linux": 8950,
+      "android": 4367,
       "harmony": 46
     }
   },
@@ -3062,7 +3062,7 @@
       "repository": "metasequoiaime/msime",
       "id": 668360231,
       "name": "MetasequoiaIME-Full_Setup_v0.3.0.exe",
-      "download_count": 512
+      "download_count": 513
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4136,7 +4136,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675481085,
       "name": "msime-macos-0.55.0-universal.dmg",
-      "download_count": 74
+      "download_count": 75
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4160,7 +4160,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675608427,
       "name": "msime-linux-pinyin_0.14.0_amd64.deb",
-      "download_count": 1
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4448,7 +4448,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675680671,
       "name": "msime-linux_0.14.0_amd64.deb",
-      "download_count": 13
+      "download_count": 14
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4640,7 +4640,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675916021,
       "name": "msime-android.apk",
-      "download_count": 71
+      "download_count": 75
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4868,36 +4868,42 @@
       "repository": "metasequoiaime/msime",
       "id": 677059038,
       "name": "msime-android-vietnamese.apk",
-      "download_count": 0
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677059039,
       "name": "msime-android-wubi.apk",
-      "download_count": 0
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677059040,
       "name": "msime-android-tibetan.apk",
-      "download_count": 0
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677059042,
       "name": "msime-android-pinyin.apk",
-      "download_count": 0
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677059045,
       "name": "msime-android-japanese.apk",
-      "download_count": 0
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677059250,
       "name": "msime-android.apk",
+      "download_count": 2
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 677081379,
+      "name": "msime-harmony-0.3.0.hap",
       "download_count": 0
     },
     {
@@ -5738,23 +5744,23 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 675693188,
       "name": "MetasequoiaIME_Setup_v0.12.0.exe",
-      "download_count": 340
+      "download_count": 350
     }
   ],
   "mirrorDownloadStats": {
-    "total": 9201,
+    "total": 9208,
     "platforms": {
-      "android": 963,
+      "android": 967,
       "harmony": 35,
       "linux": 558,
       "macos": 942,
-      "windows": 6703
+      "windows": 6706
     },
-    "generatedAt": "2026-10-26T04:55:52.307131Z"
+    "generatedAt": "2026-10-26T05:07:42.47292Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-26T04:55:51.847Z",
-    "total": 4509,
+    "generatedAt": "2026-10-26T05:07:41.912Z",
+    "total": 4512,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -5770,7 +5776,7 @@
       },
       {
         "id": "843b43b3c61667a1ef6f37cd926ae1edcc71587152fa26e2d9ebbfaa7f7f794d",
-        "downloads": 1
+        "downloads": 3
       },
       {
         "id": "bac9145476cafdbddeaf8b216d4a079d7522902d3821c740f7dbf0e31fd5aaab",
@@ -5782,7 +5788,7 @@
       },
       {
         "id": "c7bacbd70a07968678d9be493e1126ec4b4579a9c645ca340fab0d0dfa013a71",
-        "downloads": 1220
+        "downloads": 1221
       },
       {
         "id": "cedc4bf87e8d651d8aa97f3eb46bc86cef27b545ea84337cff42544885a85469",
@@ -5799,7 +5805,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-10-26T04:55:52.397Z",
+    "generatedAt": "2026-10-26T05:07:42.579Z",
     "downloads": 1706,
     "periodStart": "2025-10-26",
     "periodEnd": "2026-10-26"
