@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-26T23:28:08.509Z",
+  "generatedAt": "2026-10-26T23:31:40.668Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -4978,6 +4978,84 @@
       "download_count": 4
     },
     {
+      "repository": "metasequoiaime/msime",
+      "id": 679817428,
+      "name": "msime-macos-tibetan-0.55.0-universal-nightly.40411840275.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679817432,
+      "name": "msime-macos-0.55.0-universal-nightly.40411840275.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679817434,
+      "name": "msime-macos-japanese-0.55.0-universal-nightly.40411840275.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679817435,
+      "name": "msime-macos-pinyin-0.55.0-universal-nightly.40411840275.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679817437,
+      "name": "msime-macos-vietnamese-0.55.0-universal-nightly.40411840275.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679817755,
+      "name": "msime-macos-wubi-0.55.0-universal-nightly.40411840275.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679818032,
+      "name": "msime-harmony-0.3.0-unsigned-nightly.40411840275.1.hap",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679818321,
+      "name": "MetasequoiaIME-Japanese_Setup_v0.3.0-nightly.40411840275.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679818325,
+      "name": "MetasequoiaIME-Vietnamese_Setup_v0.3.0-nightly.40411840275.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679818326,
+      "name": "MetasequoiaIME-Pinyin_Setup_v0.3.0-nightly.40411840275.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679818327,
+      "name": "MetasequoiaIME-Full_Setup_v0.3.0-nightly.40411840275.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679818328,
+      "name": "MetasequoiaIME-Tibetan_Setup_v0.3.0-nightly.40411840275.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 679818600,
+      "name": "MetasequoiaIME-Wubi_Setup_v0.3.0-nightly.40411840275.1.exe",
+      "download_count": 0
+    },
+    {
       "repository": "metasequoiaime/msime-linux",
       "id": 545412939,
       "name": "metasequoia-ime-linux-0.2.0-Linux.rpm",
@@ -5827,10 +5905,10 @@
       "macos": 964,
       "windows": 6945
     },
-    "generatedAt": "2026-10-26T23:28:07.825632Z"
+    "generatedAt": "2026-10-26T23:31:40.135286Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-26T23:28:07.303Z",
+    "generatedAt": "2026-10-26T23:31:39.605Z",
     "total": 4617,
     "builds": [
       {
@@ -5880,7 +5958,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-10-26T23:28:07.965Z",
+    "generatedAt": "2026-10-26T23:31:40.276Z",
     "downloads": 2119,
     "periodStart": "2025-10-26",
     "periodEnd": "2026-10-26"
