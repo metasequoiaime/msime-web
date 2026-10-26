@@ -11,9 +11,9 @@ import { candidateSkinSchema, keyboardSkinDesignSchema } from '../src/data/schem
 import { CANDIDATE_SKIN_CATEGORIES, CANDIDATE_SKIN_CATEGORY_LABELS } from '../src/data/skin-categories.ts';
 import { ART_HEIGHT, ART_WIDTH, keyboardArt, keyboardKeyPath, mayHavePhoto, MONOSPACED_FONT, readableSkinText, skinColor } from '../src/skins/keyboard-art.ts';
 import { unzipSync, strFromU8 } from 'fflate';
-import { candidateSkinArchive, downloadCandidateSkin } from '../src/skins/candidate-download.ts';
-import { ApiError } from '../src/data/account.ts';
-import { proxyApi, ACCESS_COOKIE } from '../shared/site-session.ts';
+import { candidateSkinArchive } from '../src/skins/candidate-archive.ts';
+import { serveCandidateDownload } from '../functions/api/skins/candidate/[id]/download.ts';
+import { ACCESS_COOKIE } from '../shared/site-session.ts';
 
 const ORIGIN = 'https://api.msime.app';
 const KEYBOARD_ID = 'ea041e49-e1ab-48ff-8b06-942ec9c291b9';
@@ -370,41 +370,40 @@ test('清单按 UTF-8 字节限长，图片数量、单图和整包均限长', (
   assert.throws(() => candidateSkinArchive({ ...pack, manifest: `${pack.manifest}#${'字'.repeat(22_000)}` }, CANDIDATE_ID));
 });
 
-for (const signedIn of [false, true]) test(`下载通过同源代理 POST（登录：${signedIn}），保存 ZIP 并释放下载链接`, async t => {
+for (const signedIn of [false, true]) test(`浏览器导航直接取得候选窗皮肤 ZIP（登录：${signedIn}）`, async () => {
   const calls = [];
   const backend = async (url, init) => {
-    calls.push({ url, method: init.method });
-    assert.equal(new Headers(init.headers).has('Authorization'), signedIn);
+    calls.push({ url, method: init.method, authorized: new Headers(init.headers).has('Authorization') });
     return Response.json(downloadPack());
   };
-  t.mock.method(globalThis, 'fetch', async (path, init) => proxyApi({ request: new Request(`https://msime.app${path}`, { ...init, headers: { ...init.headers, Origin: 'https://msime.app', ...(signedIn ? { Cookie: `${ACCESS_COOKIE}=synthetic-access-token` } : {}) } }), env: {} }, backend));
-  const link = { href: '', download: '', click: t.mock.fn(), remove: t.mock.fn() };
-  const before = globalThis.document;
-  globalThis.document = { createElement: () => link, body: { append: t.mock.fn() } };
-  t.after(() => { if (before === undefined) delete globalThis.document; else globalThis.document = before; });
-  let blob;
-  t.mock.method(URL, 'createObjectURL', value => { blob = value; return 'blob:synthetic'; });
-  const revoke = t.mock.method(URL, 'revokeObjectURL', () => {});
-  t.mock.timers.enable({ apis: ['setTimeout'] });
-  await downloadCandidateSkin(CANDIDATE_ID);
-  assert.deepEqual(calls, [{ url: `${ORIGIN}/v1/community/candidate-skins/${CANDIDATE_ID}/download`, method: 'POST' }]);
-  assert.equal(blob.type, 'application/zip');
-  assert.equal(strFromU8(unzipSync(new Uint8Array(await blob.arrayBuffer()))['sample-skin/skin.toml']), downloadPack().manifest);
-  assert.equal(link.download, 'sample-skin.zip');
-  assert.equal(link.click.mock.callCount(), 1);
-  assert.equal(link.remove.mock.callCount(), 1);
-  assert.equal(revoke.mock.callCount(), 0);
-  t.mock.timers.tick(60_000);
-  assert.equal(revoke.mock.callCount(), 1);
+  const response = await serveCandidateDownload({
+    request: new Request(`https://msime.app/api/skins/candidate/${CANDIDATE_ID}/download`, { method: 'POST', headers: { Origin: 'https://msime.app', ...(signedIn ? { Cookie: `${ACCESS_COOKIE}=synthetic-access-token` } : {}) } }),
+    env: {}, params: { id: CANDIDATE_ID },
+  }, backend);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('Content-Type'), 'application/zip');
+  assert.equal(response.headers.get('Content-Disposition'), 'attachment; filename="sample-skin.zip"');
+  assert.equal(response.headers.get('Cache-Control'), 'no-store');
+  assert.deepEqual(calls, [{ url: `${ORIGIN}/v1/community/candidate-skins/${CANDIDATE_ID}/download`, method: 'POST', authorized: signedIn }]);
+  assert.equal(strFromU8(unzipSync(new Uint8Array(await response.arrayBuffer()))['sample-skin/skin.toml']), downloadPack().manifest);
 });
 
-test('下载权限错误或上游失败不会生成文件，也不自动重放 POST', async t => {
-  const save = t.mock.method(URL, 'createObjectURL', () => { throw new Error('must not save'); });
+test('下载失败、无效 ID 或跨站提交不生成 ZIP', async () => {
   for (const status of [401, 403, 404, 429, 503]) {
-    const request = t.mock.method(globalThis, 'fetch', async () => Response.json({ error: 'download_denied' }, { status }));
-    await assert.rejects(downloadCandidateSkin(CANDIDATE_ID), error => error instanceof ApiError && error.status === status);
-    assert.equal(request.mock.callCount(), 1);
-    request.mock.restore();
+    let calls = 0;
+    const response = await serveCandidateDownload({
+      request: new Request(`https://msime.app/api/skins/candidate/${CANDIDATE_ID}/download`, { method: 'POST', headers: { Origin: 'https://msime.app' } }),
+      env: {}, params: { id: CANDIDATE_ID },
+    }, async () => { calls++; return Response.json({ error: { code: 'download_denied' } }, { status }); });
+    assert.equal(response.status, status);
+    assert.notEqual(response.headers.get('Content-Type'), 'application/zip');
+    assert.equal(calls, 1);
   }
-  assert.equal(save.mock.callCount(), 0);
+  const invalid = await serveCandidateDownload({ request: new Request('https://msime.app/api/skins/candidate/bad/download', { method: 'POST', headers: { Origin: 'https://msime.app' } }), env: {}, params: { id: 'bad' } }, async () => { throw new Error('must not call'); });
+  assert.equal(invalid.status, 404);
+  const crossSite = await serveCandidateDownload({ request: new Request(`https://msime.app/api/skins/candidate/${CANDIDATE_ID}/download`, { method: 'POST', headers: { Origin: 'https://other.example' } }), env: {}, params: { id: CANDIDATE_ID } }, async () => { throw new Error('must not call'); });
+  assert.equal(crossSite.status, 403);
+  const invalidPack = await serveCandidateDownload({ request: new Request(`https://msime.app/api/skins/candidate/${CANDIDATE_ID}/download`, { method: 'POST', headers: { Origin: 'https://msime.app' } }), env: {}, params: { id: CANDIDATE_ID } }, async () => Response.json({ ...downloadPack(), id: KEYBOARD_ID }));
+  assert.equal(invalidPack.status, 502);
+  assert.notEqual(invalidPack.headers.get('Content-Type'), 'application/zip');
 });
