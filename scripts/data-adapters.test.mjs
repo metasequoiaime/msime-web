@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { siteApi, SourceError, staticSnapshot, withFallback } from '../src/data/source.ts';
 import { appStatsQuery, communityQuery, downloadStatsQuery, platformsQuery, releasesQuery, testflightStatsQuery, updateManifestQuery } from '../src/data/queries.ts';
-import { ANDROID_PGYER_URL, IOS_TESTFLIGHT_URL, sitePlatforms, SITE_PLATFORMS } from '../src/data/platforms.ts';
+import { ANDROID_PGYER_URL, HARMONY_APPGALLERY_URL, IOS_TESTFLIGHT_URL, sitePlatforms, SITE_PLATFORMS } from '../src/data/platforms.ts';
 import { communitySchema } from '../src/community-data.ts';
 import { platformsSchema } from '../src/platforms-data.ts';
 import { downloadChoices } from '../src/download/windows.ts';
@@ -219,7 +219,7 @@ test('the seven-platform catalogue joins desktop and Android releases and keeps 
   assert.deepEqual(entries.map(entry => entry.id), [...SITE_PLATFORMS]);
   assert.deepEqual(entries.map(entry => entry.id), ['windows', 'macos', 'linux', 'android', 'ios', 'harmony', 'web']);
   for (const entry of entries) {
-    if (['windows', 'macos', 'linux', 'android', 'harmony'].includes(entry.id)) assert.equal(entry.release?.version, platforms.platforms[entry.id].version);
+    if (['windows', 'macos', 'linux', 'android'].includes(entry.id)) assert.equal(entry.release?.version, platforms.platforms[entry.id].version);
     else assert.equal(entry.release, null);
     assert.ok(entry.href.startsWith('https://github.com/metasequoiaime/') || entry.href === IOS_TESTFLIGHT_URL || entry.href === ANDROID_PGYER_URL || entry.href === 'https://www.npmjs.com/package/@msime/web-engine');
   }
@@ -233,10 +233,13 @@ test('the seven-platform catalogue joins desktop and Android releases and keeps 
   assert.equal(android.distribution, 'pgyer');
   assert.equal(android.href, 'https://www.pgyer.com/msime');
   assert.equal(android.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/platforms/android');
+  // HarmonyOS NEXT 零售设备装不上 HAP：清单里的 HAP 只留给统计，下载页只走华为应用市场，未上架时链接到源码目录。
+  assert.ok(platforms.platforms.harmony, 'the fixture still carries the automation\'s HarmonyOS entry');
   const harmony = entries.find(entry => entry.id === 'harmony');
-  assert.equal(harmony.distribution, 'release');
-  assert.equal(harmony.release.version, platforms.platforms.harmony.version);
-  assert.equal(harmony.href, 'https://github.com/metasequoiaime/msime/releases');
+  assert.equal(harmony.distribution, 'appgallery');
+  assert.equal(harmony.release, null, 'HarmonyOS HAPs in the manifest never become download buttons');
+  assert.equal(harmony.publishedVersion, null);
+  assert.equal(harmony.href, HARMONY_APPGALLERY_URL ?? harmony.sourceUrl);
   assert.equal(harmony.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/platforms/harmony');
   assert.deepEqual(sitePlatforms().map(entry => entry.release), [null, null, null, null, null, null, null], 'renders without a manifest');
 });

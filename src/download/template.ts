@@ -1,3 +1,4 @@
+import { HARMONY_APPGALLERY_URL } from "../data/platforms.ts";
 import type { UpdateManifest } from "../data/schemas.ts";
 import { PLATFORM_LABELS, PLATFORMS, type Platform } from "../platform.ts";
 import type { PlatformRelease, Platforms } from "../platforms-data.ts";
@@ -79,13 +80,20 @@ const macosInstallBlocks = (source: string, macos: PlatformRelease | undefined) 
   return keepBlock(keepBlock(source, "macosDmg", dmg), "macosLegacy", !dmg);
 };
 
+/** HarmonyOS 的状态句跟着 `HARMONY_APPGALLERY_URL` 走：上架前说明在审核，上架后给出应用市场链接。 */
+const harmonyStatus = () =>
+  HARMONY_APPGALLERY_URL
+    ? `HarmonyOS 版已上架华为应用市场，打开[水杉输入法的应用市场页面](${HARMONY_APPGALLERY_URL})安装。`
+    : "HarmonyOS 版正在提交华为应用市场审核，上架后这里提供应用市场链接。";
+
 /** Fills the placeholders in `content/download.md`. A manifest that failed to load is passed as `{}`, which makes every derived statement fall back to "check the release page" rather than guess. */
 export const fillTemplate = (manifest: Partial<UpdateManifest>, platforms: Partial<Platforms> | undefined) =>
   macosInstallBlocks(downloadSource, platforms?.macos)
     .replaceAll("{{securityNote}}", securityNote(manifest))
     .replaceAll("{{installerName}}", manifest.installerName ?? FALLBACK_INSTALLER_NAME)
     .replaceAll("{{macosSigning}}", PLATFORM_SIGNING.macos[signingKey(platforms?.macos?.signed)])
-    .replaceAll("{{linuxSigning}}", PLATFORM_SIGNING.linux[signingKey(platforms?.linux?.signed)]);
+    .replaceAll("{{linuxSigning}}", PLATFORM_SIGNING.linux[signingKey(platforms?.linux?.signed)])
+    .replaceAll("{{harmonyStatus}}", harmonyStatus());
 
 export const readableSize = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 

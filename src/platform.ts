@@ -3,7 +3,7 @@ import { PLATFORM_NAMES, SITE_PLATFORMS, type SitePlatform } from "./data/platfo
 export const DESKTOP_PLATFORMS = ["windows", "macos", "linux"] as const;
 export type DesktopPlatform = (typeof DESKTOP_PLATFORMS)[number];
 
-/** Platforms whose packages come from GitHub releases through `public/platforms.json`: the three desktops, Android's APKs, and HarmonyOS HAPs. */
+/** Platforms the release automation writes into `public/platforms.json`: the three desktops, Android's APKs, and HarmonyOS HAPs. The manifest schema accepts exactly these keys. HarmonyOS stays here because the automation still records its HAPs (download statistics, mirrors), but the download page does not offer them: retail HarmonyOS NEXT devices only install from AppGallery (see `PLATFORM_CATALOG.harmony`). */
 export const RELEASE_PLATFORMS = [...DESKTOP_PLATFORMS, "android", "harmony"] as const;
 export type ReleasePlatform = (typeof RELEASE_PLATFORMS)[number];
 
