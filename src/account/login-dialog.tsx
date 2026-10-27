@@ -61,7 +61,9 @@ export function LoginDialog({ onClose, onSignedIn }: { onClose: () => void; onSi
           )}
         </div>
         <p className="m-0 mt-5 text-center text-xs leading-[1.7] text-muted">
-          {t("登录即表示你了解")}
+          {t("登录即表示你同意")}
+          <LocaleLink to="/terms/" onClick={onClose}>{t("用户协议")}</LocaleLink>
+          {t("并了解")}
           <LocaleLink to="/privacy/" onClick={onClose}>{t("隐私说明")}</LocaleLink>
         </p>
       </div>

@@ -776,6 +776,7 @@ function SiteFooter({ inert }: { inert: boolean }) {
             <Link className={footerLink} to="/code/">{t("开源代码")}</Link>
             <Link className={footerLink} to="/about/">{t("关于")}</Link>
             <Link className={footerLink} to="/privacy/">{t("隐私说明")}</Link>
+            <Link className={footerLink} to="/terms/">{t("用户协议")}</Link>
             <ExternalFooterLink href={ORG_URL}>{t("GitHub 组织")}</ExternalFooterLink>
           </FooterColumn>
         </div>
