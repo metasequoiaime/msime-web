@@ -145,6 +145,12 @@ const privacyRoute = createRoute({
   component: lazyRouteComponent(() => import("./page-privacy"), "PrivacyPage"),
 });
 
+const termsRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/terms",
+  component: lazyRouteComponent(() => import("./page-terms"), "TermsPage"),
+});
+
 const feedbackRoute = createRoute({
   getParentRoute: () => shellRoute,
   path: "/feedback",
@@ -210,12 +216,13 @@ const traditionalRoutes = [
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/code", component: lazyRouteComponent(() => import("./page-code"), "CodePage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/price", component: lazyRouteComponent(() => import("./page-price"), "PricePage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/privacy", component: lazyRouteComponent(() => import("./page-privacy"), "PrivacyPage") }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/terms", component: lazyRouteComponent(() => import("./page-terms"), "TermsPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/docs", component: lazyRouteComponent(() => import("./page-docs"), "DocsPage"), validateSearch: docsSearchSchema }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/docs/$guide", component: lazyRouteComponent(() => import("./page-docs"), "DocsPage") })
 ];
 
 const routeTree = rootRoute.addChildren([
-  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, priceRoute, privacyRoute, feedbackRoute, wordsRoute, skinsRoute, galleryRoute, dictionariesRoute, pluginsRoute, meRoute]),
+  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, priceRoute, privacyRoute, termsRoute, feedbackRoute, wordsRoute, skinsRoute, galleryRoute, dictionariesRoute, pluginsRoute, meRoute]),
   resumeRoute,
 ]);
 

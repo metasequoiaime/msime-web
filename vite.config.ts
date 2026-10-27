@@ -33,6 +33,7 @@ export default defineConfig({
         download: resolve(projectRoot, "download/index.html"),
         price: resolve(projectRoot, "price/index.html"),
         privacy: resolve(projectRoot, "privacy/index.html"),
+        terms: resolve(projectRoot, "terms/index.html"),
         resume: resolve(projectRoot, "resume/index.html"),
       },
     },
