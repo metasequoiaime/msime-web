@@ -34,7 +34,7 @@ export const REPOSITORY_GROUPS: readonly RepositoryGroup[] = [
   {
     title: "词库、模型与数据",
     repositories: [
-      { name: "chinese-ime-lm", description: "面向中文输入法的语言模型：语料、n-gram 统计、字级神经模型与评测集" },
+      { name: "chinese-ime-lm", description: "面向中文输入法的语言模型：语料、n-gram 统计、字级神经模型与评测集；推理库已在 crates.io 发布，Rust 用 chinese-ime-lm，C、C++、Swift 等宿主用 chinese-ime-lm-ffi" },
       { name: "msime-dictionary", description: "多语言词库源数据：拼音、五笔、英文、粤拼、注音、笔画、日文、韩文，以及自定义词条、候选窗翻译与专业词库，构建结果以 dict-v* Release 发布；官网“词库缺失反馈”的提交会汇总到这里的 Pull Request" },
     ],
   },
