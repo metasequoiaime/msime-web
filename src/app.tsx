@@ -10,8 +10,10 @@ import { StrictMode } from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import { makeRouter } from "./routes";
 import { ThemeProvider } from "./theme";
+import { startSiteAnalytics } from "../shared/site-analytics";
 
 async function start() {
+  startSiteAnalytics();
   if (isTraditional(window.location.pathname)) await loadTraditional();
   const router = makeRouter();
 

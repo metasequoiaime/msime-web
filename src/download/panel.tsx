@@ -6,6 +6,7 @@ import { useDownloadMirrorsQuery } from "../data/queries";
 import { AnchorButton, ChevronDownIcon, CloudDownloadIcon, copyText, cx, ExternalIcon, GitHubIcon, Pill, PlatformIcon, QQIcon, useToast } from "../ui";
 import { useLocale } from "../use-locale";
 import { mirrorDownloadPlatform, reportMirrorDownload, serverCountsMirror } from "../../shared/download-events";
+import { reportDownloadClick } from "../../shared/site-analytics";
 import { describeLinuxPackage, detectArm64, pickPrimary } from "./linux-primary";
 import { groupByArch, readableSize } from "./template";
 import { downloadChoices, type DownloadEntry, type WindowsVariant } from "./windows";
@@ -78,7 +79,12 @@ const TILE_STATUS = "text-[12.5px] leading-snug font-medium text-accent-ink tabu
 
 /** 本站镜像由服务器记录；其他镜像保留点击统计，Rust Windows 按真实包地址识别。 */
 const reportMirror = (platform: ReleasePlatform, version: string, entry: PlatformRelease["downloads"][number]) => () => {
+  reportDownloadClick({ platform: mirrorDownloadPlatform(platform, entry.url), version, artifact: entry.name, channel: "cn-mirror" });
   if (!serverCountsMirror(entry.mirrorUrl)) reportMirrorDownload({ platform: mirrorDownloadPlatform(platform, entry.url), version, artifact: entry.name });
+};
+
+const reportPackage = (platform: ReleasePlatform, version: string, entry: PlatformRelease["downloads"][number]) => () => {
+  reportDownloadClick({ platform: mirrorDownloadPlatform(platform, entry.url), version, artifact: entry.name, channel: "github" });
 };
 
 /** The mirror copy of the selected package, beside the GitHub button. Left out when the manifest carries no mirror. */
@@ -109,7 +115,7 @@ function MorePackages({ platform, version, downloads, id }: { platform: ReleaseP
             <ul className="m-0 grid list-none gap-1 p-0">
               {entries.map((entry) => (
                 <li key={entry.url} className="flex items-baseline justify-between gap-3 rounded-row px-2 py-1.5 hover:bg-panel">
-                  <a className="min-w-0 text-sm font-medium text-accent-ink [overflow-wrap:anywhere] hover:text-ink" href={entry.url} rel="noreferrer">
+                  <a className="min-w-0 text-sm font-medium text-accent-ink [overflow-wrap:anywhere] hover:text-ink" href={entry.url} rel="noreferrer" onClick={reportPackage(platform, version, entry)}>
                     {t(entry.label)}
                   </a>
                   <span className="flex flex-none items-baseline gap-3 text-[13px] text-muted tabular-nums">
@@ -163,6 +169,7 @@ function PreviewPanel({
           className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
           href={first.url}
           rel="noreferrer"
+          onClick={reportPackage(platform, preview.version, first)}
         >
           {t(platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`)}
         </a>
@@ -190,6 +197,7 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
   const lanzouUrl = useDownloadMirrorsQuery().data?.lanzouUrl;
   const reportWindowsMirror = () => {
     const installer = release?.downloads[0];
+    if (release && installer) reportDownloadClick({ platform: "windows", version: release.version, artifact: installer.name, channel: "cn-mirror" });
     if (release && installer) reportMirrorDownload({ platform: "windows", version: release.version, artifact: installer.name });
   };
 
@@ -308,7 +316,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
   if (entry.distribution === "testflight") {
     return (
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
-        <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer">
+        <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer" onClick={() => reportDownloadClick({ platform: "ios", version: entry.publishedVersion ?? undefined, channel: "testflight" })}>
           {t("通过 TestFlight 安装 iOS 版")}
           <ExternalIcon />
         </a>
@@ -325,14 +333,14 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
     return (
       <div>
         <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-3">
-          <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer">
+          <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer" onClick={() => reportDownloadClick({ platform: "android", version: entry.publishedVersion ?? undefined, channel: "pgyer" })}>
             {t("通过蒲公英安装 Android 版")}
             <ExternalIcon />
           </a>
           {/* android-v 发布里的 APK：和蒲公英是同一个应用，给装不了蒲公英、或者要特定版本（五笔、日语……）的人直接下载。 */}
           {entry.release && apk && (
             <>
-              <a className={MIRROR_ACTION} href={apk.url} rel="noreferrer" aria-label={t(`从 GitHub 下载 Android 版 v${entry.release.version}`)}>
+              <a className={MIRROR_ACTION} href={apk.url} rel="noreferrer" aria-label={t(`从 GitHub 下载 Android 版 v${entry.release.version}`)} onClick={reportPackage("android", entry.release.version, apk)}>
                 <GitHubIcon size={18} />
                 {t("GitHub 下载")}
               </a>
@@ -400,6 +408,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
           href={primary?.url ?? entry.href}
           rel="noreferrer"
           target={primary ? undefined : "_blank"}
+          onClick={primary && release ? reportPackage(entry.id as ReleasePlatform, release.version, primary) : undefined}
           aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name}${entry.windowsVariant === "pure" ? " 正式版" : " 版"} v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}${entry.windowsVariant === "win7" ? ` ${primary.arch}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
         >
           <GitHubIcon size={18} />

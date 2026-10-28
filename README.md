@@ -245,3 +245,11 @@ CSP 为 Google 登录放行 `https://accounts.google.com/gsi/client`（script-sr
 界面显示文案通过 `useLocale` 和术语表转换，用户输入、配置值及动态模板的原始选项值不转换。完整指南和 FAQ 从固定 MSIME-Docs 的 `guides/zh-TW/` 读取；其来源摘要由构建测试核对。反馈模板仍实时读取各仓库，繁体表单的字段说明和预览标题本地化，服务端按原始选项验证。
 
 `shared/locales.ts` 统一网址和语言元数据；静态 HTML、站点地图和客户端提供 reciprocal hreflang、canonical 和 Markdown。个人简历及外部 GitHub 页面不属于本站产品翻译范围。
+
+## 官网访问与发布来源统计
+
+正式域名 `msime.app` 通过 `shared/site-analytics.ts` 加载自托管 Umami：`https://umami.yldm.tech`，Website ID 为 `be5550dc-13d6-43a0-8e9c-b7ca9fe2a72b`。站点 ID 是公开标识，API key 只供 n8n 在服务端查询，不进入网页。CSP 只对脚本与连接放行该域名；开发、Pages 预览与 DNT 访问均不加载统计脚本。
+
+Umami 负责页面访问和 SPA 换页，发送前仅保留有效的 `utm_source`、`utm_medium`、`utm_campaign`、`utm_content`、`utm_term`。活动参数只存在当前页面内存中，站内换页和下载点击继续沿用；来源页去掉查询参数与锚点，外站只保留来源域名。下载按钮发送 `Download` 事件，包含平台、渠道、版本及公开文件名；统计失败不延迟或阻断点击。既有后端镜像下载计数保持独立，`Download` 不能当作下载完成、`Install` 或新安装用户数。
+
+发布帖中的链接必须先到官网并附带 `utm_medium=social` 等活动参数，直接到 GitHub 的链接不会产生官网访问。n8n 当前的 `Install` 统计没有来自官网的安装完成信号，接入客户端可靠信号前不能宣称已完成安装归因。部署后先用正常官网流量验证采集，再启用周报；合成验收不应向生产站点写入测试访问。
