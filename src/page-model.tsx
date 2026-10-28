@@ -14,6 +14,11 @@ const MODEL_25M = "https://huggingface.co/metasequoiaime/pinyin-ime-reranker-25M
 const CRATE = "https://crates.io/crates/chinese-ime-lm";
 const CRATE_FFI = "https://crates.io/crates/chinese-ime-lm-ffi";
 
+/** Brand colours: Android and Linux as Simple Icons records them, Windows as its logo is drawn (Simple Icons no longer carries Microsoft marks). Apple, HarmonyOS, Rust and GitHub are black marks, so they take the text colour and stay visible in the dark theme. */
+const WINDOWS_BLUE = "text-[#0078D4]";
+const ANDROID_GREEN = "text-[#3DDC84]";
+const LINUX_YELLOW = "text-[#FCC624]";
+
 /** 数字均出自 chinese-ime-lm 的 docs/measurements.md 与两张 Hugging Face 模型卡：60 句手写整句用例经真实输入法运行时驱动，其中 56 句的首选由引擎组句，重排只作用于这一类。 */
 const RESULTS = [
   { label: "引擎自己的首选", correct: 41, note: "" },
@@ -43,7 +48,7 @@ function MarkedItem({ marks, className, children }: { marks: ReactNode; classNam
   return (
     <li className={cx("flex items-start gap-3", className)}>
       {/* 15px marks centred on the first 30px line of 15.5px / 1.95 body text, not on the whole item. */}
-      <span className="mt-[7px] flex flex-none items-center gap-1 text-muted" aria-hidden="true">
+      <span className="mt-[7px] flex flex-none items-center gap-1 text-ink" aria-hidden="true">
         {marks}
       </span>
       <span className="min-w-0">{children}</span>
@@ -145,7 +150,7 @@ export function ModelPage() {
             </div>
             <p className="m-0 mt-3 text-[14px] text-muted">
               {t("耗时在 Apple M4 Pro 上用参考实现测得。完整的测量方法、负结果和与通用模型的对比见")}{" "}
-              <LogoLink href={MEASUREMENTS} icon={<GitHubIcon size={14} />}>
+              <LogoLink href={MEASUREMENTS} icon={<GitHubIcon size={14} className="text-ink" />}>
                 {t("测量记录")}
               </LogoLink>
               {t("。")}
@@ -168,13 +173,13 @@ export function ModelPage() {
               {t("Windows 正式版从 v0.10.0 起默认开着速度优先的一档；其他平台默认关闭，因为它要在打字或停顿时多做一次模型计算，需要时在设置里打开：")}
             </p>
             <ul className="m-0 mt-3 list-none p-0">
-              <MarkedItem marks={<WindowsIcon size={15} />}>
+              <MarkedItem marks={<WindowsIcon size={15} className={WINDOWS_BLUE} />}>
                 {t("Windows：设置的输入页里，「神经网络模型整句（速度优先）」默认开启；「神经网络模型整句（效果优先）」默认关闭，要先下载约 25 MB 的模型才能打开。")}
               </MarkedItem>
-              <MarkedItem marks={<><AppleIcon size={15} /><LinuxIcon size={15} /></>} className="mt-2">
+              <MarkedItem marks={<><AppleIcon size={15} /><LinuxIcon size={15} className={LINUX_YELLOW} /></>} className="mt-2">
                 {t("macOS、Linux：设置的输入页「候选与联想」一组里打开「桌面神经联想」，打开时会下载约 25 MB 的模型。")}
               </MarkedItem>
-              <MarkedItem marks={<><AndroidIcon size={15} /><AppleIcon size={15} /><HarmonyOSIcon size={15} /></>} className="mt-2">
+              <MarkedItem marks={<><AndroidIcon size={15} className={ANDROID_GREEN} /><AppleIcon size={15} /><HarmonyOSIcon size={15} /></>} className="mt-2">
                 {t("Android、iOS、鸿蒙手机：在「表达」页把「整句联想」从「标准」改成「增强」。")}
               </MarkedItem>
             </ul>
