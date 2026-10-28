@@ -24,6 +24,12 @@ const FEATURES = [
     title: "本地优先，云端可选",
     desc: "转换与词频学习在本机完成，联网功能都能关。",
   },
+  {
+    glyph: "联",
+    title: "神经联想",
+    desc: "几 MB 的语言模型看着前文，在整句候选里挑出更通顺的读法，模型和代码都开源。",
+    link: { to: "/model/", label: "效果与开启方法" },
+  },
 ] as const;
 
 /** How each platform reaches users today, shown as a small tag on its card. Web is a package developers embed in their own pages. */
@@ -62,14 +68,22 @@ export function HomePage() {
         <div data-reveal>
           <SectionHeading id="home-features" title={t("打字、翻译、联想，在一个候选窗里完成")} />
         </div>
-        <div className="mt-[clamp(32px,4vw,48px)] grid grid-cols-1 gap-4 lg:grid-cols-3" data-reveal-stagger>
+        <div className="mt-[clamp(32px,4vw,48px)] grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-4" data-reveal-stagger>
           {FEATURES.map((feature) => (
             <Card key={feature.glyph} className="min-w-0 p-[clamp(24px,3vw,32px)] lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:gap-y-0" data-reveal>
               <div className="grid size-11 place-items-center rounded-field bg-accent-soft text-lg font-bold text-accent" aria-hidden="true">
                 {t(feature.glyph)}
               </div>
               <h3 className="m-0 mt-5 text-[21px] font-bold text-ink">{t(feature.title)}</h3>
-              <p className="m-0 mt-2.5 text-[15.5px] leading-[1.9] text-body">{t(feature.desc)}</p>
+              <p className="m-0 mt-2.5 text-[15.5px] leading-[1.9] text-body">
+                {t(feature.desc)}
+                {"link" in feature && (
+                  <>
+                    {" "}
+                    <LocaleLink to={feature.link.to}>{t(feature.link.label)}</LocaleLink>
+                  </>
+                )}
+              </p>
             </Card>
           ))}
         </div>

@@ -16,7 +16,7 @@ import { HELPCODE_LABELS, HELPCODE_SCHEMES, SHUANGPIN_LAYOUTS, WEB_IME_LABELS, W
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, KeyboardIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
-  to: "/" | "/download/" | "/skins/" | "/gallery/" | "/docs/$guide/" | "/feedback/" | "/about/" | "/code/";
+  to: "/" | "/download/" | "/model/" | "/skins/" | "/gallery/" | "/docs/$guide/" | "/feedback/" | "/about/" | "/code/";
   label: string;
   /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
   github?: boolean;
@@ -26,6 +26,7 @@ type NavItem = {
 const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
   { to: "/download/", label: "下载" },
+  { to: "/model/", label: "神经联想" },
   { to: "/skins/", label: "社区" },
   { to: "/gallery/", label: "水杉娘" },
   { to: "/docs/$guide/", label: "文档" },
