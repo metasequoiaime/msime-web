@@ -28,7 +28,7 @@ jobs:
   report:
     name: Track the scheduled run in an issue
     if: github.event.workflow_run.event == 'schedule'
-    runs-on: ubuntu-latest
+    runs-on: depot-ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Open the failure issue, or close it on recovery
