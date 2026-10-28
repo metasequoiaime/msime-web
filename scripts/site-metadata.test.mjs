@@ -78,9 +78,9 @@ test('the response headers lock the page down and keep hashed assets cacheable',
   }
   // 候选窗皮肤的「下载皮肤包」是提交到 /api/skins/candidate/:id/download 的原生表单（src/skins/candidate-download-button.tsx），form-action 'none' 会让浏览器静默拦下提交，按钮点了没反应。只放行同源。
   assert.match(csp, /form-action 'self'(;|$)/);
-  // 只放行头像、Turnstile 的脚本与验证框、词条提交所用的公共 API、Google 登录（GIS）和账号头像、下载页 Web 平台嵌入的在线演示（frame-src），以及 Cloudflare Web Analytics 的统计脚本和上报地址。
+  // 只放行头像、Turnstile 的脚本与验证框、词条提交所用的公共 API、Google 登录（GIS）和账号头像、下载页 Web 平台嵌入的在线演示（frame-src），以及 Cloudflare Web Analytics 和自托管 Umami 的统计脚本与上报地址。
   const externals = [...csp.matchAll(/https:\/\/[^\s;]+/g)].map(m => m[0]);
-  assert.deepEqual(externals, ['https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/client', 'https://static.cloudflareinsights.com', 'https://accounts.google.com/gsi/style', 'https://avatars.githubusercontent.com', 'https://*.googleusercontent.com', 'https://media.msime.app', 'https://api.msime.app', 'https://accounts.google.com/gsi/', 'https://cloudflareinsights.com', 'https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/', 'https://wasm.msime.app']);
+  assert.deepEqual(externals, ['https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/client', 'https://static.cloudflareinsights.com', 'https://umami.yldm.tech', 'https://accounts.google.com/gsi/style', 'https://avatars.githubusercontent.com', 'https://*.googleusercontent.com', 'https://media.msime.app', 'https://api.msime.app', 'https://accounts.google.com/gsi/', 'https://cloudflareinsights.com', 'https://umami.yldm.tech', 'https://challenges.cloudflare.com', 'https://accounts.google.com/gsi/', 'https://wasm.msime.app']);
   assert.match(headers, /\/assets\/\*\n\s+Cache-Control: public, max-age=31536000, immutable/);
   assert.match(headers, /\/msime\/\*\n\s+Cache-Control: public, max-age=31536000, immutable/);
   // 网页输入法要编译 wasm，但 script-src 仍然不能放行 eval 和内联脚本。
