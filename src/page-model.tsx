@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";
 import { textareaClass } from "./feedback/styles";
-import { AnchorButton, Card, Container, LinkButton } from "./ui";
+import { AndroidIcon, AnchorButton, AppleIcon, Card, Container, cx, GitHubIcon, HarmonyOSIcon, HuggingFaceIcon, LinkButton, LinuxIcon, RustIcon, WindowsIcon } from "./ui";
 import { useLocale } from "./use-locale";
 import { useReveal } from "./use-reveal";
 
@@ -27,6 +27,29 @@ const MODELS = [
   { name: "快速模型", size: "4.5 MB", params: "425 万参数", cost: "每个候选字 0.33 ms", worst: "15 字长句、9 个候选最慢 46 ms", href: MODEL_4M, use: "每次按键都跑，手机键盘也装得下" },
   { name: "高精度模型", size: "25.5 MB", params: "2486 万参数", cost: "每个候选字 2.0 ms", worst: "同样情形最慢 268 ms", href: MODEL_25M, use: "电脑上在输入停顿后接手" },
 ] as const;
+
+/** An external link led by the mark of the site it goes to, so a reader can tell GitHub, Hugging Face and crates.io apart before following it. */
+function LogoLink({ href, icon, className, children }: { href: string; icon: ReactNode; className?: string; children: ReactNode }) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" className={cx("inline-flex items-center gap-1.5", className)}>
+      {icon}
+      {children}
+    </a>
+  );
+}
+
+/** A list item whose bullet is one or more marks, aligned with the first line of text. */
+function MarkedItem({ marks, className, children }: { marks: ReactNode; className?: string; children: ReactNode }) {
+  return (
+    <li className={cx("flex items-start gap-3", className)}>
+      {/* 15px marks centred on the first 30px line of 15.5px / 1.95 body text, not on the whole item. */}
+      <span className="mt-[7px] flex flex-none items-center gap-1 text-muted" aria-hidden="true">
+        {marks}
+      </span>
+      <span className="min-w-0">{children}</span>
+    </li>
+  );
+}
 
 function NumberedSection({ index, title, id, children }: { index: number; title: string; id: string; children: ReactNode }) {
   const { t } = useLocale();
@@ -114,17 +137,17 @@ export function ModelPage() {
                     <li>{t(model.worst)}</li>
                     <li className="text-muted">{t(model.use)}</li>
                   </ul>
-                  <a href={model.href} target="_blank" rel="noreferrer" className="mt-3 inline-block text-[14.5px]">
+                  <LogoLink href={model.href} icon={<HuggingFaceIcon size={17} />} className="mt-3 text-[14.5px]">
                     {t("在 Hugging Face 查看")}
-                  </a>
+                  </LogoLink>
                 </Card>
               ))}
             </div>
             <p className="m-0 mt-3 text-[14px] text-muted">
               {t("耗时在 Apple M4 Pro 上用参考实现测得。完整的测量方法、负结果和与通用模型的对比见")}{" "}
-              <a href={MEASUREMENTS} target="_blank" rel="noreferrer">
+              <LogoLink href={MEASUREMENTS} icon={<GitHubIcon size={14} />}>
                 {t("测量记录")}
-              </a>
+              </LogoLink>
               {t("。")}
             </p>
           </NumberedSection>
@@ -144,10 +167,16 @@ export function ModelPage() {
             <p className="m-0">
               {t("Windows 正式版从 v0.10.0 起默认开着速度优先的一档；其他平台默认关闭，因为它要在打字或停顿时多做一次模型计算，需要时在设置里打开：")}
             </p>
-            <ul className="m-0 mt-3 list-disc pl-5">
-              <li>{t("Windows：设置的输入页里，「神经网络模型整句（速度优先）」默认开启；「神经网络模型整句（效果优先）」默认关闭，要先下载约 25 MB 的模型才能打开。")}</li>
-              <li className="mt-1">{t("macOS、Linux：设置的输入页「候选与联想」一组里打开「桌面神经联想」，打开时会下载约 25 MB 的模型。")}</li>
-              <li className="mt-1">{t("Android、iOS、鸿蒙手机：在「表达」页把「整句联想」从「标准」改成「增强」。")}</li>
+            <ul className="m-0 mt-3 list-none p-0">
+              <MarkedItem marks={<WindowsIcon size={15} />}>
+                {t("Windows：设置的输入页里，「神经网络模型整句（速度优先）」默认开启；「神经网络模型整句（效果优先）」默认关闭，要先下载约 25 MB 的模型才能打开。")}
+              </MarkedItem>
+              <MarkedItem marks={<><AppleIcon size={15} /><LinuxIcon size={15} /></>} className="mt-2">
+                {t("macOS、Linux：设置的输入页「候选与联想」一组里打开「桌面神经联想」，打开时会下载约 25 MB 的模型。")}
+              </MarkedItem>
+              <MarkedItem marks={<><AndroidIcon size={15} /><AppleIcon size={15} /><HarmonyOSIcon size={15} /></>} className="mt-2">
+                {t("Android、iOS、鸿蒙手机：在「表达」页把「整句联想」从「标准」改成「增强」。")}
+              </MarkedItem>
             </ul>
             <p className="m-0 mt-3 text-muted">
               {t("模型只用于拼音输入。五笔版和日文、越南文、藏文这些单一方案的版本不带手机上用的模型，「整句联想」也就没有「增强」这一档。")}
@@ -158,20 +187,20 @@ export function ModelPage() {
             <p className="m-0">
               {t("推理代码和权重都以 Apache-2.0 授权，链接到 MIT、BSD、Apache 许可的输入法里不会带来传染性义务。")}
             </p>
-            <ul className="m-0 mt-3 list-disc pl-5">
-              <li>
+            <ul className="m-0 mt-3 list-none p-0">
+              <MarkedItem marks={<RustIcon size={15} />}>
                 <a href={CRATE} target="_blank" rel="noreferrer" className="font-mono">chinese-ime-lm</a>
                 {t("：Rust 写的引擎直接依赖，")}
                 <code className="rounded-md bg-panel px-1.5 py-px font-mono text-[13px] text-ink">cargo add chinese-ime-lm</code>
-              </li>
-              <li className="mt-1">
+              </MarkedItem>
+              <MarkedItem marks={<RustIcon size={15} />} className="mt-2">
                 <a href={CRATE_FFI} target="_blank" rel="noreferrer" className="font-mono">chinese-ime-lm-ffi</a>
                 {t("：C ABI，提供静态库、动态库和头文件，C、C++、Swift、Kotlin（JNI）都能调用")}
-              </li>
-              <li className="mt-1">
+              </MarkedItem>
+              <MarkedItem marks={<GitHubIcon size={15} />} className="mt-2">
                 <a href={FORMAT} target="_blank" rel="noreferrer">{t("模型文件格式规范")}</a>
                 {t("：想用别的语言自己写加载器，只需要这一篇")}
-              </li>
+              </MarkedItem>
             </ul>
             <p className="m-0 mt-3">
               {t("接入时，引擎要为每个候选回答两件事：它是否覆盖整段输入，它是不是引擎愿意采信的词典命中。这两点决定模型什么时候可以出手，库的 README 里写了理由和判断方法。权重训练自 C4 中文部分（ODC-BY）与 LCCC（MIT），语料署名写在权重文件里，再分发时要保留。")}
@@ -187,9 +216,11 @@ export function ModelPage() {
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <AnchorButton href={REPO} size="md">
+                <GitHubIcon size={16} />
                 {t("chinese-ime-lm 仓库")}
               </AnchorButton>
               <AnchorButton href={MEASUREMENTS} variant="secondary" size="md">
+                <GitHubIcon size={16} />
                 {t("测量记录")}
               </AnchorButton>
               <LinkButton to="/code/" variant="ghost" size="md">

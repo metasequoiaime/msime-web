@@ -12,6 +12,8 @@ export { SeasonBackdrop } from "./season-backdrop";
 export {
   GitHubIcon,
   TelegramIcon,
+  HuggingFaceIcon,
+  RustIcon,
   SunIcon,
   MoonIcon,
   MonitorIcon,
