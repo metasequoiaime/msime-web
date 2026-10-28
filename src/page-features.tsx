@@ -4,7 +4,7 @@ import { Segmented } from "./features/segmented";
 import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";
 import type { Dictionary } from "./platforms-data";
-import { AnchorButton, Card, Container, cx, ExternalIcon } from "./ui";
+import { AnchorButton, Card, Container, cx, ExternalIcon, LinkButton } from "./ui";
 import { useLocale } from "./use-locale";
 import { usePageSearch } from "./use-page-search";
 import { useReveal } from "./use-reveal";
@@ -331,6 +331,18 @@ export function FeaturesPage() {
                 </li>
               ))}
             </ul>
+          </FeatureBlock>
+
+          <FeatureBlock
+            eyebrow="整句"
+            title="神经联想：让语言模型挑整句"
+            lead={t("打一整句拼音时，可以让几 MB 的字级语言模型看着前文，在引擎拼出的几种读法里挑出更通顺的一个。设置的输入页里有「神经网络模型整句（速度优先）」和「神经网络模型整句（效果优先）」两项，默认关闭，效果优先要先下载模型。")}
+          >
+            <div className="mt-5 flex flex-wrap gap-3">
+              <LinkButton to="/model/" variant="soft">
+                {t("效果、代价与开源模型")}
+              </LinkButton>
+            </div>
           </FeatureBlock>
         </Container>
       </main>
