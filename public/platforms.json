@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-28T23:50:18.359Z",
+  "generatedAt": "2026-10-29T00:06:34.012Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -573,10 +573,10 @@
     ]
   },
   "downloadStats": {
-    "total": 62528,
+    "total": 62532,
     "platforms": {
-      "windows": 40995,
-      "windowsRust": 1654,
+      "windows": 40998,
+      "windowsRust": 1655,
       "windows7": 80,
       "macos": 4777,
       "linux": 9747,
@@ -3085,7 +3085,7 @@
       "repository": "metasequoiaime/msime",
       "id": 668360231,
       "name": "MetasequoiaIME-Full_Setup_v0.3.0.exe",
-      "download_count": 789
+      "download_count": 790
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6241,24 +6241,24 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 675693188,
       "name": "MetasequoiaIME_Setup_v0.12.0.exe",
-      "download_count": 2001
+      "download_count": 2004
     }
   ],
   "mirrorDownloadStats": {
-    "total": 10656,
+    "total": 10662,
     "platforms": {
       "android": 1383,
       "harmony": 58,
       "linux": 625,
       "macos": 1045,
-      "windows": 7536,
+      "windows": 7542,
       "windowsRust": 9
     },
-    "generatedAt": "2026-10-28T23:50:17.340159Z"
+    "generatedAt": "2026-10-29T00:06:33.175241Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-28T23:50:16.425Z",
-    "total": 4814,
+    "generatedAt": "2026-10-29T00:06:32.760Z",
+    "total": 4815,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -6278,7 +6278,7 @@
       },
       {
         "id": "a857688b2ac9baf92450397d5105726782c2a1d75469fa0afa59200d2c03a984",
-        "downloads": 261
+        "downloads": 262
       },
       {
         "id": "bac9145476cafdbddeaf8b216d4a079d7522902d3821c740f7dbf0e31fd5aaab",
@@ -6307,9 +6307,9 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-10-28T23:50:17.549Z",
+    "generatedAt": "2026-10-29T00:06:33.286Z",
     "downloads": 2314,
-    "periodStart": "2025-10-28",
-    "periodEnd": "2026-10-28"
+    "periodStart": "2025-10-29",
+    "periodEnd": "2026-10-29"
   }
 }
