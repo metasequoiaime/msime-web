@@ -24,7 +24,7 @@ const DICTIONARY_NOTICE = "https://github.com/metasequoiaime/msime-dictionary/bl
 const RUST_SNIPPET = `use msime_engine::{prepare_runtime_paths, DictionaryAccess, Session, SessionOptions};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let resources = std::path::absolute("msime-engine-data-quanpin-2.0.39")?;
+    let resources = std::path::absolute("msime-engine-data-quanpin-2.0.41")?;
     let work = std::env::temp_dir().join("msime-quickstart");
     let paths = prepare_runtime_paths(&resources, &work.join("user"), &work.join("cache"), "dict-v2_0_39")?;
     let access = DictionaryAccess::try_session(&paths.user_data, &paths.dictionaries)?
@@ -35,6 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         session.character(*key, false);
     }
     let state = session.display_snapshot();
+    println!("preedit: {}", state.preedit);
     for (index, candidate) in state.candidates.iter().take(9).enumerate() {
         println!("{}. {}", index + 1, candidate.word);
     }
@@ -182,7 +183,11 @@ export function EnginePage() {
               <li>{t("Rust 库另有九键与 14 键布局。")}</li>
             </ul>
             <p className="m-0 mt-3 text-muted">
-              {t("C 接口（ABI 1.0）覆盖词格整句、拼写纠错、学习、个人词典和上面十种方案；九键、触点纠错、神经重排和搭配模型目前只在 Rust 库里，C 接口留到后续版本。神经重排的效果和模型见")}
+              {t("C 接口（ABI 1.1）覆盖词格整句、拼写纠错、学习与调频、个人词典（含词条检查）和上面十种方案，还能混排 emoji、颜文字和符号候选，逐个开关计算、拆字、日期时间等本地模式，按数字选词，把引擎的日志交给你的回调，并且只为用到的方案准备和重置数据。C 接口不包括整句的其余读法（只给引擎认为最好的那一种）、在线候选、九键和 14 键这类按键网格，以及 ")}
+              <InlineCode>/</InlineCode>
+              {t(" 指令和 ")}
+              <InlineCode>@</InlineCode>
+              {t(" 名单两个模式；触点纠错、神经重排和搭配模型也只在 Rust 库里。神经重排的效果和模型见")}
               <LocaleLink to="/model/">{t("神经联想")}</LocaleLink>
               {t("。")}
             </p>
@@ -262,7 +267,21 @@ export function EnginePage() {
             </p>
             <CodeBlock label="数据包的内容" code={t(DATA_SNIPPET)} />
             <p className="m-0 mt-3">
-              {t("这些文件逐字节取自 msime-dictionary 的 dict-v* 发布，也可以从那里逐个下载。五笔、日文、粤拼、注音、笔画等方案还要各自的数据文件，见数据格式文档的「每个方案的最小数据集」；文件格式也写在那份文档里，可以换成自己构建的数据。")}
+              {t("这些文件逐字节取自 msime-dictionary 的 dict-v* 发布，也可以从那里逐个下载。")}
+            </p>
+            <p className="m-0 mt-3">
+              {t("要带哪些文件按方案定：全拼、双拼、五笔都要 msime-pinyin.db 和 msime-english.db，五笔再加 msime-wubi.db；韩文、越南文、藏文什么也不用带；日文只要 msime-japanese.dat，没有它只出假名；粤拼、注音、笔画只要各自的数据库。msime-english.db 对后面这些方案是可选的，只在打开专用英文时用。只用几个方案时，Rust 调 ")}
+              <InlineCode>prepare_runtime_paths_for</InlineCode>
+              {t("，C 调 ")}
+              <InlineCode>msime_engine_prepare_runtime_for</InlineCode>
+              {t("，数据目录里只要有这些方案的文件；不分方案的 ")}
+              <InlineCode>prepare_runtime_paths</InlineCode>
+              {t(" 和 ")}
+              <InlineCode>msime_engine_prepare_runtime</InlineCode>
+              {t(" 按全部方案准备，要前两个库。混排 emoji 和颜文字另要 msime-others.db，它的来源还没有核实，再分发前要另行确认。")}
+            </p>
+            <p className="m-0 mt-3">
+              {t("逐个方案的文件与许可证见数据格式文档的「每个方案的最小数据集」；文件格式也写在那份文档里，可以换成自己构建的数据。")}
             </p>
             <LinkRow>
               <LogoLink href={CAPI_RELEASES} icon={<GitHubIcon size={15} className="text-ink" />}>
@@ -287,7 +306,7 @@ export function EnginePage() {
               </li>
               <li className="mt-2">
                 <strong className="font-semibold text-ink">{t("数据不是 MPL-2.0。")}</strong>
-                {t("默认的中文词库含 rime-ice 的 GPL-3.0 数据，n-gram 表的计数来自中文维基百科（CC-BY-SA-4.0），目前每个方案都要的 msime-english.db 也含 GPL-3.0 数据。带哪套数据由你决定，逐项的来源和许可证见数据包里的 README.md。")}
+                {t("默认的中文词库含 rime-ice 的 GPL-3.0 数据，n-gram 表的计数来自中文维基百科（CC-BY-SA-4.0），全拼、双拼、五笔都要的 msime-english.db 也含 GPL-3.0 数据。其余方案不必带这两个库：只用韩文、越南文、藏文时一个数据文件都不用带，日文、粤拼、注音、笔画只带各自的数据库，各有各的许可证。带哪套数据由你决定，数据包里逐项的来源和许可证见包里的 README.md，其余方案的见数据格式文档。")}
               </li>
             </ul>
             <p className="m-0 mt-3 text-muted">{t("以上是摘要，以仓库里的 LICENSE 和各数据文件的许可证为准。")}</p>
@@ -298,7 +317,7 @@ export function EnginePage() {
               {t("不是。Rime 是方案驱动的框架，输入方式由方案配置文件定义。水杉的引擎是做好的引擎：方案和算法都内置，开箱就有整句、纠错和学习，没有方案描述语言。想要什么都能配置的框架，Rime 更合适；想直接拿一个能用的拼音和多语言引擎，用这个。")}
             </Question>
             <Question title="闭源应用或 App Store 里的应用能用吗？" className="mt-5">
-              {t("引擎代码可以：MPL-2.0 允许和闭源代码一起分发，只要求公开你对引擎源文件本身的改动，并随附许可证文本。要单独考虑的是数据：默认的中文和英文词库含 GPL-3.0 数据，n-gram 表是 CC-BY-SA-4.0。把它们打包进闭源或 App Store 应用之前，请先评估这些许可证，或者换用别的数据。")}
+              {t("引擎代码可以：MPL-2.0 允许和闭源代码一起分发，只要求公开你对引擎源文件本身的改动，并随附许可证文本。要单独考虑的是数据：全拼、双拼、五笔要的中文和英文词库含 GPL-3.0 数据，n-gram 表是 CC-BY-SA-4.0。把它们打包进闭源或 App Store 应用之前，请先评估这些许可证，或者换用别的数据。只做韩文、越南文、藏文的话不用带任何数据文件，也就不涉及这些 GPL-3.0 数据；日文、粤拼、注音、笔画的数据库各有自己的许可证，见数据格式文档。")}
             </Question>
             <Question title="词库从哪里来？" className="mt-5">
               {t("引擎本身不带词库。水杉的词库在 msime-dictionary 维护，以 dict-v* 发布，数据包就取自那里；中文词库的主体来自 rime-ice（GPL-3.0）及其补充，n-gram 计数来自中文维基百科。每个来源的上游和条款见 msime-dictionary 的 ")}
@@ -306,7 +325,7 @@ export function EnginePage() {
               {t("。按数据格式文档自己构建数据也可以。")}
             </Question>
             <Question title="接口稳定吗？" className="mt-5">
-              {t("Rust 库还在 0.x，API 可能在小版本之间改。C 接口按 ABI 版本号管理，主版本号就是共享库 SONAME 的主版本，运行时可以用 msime_engine_abi_version() 核对。")}
+              {t("Rust 库还在 0.x，API 可能在小版本之间改。C 接口按 ABI 版本号管理，主版本号就是共享库 SONAME 的主版本；同一个主版本内只追加函数、常量和结构体尾部的字段，已有的编号与含义不变，1.1 就是在 1.0 上追加的。运行时可以用 msime_engine_abi_version() 核对，次版本低于 1.1 的库没有 1.1 新加的函数。")}
             </Question>
           </NumberedSection>
 
