@@ -3,7 +3,7 @@ import { cx } from "./ui";
 import { useLocale } from "./use-locale";
 
 /** One page of a header entry that stands for several pages. `to` is the page's locale-free address. */
-export type Section = { readonly to: "/skins/" | "/dictionaries/" | "/plugins/" | "/feedback/" | "/words/"; readonly label: string };
+export type Section = { readonly to: "/skins/" | "/dictionaries/" | "/plugins/" | "/feedback/" | "/words/" | "/model/" | "/engine/"; readonly label: string };
 
 /** Pages that share one header entry: `label` names the switcher for screen readers, and must read correctly after the Traditional conversion too. */
 export type SectionGroup = { readonly label: string; readonly sections: readonly Section[] };
@@ -11,7 +11,7 @@ export type SectionGroup = { readonly label: string; readonly sections: readonly
 /** Whether a locale-free path is one of a group's pages, so the site shell can mark the group's header entry current. */
 export const inSectionGroup = (group: SectionGroup, path: string) => group.sections.some((section) => path.startsWith(section.to));
 
-/** Switches between the pages behind one header entry (社区: 皮肤, 词库, 插件; 反馈: Bug 与需求, 词库缺失), under each page's hero, since the header links only to the first of them. It is an underlined strip across the content width rather than another segmented control, so it reads as page navigation and not as one more filter above the page's own tabs. The segments are ordinary links in the tab order, and the current one carries `aria-current="page"`. */
+/** Switches between the pages behind one header entry (社区: 皮肤, 词库, 插件; 反馈: Bug 与需求, 词库缺失; 接入: 神经联想, 引擎库), under each page's hero, since the header links only to the first of them. It is an underlined strip across the content width rather than another segmented control, so it reads as page navigation and not as one more filter above the page's own tabs. The segments are ordinary links in the tab order, and the current one carries `aria-current="page"`. */
 export function SectionNav<G extends SectionGroup>({ group, current }: { group: G; current: G["sections"][number]["to"] }) {
   const { t } = useLocale();
   return (

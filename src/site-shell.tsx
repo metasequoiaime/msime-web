@@ -7,6 +7,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type 
 import { NoticeBanner } from "./notice-banner";
 import { COMMUNITY_SECTIONS } from "./community/sections";
 import { FEEDBACK_SECTIONS } from "./feedback/sections";
+import { INTEGRATION_SECTIONS } from "./integration/sections";
 import { inSectionGroup } from "./section-nav";
 import { AccountProvider, useAccount } from "./account/session";
 import { Avatar } from "./account/avatar";
@@ -22,11 +23,11 @@ type NavItem = {
   github?: boolean;
 };
 
-/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). 社区 stands for the three community pages (皮肤, 词库, 插件) and opens 皮肤, the address the tab had as 社区皮肤, so the entry still lands where it always did; 反馈 likewise stands for the two feedback forms (Bug 与需求, 词库缺失) and opens the first. Each group's pages switch between each other with the sub-navigation under their heroes, and the footer still links to each one. */
+/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). 社区 stands for the three community pages (皮肤, 词库, 插件) and opens 皮肤, the address the tab had as 社区皮肤, so the entry still lands where it always did; 反馈 likewise stands for the two feedback forms (Bug 与需求, 词库缺失) and opens the first; 接入 stands for the two pages for developers who build on the project (神经联想, 引擎库) and opens 神经联想, the address the tab had under that name. Each group's pages switch between each other with the sub-navigation under their heroes, and the footer still links to each one. */
 const NAV_ITEMS: readonly NavItem[] = [
   { to: "/", label: "首页" },
   { to: "/download/", label: "下载" },
-  { to: "/model/", label: "神经联想" },
+  { to: "/model/", label: "接入" },
   { to: "/skins/", label: "社区" },
   { to: "/gallery/", label: "水杉娘" },
   { to: "/docs/$guide/", label: "文档" },
@@ -42,7 +43,7 @@ const ORG_URL = "https://github.com/metasequoiaime";
 const DESKTOP_NAV_QUERY = "(width >= 73.75rem)";
 const QQ_GROUP = "829919142";
 
-/** The docs tab also covers the FAQ, which lives under the docs toolbar in the design; the 社区 tab covers all three community pages and the 反馈 tab both feedback forms. */
+/** The docs tab also covers the FAQ, which lives under the docs toolbar in the design; the 社区 tab covers all three community pages, the 反馈 tab both feedback forms and the 接入 tab 神经联想 and 引擎库. */
 const isCurrent = (item: NavItem, path: string) =>
   item.to === "/"
     ? path === "/"
@@ -52,7 +53,9 @@ const isCurrent = (item: NavItem, path: string) =>
         ? inSectionGroup(COMMUNITY_SECTIONS, path)
         : item.to === "/feedback/"
           ? inSectionGroup(FEEDBACK_SECTIONS, path)
-          : path.startsWith(item.to);
+          : item.to === "/model/"
+            ? inSectionGroup(INTEGRATION_SECTIONS, path)
+            : path.startsWith(item.to);
 
 const linkParams = (item: NavItem) => (item.to === "/docs/$guide/" ? { guide: "windows" } : {});
 

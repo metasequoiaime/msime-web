@@ -183,8 +183,39 @@ test('the header has one 反馈 entry for the two feedback forms, which switch b
   }
 });
 
-test('the header includes 神经联想 and 水杉娘, and 开源代码 is a GitHub button there and the last item of the menu panel', () => {
-  for (const [prefix, labels, code] of [['', ['首页', '下载', '神经联想', '社区', '水杉娘', '文档', '反馈', '关于'], '开源代码'], ['/zh-TW', ['首頁', '下載', '神經聯想', '社群', '水杉娘', '文件', '回報', '關於'], '開源程式碼']]) {
+test('the header has one 接入 entry for 神经联想 and 引擎库, which switch between each other under their heroes', () => {
+  const sections = ['/model/', '/engine/'];
+  for (const [prefix, entry, area, labels] of [['', '接入', '接入栏目', ['神经联想', '引擎库']], ['/zh-TW', '接入', '接入欄目', ['神經聯想', '引擎庫']]]) {
+    for (const base of [...sections, '/']) {
+      const doc = document(`${prefix}${base}`);
+      for (const menu of ['.nav-list', '#nav-menu']) {
+        const links = [...doc.querySelectorAll(`${menu} a`)];
+        assert.equal(links.filter(link => sections.some(section => link.getAttribute('href') === `${prefix}${section}`)).length, 1, `${prefix}${base} ${menu}: one 接入 entry`);
+        const integration = links.find(link => link.getAttribute('href') === `${prefix}/model/`);
+        assert.equal(integration.textContent.trim(), entry);
+        assert.equal(integration.getAttribute('aria-current'), base === '/' ? null : 'page', `${prefix}${base} ${menu}`);
+      }
+      const switcher = doc.querySelector(`nav[aria-label="${area}"]`);
+      if (base === '/') { assert.equal(switcher, null); continue; }
+      assert.deepEqual([...switcher.querySelectorAll('a')].map(link => [link.getAttribute('href'), link.textContent.trim()]), sections.map((section, index) => [`${prefix}${section}`, labels[index]]));
+      assert.deepEqual([...switcher.querySelectorAll('a[aria-current="page"]')].map(link => link.getAttribute('href')), [`${prefix}${base}`]);
+      assert.ok(doc.querySelector('.page-hero').compareDocumentPosition(switcher) & 4, `${prefix}${base}: the switcher follows the hero`);
+    }
+  }
+});
+
+test('the home page has an 引擎库 section linking the page, the crate and the prebuilt C libraries', () => {
+  for (const prefix of ['', '/zh-TW']) {
+    const section = document(`${prefix}/`).querySelector('#home-engine').closest('section');
+    const hrefs = [...section.querySelectorAll('a')].map(link => link.getAttribute('href'));
+    assert.ok(hrefs.includes(`${prefix}/engine/`), prefix);
+    assert.ok(hrefs.includes('https://crates.io/crates/msime-engine'), prefix);
+    assert.ok(hrefs.includes('https://github.com/metasequoiaime/msime/releases?q=msime-engine-capi&expanded=true'), prefix);
+  }
+});
+
+test('the header includes 接入 and 水杉娘, and 开源代码 is a GitHub button there and the last item of the menu panel', () => {
+  for (const [prefix, labels, code] of [['', ['首页', '下载', '接入', '社区', '水杉娘', '文档', '反馈', '关于'], '开源代码'], ['/zh-TW', ['首頁', '下載', '接入', '社群', '水杉娘', '文件', '回報', '關於'], '開源程式碼']]) {
     for (const base of ['/', '/code/', '/download/', '/gallery/']) {
       const doc = document(`${prefix}${base}`);
       assert.deepEqual([...doc.querySelectorAll('.nav-list a')].map(link => link.textContent.trim()), labels, `${prefix}${base}`);
