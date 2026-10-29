@@ -27,14 +27,22 @@ export const IOS_TESTFLIGHT_URL = "https://testflight.apple.com/join/bUzPvyqt";
 export const ANDROID_PGYER_URL = "https://www.pgyer.com/msime";
 
 /**
+ * 华为应用市场（AppGallery）上水杉输入法的页面地址。上架之前是 `null`，下载页显示审核状态；上架后把地址填在这里，下载页、首页和下载说明都会改为给出应用市场链接，不需要改其他地方。
+ *
+ * HarmonyOS NEXT（HarmonyOS 5 及以上）不允许普通用户安装 HAP 文件，应用只能从应用市场获得，所以 harmony-v 发布里的 HAP 不作为下载提供。
+ */
+export const HARMONY_APPGALLERY_URL: string | null = null;
+
+/**
  * How a platform reaches users today.
  * - `release`: installable packages on GitHub Releases, described by `public/platforms.json`.
  * - `testflight`: Apple's public beta only; the IPAs on GitHub are TestFlight builds, not sideloadable.
  * - `pgyer`: a test APK on Pgyer's install page, sideloaded rather than installed from a store.
+ * - `appgallery`: Huawei AppGallery only (`HARMONY_APPGALLERY_URL`, `null` while the listing is under review). The HAPs on GitHub are not installable on retail devices.
  * - `source`: 尚在开发，官网暂未提供正式安装包。
  * - `sdk`: a library for developers to embed (the web engine on npm), not something end users install.
  */
-export type Distribution = "release" | "testflight" | "pgyer" | "source" | "sdk";
+export type Distribution = "release" | "testflight" | "pgyer" | "appgallery" | "source" | "sdk";
 
 export type PlatformInfo = {
   id: SitePlatform;
@@ -42,7 +50,7 @@ export type PlatformInfo = {
   /** One-line description of the native host, as the design's platform cards show it. */
   host: string;
   distribution: Distribution;
-  /** Where the platform card sends visitors: the releases page, TestFlight, Pgyer, or the platform's source directory. */
+  /** Where the platform card sends visitors: the releases page, TestFlight, Pgyer, AppGallery, or the platform's source directory. */
   href: string;
   /** Source directory, for "view the code" links. */
   sourceUrl: string;
@@ -50,11 +58,14 @@ export type PlatformInfo = {
 
 const MSIME = "https://github.com/metasequoiaime/msime";
 
+/** 鸿蒙宿主 README 的「本地构建」一节，给需要自行构建、调试安装 HAP 的开发者。 */
+export const HARMONY_BUILD_GUIDE_URL = `${MSIME}/blob/develop/platforms/harmony/README.md#本地构建`;
+
 /** The web engine's npm package; the same files are attached to every `web-engine-v…` release in the msime repository. */
 export const WEB_ENGINE_NPM_URL = "https://www.npmjs.com/package/@msime/web-engine";
 
 /*
- * Static facts about the seven platforms. `public/platforms.json` belongs to the release automation and covers desktop, Android, and HarmonyOS packages. iOS keeps its publication metadata separate because it has no downloadable package. Windows keeps its separate repository; the other releases come from the merged `msime` repository.
+ * Static facts about the seven platforms. `public/platforms.json` belongs to the release automation and covers desktop, Android, and HarmonyOS packages. iOS keeps its publication metadata separate because it has no downloadable package; HarmonyOS is handled the same way: its HAPs stay in the manifest for the download statistics, but the site does not offer them, and its store link is `HARMONY_APPGALLERY_URL`. Windows keeps its separate repository; the other releases come from the merged `msime` repository.
  */
 export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
   windows: {
@@ -101,8 +112,8 @@ export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
     id: "harmony",
     name: PLATFORM_NAMES.harmony,
     host: "InputMethodExtensionAbility，NAPI 调 host-api",
-    distribution: "release",
-    href: `${MSIME}/releases`,
+    distribution: "appgallery",
+    href: HARMONY_APPGALLERY_URL ?? `${MSIME}/tree/develop/platforms/harmony`,
     sourceUrl: `${MSIME}/tree/develop/platforms/harmony`,
   },
   web: {
@@ -130,8 +141,8 @@ export function sitePlatforms(platforms?: Partial<Platforms>, releases: readonly
     !latest || item.publishedAt > latest.publishedAt ? item : latest, null);
   return SITE_PLATFORMS.map(id => {
     const info = PLATFORM_CATALOG[id];
-    // Android 的主入口是蒲公英，但 android-v 发布里的 APK 也在清单里；HarmonyOS 的 HAP 直接来自 harmony-v 发布。
-    const release = id === "windows" || id === "macos" || id === "linux" || id === "android" || id === "harmony" ? (platforms?.[id] ?? null) : null;
+    // Android 的主入口是蒲公英，但 android-v 发布里的 APK 也在清单里。HarmonyOS 的 HAP 虽然也在清单里，零售设备却装不上，所以不接进来，只走应用市场。
+    const release = id === "windows" || id === "macos" || id === "linux" || id === "android" ? (platforms?.[id] ?? null) : null;
     const publication = id === "ios" ? iosRelease : id === "web" ? webRelease : null;
     return { ...info, release, publishedVersion: release?.version ?? publication?.version ?? null };
   });

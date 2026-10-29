@@ -192,7 +192,7 @@ curl -fsSL https://msime.app/install.sh | sh
 2. 打开下载好的 APK。系统提示“禁止安装未知来源应用”时，按提示允许浏览器安装应用，再回到安装界面。
 3. 安装完成后打开水杉输入法，按引导到系统设置中启用它，并切换为当前输入法。
 
-需要 Android 9 及以上。鸿蒙 NEXT（HarmonyOS 5 及以上）不能安装 APK，请关注下方的 HarmonyOS 版。
+需要 Android 9 及以上。鸿蒙 NEXT（HarmonyOS 5 及以上）不能安装 APK，请改用下方的 HarmonyOS 版。
 
 ### 测试版说明
 
@@ -224,13 +224,13 @@ TestFlight 的每个构建有效期为 90 天，到期前在 TestFlight 中更�
 
 ### 安装与启用
 
-HarmonyOS 版已经发布 HAP 测试包，可以在本页上方选择 HarmonyOS，点击 GitHub 下载按钮获取当前版本。安装 HAP 后打开水杉输入法，按引导到系统设置中启用它，并切换为当前输入法。
+{{harmonyStatus}}
 
-当前版本通过 GitHub Releases 分发，尚未上架应用市场。安装包带有 SHA256 校验值，下载后请以对应的 [HarmonyOS Release](https://github.com/metasequoiaime/msime/releases) 说明为准。
+鸿蒙 NEXT（HarmonyOS 5 及以上）只能从华为应用市场安装应用，不能直接安装 HAP 文件，所以本页不提供 HAP 下载。从应用市场安装后打开水杉输入法，按引导到系统设置中启用它，并切换为当前输入法。
 
-### 从源码构建
+### 开发者调试
 
-源码和构建脚本都在 msime 仓库的 `platforms/harmony` 目录。构建需要 DevEco Studio 提供的 OpenHarmony NDK 与 `hvigorw`，步骤见该目录 README 的「本地构建」一节。测试包尚未上架应用市场，遇到问题欢迎到[Bug 与需求反馈](/feedback/)反馈。
+调试签名的 HAP 只能安装在 UDID 已登记到调试 Profile 的设备上，需要打开开发者模式，再用 `hdc install` 安装，普通用户无法这样安装。源码和构建脚本都在 msime 仓库的 `platforms/harmony` 目录，构建需要 DevEco Studio 提供的 OpenHarmony NDK 与 `hvigorw`，步骤见该目录 README 的[「本地构建」](https://github.com/metasequoiaime/msime/blob/develop/platforms/harmony/README.md#本地构建)一节。遇到问题欢迎到[Bug 与需求反馈](/feedback/)反馈。
 
 ## Web
 

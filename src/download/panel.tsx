@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { SitePlatformEntry } from "../data/platforms.ts";
+import { HARMONY_APPGALLERY_URL, HARMONY_BUILD_GUIDE_URL, type SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform, ReleasePlatform } from "../platform.ts";
 import { useDownloadMirrorsQuery } from "../data/queries";
@@ -20,7 +20,7 @@ const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
   macos: "适用于 macOS 12 及以上",
   android: "适用于 Android 9 及以上；测试版，需允许安装未知来源应用",
   ios: "适用于 iOS 17 及以上",
-  harmony: "适用于 HarmonyOS 5 及以上；需手动安装 HAP",
+  harmony: "适用于 HarmonyOS 5 及以上",
 };
 
 /** macOS 的最低版本跟着安装包格式走，理由见下面 `platformHint`。 */
@@ -62,6 +62,7 @@ const tileStatus = (entry: DownloadEntry) => {
   if (entry.windowsVariant === "win7") return "暂未发布";
   if (entry.distribution === "testflight") return "TestFlight";
   if (entry.distribution === "pgyer") return "测试版";
+  if (entry.distribution === "appgallery") return HARMONY_APPGALLERY_URL ? "华为应用市场" : "审核中";
   if (entry.distribution === "source") return "开发中";
   if (entry.distribution === "sdk") return "npm";
   return "查看发布页";
@@ -324,6 +325,44 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
           {hint}
           {entry.publishedVersion && <p className="m-0 text-sm leading-[1.8] text-muted">{t("显示最新公开发布版本；可安装版本以 TestFlight 为准。")}</p>}
         </div>
+      </div>
+    );
+  }
+
+  if (entry.distribution === "appgallery") {
+    return (
+      <div>
+        {HARMONY_APPGALLERY_URL ? (
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+            <a className={PRIMARY_ACTION} href={HARMONY_APPGALLERY_URL} target="_blank" rel="noreferrer">
+              {t("在华为应用市场安装 HarmonyOS 版")}
+              <ExternalIcon />
+            </a>
+            {hint}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+            <div className="min-w-0">
+              <Pill tone="warn">{t("审核中")}</Pill>
+              <p className="m-0 mt-2.5 text-[15px] leading-[1.85] text-body">{t("正在提交华为应用市场审核，上架后这里提供应用市场链接。")}</p>
+              {hint}
+            </div>
+            <AnchorButton variant="secondary" href={entry.sourceUrl} className="flex-none">
+              {t("查看源码")}
+              <ExternalIcon />
+            </AnchorButton>
+          </div>
+        )}
+        {/* HarmonyOS NEXT 不允许普通用户安装 HAP 文件，这里只给开发者一句调试安装的条件，不提供 HAP 下载。 */}
+        <p className="m-0 mt-4 text-[13.5px] leading-[1.75] text-muted">
+          {t("开发者：调试签名的 HAP 只能安装在已登记到调试 Profile 的设备上，需打开开发者模式并用 ")}
+          <code className="font-mono text-[12.5px]">hdc install</code>
+          {t(" 安装，见")}
+          <a className="font-medium text-accent-ink hover:text-ink" href={HARMONY_BUILD_GUIDE_URL} target="_blank" rel="noreferrer">
+            {t("构建说明")}
+          </a>
+          {t("。")}
+        </p>
       </div>
     );
   }

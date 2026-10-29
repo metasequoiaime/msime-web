@@ -463,6 +463,21 @@ test('the current macOS DMG guide describes the in-app install flow', () => {
   assert.doesNotMatch(macos.textContent, /打开「应用程序」里的 MSIME。它会把输入法装进/);
 });
 
+test('简繁下载页的 HarmonyOS 只走华为应用市场，不提供 HAP 下载', () => {
+  for (const path of ['/download/', '/zh-TW/download/']) {
+    const doc = document(path);
+    const harmony = doc.querySelector('#download-harmony');
+    assert.ok(harmony);
+    assert.match(harmony.textContent, /[华華][为為][应應]用市[场場]/);
+    assert.match(harmony.textContent, /hdc install/);
+    assert.doesNotMatch(harmony.textContent, /GitHub 下[载載]|安[装裝] HAP 後|安装 HAP 后|HAP 測試|HAP 测试/);
+    assert.equal(doc.querySelectorAll('a[href$=".hap"]').length, 0);
+    // 预渲染状态里不带自动化的逐个产物下载账本，nightly HAP 的文件名不会出现在页面里。
+    const state = read(doc.querySelector('script[data-router-state]').getAttribute('src').slice(1));
+    assert.doesNotMatch(state, /downloadHistory|unsigned-nightly[^"]*\.hap/);
+  }
+});
+
 test('iOS 安装量放入首页 iOS 平台卡片', async t => {
   const dom = parseHTML('<html><head></head><body></body></html>');
   const keys = ['document', 'Node', 'HTMLElement', 'HTMLParagraphElement', 'HTMLAnchorElement'];

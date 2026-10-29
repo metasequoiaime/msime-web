@@ -30,7 +30,8 @@ for (const path of pages) {
   const html = parseHTML(translatedTemplates[path] ?? (guide ? docsTemplate : readFileSync(`${dist}/${template}`, 'utf8')));
   const document = html.document;
   // The features page reads the dictionary release from platforms.json, so it is seeded too and its dictionary block is in the static HTML. The home page gets only the counters needed by its social-proof card, not the full release list.
-  const platformSnapshot = JSON.parse(readFileSync('public/platforms.json'));
+  // `downloadHistory` is the automation's per-asset download ledger (every nightly included, HarmonyOS HAPs among them). The page never reads it and the schema drops it, so it stays out of the seeded state rather than shipping some 120 KB of asset names with every prerendered page.
+  const { downloadHistory: _downloadHistory, ...platformSnapshot } = JSON.parse(readFileSync('public/platforms.json'));
   const statsSnapshot = {
     generatedAt: platformSnapshot.generatedAt,
     downloadStats: platformSnapshot.downloadStats,
