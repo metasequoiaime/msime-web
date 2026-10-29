@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { INTEGRATION_SECTIONS } from "./integration/sections";
+import { ModelEngineRelation } from "./integration/relation";
 import { PageHero } from "./page-content";
 import { SectionNav } from "./section-nav";
 import { usePageMeta } from "./page-meta";
@@ -93,6 +94,7 @@ export function ModelPage() {
       <SectionNav group={INTEGRATION_SECTIONS} current="/model/" />
       <main className="w-full">
         <Container>
+          <ModelEngineRelation current="/model/" />
           <NumberedSection index={1} title="它做什么" id="model-what">
             <p className="m-0">
               {t("拼音本身有歧义：同一串字母可以切成不同的音节，每个音节又对应很多字。引擎靠词库把可能的读法拼成整句候选，首选是它按词频估计最可能的那一个。词频只看单个词常不常见，看不出整句读起来顺不顺。")}
@@ -201,7 +203,7 @@ export function ModelPage() {
               <MarkedItem marks={<RustIcon size={15} />}>
                 <a href={CRATE} target="_blank" rel="noreferrer" className="font-mono">chinese-ime-lm</a>
                 {t("：Rust 写的引擎直接依赖，")}
-                <code className="rounded-md bg-panel px-1.5 py-px font-mono text-[13px] text-ink">cargo add chinese-ime-lm</code>
+                <code className="rounded-md bg-panel px-1.5 py-px text-[13px] text-ink">cargo add chinese-ime-lm</code>
               </MarkedItem>
               <MarkedItem marks={<RustIcon size={15} />} className="mt-2">
                 <a href={CRATE_FFI} target="_blank" rel="noreferrer" className="font-mono">chinese-ime-lm-ffi</a>

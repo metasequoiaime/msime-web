@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { HighlightedCode } from "./code";
 import { CommunitySection } from "./community-section";
 import { HARMONY_APPGALLERY_URL, PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution, type SitePlatform } from "./data/platforms";
 import { HomeHero } from "./home/hero";
@@ -241,10 +242,7 @@ export function HomePage() {
                 <h3 className="m-0 min-w-0 text-[21px] font-bold text-ink">{t(way.title)}</h3>
               </div>
               <p className="m-0 mt-4 text-[15.5px] leading-[1.9] text-body">{t(way.desc)}</p>
-              {/* `font-code`, not `font-mono`: on this site `font-mono` is the sans label face (see CodeBlock in page-engine.tsx). */}
-              <pre className="m-0 mt-4 overflow-x-auto rounded-field bg-panel-2 px-3.5 py-3 font-code text-[13px] leading-[1.7] text-ink">
-                <code className="font-code">{way.code}</code>
-              </pre>
+              <HighlightedCode code={way.code} language="bash" className="mt-4" />
               <div className="mt-auto flex flex-wrap gap-3 pt-6">
                 <AnchorButton href={way.href} variant="secondary" size="md">
                   {way.linkMark}

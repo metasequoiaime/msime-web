@@ -5,9 +5,8 @@ import { toTraditional } from "../shared/translate";
 import { localeHref } from "../shared/locales";
 import { GUIDE_NAMES } from "../shared/site-seo";
 import MarkdownIt from "markdown-it";
-import "./prism";
-// The core only: the package's main entry bundles plugins that touch Element at load, which the static render (linkedom: a document, no Element) does not have.
-import Prism from "prismjs/components/prism-core";
+// Ahead of the grammars, which extend the core as they load (see prism-runtime.ts).
+import Prism from "./prism-runtime";
 import "prismjs/components/prism-markup";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";

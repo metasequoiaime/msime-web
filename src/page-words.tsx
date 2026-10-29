@@ -263,7 +263,7 @@ export function WordsPage() {
             <h2 className={cx(stepTitleClass, "mt-8")}>{t("2. 确认并提交")}</h2>
             {t(preview.length > 0 && <>
               <p className={cx(hintClass, "mt-1.5")}>{t(PREVIEW_HINTS[kind])}</p>
-              <pre className="m-0 mt-2 overflow-x-auto rounded-field bg-panel-2 px-4 py-3 font-mono text-[13px] leading-[1.7] text-body [tab-size:12]">{preview.join("\n")}</pre>
+              <pre className="m-0 mt-2 overflow-x-auto rounded-field bg-panel-2 px-4 py-3 text-[13px] leading-[1.7] text-body [tab-size:12]">{preview.join("\n")}</pre>
             </>)}
             <fieldset className="m-0 mt-4 min-w-0 border-0 p-0" disabled={busy}>
               <label className="flex cursor-pointer items-start gap-3 text-sm leading-[1.75] text-body"><input className={cx(checkClass, "mt-1")} name="consent" type="checkbox" required checked={consent} onChange={event => setConsent(event.target.checked)} /><span>{t("我同意将以上词条和备注公开发布到 GitHub，并理解词条需经维护者审核，可能不会被收录；我已阅读并同意")}<LegalDocumentLinks />{t("。")}</span></label>

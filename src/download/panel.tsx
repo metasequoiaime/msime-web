@@ -356,7 +356,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
         {/* HarmonyOS NEXT 不允许普通用户安装 HAP 文件，这里只给开发者一句调试安装的条件，不提供 HAP 下载。 */}
         <p className="m-0 mt-4 text-[13.5px] leading-[1.75] text-muted">
           {t("开发者：调试签名的 HAP 只能安装在已登记到调试 Profile 的设备上，需打开开发者模式并用 ")}
-          <code className="font-mono text-[12.5px]">hdc install</code>
+          <code className="text-[12.5px]">hdc install</code>
           {t(" 安装，见")}
           <a className="font-medium text-accent-ink hover:text-ink" href={HARMONY_BUILD_GUIDE_URL} target="_blank" rel="noreferrer">
             {t("构建说明")}
