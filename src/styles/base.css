@@ -16,10 +16,6 @@
     color: var(--ink);
   }
 
-  :where(code, kbd, samp, pre) {
-    font-family: var(--font-code);
-  }
-
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;

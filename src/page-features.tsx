@@ -135,7 +135,7 @@ const breakAtSeparators = (path: string) =>
   path.split(/(?<=[\\/])/).flatMap((part, index, all) => (index === 0 ? [part] : [<wbr key={all.slice(0, index).join("")} />, part]));
 
 /** Inline code inside running text. */
-const INLINE_CODE = "rounded-md bg-panel-2 px-1.5 py-px font-mono text-[0.88em] text-ink";
+const INLINE_CODE = "rounded-md bg-panel-2 px-1.5 py-px text-[0.88em] text-ink";
 
 /** One feature card: eyebrow, h2, optional lead and an optional control group aligned to the right on wide screens. */
 function FeatureBlock({ eyebrow, title, lead, control, children }: { eyebrow: string; title: string; lead?: ReactNode; control?: ReactNode; children?: ReactNode }) {
@@ -309,7 +309,7 @@ export function FeaturesPage() {
                 <div key={label} className="min-w-0">
                   <span className="mb-1.5 block text-[13px] font-medium text-accent-ink">{t(label)}</span>
                   {/* 词库是制表符分隔的三列，把制表位摆出来才看得出「三列」 */}
-                  <pre className="m-0 overflow-x-auto rounded-field bg-panel-2 px-3.5 py-3 font-mono text-[13px] leading-[1.7] text-ink [tab-size:12]">
+                  <pre className="m-0 overflow-x-auto rounded-field bg-panel-2 px-3.5 py-3 text-[13px] leading-[1.7] text-ink [tab-size:12]">
                     <code>{sample}</code>
                   </pre>
                 </div>
@@ -376,7 +376,7 @@ function ShippedDictionary({ dictionary }: { dictionary: Dictionary }) {
           >
             <span className="basis-full text-ink lg:basis-auto">{t(file.label)}</span>
             <span className="min-w-0 [overflow-wrap:anywhere] lg:whitespace-nowrap lg:pr-3">
-              <code className="rounded-md bg-panel px-1.5 py-px font-mono text-[12.5px] text-ink">{file.name}</code>
+              <code className="rounded-md bg-panel px-1.5 py-px text-[12.5px] text-ink">{file.name}</code>
             </span>
             <span className="ml-auto text-right text-[13px] lg:ml-0 text-muted tabular-nums">{t(readableSize(file.size))}</span>
           </li>

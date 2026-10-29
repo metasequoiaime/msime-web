@@ -64,6 +64,8 @@
   --font-heading: var(--site-font-sans);
   --font-mono: var(--site-font-sans);
   --font-code: "Cascadia Code", Consolas, "SFMono-Regular", Menlo, Monaco, "Liberation Mono", "Noto Sans Mono", monospace;
+  /* Preflight gives code, kbd, samp and pre Tailwind's default mono face, which follows --font-mono unless set here. On this site --font-mono is the sans label face, so without this every code block outside the guides rendered in a proportional font; a rule in the base layer cannot fix it, because preflight sits in that layer too and its element selectors outrank a :where(). */
+  --default-mono-font-family: var(--font-code);
 
   --color-bg: var(--bg);
   --color-bg-t: var(--bg-t);

@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
+import { type CodeLanguage, HighlightedCode, InlineCode } from "./code";
 import { LocaleLink } from "./locale-link";
 import { INTEGRATION_SECTIONS } from "./integration/sections";
+import { ModelEngineRelation } from "./integration/relation";
 import { PageHero } from "./page-content";
 import { SectionNav } from "./section-nav";
 import { usePageMeta } from "./page-meta";
@@ -88,19 +90,13 @@ const C_HOSTS = [
   ["Dart", "dart:ffi"],
 ] as const;
 
-function InlineCode({ children }: { children: ReactNode }) {
-  return <code className="rounded-md bg-panel px-1.5 py-px font-code text-[13px] text-ink [overflow-wrap:anywhere] [box-decoration-break:clone]">{children}</code>;
-}
-
-/** Code is shown as written in the repository; the caller converts it only when it holds a Chinese placeholder (the data pack's version), since conversion touches nothing but Han characters. `font-code`, not `font-mono`: on this site `font-mono` is the sans label face, and Tailwind's preflight (which sets `pre` and `code` to that face) outranks the `:where()` rule in base.css. */
-function CodeBlock({ label, code }: { label: string; code: string }) {
+/** Code is shown as written in the repository; the caller converts it only when it holds a Chinese placeholder (the data pack's version), since conversion touches nothing but Han characters. */
+function CodeBlock({ label, code, language }: { label: string; code: string; language: CodeLanguage }) {
   const { t } = useLocale();
   return (
     <figure className="m-0 mt-4 min-w-0">
       <figcaption className="mb-1.5 text-[13px] font-medium text-accent-ink">{t(label)}</figcaption>
-      <pre className="m-0 overflow-x-auto rounded-field bg-panel-2 px-3.5 py-3 font-code text-[13px] leading-[1.7] text-ink">
-        <code className="font-code">{code}</code>
-      </pre>
+      <HighlightedCode code={code} language={language} />
     </figure>
   );
 }
@@ -164,6 +160,7 @@ export function EnginePage() {
       <SectionNav group={INTEGRATION_SECTIONS} current="/engine/" />
       <main className="w-full">
         <Container>
+          <ModelEngineRelation current="/engine/" />
           <NumberedSection index={1} title="它是什么" id="engine-what">
             <p className="m-0">
               {t("一个开箱即用的拼音与多语言输入引擎：组字状态、各输入方案、词库查询、整句排序和学习都在里面，水杉输入法的 macOS、Linux、手机和网页版用的就是它。候选窗、键位映射、和 fcitx5、IBus、TSF 或手机键盘框架的对接，由接入它的输入法自己写。")}
@@ -202,8 +199,8 @@ export function EnginePage() {
             <p className="m-0">
               {t("一条命令加依赖，SQLite 已经编进引擎，不用另装任何库，也不用克隆仓库：")}
             </p>
-            <CodeBlock label="添加依赖" code="cargo add msime-engine" />
-            <CodeBlock label="打一句全拼，选第一个候选上屏" code={RUST_SNIPPET} />
+            <CodeBlock label="添加依赖" code="cargo add msime-engine" language="bash" />
+            <CodeBlock label="打一句全拼，选第一个候选上屏" code={RUST_SNIPPET} language="rust" />
             <p className="m-0 mt-3">
               {t("引擎不带词库，第一个路径是解开的数据包（见下面「数据」），工作目录用来放学习日志和工作词库，两者都要是绝对路径。数据换了就换一个 content id（最后那个参数）。会话结束、释放租约之后调 ")}
               <InlineCode>shutdown()</InlineCode>
@@ -236,8 +233,8 @@ export function EnginePage() {
               <InlineCode>msime-engine.pc</InlineCode>
               {t("，以及一个可以直接编译的 C 示例。函数一律以 msime_engine_ 开头，带 ABI 版本号，头文件里写了每个函数的说明。")}
             </p>
-            <CodeBlock label="编译" code="cc app.c $(pkg-config --cflags --libs msime-engine)" />
-            <CodeBlock label="调用顺序（节选）" code={C_SNIPPET} />
+            <CodeBlock label="编译" code="cc app.c $(pkg-config --cflags --libs msime-engine)" language="bash" />
+            <CodeBlock label="调用顺序（节选）" code={C_SNIPPET} language="c" />
             <p className="m-0 mt-3">{t("能调用 C 函数的语言都能用它：")}</p>
             {/* One column on phones, so every language sits above its note instead of only the long ones wrapping. */}
             <dl className="m-0 mt-2 grid grid-cols-1 gap-x-4 sm:grid-cols-[11em_minmax(0,1fr)]">
@@ -270,7 +267,7 @@ export function EnginePage() {
               <InlineCode>{t("msime-engine-data-quanpin-<词库版本>.tar.gz")}</InlineCode>
               {t("（Windows 用同名的 .zip），解开的目录就是数据目录，够全拼和双拼用。Rust 和 C 用的是同一个包。")}
             </p>
-            <CodeBlock label="数据包的内容" code={t(DATA_SNIPPET)} />
+            <CodeBlock label="数据包的内容" code={t(DATA_SNIPPET)} language="text" />
             <p className="m-0 mt-3">
               {t("这些文件逐字节取自 msime-dictionary 的 dict-v* 发布，也可以从那里逐个下载。")}
             </p>

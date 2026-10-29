@@ -176,9 +176,9 @@
     font-size: inherit;
   }
 
-  /* ---- Syntax highlighting (Prism tokens from markdown.ts) ---- */
+  /* ---- Syntax highlighting (Prism tokens from markdown.ts, and from HighlightedCode in code.tsx for the code samples outside the guides) ---- */
   /* Colours sit on --panel-2, the code block's background; the dark set repeats for system dark, as tokens.css does. */
-  .docs-content {
+  :is(.docs-content, .code-highlight) {
     --code-comment: #6E7E72;
     --code-keyword: #1E7A44;
     --code-string: #9A5A22;
@@ -188,7 +188,7 @@
     --code-tag: #B0482A;
   }
 
-  [data-theme="dark"] .docs-content {
+  [data-theme="dark"] :is(.docs-content, .code-highlight) {
     --code-comment: #7E9886;
     --code-keyword: #7FE08E;
     --code-string: #F2C97D;
@@ -199,7 +199,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    [data-theme="system"] .docs-content {
+    [data-theme="system"] :is(.docs-content, .code-highlight) {
       --code-comment: #7E9886;
       --code-keyword: #7FE08E;
       --code-string: #F2C97D;
@@ -210,14 +210,14 @@
     }
   }
 
-  .docs-content pre .token.comment { color: var(--code-comment); font-style: italic; }
-  .docs-content pre :is(.token.keyword, .token.boolean, .token.important) { color: var(--code-keyword); }
-  .docs-content pre :is(.token.string, .token.attr-value, .token.template-string) { color: var(--code-string); }
-  .docs-content pre :is(.token.function, .token.class-name, .token.builtin) { color: var(--code-function); }
-  .docs-content pre .token.number { color: var(--code-number); }
-  .docs-content pre :is(.token.property, .token.attr-name, .token.parameter, .token.literal-property, .token.variable) { color: var(--code-property); }
-  .docs-content pre .token.tag { color: var(--code-tag); }
-  .docs-content pre :is(.token.punctuation, .token.operator) { color: var(--muted); }
+  :is(.docs-content pre, .code-highlight) .token.comment { color: var(--code-comment); font-style: italic; }
+  :is(.docs-content pre, .code-highlight) :is(.token.keyword, .token.boolean, .token.important) { color: var(--code-keyword); }
+  :is(.docs-content pre, .code-highlight) :is(.token.string, .token.attr-value, .token.template-string) { color: var(--code-string); }
+  :is(.docs-content pre, .code-highlight) :is(.token.function, .token.class-name, .token.builtin) { color: var(--code-function); }
+  :is(.docs-content pre, .code-highlight) .token.number { color: var(--code-number); }
+  :is(.docs-content pre, .code-highlight) :is(.token.property, .token.attr-name, .token.parameter, .token.literal-property, .token.variable) { color: var(--code-property); }
+  :is(.docs-content pre, .code-highlight) .token.tag { color: var(--code-tag); }
+  :is(.docs-content pre, .code-highlight) :is(.token.punctuation, .token.operator) { color: var(--muted); }
 
   /* ---- Keys and glyph samples (markUpKeystrokes / markUpGlyphSamples) ---- */
   /* A key is a keycap: framed, with a bottom edge. The `+` between keys stays outside the caps, so a chord reads as separate keys. */
