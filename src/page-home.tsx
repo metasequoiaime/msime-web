@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { CommunitySection } from "./community-section";
 import { HARMONY_APPGALLERY_URL, PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution, type SitePlatform } from "./data/platforms";
 import { HomeHero } from "./home/hero";
@@ -6,7 +7,7 @@ import { LocaleLink } from "./locale-link";
 import { usePageMeta } from "./page-meta";
 import { useLocale } from "./use-locale";
 import { useReveal } from "./use-reveal";
-import { AnchorButton, Card, Container, Grove, LinkButton, LogoMark, Pill, PlatformIcon, SectionHeading, cx, type GroveTree } from "./ui";
+import { AnchorButton, Card, Container, GitHubIcon, Grove, LinkButton, LogoMark, Pill, PlatformIcon, RustIcon, SectionHeading, cx, type GroveTree } from "./ui";
 
 const FEATURES = [
   {
@@ -54,6 +55,33 @@ const BANNER_FAR: GroveTree[] = [[560, 247, 0.9], [640, 264, 0.8], [760, 230, 1]
 const BANNER_NEAR: GroveTree[] = [[700, 145, 1.5], [830, 60, 2], [960, 128, 1.6], [1070, 43, 2.1]];
 
 const SECTION_SPACING = "pt-[clamp(80px,10vw,128px)]";
+
+/** Prebuilt C libraries and the minimal data pack hang off the msime-engine-capi-v* releases of the main repository, which it shares with the apps' releases; the same filter as on /engine/ lists only them. */
+const ENGINE_CAPI_RELEASES = "https://github.com/metasequoiaime/msime/releases?q=msime-engine-capi&expanded=true";
+
+/** The two ways into the engine library, each with the first command a developer runs; /engine/ has the full walkthrough. */
+const ENGINE_WAYS: readonly { id: string; mark: ReactNode; title: string; desc: string; code: string; href: string; link: string; linkMark: ReactNode }[] = [
+  {
+    id: "rust",
+    mark: <RustIcon size={24} />,
+    title: "Rust：msime-engine",
+    desc: "Rust 项目直接从 crates.io 依赖，SQLite 已经编进引擎，不用另装任何库。",
+    code: "cargo add msime-engine",
+    href: "https://crates.io/crates/msime-engine",
+    link: "crates.io 上的 msime-engine",
+    linkMark: <RustIcon size={16} />,
+  },
+  {
+    id: "c",
+    mark: "C",
+    title: "C 库：每种语言都能调用",
+    desc: "Linux、macOS、Windows 的预编译归档，带头文件和 pkg-config。C、C++、Swift、Kotlin、Go、Python 等能经 C FFI 调用的语言都能用。",
+    code: "cc app.c $(pkg-config --cflags --libs msime-engine)",
+    href: ENGINE_CAPI_RELEASES,
+    link: "下载预编译 C 库",
+    linkMark: <GitHubIcon size={16} />,
+  },
+];
 
 export function HomePage() {
   const { t } = useLocale();
@@ -136,11 +164,7 @@ export function HomePage() {
               id="home-platforms"
               title={t("六个平台原生体验，网页也能用")}
               lead={
-                <>
-                  {t("五个平台共用 Rust 输入引擎；Windows 正式版仍独立开发，基于同一引擎的新版正在预发布。同一个引擎编译成 WebAssembly，可以嵌进任何网页；其他输入法也能把它当作")}
-                  <LocaleLink to="/engine/">{t("引擎库")}</LocaleLink>
-                  {t("嵌入。")}
-                </>
+                t("五个平台共用 Rust 输入引擎；Windows 正式版仍独立开发，基于同一引擎的新版正在预发布。同一个引擎编译成 WebAssembly，可以嵌进任何网页。")
               }
               action={
                 <LinkButton to="/download/" variant="soft">
@@ -191,6 +215,45 @@ export function HomePage() {
             </div>
           )}
         </Card>
+      </Container>
+
+      <Container as="section" width="page" className={SECTION_SPACING}>
+        <div data-reveal>
+          <SectionHeading
+            id="home-engine"
+            eyebrow={t("引擎库")}
+            title={t("把水杉的输入引擎嵌进你的输入法")}
+            lead={t("全拼、双拼和多语言的输入引擎单独发布成库，其他输入法可以直接嵌入：按键交给它，候选、排序和学习由它给出，界面和与系统的对接留给你。引擎代码以 MPL-2.0 授权。")}
+            action={
+              <LinkButton to="/engine/" variant="soft">
+                {t("了解引擎库 →")}
+              </LinkButton>
+            }
+          />
+        </div>
+        <div className="mt-[clamp(32px,4vw,48px)] grid grid-cols-1 gap-4 lg:grid-cols-2" data-reveal-stagger>
+          {ENGINE_WAYS.map((way) => (
+            <Card key={way.id} className="flex min-w-0 flex-col p-[clamp(24px,3vw,32px)]" data-reveal>
+              <div className="flex items-center gap-4">
+                <div className="grid size-11 flex-none place-items-center rounded-field bg-accent-soft font-code text-lg font-bold text-accent" aria-hidden="true">
+                  {way.mark}
+                </div>
+                <h3 className="m-0 min-w-0 text-[21px] font-bold text-ink">{t(way.title)}</h3>
+              </div>
+              <p className="m-0 mt-4 text-[15.5px] leading-[1.9] text-body">{t(way.desc)}</p>
+              {/* `font-code`, not `font-mono`: on this site `font-mono` is the sans label face (see CodeBlock in page-engine.tsx). */}
+              <pre className="m-0 mt-4 overflow-x-auto rounded-field bg-panel-2 px-3.5 py-3 font-code text-[13px] leading-[1.7] text-ink">
+                <code className="font-code">{way.code}</code>
+              </pre>
+              <div className="mt-auto flex flex-wrap gap-3 pt-6">
+                <AnchorButton href={way.href} variant="secondary" size="md">
+                  {way.linkMark}
+                  {t(way.link)}
+                </AnchorButton>
+              </div>
+            </Card>
+          ))}
+        </div>
       </Container>
 
       <CommunitySection />

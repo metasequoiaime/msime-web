@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { LocaleLink } from "./locale-link";
+import { INTEGRATION_SECTIONS } from "./integration/sections";
 import { PageHero } from "./page-content";
+import { SectionNav } from "./section-nav";
 import { usePageMeta } from "./page-meta";
 import { AnchorButton, Card, Container, cx, GitHubIcon, LinkButton, RustIcon } from "./ui";
 import { useLocale } from "./use-locale";
@@ -119,8 +121,9 @@ function LinkRow({ children }: { children: ReactNode }) {
 
 function NumberedSection({ index, title, id, children }: { index: number; title: string; id: string; children: ReactNode }) {
   const { t } = useLocale();
+  // The first section sits right under the sub-navigation's underline, so only the later ones draw their own divider.
   return (
-    <section aria-labelledby={id} className="flex flex-wrap gap-x-[clamp(24px,4vw,56px)] gap-y-3 py-[clamp(24px,3vw,36px)] shadow-divider-t-2" data-reveal>
+    <section aria-labelledby={id} className="flex flex-wrap gap-x-[clamp(24px,4vw,56px)] gap-y-3 py-[clamp(24px,3vw,36px)] not-first:shadow-divider-t-2" data-reveal>
       <div className="max-w-full flex-[0_0_220px]">
         <p className="m-0 font-mono text-xs tracking-[0.16em] text-accent-ink" aria-hidden="true">
           {String(index).padStart(2, "0")}
@@ -153,12 +156,14 @@ export function EnginePage() {
   return (
     <>
       <PageHero
+        variant="plain"
         kicker="引擎库"
         title="把水杉的输入引擎嵌进你的输入法"
         lead="水杉输入法的 Rust 输入引擎也单独发布成库。你的输入法负责界面和与系统的对接，按键交给它，候选、排序、上屏文字和学习由它给出。Rust 项目直接依赖，C、C++、Swift、Kotlin、Go、Python 等语言用预编译的 C 库。引擎代码以 MPL-2.0 授权。"
       />
+      <SectionNav group={INTEGRATION_SECTIONS} current="/engine/" />
       <main className="w-full">
-        <Container className="pt-[clamp(28px,4vw,48px)]">
+        <Container>
           <NumberedSection index={1} title="它是什么" id="engine-what">
             <p className="m-0">
               {t("一个开箱即用的拼音与多语言输入引擎：组字状态、各输入方案、词库查询、整句排序和学习都在里面，水杉输入法的 macOS、Linux、手机和网页版用的就是它。候选窗、键位映射、和 fcitx5、IBus、TSF 或手机键盘框架的对接，由接入它的输入法自己写。")}

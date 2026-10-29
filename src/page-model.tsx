@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
+import { INTEGRATION_SECTIONS } from "./integration/sections";
 import { PageHero } from "./page-content";
+import { SectionNav } from "./section-nav";
 import { usePageMeta } from "./page-meta";
 import { textareaClass } from "./feedback/styles";
 import { AndroidIcon, AnchorButton, AppleIcon, Card, Container, cx, GitHubIcon, HarmonyOSIcon, HuggingFaceIcon, LinkButton, LinuxIcon, RustIcon, WindowsIcon } from "./ui";
@@ -58,8 +60,9 @@ function MarkedItem({ marks, className, children }: { marks: ReactNode; classNam
 
 function NumberedSection({ index, title, id, children }: { index: number; title: string; id: string; children: ReactNode }) {
   const { t } = useLocale();
+  // The first section sits right under the sub-navigation's underline, so only the later ones draw their own divider.
   return (
-    <section aria-labelledby={id} className="flex flex-wrap gap-x-[clamp(24px,4vw,56px)] gap-y-3 py-[clamp(24px,3vw,36px)] shadow-divider-t-2" data-reveal>
+    <section aria-labelledby={id} className="flex flex-wrap gap-x-[clamp(24px,4vw,56px)] gap-y-3 py-[clamp(24px,3vw,36px)] not-first:shadow-divider-t-2" data-reveal>
       <div className="max-w-full flex-[0_0_220px]">
         <p className="m-0 font-mono text-xs tracking-[0.16em] text-accent-ink" aria-hidden="true">
           {String(index).padStart(2, "0")}
@@ -82,12 +85,14 @@ export function ModelPage() {
   return (
     <>
       <PageHero
+        variant="plain"
         kicker="开源模型"
         title="神经联想"
         lead="打一整句拼音时，引擎会拼出好几种读法。神经联想用一个只有几 MB 的字级语言模型，看着前文在这些读法里挑出更通顺的那一个。模型、代码和评测都开源，别的输入法也能直接用。"
       />
+      <SectionNav group={INTEGRATION_SECTIONS} current="/model/" />
       <main className="w-full">
-        <Container className="pt-[clamp(28px,4vw,48px)]">
+        <Container>
           <NumberedSection index={1} title="它做什么" id="model-what">
             <p className="m-0">
               {t("拼音本身有歧义：同一串字母可以切成不同的音节，每个音节又对应很多字。引擎靠词库把可能的读法拼成整句候选，首选是它按词频估计最可能的那一个。词频只看单个词常不常见，看不出整句读起来顺不顺。")}
