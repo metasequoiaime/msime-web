@@ -776,6 +776,7 @@ function SiteFooter({ inert }: { inert: boolean }) {
             <Link className={footerLink} to="/gallery/">{t("水杉娘画廊")}</Link>
             <Link className={footerLink} to="/code/">{t("开源代码")}</Link>
             <Link className={footerLink} to="/model/">{t("神经联想")}</Link>
+            <Link className={footerLink} to="/engine/">{t("引擎库")}</Link>
             <Link className={footerLink} to="/about/">{t("关于")}</Link>
             <Link className={footerLink} to="/privacy/">{t("隐私政策")}</Link>
             <Link className={footerLink} to="/terms/">{t("用户协议")}</Link>

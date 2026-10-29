@@ -39,12 +39,17 @@ export function CodePage() {
                   <h2 id={headingId} className="m-0 mt-2 font-heading text-[21px] leading-[1.4] font-bold text-ink">
                     {t(group.title)}
                   </h2>
+                  {group.page && (
+                    <LocaleLink to={group.page.to} className="mt-2 inline-block text-sm font-semibold text-accent-ink no-underline hover:text-ink">
+                      {t(group.page.label)}
+                    </LocaleLink>
+                  )}
                 </div>
                 <ul className="m-0 min-w-0 flex-[1_1_480px] list-none p-0">
                   {group.repositories.map((repository) => (
                     <li key={repository.name}>
                       <a
-                        href={repositoryUrl(repository.name)}
+                        href={repository.href ?? repositoryUrl(repository.name)}
                         target="_blank"
                         rel="noreferrer"
                         className="-mx-3 flex flex-wrap items-baseline gap-x-5 gap-y-1 rounded-field px-3 py-3.5 text-body no-underline transition-colors duration-150 hover:bg-panel hover:text-body"
