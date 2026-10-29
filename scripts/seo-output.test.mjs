@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { test } from 'node:test';
 import { parseHTML } from 'linkedom';
 import { seoPages, pageSeo, markdownPath, SITE_ORIGIN } from '../shared/site-seo.ts';
@@ -526,4 +526,20 @@ test('首页平台卡片按平台显示镜像合并后的累计值', async t => 
       assert.deepEqual([values.windows, Number(doc.querySelector('[data-platform="windowsRust"] strong')?.textContent?.replaceAll(',', '') ?? 0), values.macos, values.linux, values.android, values.harmony], scenario.expected.slice(1));
     }
   }
+});
+
+test('the terms, the privacy policy and the login dialog ask for explicit consent instead of implying it', () => {
+  // The phrases AppGallery rejected under guideline 7.5, and the old terms' clauses that treated logging in or continued use as acceptance.
+  const implied = ['登录即表示', '登录即代表', '登入即表示', '登入即代表', '登錄即表示', '登錄即代表', '开始使用本服务，即表示', '開始使用本服務，即表示', '的，视为接受', '的，視為接受'];
+  for (const path of ['/terms/', '/privacy/', '/zh-TW/terms/', '/zh-TW/privacy/']) {
+    const text = document(path).querySelector('#root').textContent;
+    for (const phrase of implied) assert.ok(!text.includes(phrase), `${path}: implied consent "${phrase}"`);
+  }
+  assert.ok(document('/terms/').querySelector('#root').textContent.includes('主动勾选「我已阅读并同意《用户协议》和《隐私政策》」'));
+  assert.equal(document('/privacy/').querySelector('h1').textContent, '隐私政策');
+  assert.equal(document('/zh-TW/privacy/').querySelector('h1').textContent, '隱私政策');
+  const bundle = readdirSync('dist/assets').filter(name => name.endsWith('.js')).map(name => read(`assets/${name}`)).join('\n');
+  for (const phrase of implied) assert.ok(!bundle.includes(phrase), `bundle: implied consent "${phrase}"`);
+  assert.ok(bundle.includes('我已阅读并同意《用户协议》和《隐私政策》'), 'bundle: login consent checkbox');
+  assert.ok(bundle.includes('请先阅读并勾选同意《用户协议》和《隐私政策》'), 'bundle: login consent prompt');
 });

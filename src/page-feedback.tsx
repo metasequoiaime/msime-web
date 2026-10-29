@@ -10,6 +10,7 @@ import type { FormEvent } from "react";
 import { contactFields, feedbackSchema, formatIssue, targets } from "../shared/feedback";
 import type { Feedback } from "../shared/feedback";
 import { usePageMeta } from "./page-meta";
+import { LegalDocumentLinks } from "./legal-links";
 import { markdown } from "./markdown";
 import { FeedbackResponseError, readFeedbackResponse } from "./feedback-response";
 import { loadTurnstile } from "./turnstile";
@@ -436,7 +437,7 @@ export function FeedbackPage() {
                 <fieldset className="m-0 min-w-0 border-0 p-0" disabled={busy || readingImages}>
                   <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-sm leading-[1.75] text-body">
                     <input className={cx(checkClass, "mt-[5px]")} name="consent" type="checkbox" required checked={consent} onChange={event => setConsent(event.target.checked)} />
-                    <span>{t("我同意将以上文字、截图及自愿填写的联系方式公开发布到 GitHub，确认不包含密码、令牌或其他不愿公开的信息。")}</span>
+                    <span>{t("我同意将以上文字、截图及自愿填写的联系方式公开发布到 GitHub，确认不包含密码、令牌或其他不愿公开的信息；我已阅读并同意")}<LegalDocumentLinks />{t("。")}</span>
                   </label>
                 </fieldset>
                 <div className="feedback-verification mt-5 flex flex-col items-start gap-2 rounded-field outline-none" tabIndex={-1}>

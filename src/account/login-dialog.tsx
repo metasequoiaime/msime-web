@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { authConfigQuery, webLoginAvailable } from "../data/account";
 import { checkClass } from "../feedback/styles";
-import { LocaleLink } from "../locale-link";
+import { LegalDocumentLinks } from "../legal-links";
 import { Button, CloseIcon, useToast } from "../ui";
 import { useLocale } from "../use-locale";
 import { EmailLogin } from "./login-email";
@@ -99,9 +99,7 @@ export function LoginDialog({ onClose, onSignedIn }: { onClose: () => void; onSi
               />
               {t("我已阅读并同意")}
             </label>
-            <LocaleLink to="/terms/" onClick={onClose}>{t("《用户协议》")}</LocaleLink>
-            {t("和")}
-            <LocaleLink to="/privacy/" onClick={onClose}>{t("《隐私政策》")}</LocaleLink>
+            <LegalDocumentLinks />
           </p>
           {prompting && <p id={promptId} className="m-0 text-xs text-warn" role="alert">{t(CONSENT_PROMPT)}</p>}
         </div>
