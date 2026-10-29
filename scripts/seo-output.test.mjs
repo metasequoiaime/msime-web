@@ -183,15 +183,15 @@ test('the header has one 反馈 entry for the two feedback forms, which switch b
   }
 });
 
-test('the header has one 接入 entry for 神经联想 and 引擎库, which switch between each other under their heroes', () => {
-  const sections = ['/model/', '/engine/'];
-  for (const [prefix, entry, area, labels] of [['', '接入', '接入栏目', ['神经联想', '引擎库']], ['/zh-TW', '接入', '接入欄目', ['神經聯想', '引擎庫']]]) {
+test('the header has one 接入 entry for 引擎库 and 神经联想, which switch between each other under their heroes', () => {
+  const sections = ['/engine/', '/model/'];
+  for (const [prefix, entry, area, labels] of [['', '接入', '接入栏目', ['引擎库', '神经联想']], ['/zh-TW', '接入', '接入欄目', ['引擎庫', '神經聯想']]]) {
     for (const base of [...sections, '/']) {
       const doc = document(`${prefix}${base}`);
       for (const menu of ['.nav-list', '#nav-menu']) {
         const links = [...doc.querySelectorAll(`${menu} a`)];
         assert.equal(links.filter(link => sections.some(section => link.getAttribute('href') === `${prefix}${section}`)).length, 1, `${prefix}${base} ${menu}: one 接入 entry`);
-        const integration = links.find(link => link.getAttribute('href') === `${prefix}/model/`);
+        const integration = links.find(link => link.getAttribute('href') === `${prefix}/engine/`);
         assert.equal(integration.textContent.trim(), entry);
         assert.equal(integration.getAttribute('aria-current'), base === '/' ? null : 'page', `${prefix}${base} ${menu}`);
       }
