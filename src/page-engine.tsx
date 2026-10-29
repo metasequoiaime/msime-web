@@ -26,7 +26,7 @@ const RUST_SNIPPET = `use msime_engine::{prepare_runtime_paths, DictionaryAccess
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let resources = std::path::absolute("msime-engine-data-quanpin-2.0.41")?;
     let work = std::env::temp_dir().join("msime-quickstart");
-    let paths = prepare_runtime_paths(&resources, &work.join("user"), &work.join("cache"), "dict-v2_0_39")?;
+    let paths = prepare_runtime_paths(&resources, &work.join("user"), &work.join("cache"), "dict-v2_0_41")?;
     let access = DictionaryAccess::try_session(&paths.user_data, &paths.dictionaries)?
         .ok_or("the dictionaries are being maintained")?;
     let mut session = Session::new(SessionOptions::new(paths))?;
@@ -52,7 +52,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 /** The call order from crates/engine-capi/README.md「生命周期」; the compilable program is examples/c/example.c in every archive. */
 const C_SNIPPET = `#include <msime_engine.h>
 
-msime_engine_prepare_runtime(&paths, "dict-v2_0_39", 12, &dictionaries);
+msime_engine_prepare_runtime(&paths, "dict-v2_0_41", 12, &dictionaries);
 msime_engine_session_new(options_json, len, &session);
 msime_engine_key_char(session, 'n', 0, &result);
 msime_engine_state_get(session, &state);
