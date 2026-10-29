@@ -14,7 +14,8 @@ const ERRORS: Record<string, string> = {
 
 type Challenge = { challenge_id: string; expires_in: number; expiresAt: number };
 
-export function EmailLogin({ onBusyChange, onSignedIn }: { onBusyChange: (busy: boolean) => void; onSignedIn: () => void }) {
+/** `confirmConsent` is the dialog's consent gate: it runs before any request and returns false (and prompts) while the box is unticked. */
+export function EmailLogin({ confirmConsent, onBusyChange, onSignedIn }: { confirmConsent: () => boolean; onBusyChange: (busy: boolean) => void; onSignedIn: () => void }) {
   const { t } = useLocale();
   const emailRef = useRef<HTMLInputElement>(null);
   const codeRef = useRef<HTMLInputElement>(null);
@@ -87,13 +88,13 @@ export function EmailLogin({ onBusyChange, onSignedIn }: { onBusyChange: (busy: 
   };
 
   const sendCode = () => {
-    if (Date.now() < resendAt || !emailRef.current?.reportValidity()) return;
+    if (Date.now() < resendAt || !confirmConsent() || !emailRef.current?.reportValidity()) return;
     void perform("sending");
   };
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!challenge) sendCode();
-    else if (/^\d{6}$/.test(code)) void perform("signing-in");
+    else if (/^\d{6}$/.test(code) && confirmConsent()) void perform("signing-in");
   };
 
   return (

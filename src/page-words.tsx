@@ -8,6 +8,7 @@ import { createdSchema, formatLine, KIND_FIELDS, KIND_FILES, kindEntrySchemas, k
 import type { SubmissionKind } from "../shared/words";
 import { PageHero } from "./page-content";
 import { LocaleLink } from "./locale-link";
+import { LegalDocumentLinks } from "./legal-links";
 import { FEEDBACK_SECTIONS } from "./feedback/sections";
 import { SectionNav } from "./section-nav";
 import { AnchorButton, Button, Card, Container, cx } from "./ui";
@@ -265,7 +266,7 @@ export function WordsPage() {
               <pre className="m-0 mt-2 overflow-x-auto rounded-field bg-panel-2 px-4 py-3 font-mono text-[13px] leading-[1.7] text-body [tab-size:12]">{preview.join("\n")}</pre>
             </>)}
             <fieldset className="m-0 mt-4 min-w-0 border-0 p-0" disabled={busy}>
-              <label className="flex cursor-pointer items-start gap-3 text-sm leading-[1.75] text-body"><input className={cx(checkClass, "mt-1")} name="consent" type="checkbox" required checked={consent} onChange={event => setConsent(event.target.checked)} /><span>{t("我同意将以上词条和备注公开发布到 GitHub，并理解词条需经维护者审核，可能不会被收录。")}</span></label>
+              <label className="flex cursor-pointer items-start gap-3 text-sm leading-[1.75] text-body"><input className={cx(checkClass, "mt-1")} name="consent" type="checkbox" required checked={consent} onChange={event => setConsent(event.target.checked)} /><span>{t("我同意将以上词条和备注公开发布到 GitHub，并理解词条需经维护者审核，可能不会被收录；我已阅读并同意")}<LegalDocumentLinks />{t("。")}</span></label>
             </fieldset>
             <div className="feedback-verification mt-5 flex flex-col items-start gap-2 rounded-field outline-none" tabIndex={-1}><div ref={widget} /><p className={hintClass} role="status">{t(status)}</p>
               {t(!token && widgetId.current !== undefined && <Button variant="ghost" size="sm" disabled={busy} onClick={() => { if (widgetId.current !== undefined) window.turnstile?.reset(widgetId.current); }}>{t("重新验证")}</Button>)}

@@ -15,7 +15,7 @@ export const traditionalPages = {
   '/code/': { title: '原始碼與參與開發｜水杉輸入法', description: '瀏覽各平台、輸入引擎、詞庫、語言模型及文件的原始碼，了解如何參與開發。' },
   '/model/': { title: '神經聯想與整句重排模型｜水杉輸入法', description: '神經聯想以數 MB 的字級語言模型，在拼音整句候選字中挑出更通順的讀法。查看實測效果與代價、在水杉輸入法中啟用的方式，以及供其他輸入法使用的開源函式庫與模型。' },
   '/price/': { title: '價格與付費計畫｜水杉輸入法', description: '水杉輸入法目前可免費使用，查看後續自願付費支持計畫與第三方服務費用說明。' },
-  '/privacy/': { title: '隱私與連線功能說明｜水杉輸入法', description: '了解本機資料、雲端候選字、語音等連線功能的資料流程，以及關閉方式。' },
+  '/privacy/': { title: '隱私政策｜水杉輸入法', description: '了解本機資料、雲端候選字、語音等連線功能的資料流程，以及關閉方式。' },
   '/terms/': { title: '使用者協議｜水杉輸入法', description: '水杉輸入法帳號、雲端同步、社群與官網等線上服務的使用者協議：帳號與註銷、行為規範、使用者發布的內容、開源授權與第三方服務。' },
   '/docs/': { title: '使用指南｜水杉輸入法', description: '選擇 Windows、macOS、Linux、Android 或 iOS 使用指南，查看安裝、設定與疑難排解。' },
   '/docs/windows/': { title: 'Windows 安裝與使用指南｜水杉輸入法', description: 'Windows 版水杉輸入法完整使用指南：安裝、輸入方案、設定、詞庫與疑難排解。' },
