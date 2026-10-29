@@ -23,6 +23,7 @@ export default defineConfig({
         faq: resolve(projectRoot, "faq/index.html"),
         code: resolve(projectRoot, "code/index.html"),
         model: resolve(projectRoot, "model/index.html"),
+        engine: resolve(projectRoot, "engine/index.html"),
         feedback: resolve(projectRoot, "feedback/index.html"),
         words: resolve(projectRoot, "words/index.html"),
         skins: resolve(projectRoot, "skins/index.html"),

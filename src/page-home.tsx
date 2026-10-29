@@ -135,7 +135,13 @@ export function HomePage() {
             <SectionHeading
               id="home-platforms"
               title={t("六个平台原生体验，网页也能用")}
-              lead={t("五个平台共用 Rust 输入引擎；Windows 正式版仍独立开发，基于同一引擎的新版正在预发布。同一个引擎编译成 WebAssembly，可以嵌进任何网页。")}
+              lead={
+                <>
+                  {t("五个平台共用 Rust 输入引擎；Windows 正式版仍独立开发，基于同一引擎的新版正在预发布。同一个引擎编译成 WebAssembly，可以嵌进任何网页；其他输入法也能把它当作")}
+                  <LocaleLink to="/engine/">{t("引擎库")}</LocaleLink>
+                  {t("嵌入。")}
+                </>
+              }
               action={
                 <LinkButton to="/download/" variant="soft">
                   {t("前往下载页 →")}
