@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import androidPgyerQr from "../assets/download/android-pgyer-qr.png?no-inline";
+import harmonyAppTestQr from "../assets/download/harmony-apptest-qr.png?no-inline";
+import iosTestFlightQr from "../assets/download/ios-testflight-qr.png?no-inline";
 import { HARMONY_APPTEST_CODE, HARMONY_BUILD_GUIDE_URL, type SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform, ReleasePlatform } from "../platform.ts";
@@ -319,7 +322,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
     return (
       <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
         <a className="flex-none rounded-tile bg-white p-3" href={entry.href} target="_blank" rel="noreferrer" aria-label={t("打开 TestFlight 测试邀请")} onClick={reportTestFlight}>
-          <img src="/img/ios-testflight-qr.png" width={180} height={180} alt={t("iOS TestFlight 测试邀请二维码")} className="block h-[180px] w-[180px]" />
+          <img src={iosTestFlightQr} width={180} height={180} alt={t("iOS TestFlight 测试邀请二维码")} className="block h-[180px] w-[180px]" />
         </a>
         <div className="grid w-full min-w-0 justify-items-start gap-3 sm:w-auto">
           <p className="m-0 text-[15px] font-semibold text-ink">{t("用 iPhone 扫码加入测试，或点击下方链接。")}</p>
@@ -339,7 +342,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
       <div>
         <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
           <a className="flex-none rounded-tile bg-white p-3" href={entry.href} target="_blank" rel="noreferrer" aria-label={t("打开华为 AppTest 测试邀请")}>
-            <img src="/img/harmony-apptest-qr.png" width={180} height={180} alt={t("华为 AppTest 测试邀请二维码")} className="block h-[180px] w-[180px]" />
+            <img src={harmonyAppTestQr} width={180} height={180} alt={t("华为 AppTest 测试邀请二维码")} className="block h-[180px] w-[180px]" />
           </a>
           <div className="grid w-full min-w-0 justify-items-start gap-3 sm:w-auto">
             <p className="m-0 text-[15px] font-semibold text-ink">{t("用华为手机扫码加入测试，或点击下方链接。")}</p>
@@ -377,7 +380,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
       <div>
         <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
           <a className="flex-none rounded-tile bg-white p-3" href={entry.href} target="_blank" rel="noreferrer" aria-label={t("打开蒲公英下载页")} onClick={reportPgyer}>
-            <img src="/img/android-pgyer-qr.png" width={180} height={180} alt={t("Android 蒲公英下载二维码")} className="block h-[180px] w-[180px]" />
+            <img src={androidPgyerQr} width={180} height={180} alt={t("Android 蒲公英下载二维码")} className="block h-[180px] w-[180px]" />
           </a>
           <div className="grid w-full min-w-0 gap-3 sm:w-auto">
             <p className="m-0 text-[15px] font-semibold text-ink">{t("用 Android 手机扫码安装，或点击下方链接。")}</p>

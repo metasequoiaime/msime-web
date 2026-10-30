@@ -5,6 +5,8 @@ export const WINDOWS_VARIANTS = ["pure", "online", "win7"] as const;
 export type WindowsVariant = (typeof WINDOWS_VARIANTS)[number];
 export type DownloadEntry = SitePlatformEntry & { windowsVariant?: WindowsVariant };
 
+const DOWNLOAD_PLATFORM_ORDER = ["windows", "macos", "linux", "web", "ios", "harmony", "android"] as const;
+
 const WINDOWS_NAMES: Record<WindowsVariant, string> = {
   pure: "Windows 10/11（纯净版）",
   online: "Windows 10/11（联网版）",
@@ -13,7 +15,7 @@ const WINDOWS_NAMES: Record<WindowsVariant, string> = {
 
 /** Windows 产品共用平台身份，各自读取独立发布槽；缺少某版时不借用其他版本的安装包。 */
 export function downloadChoices(entries: SitePlatformEntry[]): DownloadEntry[] {
-  return entries.flatMap(entry => {
+  return entries.toSorted((a, b) => DOWNLOAD_PLATFORM_ORDER.indexOf(a.id) - DOWNLOAD_PLATFORM_ORDER.indexOf(b.id)).flatMap(entry => {
     if (entry.id !== "windows") return [entry];
     return WINDOWS_VARIANTS.map(windowsVariant => {
       const publication = windowsVariant === "pure" ? entry.release : windowsVariant === "online" ? entry.release?.experimental : entry.release?.windows7;
