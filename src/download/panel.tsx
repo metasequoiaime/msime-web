@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { HARMONY_APPGALLERY_URL, HARMONY_BUILD_GUIDE_URL, type SitePlatformEntry } from "../data/platforms.ts";
+import { HARMONY_APPTEST_CODE, HARMONY_BUILD_GUIDE_URL, type SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform, ReleasePlatform } from "../platform.ts";
 import { useDownloadMirrorsQuery } from "../data/queries";
@@ -62,7 +62,7 @@ const tileStatus = (entry: DownloadEntry) => {
   if (entry.windowsVariant === "win7") return "暂未发布";
   if (entry.distribution === "testflight") return "TestFlight";
   if (entry.distribution === "pgyer") return "测试版";
-  if (entry.distribution === "appgallery") return HARMONY_APPGALLERY_URL ? "华为应用市场" : "审核中";
+  if (entry.distribution === "appgallery") return "AppTest";
   if (entry.distribution === "source") return "开发中";
   if (entry.distribution === "sdk") return "npm";
   return "查看发布页";
@@ -332,27 +332,24 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
   if (entry.distribution === "appgallery") {
     return (
       <div>
-        {HARMONY_APPGALLERY_URL ? (
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
-            <a className={PRIMARY_ACTION} href={HARMONY_APPGALLERY_URL} target="_blank" rel="noreferrer">
-              {t("在华为应用市场安装 HarmonyOS 版")}
+        <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
+          <a className="flex-none rounded-tile bg-white p-3" href={entry.href} target="_blank" rel="noreferrer" aria-label={t("打开华为 AppTest 测试邀请")}>
+            <img src="/img/harmony-apptest-qr.png" width={180} height={180} alt={t("华为 AppTest 测试邀请二维码")} className="block h-[180px] w-[180px]" />
+          </a>
+          <div className="grid w-full min-w-0 justify-items-start gap-3 sm:w-auto">
+            <p className="m-0 text-[15px] font-semibold text-ink">{t("用华为手机扫码加入测试，或点击下方链接。")}</p>
+            <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer">
+              {t("通过 AppTest 安装 HarmonyOS 版")}
               <ExternalIcon />
             </a>
             {hint}
           </div>
-        ) : (
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
-            <div className="min-w-0">
-              <Pill tone="warn">{t("审核中")}</Pill>
-              <p className="m-0 mt-2.5 text-[15px] leading-[1.85] text-body">{t("正在提交华为应用市场审核，上架后这里提供应用市场链接。")}</p>
-              {hint}
-            </div>
-            <AnchorButton variant="secondary" href={entry.sourceUrl} className="flex-none">
-              {t("查看源码")}
-              <ExternalIcon />
-            </AnchorButton>
-          </div>
-        )}
+        </div>
+        <p className="m-0 mt-4 text-sm leading-[1.8] text-body">
+          {t("手动加入：在华为应用市场下载 AppTest，打开后输入邀请码 ")}
+          <code className="select-all break-all font-semibold text-ink">{HARMONY_APPTEST_CODE}</code>
+          {t("，加入水杉输入法测试并安装。")}
+        </p>
         {/* HarmonyOS NEXT 不允许普通用户安装 HAP 文件，这里只给开发者一句调试安装的条件，不提供 HAP 下载。 */}
         <p className="m-0 mt-4 text-[13.5px] leading-[1.75] text-muted">
           {t("开发者：调试签名的 HAP 只能安装在已登记到调试 Profile 的设备上，需打开开发者模式并用 ")}

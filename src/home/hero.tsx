@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { HARMONY_APPGALLERY_URL, PLATFORM_CATALOG, PLATFORM_NAMES, SITE_PLATFORMS } from "../data/platforms";
+import { PLATFORM_CATALOG, PLATFORM_NAMES, SITE_PLATFORMS } from "../data/platforms";
 import { LocaleLink } from "../locale-link";
 import { recognizePlatform } from "../platform";
 import { useLocale } from "../use-locale";
@@ -10,7 +10,7 @@ import { HeroDemo } from "./hero-demo";
 import { type HeroFrame, LANGUAGES, SCHEMES, type SchemeId, useHeroCycle } from "./hero-cycle";
 
 /**
- * 首屏的「下载」按钮：认出访客的系统就换成该平台的标志，带着 `?platform=` 去下载页的对应平台，那里列着 GitHub 之外的各个下载途径；iOS 直接去 TestFlight，Android 直接去蒲公英，HarmonyOS 上架后直接去华为应用市场；上架前 HarmonyOS 没有可下载的东西，和认不出系统一样给普通的「下载」。静态 HTML 和水合前的第一次渲染都是指向 /download/ 的普通「下载」，认不出系统时也退回它，所以预渲染出来的页面与水合结果一致。
+ * 首屏的「下载」按钮：认出访客的系统就换成该平台的标志，带着 `?platform=` 去下载页的对应平台，那里列着 GitHub 之外的各个下载途径；iOS 直接去 TestFlight，Android 直接去蒲公英，HarmonyOS 直接去华为 AppTest 测试邀请。静态 HTML 和水合前的第一次渲染都是指向 /download/ 的普通「下载」，认不出系统时也退回它，所以预渲染出来的页面与水合结果一致。
  */
 function HeroDownloadButton() {
   const { t } = useLocale();
@@ -18,8 +18,7 @@ function HeroDownloadButton() {
   const platform = hydrated ? recognizePlatform() : null;
   const className = "shadow-btn";
 
-  const listed = platform !== "harmony" || HARMONY_APPGALLERY_URL !== null;
-  if (platform && listed && PLATFORM_CATALOG[platform].distribution !== "source") {
+  if (platform && PLATFORM_CATALOG[platform].distribution !== "source") {
     const label = t(`下载 ${PLATFORM_NAMES[platform]} 端`);
     const logo = <PlatformIcon platform={platform} size={19} />;
     if (platform === "ios" || platform === "android" || platform === "harmony")
