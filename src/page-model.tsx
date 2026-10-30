@@ -18,6 +18,8 @@ const MODEL_4M = "https://huggingface.co/metasequoiaime/pinyin-ime-reranker-4M";
 const MODEL_25M = "https://huggingface.co/metasequoiaime/pinyin-ime-reranker-25M";
 const CRATE = "https://crates.io/crates/chinese-ime-lm";
 const CRATE_FFI = "https://crates.io/crates/chinese-ime-lm-ffi";
+const QINGJIAN = "https://github.com/qingjian-team/qingjian";
+const ZHIYI = "https://github.com/dd1000001000/zhiyi_ime";
 
 /** Brand colours: Android and Linux as Simple Icons records them, Windows as its logo is drawn (Simple Icons no longer carries Microsoft marks). Apple, HarmonyOS, Rust and GitHub are black marks, so they take the text colour and stay visible in the dark theme. */
 const WINDOWS_BLUE = "text-[#0078D4]";
@@ -137,7 +139,7 @@ export function ModelPage() {
               {t("救回和弄错分开算：用户感受到的是「它帮我改对了几句」和「它把我本来对的改错了几句」，合成一个总分就看不出后者。")}
             </p>
             <p className="m-0 mt-3 text-muted">
-              {t("样本只有 60 句，两个模型之间、以及它们和开源通用大模型之间的名次差异都在统计噪声里，不能当成质量排名。能确定的是体积和速度：")}
+              {t("样本只有 60 句，两个模型之间的名次差异在统计噪声里，和下文其他开源模型之间的差异也大多如此，不能当成质量排名。能确定的是体积和耗时：")}
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {MODELS.map((model) => (
@@ -158,7 +160,7 @@ export function ModelPage() {
               ))}
             </div>
             <p className="m-0 mt-3 text-[14px] text-muted">
-              {t("耗时在 Apple M4 Pro 上用参考实现测得。完整的测量方法、负结果和与通用模型的对比见")}{" "}
+              {t("耗时在 Apple M4 Pro 上用参考实现测得。完整的测量方法、负结果和与其他模型的对比见")}{" "}
               <LogoLink href={MEASUREMENTS} icon={<GitHubIcon size={14} className="text-ink" />}>
                 {t("测量记录")}
               </LogoLink>
@@ -166,29 +168,52 @@ export function ModelPage() {
             </p>
 
             <h3 id="model-vs-open" className="m-0 mt-8 font-heading text-[17px] leading-[1.5] font-bold text-ink">
-              {t("与开源通用模型比较")}
+              {t("与其他开源模型比较")}
             </h3>
             <p className="m-0 mt-2">
-              {t(`常有人问，为什么不直接用开源的通用小模型。同一批候选上量过几个开源通用模型：只取金标准落在候选池里的 ${BENCHMARK_CASES} 句，每句池里 6 到 7 个候选，各打分器在池内挑一个，所以下图的分母是 ${BENCHMARK_CASES}，不是上表的 ${DECODER_CASES}。「挑对了几句」那张图里的竖线是引擎原序（不重排、不用任何模型）挑对的 ${BENCHMARK_BASELINE.hits} 句；「模型体积」按实际大小画。两张图都从零画起，同一行是同一个模型。`)}
+              {t("常有人问，为什么不直接用开源的通用小模型，或者别的输入法已经训好的模型。同一批候选上量过四个开源通用模型（Qwen），和两个开源输入法自带的重排模型：")}
+              <a href={QINGJIAN} target="_blank" rel="noreferrer">{t("青简输入法")}</a>
+              {t("的含章·通变、含章·知微，")}
+              <a href={ZHIYI} target="_blank" rel="noreferrer">{t("知意输入法")}</a>
+              {t(`的知意（两个版本）。只取金标准落在候选池里的 ${BENCHMARK_CASES} 句，每句池里 6 到 7 个候选，各模型在池内挑一个，所以下图的分母是 ${BENCHMARK_CASES}，不是上表的 ${DECODER_CASES}。「挑对了几句」那张图里的竖线是引擎原序（不重排、不用任何模型）挑对的 ${BENCHMARK_BASELINE.hits} 句；「模型体积」按实际大小画。两张图都从零画起，同一行是同一个模型。`)}
             </p>
             <figure className="m-0 mt-5" aria-labelledby="model-vs-open">
-              {/* The takeaway the rows support; re-check it when a model is added to src/model-benchmark.ts. Within the five at 49 to 52, the project models are 25 to 380 times smaller than the Qwen models (4.25M: 140 to 380; 24.9M: 25 to 67). */}
-              <p className="m-0 mb-4 text-[16px] leading-[1.6] font-semibold text-ink">{t("挑对 49–52 句的五个模型差别在噪声里，本项目的两个比同档 Qwen 小了几十到几百倍")}</p>
+              {/* The takeaway the rows support; re-check it when a model is added to src/model-benchmark.ts. Hits run 45 to 52 (nine of the ten 48 to 52), sizes 4.49 MB (4.25M) to 1722 MB (Qwen3.5-2B). */}
+              <p className="m-0 mb-4 text-[16px] leading-[1.6] font-semibold text-ink">{t("挑对的句数大多相差无几，体积却从 4.5 MB 到 1.7 GB 不等，最小的是本项目的快速模型")}</p>
               <ModelBenchmarkChart />
               <figcaption className="mt-4 text-[14px] leading-[1.8] text-muted">
-                {t(`${BENCHMARK_CASES} 句上相差三句以内是统计噪声：`)}
-                <a href={`${MEASUREMENTS}#52-条上没有任何一对模型达到显著`} target="_blank" rel="noreferrer">
-                  {t("测量记录")}
-                </a>
-                {t("里的 McNemar 精确检验中，即使一方 3 比 0 全胜，p 也有 0.25。各模型的 95% 置信区间见下方「图表数据」。")}
+                <span className="block">
+                  {t(`${BENCHMARK_CASES} 句上相差三句以内是统计噪声：`)}
+                  <a href={`${MEASUREMENTS}#52-条上命中相近的模型之间没有一对达到显著`} target="_blank" rel="noreferrer">
+                    {t("测量记录")}
+                  </a>
+                  {t("里的 McNemar 精确检验中，即使一方 3 比 0 全胜，p 也有 0.25。各模型的 95% 置信区间见下方「图表数据」。")}
+                </span>
+                <span className="mt-1 block">
+                  {t("* Qwen 四行按首字也计分的口径：每个候选前面接一个 ")}
+                  <code className="text-[13px] [font-variant-ligatures:none]">{"<|endoftext|>"}</code>
+                  {t("。之前发布的数字没有给每个候选的第一个 token 打分；同一份权重随这个细节在 42–52（Qwen2.5-0.5B）、49–50（Qwen3-0.6B）、48–49（Qwen3.5-0.8B）、45–51（Qwen3.5-2B）句之间变动，见")}
+                  <a href={`${MEASUREMENTS}#复测原表没有给第一个-token-打分`} target="_blank" rel="noreferrer">
+                    {t("复测")}
+                  </a>
+                  {t("。知意两行体积条里浅色的一段，是它另需的 34.4 MB 分词表。")}
+                </span>
               </figcaption>
             </figure>
             <ModelBenchmarkTable />
             <p className="m-0 mt-4">
-              {t("命中 49 到 52 句的五个模型，区间彼此大面积重叠，两两做配对检验也没有一对的差别达到显著：上面说名次在噪声里，指的就是这个。区间不相交的只有高精度模型与最低的两项（引擎原序、Qwen2.5-0.5B）。能确定的是体积：和快速模型同样命中 49 句的 Qwen3-0.6B、Qwen3.5-0.8B 有 633 MB 和 1.0 GB，是它的 140 到 220 倍，差了两个数量级。")}
+              {t(`十个模型里有九个挑对 48 到 52 句。${BENCHMARK_CASES} 句上，一方至少要净多对 6 句才可能显著（6 比 0 时 McNemar p≈0.03），这九个之间最多差 4 句，所以两两之间没有一对的差别达到显著：上面说名次在噪声里，指的就是这个。Qwen3.5-2B 在这个口径下只挑对 45 句，比全对的高精度模型少 7 句，这一对是显著的（p≈0.016）；可候选前面改接 `)}
+              <code className="text-[13px] [font-variant-ligatures:none]">{"<|im_end|>"}</code>
+              {t("，它就挑对 51 句。它的名次连打分细节都定不住，谈不上和别的模型比高下。和不重排相比，本项目两个模型的提升是显著的（p 为 0.039 和 0.001）。")}
             </p>
             <p className="m-0 mt-3">
-              {t("速度也差得多：快速模型在真实按键路径上每次决策的 p95 是 8.6 ms，Qwen3.5-0.8B 和 2B 在 Apple M4 Pro 上每次决策约 57 ms 和 110 ms。开源模型这一侧是逐个候选单独计算，没有批处理，优化后还能快几倍。")}
+              {t("能确定的是体积，它不是抽样估计，没有噪声可言。快速模型 4.5 MB，是这里最小的：青简的含章·通变 46.1 MB，是它的 10 倍；知意 Long-L12 的 int8 ONNX 84.4 MB，是它的 19 倍，算上分词表是 26 倍；四个 Qwen 是它的 62 到 384 倍。高精度模型 25.5 MB，也比青简、知意的模型都小。")}
+            </p>
+            <p className="m-0 mt-3">
+              {t("速度上，本项目的模型并不比青简、知意的快。这次测量给一个池打一次分，快速模型在单个 CPU 线程上要 12 ms，高精度模型 72 ms；青简、知意的模型在 Apple M4 Pro 的 GPU（Metal）或 4 个 CPU 线程上是 5 到 10 ms。和 Qwen 比，快速模型快 2.2 到 8.5 倍（Qwen 在 GPU 上 27 到 101 ms），但 Qwen 这一侧是逐个候选单独计算，没有批处理，优化后差距可能缩到同一量级。快速模型在真实按键路径上还有跨按键续算，p95 是 8.6 ms，那是另一种测法，不和这里直接比。")}
+            </p>
+            <p className="m-0 mt-3">
+              {t("青简和知意的模型是给各自输入法的候选生成配套训练、配套调参的，在自己的输入法里还和别的打分项加在一起用。这里只量其中一项能力：给同一个池，挑一个，所以这几行不代表它们在自己输入法里的表现。含章两款模型以 GPL-3.0-or-later 发布，知意模型以 Apache-2.0 发布。")}
             </p>
           </NumberedSection>
 

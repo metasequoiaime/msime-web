@@ -1,4 +1,9 @@
-import { useId, useMemo } from "react";
+import { type CSSProperties, type RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { barX, type ChartPoint, defineChart, ruleX, text } from "@tanstack/charts";
+import { decorative } from "@tanstack/charts/mark/decorative";
+import { Chart } from "@tanstack/charts/react";
+import { scaleLinear } from "@tanstack/charts/scales/linear";
+import { tooltip } from "@tanstack/charts/tooltip";
 import {
   BENCHMARK_BASELINE,
   BENCHMARK_CASES,
@@ -14,183 +19,254 @@ import { cx } from "./ui";
 import { useLocale } from "./use-locale";
 
 /**
- * Identity colours, one per group and the same hex in light and dark: green is the site's summer --hero-c, the muted violet keeps the open models recessive, amber is reserved for the other input methods' models. Validated with the dataviz skill's validate_palette.js as an adjacent-pair (bar) palette in this order against every season's page background and the panel colour, light and dark: worst CVD ΔE 13.8 (deutan, green and violet), worst normal-vision ΔE 20.6, every colour inside the lightness band and at least 3:1 against the surface. Row names carry identity as well, so nothing depends on colour alone.
+ * Identity colours, one per group and the same hex in light and dark: green is the site's summer --hero-c, the muted violet keeps the open models recessive, amber marks the other input methods' models. Validated with the dataviz skill's validate_palette.js as an adjacent-pair (bar) palette in this order against every season's page background and the panel colour, light and dark. Row names carry identity as well, so nothing depends on colour alone.
  */
 const GROUP_COLORS: Record<BenchmarkGroup, string> = { project: "#3E9F63", open: "#8C76B8", ime: "#C8792E" };
 
-/** Width of the row-name column and the gap after it; the side-by-side column split below is derived from the two. */
-const NAME_COLUMN = "grid-cols-[7.25rem_minmax(0,1fr)] gap-x-3";
+/** The tokenizer part of a size bar: the row's own hue, lighter, so it reads as the same model's extra file rather than a fourth identity. */
+const TOKENIZER_OPACITY = 0.5;
 
-/**
- * Side by side the size chart drops its name column and reads its rows off the hits chart's names, so the hits chart gets that column's width on top of an equal half: 50% − gap/2 + (7.25rem + 0.75rem)/2 with a 1.75rem gap. Below 34rem of container width (phones) the two stack and each keeps its names.
- */
-const PANELS = "grid gap-x-7 gap-y-7 @min-[34rem]:grid-cols-[calc(50%_+_3.125rem)_minmax(0,1fr)]";
+/** Row pitch, bar thickness and the extra space between groups, in pixels and rows. */
+const ROW_PX = 30;
+const BAR_PX = 16;
+const GROUP_GAP_ROWS = 0.35;
 
-/** Space kept right of the longest bar for its value label ("25.5 MB", "49 / 52"). */
-const LABEL_RESERVE = "right-[4.5rem]";
+/** Fixed top and bottom margins so the two charts' rows line up side by side; the hits chart writes its reference label in the bottom one. Left and right stay automatic, so the library measures the row names and the end labels and never clips them. */
+const MARGIN_TOP = 4;
+const MARGIN_BOTTOM = 26;
+const MARGIN_BOTTOM_ALONE = 6;
 
-/** A bar this small would vanish; the 4.5 MB model is under a pixel wide at true scale on a phone. */
+/** A size bar is never thinner than this; the 4.5 MB model is under a pixel at true scale next to 1.7 GB. Its label still states the exact size. */
 const MIN_BAR_PX = 3;
+/** Gap between a weights bar and its tokenizer segment. */
+const SEGMENT_GAP_PX = 2;
+/** Upper bound for the width the automatic margins take (row names plus the widest end label), used only to turn the two pixel sizes above into data units before layout. Overestimating it errs towards a slightly wider minimum bar. */
+const GUIDE_ESTIMATE_PX = 210;
+
+/** Side by side the hits chart also carries the row names, so it gets more than half the width. Below 34rem of container width (phones) the two stack. */
+const PANELS = "grid gap-x-7 gap-y-7 @min-[34rem]:grid-cols-[calc(50%_+_3.5rem)_minmax(0,1fr)]";
+
+/** The library's tooltip reads these custom properties; they point it at the site's panel, hairline and ink tokens so it follows the theme and season like the rest of the page. */
+const CHART_STYLE = {
+  color: "var(--ink)",
+  "--ts-chart-tooltip-background": "var(--panel)",
+  "--ts-chart-tooltip-color": "var(--ink)",
+  "--ts-chart-tooltip-border": "1px solid var(--hair-2)",
+  "--ts-chart-tooltip-border-radius": "10px",
+  "--ts-chart-tooltip-shadow": "var(--shadow)",
+  "--ts-chart-tooltip-padding": "8px 12px",
+} as CSSProperties;
 
 type Row = {
   name: string;
   short: string;
   group: BenchmarkGroup;
   hits: number;
+  hitsRange?: readonly [number, number];
   low: number;
   high: number;
   sizeMb: number;
+  tokenizerMb?: number;
   size: string;
-  /** First row of a group after the first group; it gets a little space above. */
-  groupStart: boolean;
+  /** Vertical position in row units, with a gap between groups. */
+  y: number;
 };
 
-/** The models with their rates and intervals, translated once for both charts, the tooltips and the table. */
+/** The models with their rates, intervals and row positions, translated once for both charts, the tooltips and the table. */
 function useRows(): Row[] {
   const { t } = useLocale();
+  return useMemo(() => {
+    let gaps = 0;
+    return benchmarkRows().map((model, index, all) => {
+      if (index > 0 && all[index - 1].group !== model.group) gaps += 1;
+      const [low, high] = wilsonInterval(model.hits, BENCHMARK_CASES);
+      return {
+        name: t(model.name),
+        short: t(model.short),
+        group: model.group,
+        hits: model.hits,
+        hitsRange: model.hitsRange,
+        low,
+        high,
+        sizeMb: model.sizeMb,
+        tokenizerMb: model.tokenizerMb,
+        size: formatSize(model.sizeMb),
+        y: index + gaps * GROUP_GAP_ROWS,
+      };
+    });
+  }, [t]);
+}
+
+/** Whether the second panel has wrapped under the first. Read from the laid-out panels, so it follows the same container query that stacks them; before hydration it is false and the static HTML shows the side-by-side layout. */
+function useStacked(ref: RefObject<HTMLDivElement | null>) {
+  const [stacked, setStacked] = useState(false);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const update = () => {
+      const [first, second] = element.children as HTMLCollectionOf<HTMLElement>;
+      setStacked(second.offsetTop > first.offsetTop);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [ref]);
+  return stacked;
+}
+
+/** One tooltip for both charts: every value in it is also in the data table, so it adds the full name and the interval without gating anything. */
+function useTooltip() {
+  const { t } = useLocale();
   return useMemo(
-    () =>
-      benchmarkRows().map((model, index, all) => {
-        const [low, high] = wilsonInterval(model.hits, BENCHMARK_CASES);
+    () => ({
+      use: tooltip,
+      content: (points: readonly ChartPoint<Row, number, number>[]) => {
+        const row = points[0].datum;
         return {
-          name: t(model.name),
-          short: t(model.short),
-          group: model.group,
-          hits: model.hits,
-          low,
-          high,
-          sizeMb: model.sizeMb,
-          size: formatSize(model.sizeMb),
-          groupStart: index > 0 && all[index - 1].group !== model.group,
+          title: row.name,
+          color: GROUP_COLORS[row.group],
+          rows: [
+            { label: t(`挑对的句数（${percent(row.hits / BENCHMARK_CASES)}）`), value: `${row.hits} / ${BENCHMARK_CASES}` },
+            ...(row.hitsRange ? [{ label: t("随打分细节变动"), value: `${row.hitsRange[0]}–${row.hitsRange[1]}` }] : []),
+            { label: t("95% 置信区间"), value: `${percent(row.low)} – ${percent(row.high)}` },
+            { label: t("模型体积"), value: row.size },
+            ...(row.tokenizerMb ? [{ label: t("另需分词表"), value: formatSize(row.tokenizerMb) }] : []),
+          ],
         };
-      }),
+      },
+    }),
     [t]
   );
 }
 
-/** Bar length and the label's left edge right after it, both as CSS lengths of the plot width. */
-function barGeometry(value: number, max: number) {
-  const fraction = `${((value / max) * 100).toFixed(3)}%`;
-  const width = `max(${MIN_BAR_PX}px, ${fraction})`;
-  return { width, label: `calc(${width} + 6px)` };
+type PanelProps = {
+  rows: Row[];
+  /** Draw the row names; the size chart drops them while it sits right of the hits chart. */
+  names: boolean;
+  bottom: number;
+};
+
+const plotHeight = (rows: Row[]) => ROW_PX * (rows[rows.length - 1].y + 1);
+
+/** Shared scales and guides: a linear row axis whose ticks are the row names, and no value axis, since every bar carries its value at the end. */
+function rowScale(rows: Row[], names: boolean) {
+  const byPosition = new Map(rows.map((row) => [row.y, row.short]));
+  return {
+    scale: scaleLinear().domain([-0.5, rows[rows.length - 1].y + 0.5]),
+    reverse: true,
+    axis: names
+      ? { line: false, ticks: { values: rows.map((row) => row.y), size: 0, padding: 10, format: (value: number) => byPosition.get(value) ?? "" }, tickLabels: { fontSize: 13.5, opacity: 1, thin: false } }
+      : (false as const),
+  };
 }
 
-/** Per-row detail on hover and keyboard focus, under the row: from the plot's left edge side by side, from the row's left edge on a phone so it stays inside the screen. Every value in it is also in the data table, so it adds the full name and the interval without gating anything. */
-function RowTooltip({ row }: { row: Row }) {
+/** Value labels right after the bar end, in text ink rather than the bar colour. */
+const valueLabel = { anchor: "start" as const, dx: 6, fill: "var(--body)", fontSize: 13 };
+
+/** 「52 句里挑对了几句」: bars from zero to 52 and the engine's own order as a labelled reference line. */
+function HitsChart({ rows, names, bottom }: PanelProps) {
   const { t } = useLocale();
+  const content = useTooltip();
+  const definition = useMemo(() => {
+    const last = rows[rows.length - 1].y;
+    const reference = [{ hits: BENCHMARK_BASELINE.hits, label: t(`${BENCHMARK_BASELINE.short} ${BENCHMARK_BASELINE.hits}`) }];
+    const base = defineChart({
+      marks: [
+        ruleX([0], { stroke: "var(--hair-2)", strokeOpacity: 1, strokeWidth: 1 }),
+        barX(rows, { x1: 0, x2: "hits", y: "y", key: "name", fill: (row) => GROUP_COLORS[row.group], maxThickness: BAR_PX, radius: { end: 4 } }),
+        // Drawn over the bars so it stays visible through all of them, as the line every model is measured against.
+        ruleX(reference, { x: "hits", stroke: "var(--muted)", strokeOpacity: 1, strokeWidth: 2 }),
+        decorative(text(reference, { x: "hits", y: () => last, dy: ROW_PX / 2 + 13, text: "label", anchor: "middle", fill: "var(--muted)", fontSize: 12.5 })),
+        // Qwen's hits move with a scoring detail; the asterisk points at the note under the figure.
+        decorative(text(rows, { x: "hits", y: "y", key: "name", text: (row) => `${row.hits} / ${BENCHMARK_CASES}${row.hitsRange ? " *" : ""}`, ...valueLabel })),
+      ],
+      scales: { x: { scale: scaleLinear().domain([0, BENCHMARK_CASES]), axis: false }, y: rowScale(rows, names) },
+      margin: { top: MARGIN_TOP, bottom },
+    });
+    return defineChart(base, { tooltip: content });
+  }, [rows, names, bottom, t, content]);
   return (
-    <span
-      aria-hidden="true"
-      className="pointer-events-none absolute top-full left-0 z-20 mt-1 hidden w-max max-w-full @min-[34rem]:left-[var(--plot-left)] @min-[34rem]:max-w-[18rem] rounded-[10px] border border-hair-2 bg-panel px-3 py-2 text-[13px] leading-[1.6] text-body shadow-[var(--shadow)] group-hover:block group-focus-visible:block"
-    >
-      <span className="flex items-center gap-2 font-semibold text-ink">
-        <span className="h-[3px] w-3 flex-none rounded-full" style={{ background: GROUP_COLORS[row.group] }} />
-        {row.name}
-      </span>
-      <span className="mt-1 grid grid-cols-[auto_auto] gap-x-3 tabular-nums">
-        <span className="font-semibold text-ink">
-          {row.hits} / {BENCHMARK_CASES}
-        </span>
-        <span className="text-muted">{t(`挑对的句数（${percent(row.hits / BENCHMARK_CASES)}）`)}</span>
-        <span className="font-semibold text-ink">
-          {percent(row.low)} – {percent(row.high)}
-        </span>
-        <span className="text-muted">{t("95% 置信区间")}</span>
-        <span className="font-semibold text-ink">{row.size}</span>
-        <span className="text-muted">{t("模型体积")}</span>
-      </span>
-    </span>
+    <Chart
+      definition={definition}
+      height={plotHeight(rows) + MARGIN_TOP + bottom}
+      initialWidth={420}
+      idPrefix="model-benchmark-hits"
+      style={CHART_STYLE}
+      ariaLabel={t(`${BENCHMARK_CASES} 句里挑对了几句`)}
+      ariaDescription={t(`横向条形图，从零画起，竖线是${BENCHMARK_BASELINE.name}的 ${BENCHMARK_BASELINE.hits} 句。${rows.map((row) => `${row.short} ${row.hits}`).join("，")}。`)}
+    />
   );
 }
 
-type PanelProps = {
-  title: string;
-  rows: Row[];
-  value: (row: Row) => number;
-  max: number;
-  label: (row: Row) => string;
-  /** The second chart: side by side it shares the first chart's row names and keeps them only for screen readers. */
-  secondary?: boolean;
-  /** A labelled vertical reference line across the rows, in value units. */
-  reference?: { value: number; label: string };
-};
-
-/** One horizontal bar chart: a row per model, the name at the start, a bar from zero and its value right after the bar end. */
-function BarPanel({ title, rows, value, max, label, secondary = false, reference }: PanelProps) {
-  const titleId = useId();
-  const referenceAt = reference && `${((reference.value / max) * 100).toFixed(3)}%`;
+/** 「模型体积」: linear from zero, so the small models are slivers; a minimum width keeps them visible and the tokenizer a model also needs is a lighter segment after its weights. */
+function SizeChart({ rows, names, bottom }: PanelProps) {
+  const { t } = useLocale();
+  const content = useTooltip();
+  const definition = useMemo(() => {
+    const totals = rows.map((row) => row.sizeMb + (row.tokenizerMb ?? 0));
+    const max = Math.max(...totals);
+    const base = defineChart(({ width }) => {
+      // Data units per pixel at this width; the plot is the width less the guides, which are not resolved yet when the builder runs.
+      const perPixel = max / Math.max(1, width - (names ? GUIDE_ESTIMATE_PX : GUIDE_ESTIMATE_PX - 110));
+      const end = (row: Row) => Math.max(row.sizeMb, MIN_BAR_PX * perPixel);
+      const tokenized = rows.filter((row) => row.tokenizerMb);
+      const tokenStart = (row: Row) => end(row) + SEGMENT_GAP_PX * perPixel;
+      return {
+        marks: [
+          ruleX([0], { stroke: "var(--hair-2)", strokeOpacity: 1, strokeWidth: 1 }),
+          barX(rows, { x1: 0, x2: end, y: "y", key: "name", fill: (row) => GROUP_COLORS[row.group], maxThickness: BAR_PX, radius: { end: 4 } }),
+          decorative(
+            barX(tokenized, {
+              x1: tokenStart,
+              x2: (row) => tokenStart(row) + (row.tokenizerMb ?? 0),
+              y: "y",
+              key: "name",
+              fill: (row) => GROUP_COLORS[row.group],
+              fillOpacity: TOKENIZER_OPACITY,
+              maxThickness: BAR_PX,
+              radius: { end: 4 },
+            })
+          ),
+          decorative(
+            text(rows, {
+              x: (row) => (row.tokenizerMb ? tokenStart(row) + row.tokenizerMb : end(row)),
+              y: "y",
+              key: "name",
+              text: (row) => (row.tokenizerMb ? `${formatSize(row.sizeMb)} + ${formatSize(row.tokenizerMb)}` : row.size),
+              ...valueLabel,
+            })
+          ),
+        ],
+        scales: { x: { scale: scaleLinear().domain([0, max]), axis: false as const }, y: rowScale(rows, names) },
+        margin: { top: MARGIN_TOP, bottom },
+      };
+    });
+    return defineChart(base, { tooltip: content });
+  }, [rows, names, bottom, content]);
   return (
-    // --plot-left is where the bars start inside the panel: after the name column (7.25rem + 0.75rem gap), or at the edge when a side-by-side size chart drops it.
-    <div className={cx("relative [--plot-left:8rem]", secondary && "@min-[34rem]:[--plot-left:0px]")}>
-      <p id={titleId} className="m-0 text-[14.5px] leading-[1.5] font-semibold text-ink">
-        {title}
-      </p>
-      <div className="relative mt-2">
-        {/* The zero baseline and the reference line, under the bars; they run through the footer so the reference label hangs off its line. */}
-        <div aria-hidden="true" className={cx("pointer-events-none absolute inset-y-0 left-[var(--plot-left)]", LABEL_RESERVE)}>
-          <span className="absolute inset-y-0 left-0 w-px bg-hair-2" />
-          {referenceAt && <span className="absolute inset-y-0 w-[2px] -translate-x-1/2 bg-muted" style={{ left: referenceAt }} />}
-        </div>
-        <ul aria-labelledby={titleId} className="relative m-0 list-none p-0">
-          {rows.map((row) => {
-            const bar = barGeometry(value(row), max);
-            return (
-              <li
-                key={row.name}
-                // biome-ignore lint/a11y/noNoninteractiveTabindex: a focusable row is the keyboard route to the same tooltip a pointer gets on hover.
-                tabIndex={0}
-                className={cx("group relative grid h-[30px] items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-accent-ring", NAME_COLUMN, secondary && "@min-[34rem]:grid-cols-[minmax(0,1fr)]", row.groupStart && "mt-2.5")}
-              >
-                <span
-                  className={cx(
-                    "truncate text-[13.5px] leading-none text-ink",
-                    secondary && "@min-[34rem]:sr-only"
-                  )}
-                >
-                  {row.short}
-                </span>
-                <span className="relative h-full">
-                  <span className={cx("absolute inset-y-0 left-0", LABEL_RESERVE)}>
-                    <span
-                      aria-hidden="true"
-                      className="absolute top-1/2 left-0 h-4 -translate-y-1/2 rounded-r-[4px] transition-[filter] group-hover:brightness-110 group-focus-visible:brightness-110"
-                      style={{ width: bar.width, background: GROUP_COLORS[row.group] }}
-                    />
-                    <span className="absolute top-1/2 -translate-y-1/2 text-[13px] leading-none whitespace-nowrap text-body tabular-nums" style={{ left: bar.label }}>
-                      {label(row)}
-                    </span>
-                  </span>
-                </span>
-                <RowTooltip row={row} />
-              </li>
-            );
-          })}
-        </ul>
-        {reference && referenceAt && (
-          <div aria-hidden="true" className={cx("grid h-6", NAME_COLUMN)}>
-            <span />
-            <span className="relative">
-              <span className={cx("absolute inset-y-0 left-0", LABEL_RESERVE)}>
-                <span className="absolute bottom-0 -translate-x-full pr-1.5 text-[12.5px] leading-none whitespace-nowrap text-muted" style={{ left: referenceAt }}>
-                  {reference.label}
-                </span>
-              </span>
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
+    <Chart
+      definition={definition}
+      height={plotHeight(rows) + MARGIN_TOP + bottom}
+      initialWidth={330}
+      idPrefix="model-benchmark-size"
+      style={CHART_STYLE}
+      ariaLabel={t("模型体积")}
+      ariaDescription={t(`横向条形图，线性刻度从零画起。${rows.map((row) => `${row.short} ${row.size}${row.tokenizerMb ? `，另需 ${formatSize(row.tokenizerMb)} 分词表` : ""}`).join("；")}。`)}
+    />
   );
 }
 
 /**
- * Two horizontal bar charts sharing their rows: how many of the 52 sentences each model picked right, and how large it is. Both scales are linear from zero, so the project models' size bars are slivers next to the open models'; that difference is the point of the figure. The engine's own order has no weights, so it is a reference line on the hits chart instead of a row. Plain HTML, so it is in the static page, its text never clips, and the stacking for phones is a container query rather than measured JavaScript.
+ * Two horizontal bar charts sharing their rows: how many of the 52 sentences each model picked right, and how large it is. Both are TanStack Charts SVG, server-rendered into the static page. Side by side the size chart reads its rows off the hits chart's names; the two use the same row scale, height and top and bottom margins, so the rows line up. Stacked on a phone each chart names its own rows.
  */
 export function ModelBenchmarkChart() {
   const { t } = useLocale();
   const rows = useRows();
-  const maxSize = Math.max(...rows.map((row) => row.sizeMb));
+  const panels = useRef<HTMLDivElement>(null);
+  const stacked = useStacked(panels);
   const groups = BENCHMARK_GROUPS.filter((group) => rows.some((row) => row.group === group));
+  const title = "m-0 mb-2 text-[14.5px] leading-[1.5] font-semibold text-ink";
   return (
     <div className="@container" data-chart-visual="model-benchmark">
       <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[13.5px] leading-[1.6] text-body" aria-label={t("图例")}>
@@ -201,16 +277,15 @@ export function ModelBenchmarkChart() {
           </li>
         ))}
       </ul>
-      <div className={cx("mt-4", PANELS)}>
-        <BarPanel
-          title={t(`${BENCHMARK_CASES} 句里挑对了几句`)}
-          rows={rows}
-          value={(row) => row.hits}
-          max={BENCHMARK_CASES}
-          label={(row) => `${row.hits} / ${BENCHMARK_CASES}`}
-          reference={{ value: BENCHMARK_BASELINE.hits, label: t(`${BENCHMARK_BASELINE.short} ${BENCHMARK_BASELINE.hits}`) }}
-        />
-        <BarPanel title={t("模型体积")} rows={rows} value={(row) => row.sizeMb} max={maxSize} label={(row) => row.size} secondary />
+      <div ref={panels} className={cx("mt-4", PANELS)}>
+        <div className="min-w-0">
+          <p className={title}>{t(`${BENCHMARK_CASES} 句里挑对了几句`)}</p>
+          <HitsChart rows={rows} names bottom={MARGIN_BOTTOM} />
+        </div>
+        <div className="min-w-0">
+          <p className={title}>{t("模型体积")}</p>
+          <SizeChart rows={rows} names={stacked} bottom={stacked ? MARGIN_BOTTOM_ALONE : MARGIN_BOTTOM} />
+        </div>
       </div>
     </div>
   );
@@ -222,8 +297,16 @@ export function ModelBenchmarkTable() {
   const rows = useRows();
   const [baselineLow, baselineHigh] = wilsonInterval(BENCHMARK_BASELINE.hits, BENCHMARK_CASES);
   const cells = [
-    ...rows.map((row) => ({ name: row.name, kind: t(BENCHMARK_GROUP_LABELS[row.group]), hits: row.hits, low: row.low, high: row.high, size: row.size })),
-    { name: t(BENCHMARK_BASELINE.name), kind: t("参照（不用模型）"), hits: BENCHMARK_BASELINE.hits, low: baselineLow, high: baselineHigh, size: t("无权重") },
+    ...rows.map((row) => ({
+      name: row.name,
+      kind: t(BENCHMARK_GROUP_LABELS[row.group]),
+      hits: row.hits,
+      range: row.hitsRange && t(`（随打分细节 ${row.hitsRange[0]}–${row.hitsRange[1]}）`),
+      low: row.low,
+      high: row.high,
+      size: row.tokenizerMb ? t(`${row.size}，另需分词表 ${formatSize(row.tokenizerMb)}`) : row.size,
+    })),
+    { name: t(BENCHMARK_BASELINE.name), kind: t("参照（不用模型）"), hits: BENCHMARK_BASELINE.hits, range: undefined, low: baselineLow, high: baselineHigh, size: t("无权重") },
   ];
   return (
     <details className="mt-3 text-[14.5px]">
@@ -247,6 +330,7 @@ export function ModelBenchmarkTable() {
                 <td className="py-2.5 pr-4 whitespace-nowrap text-muted">{cell.kind}</td>
                 <td className="py-2.5 pr-4 whitespace-nowrap text-ink tabular-nums">
                   {cell.hits} <span className="text-muted">({percent(cell.hits / BENCHMARK_CASES)})</span>
+                  {cell.range && <span className="block text-[13px] text-muted">{cell.range}</span>}
                 </td>
                 <td className="py-2.5 pr-4 whitespace-nowrap text-ink tabular-nums">
                   {percent(cell.low)} – {percent(cell.high)}
