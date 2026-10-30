@@ -322,6 +322,18 @@ test('the gallery exposes R2 thumbnails, full previews and sticker downloads wit
   }
 });
 
+test('mobile QR images use fingerprinted asset URLs so replacements bypass cached images', () => {
+  const manifest = JSON.parse(read('.vite/manifest.json'));
+  for (const name of ['harmony-apptest-qr', 'ios-testflight-qr', 'android-pgyer-qr']) {
+    const source = `src/assets/download/${name}.png`;
+    const asset = Object.values(manifest).find(entry => entry.src?.split("?")[0] === source);
+    assert.ok(asset, `${name}: tracked by the asset build`);
+    assert.match(asset.file, new RegExp(`^assets/${name}-[\\w-]+\\.png$`));
+    assert.deepEqual(readFileSync(`dist/${asset.file}`), readFileSync(source), `${name}: serves the selected QR image`);
+    assert.ok(!existsSync(`dist/img/${name}.png`), `${name}: no reused mutable URL`);
+  }
+});
+
 test('the retired installer screenshot is not rendered anywhere', () => {
   for (const path of ['/docs/windows/', '/zh-TW/docs/windows/', '/download/', '/features/']) {
     assert.equal(document(path).querySelector('img[src*="install-finish"], img[srcset*="install-finish"]'), null, path);
