@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-29T23:31:26.600Z",
+  "generatedAt": "2026-10-30T00:04:36.662Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -573,14 +573,14 @@
     ]
   },
   "downloadStats": {
-    "total": 64384,
+    "total": 64388,
     "platforms": {
       "windows": 41436,
-      "windowsRust": 1816,
+      "windowsRust": 1817,
       "windows7": 100,
       "macos": 4964,
       "linux": 10487,
-      "android": 5265,
+      "android": 5268,
       "harmony": 316
     }
   },
@@ -3085,7 +3085,7 @@
       "repository": "metasequoiaime/msime",
       "id": 668360231,
       "name": "MetasequoiaIME-Full_Setup_v0.3.0.exe",
-      "download_count": 893
+      "download_count": 894
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4963,7 +4963,7 @@
       "repository": "metasequoiaime/msime",
       "id": 677254675,
       "name": "msime-android.apk",
-      "download_count": 429
+      "download_count": 432
     },
     {
       "repository": "metasequoiaime/msime",
@@ -5402,6 +5402,78 @@
       "id": 686725018,
       "name": "MetasequoiaIME-Wubi_Setup_v0.3.0-nightly.40778743903.1.exe",
       "download_count": 1
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690327821,
+      "name": "msime-android-pinyin-nightly.40966284976.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690327823,
+      "name": "msime-android-vietnamese-nightly.40966284976.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690327824,
+      "name": "msime-android-tibetan-nightly.40966284976.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690327825,
+      "name": "msime-android-nightly.40966284976.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690327826,
+      "name": "msime-android-japanese-nightly.40966284976.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690328006,
+      "name": "msime-android-wubi-nightly.40966284976.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690328256,
+      "name": "msime-macos-tibetan-0.55.0-universal-nightly.40966284976.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690328257,
+      "name": "msime-macos-0.55.0-universal-nightly.40966284976.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690328258,
+      "name": "msime-macos-vietnamese-0.55.0-universal-nightly.40966284976.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690328259,
+      "name": "msime-macos-pinyin-0.55.0-universal-nightly.40966284976.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690328260,
+      "name": "msime-macos-japanese-0.55.0-universal-nightly.40966284976.1.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 690328452,
+      "name": "msime-macos-wubi-0.55.0-universal-nightly.40966284976.1.dmg",
+      "download_count": 0
     },
     {
       "repository": "metasequoiaime/msime-linux",
@@ -6245,20 +6317,20 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 11092,
+    "total": 11094,
     "platforms": {
-      "android": 1454,
+      "android": 1456,
       "harmony": 86,
       "linux": 650,
       "macos": 1077,
       "windows": 7815,
       "windowsRust": 10
     },
-    "generatedAt": "2026-10-29T23:31:26.069268Z"
+    "generatedAt": "2026-10-30T00:04:35.92139Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-29T23:31:25.540Z",
-    "total": 4899,
+    "generatedAt": "2026-10-30T00:04:35.178Z",
+    "total": 4902,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -6278,7 +6350,7 @@
       },
       {
         "id": "a857688b2ac9baf92450397d5105726782c2a1d75469fa0afa59200d2c03a984",
-        "downloads": 342
+        "downloads": 345
       },
       {
         "id": "bac9145476cafdbddeaf8b216d4a079d7522902d3821c740f7dbf0e31fd5aaab",
@@ -6307,9 +6379,9 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-10-29T23:31:26.184Z",
+    "generatedAt": "2026-10-30T00:04:36.095Z",
     "downloads": 2400,
-    "periodStart": "2025-10-29",
-    "periodEnd": "2026-10-29"
+    "periodStart": "2025-10-30",
+    "periodEnd": "2026-10-30"
   }
 }
