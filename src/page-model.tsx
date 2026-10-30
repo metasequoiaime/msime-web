@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { INTEGRATION_SECTIONS } from "./integration/sections";
 import { ModelEngineRelation } from "./integration/relation";
-import { BENCHMARK_CASES } from "./model-benchmark";
+import { BENCHMARK_BASELINE, BENCHMARK_CASES } from "./model-benchmark";
 import { ModelBenchmarkChart, ModelBenchmarkTable } from "./model-benchmark-chart";
 import { PageHero } from "./page-content";
 import { SectionNav } from "./section-nav";
@@ -169,12 +169,18 @@ export function ModelPage() {
               {t("与开源通用模型比较")}
             </h3>
             <p className="m-0 mt-2">
-              {t(`常有人问，为什么不直接用开源的通用小模型。同一批候选上量过几个开源通用模型：只取金标准落在候选池里的 ${BENCHMARK_CASES} 句，每句池里 6 到 7 个候选，各打分器在池内挑一个，所以下图的分母是 ${BENCHMARK_CASES}，不是上表的 ${DECODER_CASES}。横轴是权重体积，用对数刻度；竖线是 95% 置信区间；横线和它两侧的浅色带是引擎原序（不重排）的命中率与区间。`)}
+              {t(`常有人问，为什么不直接用开源的通用小模型。同一批候选上量过几个开源通用模型：只取金标准落在候选池里的 ${BENCHMARK_CASES} 句，每句池里 6 到 7 个候选，各打分器在池内挑一个，所以下图的分母是 ${BENCHMARK_CASES}，不是上表的 ${DECODER_CASES}。「挑对了几句」那张图里的竖线是引擎原序（不重排、不用任何模型）挑对的 ${BENCHMARK_BASELINE.hits} 句；「模型体积」按实际大小画。两张图都从零画起，同一行是同一个模型。`)}
             </p>
-            <figure className="m-0 mt-4" aria-labelledby="model-vs-open">
+            <figure className="m-0 mt-5" aria-labelledby="model-vs-open">
+              {/* The takeaway the rows support; re-check it when a model is added to src/model-benchmark.ts. Within the five at 49 to 52, the project models are 25 to 380 times smaller than the Qwen models (4.25M: 140 to 380; 24.9M: 25 to 67). */}
+              <p className="m-0 mb-4 text-[16px] leading-[1.6] font-semibold text-ink">{t("挑对 49–52 句的五个模型差别在噪声里，本项目的两个比同档 Qwen 小了几十到几百倍")}</p>
               <ModelBenchmarkChart />
-              <figcaption className="mt-2 text-[14px] leading-[1.8] text-muted">
-                {t(`置信区间按 Wilson 方法计算（${BENCHMARK_CASES} 句，z = 1.96）。`)}
+              <figcaption className="mt-4 text-[14px] leading-[1.8] text-muted">
+                {t(`${BENCHMARK_CASES} 句上相差三句以内是统计噪声：`)}
+                <a href={`${MEASUREMENTS}#52-条上没有任何一对模型达到显著`} target="_blank" rel="noreferrer">
+                  {t("测量记录")}
+                </a>
+                {t("里的 McNemar 精确检验中，即使一方 3 比 0 全胜，p 也有 0.25。各模型的 95% 置信区间见下方「图表数据」。")}
               </figcaption>
             </figure>
             <ModelBenchmarkTable />
