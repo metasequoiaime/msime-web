@@ -93,7 +93,7 @@ export function ModelPage() {
         variant="plain"
         kicker="开源模型"
         title="神经联想"
-        lead="打一整句拼音时，引擎会拼出好几种读法。神经联想用一个只有几 MB 的字级语言模型，看着前文在这些读法里挑出更通顺的那一个。模型、代码和评测都开源，别的输入法也能直接用。"
+        lead="打一整句拼音时，引擎会拼出好几种读法。神经联想用字级语言模型看着前文，在这些读法里挑出更通顺的那一个：每次按键都跑的快速模型只有 4.5 MB，手机键盘也装得下；电脑上在输入停顿后接手的高精度模型 25.5 MB。模型、代码和评测都开源，别的输入法也能直接用。"
       />
       <SectionNav group={INTEGRATION_SECTIONS} current="/model/" />
       <main className="w-full">

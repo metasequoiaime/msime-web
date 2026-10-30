@@ -9,7 +9,7 @@ export const seoPages: Record<string, { title: string; description: string; noin
   "/docs/": { canonicalPath: "/docs/windows/", title: "使用文档与安装指南｜水杉输入法", description: "水杉输入法 Windows、macOS、macOS 语音、Linux、Android 与 iOS 使用指南，选择平台查看安装、配置和日常使用方法。" },
   "/faq/": { title: "常见问题与故障排查 Q&A｜水杉输入法", description: "水杉输入法常见问题与排查方法：字体方框、安装启动、快捷键、候选窗口和翻译，附相关指南及 Issue 来源。" },
   "/code/": { title: "开源仓库与贡献入口｜水杉输入法", description: "浏览水杉输入法各平台、输入引擎、词库、语言模型与文档的开源仓库，了解项目分工和贡献入口。" },
-  "/model/": { title: "神经联想与整句重排模型｜水杉输入法", description: "神经联想用几 MB 的字级语言模型，在输入引擎拼出的几种整句读法里，参照已经上屏的文字挑出更通顺的一句。查看实测效果与代价、在水杉输入法中启用的方法、它和引擎库的关系，以及给其他输入法用的开源库和模型。" },
+  "/model/": { title: "神经联想与整句重排模型｜水杉输入法", description: "神经联想用 4.5 MB 起的字级语言模型，在输入引擎拼出的几种整句读法里，参照已经上屏的文字挑出更通顺的一句。查看实测效果与代价、在水杉输入法中启用的方法、它和引擎库的关系，以及给其他输入法用的开源库和模型。" },
   "/engine/": { title: "引擎库：可嵌入的拼音与多语言输入引擎｜水杉输入法", description: "水杉输入法的输入引擎单独发布成库，供其他输入法嵌入：Rust 用 crates.io 上的 msime-engine，C、C++、Swift、Kotlin、Go、Python 等用预编译的 C 库。十种输入方案、词格整句、拼写纠错与学习，可选神经联想重排整句；代码 MPL-2.0，数据按各自的许可证。" },
   "/about/": { title: "关于项目与开发者｜水杉输入法", description: "了解水杉输入法的名字由来、项目理念、开源许可、签名与社区联系方式。" },
   "/price/": { title: "价格与付费计划｜水杉输入法", description: "水杉输入法当前可免费使用。查看后续自愿付费支持计划，以及第三方联网服务的费用说明。" },
