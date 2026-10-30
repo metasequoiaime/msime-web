@@ -511,7 +511,7 @@ test('简繁下载页展示九个入口，Windows 版本分开且旧链接默认
     assert.match(tiles[2].textContent, /Windows 7/);
     assert.equal(tiles[0].getAttribute('aria-pressed'), 'true');
     assert.ok(tiles.slice(1).every(tile => tile.getAttribute('aria-pressed') === 'false'));
-    assert.deepEqual(tiles.slice(3).map(tile => /macOS|Linux|Android|iOS|HarmonyOS|Web/.exec(tile.textContent)?.[0]), ['macOS', 'Linux', 'Android', 'iOS', 'HarmonyOS', 'Web']);
+    assert.deepEqual(tiles.slice(3).map(tile => /macOS|Linux|Android|iOS|HarmonyOS|Web/.exec(tile.textContent)?.[0]), ['macOS', 'Linux', 'Web', 'iOS', 'HarmonyOS', 'Android']);
   }
 });
 
