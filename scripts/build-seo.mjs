@@ -104,7 +104,8 @@ for (const path of pages) {
     const link = document.createElement('link'); link.rel = 'alternate'; link.type = 'text/markdown'; link.href = `${SITE_ORIGIN}${markdownPath(path)}`; link.title = 'Markdown'; document.head.append(link);
     const article = document.createElement('div');
     for (const element of document.querySelectorAll('main, .page-hero')) if (!element.parentElement?.closest('main, .page-hero')) article.append(element.cloneNode(true));
-    article.querySelectorAll('script, style, nav, aside, button, form, input, select, textarea, video, .faq-filters, .feedback-heading + .feedback-layout').forEach(element => { element.remove(); });
+    // A TanStack chart's SVG flattens to a run of tick and legend labels in Markdown. Publish such a chart with a data table beside it, as /model/ does; the table carries the values here.
+    article.querySelectorAll('script, style, nav, aside, button, form, input, select, textarea, video, .faq-filters, .feedback-heading + .feedback-layout, svg.ts-chart').forEach(element => { element.remove(); });
     article.querySelectorAll('a[href], img[src]').forEach(element => {
       const attribute = element.tagName === 'A' ? 'href' : 'src';
       const value = element.getAttribute(attribute);

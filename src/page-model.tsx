@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { INTEGRATION_SECTIONS } from "./integration/sections";
 import { ModelEngineRelation } from "./integration/relation";
+import { BENCHMARK_CASES } from "./model-benchmark";
+import { ModelBenchmarkChart, ModelBenchmarkTable } from "./model-benchmark-chart";
 import { PageHero } from "./page-content";
 import { SectionNav } from "./section-nav";
 import { usePageMeta } from "./page-meta";
@@ -161,6 +163,26 @@ export function ModelPage() {
                 {t("测量记录")}
               </LogoLink>
               {t("。")}
+            </p>
+
+            <h3 id="model-vs-open" className="m-0 mt-8 font-heading text-[17px] leading-[1.5] font-bold text-ink">
+              {t("与开源通用模型比较")}
+            </h3>
+            <p className="m-0 mt-2">
+              {t(`常有人问，为什么不直接用开源的通用小模型。同一批候选上量过几个开源通用模型：只取金标准落在候选池里的 ${BENCHMARK_CASES} 句，每句池里 6 到 7 个候选，各打分器在池内挑一个，所以下图的分母是 ${BENCHMARK_CASES}，不是上表的 ${DECODER_CASES}。横轴是权重体积，用对数刻度；竖线是 95% 置信区间；横线和它两侧的浅色带是引擎原序（不重排）的命中率与区间。`)}
+            </p>
+            <figure className="m-0 mt-4" aria-labelledby="model-vs-open">
+              <ModelBenchmarkChart />
+              <figcaption className="mt-2 text-[14px] leading-[1.8] text-muted">
+                {t(`置信区间按 Wilson 方法计算（${BENCHMARK_CASES} 句，z = 1.96）。`)}
+              </figcaption>
+            </figure>
+            <ModelBenchmarkTable />
+            <p className="m-0 mt-4">
+              {t("命中 49 到 52 句的五个模型，区间彼此大面积重叠，两两做配对检验也没有一对的差别达到显著：上面说名次在噪声里，指的就是这个。区间不相交的只有高精度模型与最低的两项（引擎原序、Qwen2.5-0.5B）。能确定的是体积：和快速模型同样命中 49 句的 Qwen3-0.6B、Qwen3.5-0.8B 有 633 MB 和 1.0 GB，是它的 140 到 220 倍，差了两个数量级。")}
+            </p>
+            <p className="m-0 mt-3">
+              {t("速度也差得多：快速模型在真实按键路径上每次决策的 p95 是 8.6 ms，Qwen3.5-0.8B 和 2B 在 Apple M4 Pro 上每次决策约 57 ms 和 110 ms。开源模型这一侧是逐个候选单独计算，没有批处理，优化后还能快几倍。")}
             </p>
           </NumberedSection>
 
