@@ -183,6 +183,26 @@ test('the header has one 反馈 entry for the two feedback forms, which switch b
   }
 });
 
+test('the 接入 pages describe their open-source libraries as SoftwareSourceCode', () => {
+  for (const [path, name, license, repository] of [
+    ['/engine/', 'msime-engine', 'https://www.mozilla.org/MPL/2.0/', 'https://github.com/metasequoiaime/msime'],
+    ['/zh-TW/engine/', 'msime-engine', 'https://www.mozilla.org/MPL/2.0/', 'https://github.com/metasequoiaime/msime'],
+    ['/model/', 'chinese-ime-lm', 'https://www.apache.org/licenses/LICENSE-2.0', 'https://github.com/metasequoiaime/chinese-ime-lm'],
+    ['/zh-TW/model/', 'chinese-ime-lm', 'https://www.apache.org/licenses/LICENSE-2.0', 'https://github.com/metasequoiaime/chinese-ime-lm'],
+  ]) {
+    const graph = [...document(path).querySelectorAll('script[type="application/ld+json"]')].flatMap(el => JSON.parse(el.textContent)['@graph'] ?? []);
+    const code = graph.find(item => item['@type'] === 'SoftwareSourceCode');
+    assert.ok(code, `${path}: SoftwareSourceCode`);
+    assert.equal(code.name, name, path);
+    assert.equal(code.license, license, path);
+    assert.equal(code.codeRepository, repository, path);
+  }
+  for (const path of ['/', '/download/', '/code/']) {
+    const graph = [...document(path).querySelectorAll('script[type="application/ld+json"]')].flatMap(el => JSON.parse(el.textContent)['@graph'] ?? []);
+    assert.equal(graph.find(item => item['@type'] === 'SoftwareSourceCode'), undefined, `${path}: no library schema`);
+  }
+});
+
 test('the header has one 接入 entry for 引擎库 and 神经联想, which switch between each other under their heroes', () => {
   const sections = ['/engine/', '/model/'];
   for (const [prefix, entry, area, labels] of [['', '接入', '接入栏目', ['引擎库', '神经联想']], ['/zh-TW', '接入', '接入欄目', ['引擎庫', '神經聯想']]]) {
