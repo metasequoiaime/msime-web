@@ -203,6 +203,23 @@ test('the 接入 pages describe their open-source libraries as SoftwareSourceCod
   }
 });
 
+test('the 神经联想 benchmark chart and its data table are in the static HTML, and only the table reaches Markdown', () => {
+  for (const [path, label, markdown] of [['/model/', '权重体积与首选命中率', 'model.md'], ['/zh-TW/model/', '權重體積與首選命中率', 'zh-TW/model.md']]) {
+    const doc = document(path);
+    const svg = doc.querySelector('figure[aria-labelledby="model-vs-open"] svg.ts-chart[role="img"]');
+    assert.ok(svg, `${path}: server-rendered chart`);
+    assert.ok(svg.getAttribute('aria-label').startsWith(label), path);
+    assert.equal(svg.querySelectorAll('.ts-chart__dot circle').length, 6, `${path}: one point per scorer with weights`);
+    const rows = [...doc.querySelectorAll('table[data-chart-table="model-benchmark"] tbody tr')].map(row => [...row.children].map(cell => cell.textContent.trim()));
+    assert.equal(rows.length, 7, `${path}: one table row per scorer`);
+    assert.deepEqual(rows[0].slice(2), ['41 (78.8%)', '66.0% – 87.8%', path === '/model/' ? '无权重' : '無權重']);
+    assert.deepEqual(rows[2].slice(2), ['52 (100.0%)', '93.1% – 100.0%', '25.5 MB']);
+    const text = read(markdown);
+    assert.ok(text.includes('data-chart-table="model-benchmark"'), `${markdown}: data table`);
+    assert.doesNotMatch(text, /10 MB100 MB/, `${markdown}: no flattened axis labels`);
+  }
+});
+
 test('the header has one 接入 entry for 引擎库 and 神经联想, which switch between each other under their heroes', () => {
   const sections = ['/engine/', '/model/'];
   for (const [prefix, entry, area, labels] of [['', '接入', '接入栏目', ['引擎库', '神经联想']], ['/zh-TW', '接入', '接入欄目', ['引擎庫', '神經聯想']]]) {
