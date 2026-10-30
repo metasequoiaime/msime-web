@@ -203,20 +203,31 @@ test('the 接入 pages describe their open-source libraries as SoftwareSourceCod
   }
 });
 
-test('the 神经联想 benchmark chart and its data table are in the static HTML, and only the table reaches Markdown', () => {
-  for (const [path, label, markdown] of [['/model/', '权重体积与首选命中率', 'model.md'], ['/zh-TW/model/', '權重體積與首選命中率', 'zh-TW/model.md']]) {
+test('the 神经联想 benchmark is two bar charts sharing named rows in the static HTML, and only its data table reaches Markdown', () => {
+  const names = ['快速模型', '高精度模型', 'Qwen2.5-0.5B', 'Qwen3-0.6B', 'Qwen3.5-0.8B', 'Qwen3.5-2B'];
+  for (const [path, markdown, tw] of [['/model/', 'model.md', false], ['/zh-TW/model/', 'zh-TW/model.md', true]]) {
     const doc = document(path);
-    const svg = doc.querySelector('figure[aria-labelledby="model-vs-open"] svg.ts-chart[role="img"]');
-    assert.ok(svg, `${path}: server-rendered chart`);
-    assert.ok(svg.getAttribute('aria-label').startsWith(label), path);
-    assert.equal(svg.querySelectorAll('.ts-chart__dot circle').length, 6, `${path}: one point per scorer with weights`);
+    const figure = doc.querySelector('figure[aria-labelledby="model-vs-open"]');
+    const visual = figure.querySelector('[data-chart-visual="model-benchmark"]');
+    assert.ok(visual, `${path}: server-rendered chart`);
+    assert.equal(visual.querySelectorAll('svg').length, 0, `${path}: plain HTML bars, no chart SVG`);
+    const panels = [...visual.querySelectorAll('ul[aria-labelledby]')];
+    assert.equal(panels.length, 2, `${path}: a hits chart and a size chart`);
+    const titles = panels.map(panel => doc.getElementById(panel.getAttribute('aria-labelledby')).textContent);
+    assert.deepEqual(titles, tw ? ['52 句裡挑對了幾句', '模型體積'] : ['52 句里挑对了几句', '模型体积'], path);
+    const cells = panel => [...panel.children].map(row => [row.children[0].textContent, row.children[1].textContent]);
+    assert.deepEqual(cells(panels[0]), names.map((name, index) => [name, `${[49, 52, 42, 49, 49, 50][index]} / 52`]), `${path}: hits rows in order, each named`);
+    assert.deepEqual(cells(panels[1]), names.map((name, index) => [name, ['4.5 MB', '25.5 MB', '278 MB', '633 MB', '1.0 GB', '1.7 GB'][index]]), `${path}: size rows in the same order, each named`);
+    assert.ok(visual.textContent.includes('引擎原序 41'), `${path}: labelled baseline`);
+    assert.ok(figure.querySelector('p').textContent.startsWith(tw ? '挑對 49–52 句的五個模型' : '挑对 49–52 句的五个模型'), `${path}: headline above the charts`);
+    assert.match(figure.querySelector('figcaption').textContent, /McNemar/, `${path}: noise note`);
     const rows = [...doc.querySelectorAll('table[data-chart-table="model-benchmark"] tbody tr')].map(row => [...row.children].map(cell => cell.textContent.trim()));
-    assert.equal(rows.length, 7, `${path}: one table row per scorer`);
-    assert.deepEqual(rows[0].slice(2), ['41 (78.8%)', '66.0% – 87.8%', path === '/model/' ? '无权重' : '無權重']);
-    assert.deepEqual(rows[2].slice(2), ['52 (100.0%)', '93.1% – 100.0%', '25.5 MB']);
+    assert.equal(rows.length, 7, `${path}: one table row per model and one for the baseline`);
+    assert.deepEqual(rows[1].slice(2), ['52 (100.0%)', '93.1% – 100.0%', '25.5 MB']);
+    assert.deepEqual(rows[6].slice(2), ['41 (78.8%)', '66.0% – 87.8%', tw ? '無權重' : '无权重']);
     const text = read(markdown);
     assert.ok(text.includes('data-chart-table="model-benchmark"'), `${markdown}: data table`);
-    assert.doesNotMatch(text, /10 MB100 MB/, `${markdown}: no flattened axis labels`);
+    assert.ok(!text.includes('52 / 52'), `${markdown}: no flattened bar labels`);
   }
 });
 
