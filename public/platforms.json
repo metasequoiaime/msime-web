@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-30T23:28:48.615Z",
+  "generatedAt": "2026-10-30T23:30:03.642Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -5850,6 +5850,66 @@
       "download_count": 0
     },
     {
+      "repository": "metasequoiaime/msime",
+      "id": 693745324,
+      "name": "msime-linux-tibetan-0.14.0-1.x86_64-nightly.41134921126.1.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 693745331,
+      "name": "msime-linux-vietnamese-0.14.0-1.x86_64-nightly.41134921126.1.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 693745332,
+      "name": "msime-linux-wubi-0.14.0-1.x86_64-nightly.41134921126.1.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 693745453,
+      "name": "msime-harmony-0.3.3-unsigned-nightly.41134921126.1.hap",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 693745909,
+      "name": "MetasequoiaIME-Pinyin_Setup_v0.3.0-nightly.41134921126.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 693745911,
+      "name": "MetasequoiaIME-Vietnamese_Setup_v0.3.0-nightly.41134921126.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 693745912,
+      "name": "MetasequoiaIME-Tibetan_Setup_v0.3.0-nightly.41134921126.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 693745913,
+      "name": "MetasequoiaIME-Japanese_Setup_v0.3.0-nightly.41134921126.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 693745914,
+      "name": "MetasequoiaIME-Full_Setup_v0.3.0-nightly.41134921126.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 693746129,
+      "name": "MetasequoiaIME-Wubi_Setup_v0.3.0-nightly.41134921126.1.exe",
+      "download_count": 0
+    },
+    {
       "repository": "metasequoiaime/msime-linux",
       "id": 545412939,
       "name": "metasequoia-ime-linux-0.2.0-Linux.rpm",
@@ -6700,10 +6760,10 @@
       "windows": 8031,
       "windowsRust": 12
     },
-    "generatedAt": "2026-10-30T23:28:48.055703Z"
+    "generatedAt": "2026-10-30T23:30:03.110632Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-30T23:28:47.664Z",
+    "generatedAt": "2026-10-30T23:30:02.679Z",
     "total": 4990,
     "builds": [
       {
@@ -6753,7 +6813,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-10-30T23:28:48.140Z",
+    "generatedAt": "2026-10-30T23:30:03.189Z",
     "downloads": 2472,
     "periodStart": "2025-10-30",
     "periodEnd": "2026-10-30"
