@@ -178,8 +178,8 @@ export function ModelPage() {
               {t(`的知意（两个版本）。只取金标准落在候选池里的 ${BENCHMARK_CASES} 句，每句池里 6 到 7 个候选，各模型在池内挑一个，所以下图的分母是 ${BENCHMARK_CASES}，不是上表的 ${DECODER_CASES}。「挑对了几句」那张图里的竖线是引擎原序（不重排、不用任何模型）挑对的 ${BENCHMARK_BASELINE.hits} 句；「模型体积」按实际大小画。两张图都从零画起，同一行是同一个模型。`)}
             </p>
             <figure className="m-0 mt-5" aria-labelledby="model-vs-open">
-              {/* The takeaway the rows support; re-check it when a model is added to src/model-benchmark.ts. Hits run 45 to 52 (nine of the ten 48 to 52), sizes 4.49 MB (4.25M) to 1722 MB (Qwen3.5-2B). */}
-              <p className="m-0 mb-4 text-[16px] leading-[1.6] font-semibold text-ink">{t("挑对的句数大多相差无几，体积却从 4.5 MB 到 1.7 GB 不等，最小的是本项目的快速模型")}</p>
+              {/* The takeaway the rows support; re-check it when a model is added to src/model-benchmark.ts. Hits run 49 to 52 with the Qwen rows at their best scoring variant, sizes 4.49 MB (4.25M) to 1722 MB (Qwen3.5-2B). */}
+              <p className="m-0 mb-4 text-[16px] leading-[1.6] font-semibold text-ink">{t("挑对的句数都在 49 到 52 句之间，体积却从 4.5 MB 到 1.7 GB 不等，最小的是本项目的快速模型")}</p>
               <ModelBenchmarkChart />
               <figcaption className="mt-4 text-[14px] leading-[1.8] text-muted">
                 <span className="block">
@@ -190,9 +190,9 @@ export function ModelPage() {
                   {t("里的 McNemar 精确检验中，即使一方 3 比 0 全胜，p 也有 0.25。各模型的 95% 置信区间见下方「图表数据」。")}
                 </span>
                 <span className="mt-1 block">
-                  {t("* Qwen 四行按首字也计分的口径：每个候选前面接一个 ")}
-                  <code className="text-[13px] [font-variant-ligatures:none]">{"<|endoftext|>"}</code>
-                  {t("。之前发布的数字没有给每个候选的第一个 token 打分；同一份权重随这个细节在 42–52（Qwen2.5-0.5B）、49–50（Qwen3-0.6B）、48–49（Qwen3.5-0.8B）、45–51（Qwen3.5-2B）句之间变动，见")}
+                  {t("* Qwen 四行取三种打分细节里对它们最有利的一种，四个模型都是每个候选前面接分词器的结束符 ")}
+                  <code className="text-[13px] [font-variant-ligatures:none]">{"<|im_end|>"}</code>
+                  {t("、首字也计分。之前发布的数字没有给每个候选的第一个 token 打分；同一份权重随这个细节在 42–52（Qwen2.5-0.5B）、49–50（Qwen3-0.6B）、48–49（Qwen3.5-0.8B）、45–51（Qwen3.5-2B）句之间变动，见")}
                   <a href={`${MEASUREMENTS}#复测原表没有给第一个-token-打分`} target="_blank" rel="noreferrer">
                     {t("复测")}
                   </a>
@@ -202,9 +202,7 @@ export function ModelPage() {
             </figure>
             <ModelBenchmarkTable />
             <p className="m-0 mt-4">
-              {t(`十个模型里有九个挑对 48 到 52 句。${BENCHMARK_CASES} 句上，一方至少要净多对 6 句才可能显著（6 比 0 时 McNemar p≈0.03），这九个之间最多差 4 句，所以两两之间没有一对的差别达到显著：上面说名次在噪声里，指的就是这个。Qwen3.5-2B 在这个口径下只挑对 45 句，比全对的高精度模型少 7 句，这一对是显著的（p≈0.016）；可候选前面改接 `)}
-              <code className="text-[13px] [font-variant-ligatures:none]">{"<|im_end|>"}</code>
-              {t("，它就挑对 51 句。它的名次连打分细节都定不住，谈不上和别的模型比高下。和不重排相比，本项目两个模型的提升是显著的（p 为 0.039 和 0.001）。")}
+              {t(`十个模型都挑对 49 到 52 句。${BENCHMARK_CASES} 句上，一方至少要净多对 6 句才可能显著（6 比 0 时 McNemar p≈0.03），这十个之间最多差 3 句，所以两两之间没有一对的差别达到显著：上面说名次在噪声里，指的就是这个。Qwen 的成绩会随打分细节变动（见上方图注），这里取的是对它们最有利的口径。和不重排相比，本项目两个模型的提升是显著的（p 为 0.039 和 0.001）。`)}
             </p>
             <p className="m-0 mt-3">
               {t("能确定的是体积，它不是抽样估计，没有噪声可言。快速模型 4.5 MB，是这里最小的：青简的含章·通变 46.1 MB，是它的 10 倍；知意 Long-L12 的 int8 ONNX 84.4 MB，是它的 19 倍，算上分词表是 26 倍；四个 Qwen 是它的 62 到 384 倍。高精度模型 25.5 MB，也比青简、知意的模型都小。")}
