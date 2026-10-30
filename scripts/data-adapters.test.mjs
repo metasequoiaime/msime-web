@@ -221,7 +221,7 @@ test('the seven-platform catalogue joins desktop and Android releases and keeps 
   for (const entry of entries) {
     if (['windows', 'macos', 'linux', 'android'].includes(entry.id)) assert.equal(entry.release?.version, platforms.platforms[entry.id].version);
     else assert.equal(entry.release, null);
-    assert.ok(entry.href.startsWith('https://github.com/metasequoiaime/') || entry.href === IOS_TESTFLIGHT_URL || entry.href === ANDROID_PGYER_URL || entry.href === 'https://www.npmjs.com/package/@msime/web-engine');
+    assert.ok(entry.href.startsWith('https://github.com/metasequoiaime/') || entry.href === IOS_TESTFLIGHT_URL || entry.href === ANDROID_PGYER_URL || entry.href === HARMONY_APPGALLERY_URL || entry.href === 'https://www.npmjs.com/package/@msime/web-engine');
   }
   const web = entries.find(entry => entry.id === 'web');
   assert.equal(web.distribution, 'sdk');
@@ -233,13 +233,13 @@ test('the seven-platform catalogue joins desktop and Android releases and keeps 
   assert.equal(android.distribution, 'pgyer');
   assert.equal(android.href, 'https://www.pgyer.com/msime');
   assert.equal(android.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/platforms/android');
-  // HarmonyOS NEXT 零售设备装不上 HAP：清单里的 HAP 只留给统计，下载页只走华为应用市场，未上架时链接到源码目录。
+  // HarmonyOS NEXT 零售设备装不上 HAP：清单里的 HAP 只留给统计，下载页只走华为 AppTest 公开测试。
   assert.ok(platforms.platforms.harmony, 'the fixture still carries the automation\'s HarmonyOS entry');
   const harmony = entries.find(entry => entry.id === 'harmony');
   assert.equal(harmony.distribution, 'appgallery');
   assert.equal(harmony.release, null, 'HarmonyOS HAPs in the manifest never become download buttons');
   assert.equal(harmony.publishedVersion, null);
-  assert.equal(harmony.href, HARMONY_APPGALLERY_URL ?? harmony.sourceUrl);
+  assert.equal(harmony.href, 'https://appgallery.huawei.com/link/invite-test-wap?taskId=c248f2d182bcf3b651b4848020daf31d');
   assert.equal(harmony.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/platforms/harmony');
   assert.deepEqual(sitePlatforms().map(entry => entry.release), [null, null, null, null, null, null, null], 'renders without a manifest');
 });

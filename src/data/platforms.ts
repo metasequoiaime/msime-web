@@ -27,18 +27,17 @@ export const IOS_TESTFLIGHT_URL = "https://testflight.apple.com/join/bUzPvyqt";
 export const ANDROID_PGYER_URL = "https://www.pgyer.com/msime";
 
 /**
- * 华为应用市场（AppGallery）上水杉输入法的页面地址。上架之前是 `null`，下载页显示审核状态；上架后把地址填在这里，下载页、首页和下载说明都会改为给出应用市场链接，不需要改其他地方。
- *
- * HarmonyOS NEXT（HarmonyOS 5 及以上）不允许普通用户安装 HAP 文件，应用只能从应用市场获得，所以 harmony-v 发布里的 HAP 不作为下载提供。
+ * 华为 AppTest 的公开测试邀请；不是应用市场正式上架页面。HarmonyOS 的 HAP 不作为普通用户的下载提供。
  */
-export const HARMONY_APPGALLERY_URL: string | null = null;
+export const HARMONY_APPGALLERY_URL = "https://appgallery.huawei.com/link/invite-test-wap?taskId=c248f2d182bcf3b651b4848020daf31d";
+export const HARMONY_APPTEST_CODE = "4rk3mjR656x";
 
 /**
  * How a platform reaches users today.
  * - `release`: installable packages on GitHub Releases, described by `public/platforms.json`.
  * - `testflight`: Apple's public beta only; the IPAs on GitHub are TestFlight builds, not sideloadable.
  * - `pgyer`: a test APK on Pgyer's install page, sideloaded rather than installed from a store.
- * - `appgallery`: Huawei AppGallery only (`HARMONY_APPGALLERY_URL`, `null` while the listing is under review). The HAPs on GitHub are not installable on retail devices.
+ * - `appgallery`: Huawei AppTest public beta (`HARMONY_APPGALLERY_URL`). The HAPs on GitHub are not installable on retail devices.
  * - `source`: 尚在开发，官网暂未提供正式安装包。
  * - `sdk`: a library for developers to embed (the web engine on npm), not something end users install.
  */
@@ -113,7 +112,7 @@ export const PLATFORM_CATALOG: Record<SitePlatform, PlatformInfo> = {
     name: PLATFORM_NAMES.harmony,
     host: "InputMethodExtensionAbility，NAPI 调 host-api",
     distribution: "appgallery",
-    href: HARMONY_APPGALLERY_URL ?? `${MSIME}/tree/develop/platforms/harmony`,
+    href: HARMONY_APPGALLERY_URL,
     sourceUrl: `${MSIME}/tree/develop/platforms/harmony`,
   },
   web: {

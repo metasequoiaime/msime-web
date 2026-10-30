@@ -548,12 +548,21 @@ test('the current macOS DMG guide describes the in-app install flow', () => {
   assert.doesNotMatch(macos.textContent, /打开「应用程序」里的 MSIME。它会把输入法装进/);
 });
 
-test('简繁下载页的 HarmonyOS 只走华为应用市场，不提供 HAP 下载', () => {
+test('简繁下载页的 HarmonyOS 提供 AppTest 邀请和手动加入说明，不提供 HAP 下载', () => {
   for (const path of ['/download/', '/zh-TW/download/']) {
     const doc = document(path);
     const harmony = doc.querySelector('#download-harmony');
     assert.ok(harmony);
     assert.match(harmony.textContent, /[华華][为為][应應]用市[场場]/);
+    assert.match(harmony.textContent, /AppTest/);
+    assert.match(harmony.textContent, /4rk3mjR656x/);
+    const invite = 'https://appgallery.huawei.com/link/invite-test-wap?taskId=c248f2d182bcf3b651b4848020daf31d';
+    assert.ok(harmony.querySelector(`a[href="${invite}"]`));
+    assert.match(read(markdownPath(path).slice(1)), /AppTest[\s\S]*4rk3mjR656x/);
+    const home = document(path.startsWith('/zh-TW/') ? '/zh-TW/' : '/');
+    const card = home.querySelector('[data-platform="harmony"]');
+    assert.match(card.textContent, /AppTest/);
+    assert.doesNotMatch(card.textContent + harmony.textContent, /[审審]核中|已上架/);
     assert.match(harmony.textContent, /hdc install/);
     assert.doesNotMatch(harmony.textContent, /GitHub 下[载載]|安[装裝] HAP 後|安装 HAP 后|HAP 測試|HAP 测试/);
     assert.equal(doc.querySelectorAll('a[href$=".hap"]').length, 0);

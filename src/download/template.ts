@@ -1,4 +1,4 @@
-import { HARMONY_APPGALLERY_URL } from "../data/platforms.ts";
+import { HARMONY_APPGALLERY_URL, HARMONY_APPTEST_CODE } from "../data/platforms.ts";
 import type { UpdateManifest } from "../data/schemas.ts";
 import { PLATFORM_LABELS, PLATFORMS, type Platform } from "../platform.ts";
 import type { PlatformRelease, Platforms } from "../platforms-data.ts";
@@ -80,11 +80,9 @@ const macosInstallBlocks = (source: string, macos: PlatformRelease | undefined) 
   return keepBlock(keepBlock(source, "macosDmg", dmg), "macosLegacy", !dmg);
 };
 
-/** HarmonyOS 的状态句跟着 `HARMONY_APPGALLERY_URL` 走：上架前说明在审核，上架后给出应用市场链接。 */
+/** The same AppTest invitation and manual code as the download panel, including in Markdown exports. */
 const harmonyStatus = () =>
-  HARMONY_APPGALLERY_URL
-    ? `HarmonyOS 版已上架华为应用市场，打开[水杉输入法的应用市场页面](${HARMONY_APPGALLERY_URL})安装。`
-    : "HarmonyOS 版正在提交华为应用市场审核，上架后这里提供应用市场链接。";
+  `HarmonyOS 版通过华为 AppTest 公开测试。用华为手机扫描上方二维码，或打开[AppTest 测试邀请链接](${HARMONY_APPGALLERY_URL})加入并安装。\n\n手动加入：在华为应用市场下载 AppTest，打开后输入邀请码 \`${HARMONY_APPTEST_CODE}\`，加入水杉输入法测试并安装。`;
 
 /** Fills the placeholders in `content/download.md`. A manifest that failed to load is passed as `{}`, which makes every derived statement fall back to "check the release page" rather than guess. */
 export const fillTemplate = (manifest: Partial<UpdateManifest>, platforms: Partial<Platforms> | undefined) =>

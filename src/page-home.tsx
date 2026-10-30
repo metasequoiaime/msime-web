@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { HighlightedCode } from "./code";
 import { CommunitySection } from "./community-section";
-import { HARMONY_APPGALLERY_URL, PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution, type SitePlatform } from "./data/platforms";
+import { PLATFORM_CATALOG, SITE_PLATFORMS, type Distribution, type SitePlatform } from "./data/platforms";
 import { HomeHero } from "./home/hero";
 import { useHomeDownloadStats } from "./home/download-stats";
 import { LocaleLink } from "./locale-link";
@@ -39,7 +39,7 @@ const DISTRIBUTION_LABELS: Record<Distribution, { label: string; tone: "accent" 
   release: { label: "可下载", tone: "accent" },
   testflight: { label: "TestFlight", tone: "accent" },
   pgyer: { label: "测试版", tone: "accent" },
-  appgallery: HARMONY_APPGALLERY_URL ? { label: "华为应用市场", tone: "accent" } : { label: "审核中", tone: "neutral" },
+  appgallery: { label: "AppTest 测试版", tone: "accent" },
   source: { label: "开发中", tone: "neutral" },
   sdk: { label: "开发者接入", tone: "accent" },
 };
