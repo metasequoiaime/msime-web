@@ -205,7 +205,7 @@ test('the 接入 pages describe their open-source libraries as SoftwareSourceCod
 
 test('the 神经联想 benchmark is two TanStack bar charts sharing named rows in the static HTML, and only its data table reaches Markdown', () => {
   const names = ['快速模型', '高精度模型', 'Qwen2.5-0.5B', 'Qwen3-0.6B', 'Qwen3.5-0.8B', 'Qwen3.5-2B', '青简 含章·通变', '青简 含章·知微', '知意 Long-L12', '知意 pumpkin'];
-  const hits = ['49 / 52', '52 / 52', '51 / 52 *', '49 / 52 *', '48 / 52 *', '45 / 52 *', '50 / 52', '49 / 52', '51 / 52', '49 / 52'];
+  const hits = ['49 / 52', '52 / 52', '52 / 52 *', '50 / 52 *', '49 / 52 *', '51 / 52 *', '50 / 52', '49 / 52', '51 / 52', '49 / 52'];
   const sizes = ['4.5 MB', '25.5 MB', '278 MB', '633 MB', '1.0 GB', '1.7 GB', '46.1 MB', '56.0 MB', '84.4 MB + 34.4 MB', '92.2 MB + 34.4 MB'];
   for (const [path, markdown, tw] of [['/model/', 'model.md', false], ['/zh-TW/model/', 'zh-TW/model.md', true]]) {
     const doc = document(path);
@@ -221,14 +221,14 @@ test('the 神经联想 benchmark is two TanStack bar charts sharing named rows i
     assert.equal(charts[0].querySelectorAll('.ts-chart__bar-x path').length, names.length, `${path}: one hits bar per model`);
     assert.deepEqual(texts(charts[1], '.ts-chart__text text'), sizes, `${path}: size rows in the same order`);
     assert.equal(charts[1].querySelectorAll('.ts-chart__bar-x path').length, names.length + 2, `${path}: one size bar per model plus the two tokenizer segments`);
-    assert.ok(figure.querySelector('p').textContent.startsWith(tw ? '挑對的句數大多相差無幾' : '挑对的句数大多相差无几'), `${path}: headline above the charts`);
+    assert.ok(figure.querySelector('p').textContent.startsWith(tw ? '挑對的句數都在 49 到 52 句之間' : '挑对的句数都在 49 到 52 句之间'), `${path}: headline above the charts`);
     const caption = figure.querySelector('figcaption').textContent;
     assert.match(caption, /McNemar/, `${path}: noise note`);
-    assert.match(caption, /<\|endoftext\|>/, `${path}: Qwen scoring note`);
+    assert.match(caption, /<\|im_end\|>/, `${path}: Qwen scoring note`);
     const rows = [...doc.querySelectorAll('table[data-chart-table="model-benchmark"] tbody tr')].map(row => [...row.children].map(cell => cell.textContent.trim()));
     assert.equal(rows.length, 11, `${path}: one table row per model and one for the baseline`);
     assert.deepEqual(rows[1].slice(2), ['52 (100.0%)', '93.1% – 100.0%', '25.5 MB']);
-    assert.equal(rows[5][2].replace(/\s+/g, ' '), tw ? '45 (86.5%)（隨打分細節 45–51）' : '45 (86.5%)（随打分细节 45–51）');
+    assert.equal(rows[5][2].replace(/\s+/g, ' '), tw ? '51 (98.1%)（隨打分細節 45–51）' : '51 (98.1%)（随打分细节 45–51）');
     assert.deepEqual(rows[8].slice(2), ['51 (98.1%)', '89.9% – 99.7%', tw ? '84.4 MB，另需分詞表 34.4 MB' : '84.4 MB，另需分词表 34.4 MB']);
     assert.deepEqual(rows[10].slice(2), ['41 (78.8%)', '66.0% – 87.8%', tw ? '無權重' : '无权重']);
     const text = read(markdown);

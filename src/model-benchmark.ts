@@ -27,15 +27,15 @@ export type BenchmarkModel = {
 };
 
 /**
- * The Qwen rows use the `endoftext` variant of results.json `start_variants`: every candidate is prefixed with <|endoftext|>, so its first token is scored like the rest. The hits published on 2026-09-19 (42, 49, 49, 50) came from a scorer that never scored the first token; `hitsRange` spans all three variants, the published numbers included.
+ * The Qwen rows use each model's best variant in results.json `start_variants`, which for all four is `eos`: every candidate is prefixed with the tokenizer's eos token (<|im_end|> in these releases), so its first token is scored like the rest. The best variant is the most favourable reading for the models we compare against; picking a variant that happens to sink one of them would let the scoring detail decide the comparison. The hits published on 2026-09-19 (42, 49, 49, 50) came from a scorer that never scored the first token; `hitsRange` spans all three variants, the published numbers included.
  */
 export const BENCHMARK_MODELS: readonly BenchmarkModel[] = [
   { name: "快速模型（本项目 4.25M int8）", short: "快速模型", group: "project", hits: 49, sizeMb: 4.49 },
   { name: "高精度模型（本项目 24.9M int8）", short: "高精度模型", group: "project", hits: 52, sizeMb: 25.48 },
-  { name: "Qwen2.5-0.5B-Instruct-4bit", short: "Qwen2.5-0.5B", group: "open", hits: 51, hitsRange: [42, 52], sizeMb: 278.06 },
-  { name: "Qwen3-0.6B-8bit", short: "Qwen3-0.6B", group: "open", hits: 49, hitsRange: [49, 50], sizeMb: 633.44 },
-  { name: "Qwen3.5-0.8B-8bit", short: "Qwen3.5-0.8B", group: "open", hits: 48, hitsRange: [48, 49], sizeMb: 1001.18 },
-  { name: "Qwen3.5-2B-4bit", short: "Qwen3.5-2B", group: "open", hits: 45, hitsRange: [45, 51], sizeMb: 1722.27 },
+  { name: "Qwen2.5-0.5B-Instruct-4bit", short: "Qwen2.5-0.5B", group: "open", hits: 52, hitsRange: [42, 52], sizeMb: 278.06 },
+  { name: "Qwen3-0.6B-8bit", short: "Qwen3-0.6B", group: "open", hits: 50, hitsRange: [49, 50], sizeMb: 633.44 },
+  { name: "Qwen3.5-0.8B-8bit", short: "Qwen3.5-0.8B", group: "open", hits: 49, hitsRange: [48, 49], sizeMb: 1001.18 },
+  { name: "Qwen3.5-2B-4bit", short: "Qwen3.5-2B", group: "open", hits: 51, hitsRange: [45, 51], sizeMb: 1722.27 },
   { name: "含章·通变 v1.0.0（青简输入法）", short: "青简 含章·通变", group: "ime", hits: 50, sizeMb: 46.14 },
   { name: "含章·知微 v1.0.0（青简输入法）", short: "青简 含章·知微", group: "ime", hits: 49, sizeMb: 56.04 },
   { name: "知意 1.4V2-Long-L12 int8 ONNX（知意输入法）", short: "知意 Long-L12", group: "ime", hits: 51, sizeMb: 84.4, tokenizerMb: 34.36 },
