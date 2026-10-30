@@ -315,13 +315,18 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
   const hint = hintText ? <p className="m-0 text-sm leading-[1.8] text-muted">{t(hintText)}</p> : null;
 
   if (entry.distribution === "testflight") {
+    const reportTestFlight = () => reportDownloadClick({ platform: "ios", version: entry.publishedVersion ?? undefined, channel: "testflight" });
     return (
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
-        <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer" onClick={() => reportDownloadClick({ platform: "ios", version: entry.publishedVersion ?? undefined, channel: "testflight" })}>
-          {t("通过 TestFlight 安装 iOS 版")}
-          <ExternalIcon />
+      <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
+        <a className="flex-none rounded-tile bg-white p-3" href={entry.href} target="_blank" rel="noreferrer" aria-label={t("打开 TestFlight 测试邀请")} onClick={reportTestFlight}>
+          <img src="/img/ios-testflight-qr.png" width={180} height={180} alt={t("iOS TestFlight 测试邀请二维码")} className="block h-[180px] w-[180px]" />
         </a>
-        <div>
+        <div className="grid w-full min-w-0 justify-items-start gap-3 sm:w-auto">
+          <p className="m-0 text-[15px] font-semibold text-ink">{t("用 iPhone 扫码加入测试，或点击下方链接。")}</p>
+          <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer" onClick={reportTestFlight}>
+            {t(`通过 TestFlight 安装 iOS 版${entry.publishedVersion ? ` v${entry.publishedVersion}` : ""}`)}
+            <ExternalIcon />
+          </a>
           {hint}
           {entry.publishedVersion && <p className="m-0 text-sm leading-[1.8] text-muted">{t("显示最新公开发布版本；可安装版本以 TestFlight 为准。")}</p>}
         </div>
@@ -339,10 +344,11 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
           <div className="grid w-full min-w-0 justify-items-start gap-3 sm:w-auto">
             <p className="m-0 text-[15px] font-semibold text-ink">{t("用华为手机扫码加入测试，或点击下方链接。")}</p>
             <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer">
-              {t("通过 AppTest 安装 HarmonyOS 版")}
+              {t(`通过 AppTest 安装 HarmonyOS 版${entry.publishedVersion ? ` v${entry.publishedVersion}` : ""}`)}
               <ExternalIcon />
             </a>
             {hint}
+            {entry.publishedVersion && <p className="m-0 text-sm leading-[1.8] text-muted">{t("显示最新公开发布版本；可安装版本以 AppTest 为准。")}</p>}
           </div>
         </div>
         <p className="m-0 mt-4 text-sm leading-[1.8] text-body">
@@ -366,24 +372,33 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
 
   if (entry.distribution === "pgyer") {
     const apk = entry.release?.downloads[0];
+    const reportPgyer = () => reportDownloadClick({ platform: "android", version: entry.publishedVersion ?? undefined, channel: "pgyer" });
     return (
       <div>
-        <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-3">
-          <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer" onClick={() => reportDownloadClick({ platform: "android", version: entry.publishedVersion ?? undefined, channel: "pgyer" })}>
-            {t("通过蒲公英安装 Android 版")}
-            <ExternalIcon />
+        <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
+          <a className="flex-none rounded-tile bg-white p-3" href={entry.href} target="_blank" rel="noreferrer" aria-label={t("打开蒲公英下载页")} onClick={reportPgyer}>
+            <img src="/img/android-pgyer-qr.png" width={180} height={180} alt={t("Android 蒲公英下载二维码")} className="block h-[180px] w-[180px]" />
           </a>
-          {/* android-v 发布里的 APK：和蒲公英是同一个应用，给装不了蒲公英、或者要特定版本（五笔、日语……）的人直接下载。 */}
-          {entry.release && apk && (
-            <>
-              <a className={MIRROR_ACTION} href={apk.url} rel="noreferrer" aria-label={t(`从 GitHub 下载 Android 版 v${entry.release.version}`)} onClick={reportPackage("android", entry.release.version, apk)}>
-                <GitHubIcon size={18} />
-                {t("GitHub 下载")}
+          <div className="grid w-full min-w-0 gap-3 sm:w-auto">
+            <p className="m-0 text-[15px] font-semibold text-ink">{t("用 Android 手机扫码安装，或点击下方链接。")}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <a className={PRIMARY_ACTION} href={entry.href} target="_blank" rel="noreferrer" onClick={reportPgyer}>
+                {t(`通过蒲公英安装 Android 版${entry.publishedVersion ? ` v${entry.publishedVersion}` : ""}`)}
+                <ExternalIcon />
               </a>
-              <MirrorAction platform="android" version={entry.release.version} entry={apk} className={MIRROR_ACTION} />
-            </>
-          )}
-          {hint}
+              {/* android-v 发布里的 APK：和蒲公英是同一个应用，给装不了蒲公英、或者要特定版本（五笔、日语……）的人直接下载。 */}
+              {entry.release && apk && (
+                <>
+                  <a className={MIRROR_ACTION} href={apk.url} rel="noreferrer" aria-label={t(`从 GitHub 下载 Android 版 v${entry.release.version}`)} onClick={reportPackage("android", entry.release.version, apk)}>
+                    <GitHubIcon size={18} />
+                    {t("GitHub 下载")}
+                  </a>
+                  <MirrorAction platform="android" version={entry.release.version} entry={apk} className={MIRROR_ACTION} />
+                </>
+              )}
+            </div>
+            {hint}
+          </div>
         </div>
         {entry.release && entry.release.downloads.length > 1 && <MorePackages platform="android" version={entry.release.version} downloads={entry.release.downloads.slice(1)} />}
       </div>
