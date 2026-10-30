@@ -3,14 +3,14 @@ export const SITE_ORIGIN = "https://msime.app";
 export const SITE_NAME = "水杉输入法";
 export const GUIDE_NAMES = { windows: "Windows", macos: "macOS", "macos-voice": "macOS 语音", linux: "Linux", android: "Android", ios: "iOS", "cli-mcp": "CLI / MCP" } as const;
 export const seoPages: Record<string, { title: string; description: string; noindex?: boolean; canonicalPath?: string }> = {
-  "/": { title: "水杉输入法 MSIME｜开源中文输入法", description: "水杉输入法（MSIME）是开源中文输入法，面向 Windows、macOS、Linux、Android、iOS 与 HarmonyOS 开发，也能嵌入网页使用，支持全拼、双拼、五笔，候选词旁直接显示译文。查看下载、使用指南与常见问题。" },
+  "/": { title: "水杉输入法 MSIME｜开源中文输入法", description: "水杉输入法（MSIME）是开源中文输入法，面向 Windows、macOS、Linux、Android、iOS 与 HarmonyOS 开发，也能嵌入网页使用，支持全拼、双拼、五笔，候选词旁直接显示译文；输入引擎也作为库开放给其他输入法嵌入。查看下载、使用指南与常见问题。" },
   "/features/": { title: "功能与界面｜水杉输入法", description: "以 Windows 版为例，查看水杉输入法的候选窗、皮肤、词库与输入功能，了解设置方法和实际界面。" },
   "/download/": { title: "下载 Windows、macOS、Linux、Android 与 iOS 版｜水杉输入法", description: "下载水杉输入法 Windows、macOS 与 Linux 版本，通过蒲公英安装 Android 测试版，或通过 TestFlight 安装 iOS 版。网站开发者可以通过 npm 包把 Web 版嵌入自己的网页。" },
   "/docs/": { canonicalPath: "/docs/windows/", title: "使用文档与安装指南｜水杉输入法", description: "水杉输入法 Windows、macOS、macOS 语音、Linux、Android 与 iOS 使用指南，选择平台查看安装、配置和日常使用方法。" },
   "/faq/": { title: "常见问题与故障排查 Q&A｜水杉输入法", description: "水杉输入法常见问题与排查方法：字体方框、安装启动、快捷键、候选窗口和翻译，附相关指南及 Issue 来源。" },
   "/code/": { title: "开源仓库与贡献入口｜水杉输入法", description: "浏览水杉输入法各平台、输入引擎、词库、语言模型与文档的开源仓库，了解项目分工和贡献入口。" },
-  "/model/": { title: "神经联想与整句重排模型｜水杉输入法", description: "神经联想用几 MB 的字级语言模型，在拼音整句候选里挑出更通顺的读法。查看实测效果与代价、在水杉输入法中启用的方法，以及给其他输入法用的开源库和模型。" },
-  "/engine/": { title: "引擎库：可嵌入的拼音与多语言输入引擎｜水杉输入法", description: "水杉输入法的输入引擎单独发布成库：Rust 用 crates.io 上的 msime-engine，C、C++、Swift、Kotlin、Go、Python 等用预编译的 C 库。十种输入方案、词格整句、拼写纠错与学习，代码 MPL-2.0，数据按各自的许可证。" },
+  "/model/": { title: "神经联想与整句重排模型｜水杉输入法", description: "神经联想用几 MB 的字级语言模型，在输入引擎拼出的几种整句读法里，参照已经上屏的文字挑出更通顺的一句。查看实测效果与代价、在水杉输入法中启用的方法、它和引擎库的关系，以及给其他输入法用的开源库和模型。" },
+  "/engine/": { title: "引擎库：可嵌入的拼音与多语言输入引擎｜水杉输入法", description: "水杉输入法的输入引擎单独发布成库，供其他输入法嵌入：Rust 用 crates.io 上的 msime-engine，C、C++、Swift、Kotlin、Go、Python 等用预编译的 C 库。十种输入方案、词格整句、拼写纠错与学习，可选神经联想重排整句；代码 MPL-2.0，数据按各自的许可证。" },
   "/about/": { title: "关于项目与开发者｜水杉输入法", description: "了解水杉输入法的名字由来、项目理念、开源许可、签名与社区联系方式。" },
   "/price/": { title: "价格与付费计划｜水杉输入法", description: "水杉输入法当前可免费使用。查看后续自愿付费支持计划，以及第三方联网服务的费用说明。" },
   "/privacy/": { title: "隐私政策｜水杉输入法", description: "了解水杉输入法哪些功能会联网、默认状态、数据用途，以及如何关闭联网功能。" },
@@ -44,6 +44,11 @@ export function pageSeo(path: string) {
   const page = seoPages[normalized];
   return { ...(page ?? { title: "页面不存在｜水杉输入法", description: "这个地址没有内容，请返回首页或查看使用文档。", noindex: true }), language: isTraditional(normalized) ? "zh-Hant-TW" : "zh-CN", path: normalized, canonicalPath: page?.canonicalPath ?? normalized, canonical: page ? `${SITE_ORIGIN}${page.canonicalPath ?? normalized}` : undefined };
 }
+/** 接入栏目里两页介绍的开源库，给结构化数据用。 */
+const OPEN_SOURCE_LIBRARIES: Record<string, object> = {
+  "/engine/": { name: "msime-engine", codeRepository: "https://github.com/metasequoiaime/msime", programmingLanguage: ["Rust", "C"], license: "https://www.mozilla.org/MPL/2.0/", sameAs: ["https://crates.io/crates/msime-engine", "https://crates.io/crates/msime-engine-capi", "https://docs.rs/msime-engine"] },
+  "/model/": { name: "chinese-ime-lm", codeRepository: "https://github.com/metasequoiaime/chinese-ime-lm", programmingLanguage: "Rust", license: "https://www.apache.org/licenses/LICENSE-2.0", sameAs: ["https://crates.io/crates/chinese-ime-lm", "https://huggingface.co/metasequoiaime/pinyin-ime-reranker-4M"] },
+};
 export function structuredData(path: string) {
   const requested = pageSeo(path);
   const page = pageSeo(requested.canonicalPath);
@@ -53,6 +58,9 @@ export function structuredData(path: string) {
     "@type": "WebPage", "@id": `${page.canonical}#webpage`, url: page.canonical, name: page.title, description: page.description, inLanguage: page.language, isPartOf: { "@id": `${SITE_ORIGIN}/#website` },
   }];
   if (page.path === "/") graph.push({ "@type": "SoftwareApplication", "@id": `${SITE_ORIGIN}/#software`, name: SITE_NAME, alternateName: ["MSIME", "MetasequoiaIME"], applicationCategory: "UtilitiesApplication", operatingSystem: ["Windows", "macOS", "Linux"], url: `${SITE_ORIGIN}/`, downloadUrl: `${SITE_ORIGIN}/download/`, isAccessibleForFree: true, offers: { "@type": "Offer", price: 0, priceCurrency: "CNY", url: `${SITE_ORIGIN}/price/` }, license: "https://github.com/metasequoiaime/MSIME-Web/blob/main/LICENSE", publisher: { "@id": organization["@id"] } });
+  // 接入栏目的两页各讲一个可以拿去用的开源库，标成 SoftwareSourceCode，搜索引擎才知道这是代码库而不只是一篇介绍。简繁两页说的是同一个库。
+  const library = OPEN_SOURCE_LIBRARIES[page.path.replace(/^\/zh-TW\//, "/")];
+  if (library) graph.push({ "@type": "SoftwareSourceCode", "@id": `${page.canonical}#code`, ...library, description: page.description, url: page.canonical, publisher: { "@id": organization["@id"] } });
   if (page.path !== "/" && page.path !== "/zh-TW/") {
     const crumbs = [{ "@type": "ListItem", position: 1, name: isTraditional(path) ? "首頁" : "首页", item: `${SITE_ORIGIN}${isTraditional(path) ? "/zh-TW/" : "/"}` }];
     crumbs.push({ "@type": "ListItem", position: crumbs.length + 1, name: page.title.split("｜")[0], item: page.canonical });

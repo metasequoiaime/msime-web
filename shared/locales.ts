@@ -1,6 +1,6 @@
 /** All public product pages share layout and behavior across these locales. */
 export const traditionalPages = {
-  '/': { title: '水杉輸入法 MSIME｜開源中文輸入法', description: '水杉輸入法（MSIME）是開源中文輸入法，面向 Windows、macOS、Linux、Android、iOS 與 HarmonyOS 開發，也能嵌入網頁使用，支援全拼、雙拼、五筆，候選字旁直接顯示譯文。' },
+  '/': { title: '水杉輸入法 MSIME｜開源中文輸入法', description: '水杉輸入法（MSIME）是開源中文輸入法，面向 Windows、macOS、Linux、Android、iOS 與 HarmonyOS 開發，也能嵌入網頁使用，支援全拼、雙拼、五筆，候選字旁直接顯示譯文；輸入引擎也以函式庫形式開放給其他輸入法嵌入。' },
   '/features/': { title: '功能與介面｜水杉輸入法', description: '以 Windows 版為例，了解水杉輸入法的候選字視窗、輔助碼、佈景主題與詞庫設定。' },
   '/download/': { title: '下載與安裝｜水杉輸入法', description: '下載水杉輸入法 Windows、macOS 與 Linux 版本，或透過 TestFlight 安裝 iOS 版。網站開發者可以透過 npm 套件把 Web 版嵌入自己的網頁。' },
   '/faq/': { title: '常見問題與疑難排解｜水杉輸入法', description: '水杉輸入法常見問題：字型方框、安裝與啟動、快捷鍵、候選字和連線功能的排查方式。' },
@@ -13,8 +13,8 @@ export const traditionalPages = {
   '/me/': { title: '我的｜水杉輸入法', description: '管理水杉輸入法帳號：我的佈景主題、個人詞庫、快捷片語、雲端剪貼簿與收藏。', noindex: true },
   '/about/': { title: '關於專案與開發者｜水杉輸入法', description: '認識水杉輸入法的名稱由來、專案理念、開源授權、簽章與社群聯絡方式。' },
   '/code/': { title: '原始碼與參與開發｜水杉輸入法', description: '瀏覽各平台、輸入引擎、詞庫、語言模型及文件的原始碼，了解如何參與開發。' },
-  '/model/': { title: '神經聯想與整句重排模型｜水杉輸入法', description: '神經聯想以數 MB 的字級語言模型，在拼音整句候選字中挑出更通順的讀法。查看實測效果與代價、在水杉輸入法中啟用的方式，以及供其他輸入法使用的開源函式庫與模型。' },
-  '/engine/': { title: '引擎庫：可嵌入的拼音與多語言輸入引擎｜水杉輸入法', description: '水杉輸入法的輸入引擎單獨發布成函式庫：Rust 使用 crates.io 上的 msime-engine，C、C++、Swift、Kotlin、Go、Python 等使用預先編譯的 C 函式庫。十種輸入方案、詞格整句、拼寫糾錯與學習，程式碼採 MPL-2.0 授權，資料依各自的授權條款。' },
+  '/model/': { title: '神經聯想與整句重排模型｜水杉輸入法', description: '神經聯想以數 MB 的字級語言模型，在輸入引擎拼出的幾種整句讀法中，參照已經上屏的文字挑出更通順的一句。查看實測效果與代價、在水杉輸入法中啟用的方式、它與引擎庫的關係，以及供其他輸入法使用的開源函式庫與模型。' },
+  '/engine/': { title: '引擎庫：可嵌入的拼音與多語言輸入引擎｜水杉輸入法', description: '水杉輸入法的輸入引擎單獨發布成函式庫，供其他輸入法嵌入：Rust 使用 crates.io 上的 msime-engine，C、C++、Swift、Kotlin、Go、Python 等使用預先編譯的 C 函式庫。十種輸入方案、詞格整句、拼寫糾錯與學習，可選神經聯想重排整句；程式碼採 MPL-2.0 授權，資料依各自的授權條款。' },
   '/price/': { title: '價格與付費計畫｜水杉輸入法', description: '水杉輸入法目前可免費使用，查看後續自願付費支持計畫與第三方服務費用說明。' },
   '/privacy/': { title: '隱私政策｜水杉輸入法', description: '了解本機資料、雲端候選字、語音等連線功能的資料流程，以及關閉方式。' },
   '/terms/': { title: '使用者協議｜水杉輸入法', description: '水杉輸入法帳號、雲端同步、社群與官網等線上服務的使用者協議：帳號與註銷、行為規範、使用者發布的內容、開源授權與第三方服務。' },
