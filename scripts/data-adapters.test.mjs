@@ -238,7 +238,7 @@ test('the seven-platform catalogue joins desktop and Android releases and keeps 
   const harmony = entries.find(entry => entry.id === 'harmony');
   assert.equal(harmony.distribution, 'appgallery');
   assert.equal(harmony.release, null, 'HarmonyOS HAPs in the manifest never become download buttons');
-  assert.equal(harmony.publishedVersion, null);
+  assert.equal(harmony.publishedVersion, platforms.platforms.harmony.version);
   assert.equal(harmony.href, 'https://appgallery.huawei.com/link/invite-test-wap?taskId=c248f2d182bcf3b651b4848020daf31d');
   assert.equal(harmony.sourceUrl, 'https://github.com/metasequoiaime/msime/tree/develop/platforms/harmony');
   assert.deepEqual(sitePlatforms().map(entry => entry.release), [null, null, null, null, null, null, null], 'renders without a manifest');
@@ -261,6 +261,17 @@ test('platform versions use installable manifests and independent iOS publicatio
   assert.equal(sitePlatforms(undefined, history.slice(1)).find(entry => entry.id === 'ios').publishedVersion, '0.50.0');
   assert.equal(sitePlatforms(undefined, [history[1]]).find(entry => entry.id === 'ios').publishedVersion, null, 'never borrows another platform version');
   assert.ok(sitePlatforms().every(entry => entry.publishedVersion === null), 'missing data keeps the distribution fallback');
+});
+
+test('HarmonyOS displays its published manifest version without exposing HAP downloads', () => {
+  for (const version of ['0.3.2', '0.4.0']) {
+    const entries = sitePlatforms({ ...platforms.platforms, harmony: { ...platforms.platforms.harmony, version } });
+    const harmony = entries.find(entry => entry.id === 'harmony');
+    assert.equal(harmony.publishedVersion, version);
+    assert.equal(harmony.release, null);
+    assert.equal(harmony.href, HARMONY_APPGALLERY_URL);
+  }
+  assert.equal(sitePlatforms({ windows: platforms.platforms.windows }, [{ platform: 'ios', version: '9.9.9' }]).find(entry => entry.id === 'harmony').publishedVersion, null);
 });
 
 test('Web versions follow the latest stable publication independently of installable manifests', () => {

@@ -558,6 +558,9 @@ test('简繁下载页的 HarmonyOS 提供 AppTest 邀请和手动加入说明，
     assert.match(harmony.textContent, /4rk3mjR656x/);
     const invite = 'https://appgallery.huawei.com/link/invite-test-wap?taskId=c248f2d182bcf3b651b4848020daf31d';
     assert.ok(harmony.querySelector(`a[href="${invite}"]`));
+    const harmonyChoice = [...doc.querySelectorAll('.download-panel button')].find(button => button.textContent.includes('HarmonyOS'));
+    const version = JSON.parse(readFileSync('public/platforms.json', 'utf8')).platforms.harmony.version;
+    assert.ok(harmonyChoice.textContent.includes(`v${version}`));
     assert.match(read(markdownPath(path).slice(1)), /AppTest[\s\S]*4rk3mjR656x/);
     const home = document(path.startsWith('/zh-TW/') ? '/zh-TW/' : '/');
     const card = home.querySelector('[data-platform="harmony"]');
