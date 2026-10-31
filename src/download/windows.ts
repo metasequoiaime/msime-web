@@ -7,9 +7,9 @@ export type DownloadEntry = SitePlatformEntry & { windowsVariant?: WindowsVarian
 
 const DOWNLOAD_PLATFORM_ORDER = ["windows", "macos", "linux", "web", "ios", "harmony", "android"] as const;
 
-const WINDOWS_NAMES: Record<WindowsVariant, string> = {
-  pure: "Windows 10/11（纯净版）",
-  online: "Windows 10/11（联网版）",
+export const WINDOWS_NAMES: Record<WindowsVariant, string> = {
+  pure: "Windows 10/11（正式版）",
+  online: "Windows 10/11（新版预览）",
   win7: "Windows 7",
 };
 

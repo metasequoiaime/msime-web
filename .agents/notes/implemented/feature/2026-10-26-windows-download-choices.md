@@ -2,6 +2,8 @@
 
 Status: implemented
 
+本篇记录的入口拆分仍然有效；其中「纯净版/联网版」的显示命名已由[Windows 下载入口改用正式版与新版预览](2026-10-31-windows-download-naming.md)取代，内部版本键和数据来源不变。
+
 ## Problem
 
 下载页把两条 Windows 产品线压在同一张选择卡上，显示两套版本号，访客需要展开内容才能判断下载的是哪一版。Windows 7 没有独立入口，容易误用现代 Windows 包。

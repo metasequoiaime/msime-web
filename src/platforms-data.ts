@@ -55,7 +55,7 @@ export const downloadStatsSchema = z.object({
   total: z.number().int().nonnegative(),
   platforms: z.object({
     windows: z.number().int().nonnegative(),
-    // 旧快照的 Windows 总数含 Rust 新版，缺少分项时不能推断它为零。
+    // 旧快照的 Windows 总数含新版预览，缺少分项时不能推断它为零。
     windowsRust: z.number().int().nonnegative().optional(),
     windows7: z.number().int().nonnegative().optional(),
     macos: z.number().int().nonnegative(),
