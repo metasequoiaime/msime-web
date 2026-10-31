@@ -97,14 +97,14 @@ const previewMirrorUrl = (url: string) => {
   return match ? `https://dl.msime.app/releases/msime/${encodeURIComponent(match[1])}/${encodeURIComponent(match[2])}` : undefined;
 };
 
-/** The mirror copy of the selected package, before the GitHub button. Left out when the manifest carries no mirror. */
-function MirrorAction({ platform, version, entry, className }: { platform: ReleasePlatform; version: string; entry: PlatformRelease["downloads"][number]; className: string }) {
+/** 国内优先的下载入口；没有可用国内副本时不显示。 */
+function MirrorAction({ platform, version, entry, className, label = "下载", ariaLabel }: { platform: ReleasePlatform; version: string; entry: PlatformRelease["downloads"][number]; className: string; label?: string; ariaLabel?: string }) {
   const { t } = useLocale();
   if (!entry.mirrorUrl) return null;
   return (
-    <a className={className} href={entry.mirrorUrl} rel="noreferrer" aria-label={t(`从国内镜像下载 ${entry.name}`)} onClick={reportMirror(platform, version, entry)}>
+    <a className={className} href={entry.mirrorUrl} rel="noreferrer" aria-label={t(ariaLabel ?? `下载 ${entry.name}`)} onClick={reportMirror(platform, version, entry)}>
       <CloudDownloadIcon size={20} className="flex-none" />
-      {t("国内镜像下载")}
+      {t(label)}
     </a>
   );
 }
@@ -125,15 +125,17 @@ function MorePackages({ platform, version, downloads, id }: { platform: ReleaseP
             <ul className="m-0 grid list-none gap-1 p-0">
               {entries.map((entry) => (
                 <li key={entry.url} className="flex items-baseline justify-between gap-3 rounded-row px-2 py-1.5 hover:bg-panel">
-                  <a className="min-w-0 text-sm font-medium text-accent-ink [overflow-wrap:anywhere] hover:text-ink" href={entry.url} rel="noreferrer" onClick={reportPackage(platform, version, entry)}>
-                    {t(entry.label)}
-                  </a>
-                  <span className="flex flex-none items-baseline gap-3 text-[13px] text-muted tabular-nums">
+                  <span className="flex min-w-0 items-baseline gap-3">
                     {entry.mirrorUrl && (
-                      <a className="font-medium text-accent-ink hover:text-ink" href={entry.mirrorUrl} rel="noreferrer" aria-label={t(`从国内镜像下载 ${entry.name}`)} onClick={reportMirror(platform, version, entry)}>
-                        {t("国内镜像")}
+                      <a className="flex-none font-medium text-accent-ink hover:text-ink" href={entry.mirrorUrl} rel="noreferrer" aria-label={t(`下载 ${entry.name}`)} onClick={reportMirror(platform, version, entry)}>
+                        {t("下载")}
                       </a>
                     )}
+                    <a className="min-w-0 text-sm font-medium text-accent-ink [overflow-wrap:anywhere] hover:text-ink" href={entry.url} rel="noreferrer" onClick={reportPackage(platform, version, entry)}>
+                      {t(entry.label)}
+                    </a>
+                  </span>
+                  <span className="flex flex-none items-baseline gap-3 text-[13px] text-muted tabular-nums">
                     {t(readableSize(entry.size))}
                   </span>
                 </li>
@@ -175,20 +177,23 @@ function PreviewPanel({
     <section className="mt-6 rounded-tile p-[clamp(18px,2.4vw,24px)] shadow-ring-2" aria-label={t(kind)}>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
         <Pill tone="warn">{t(kind)}</Pill>
+        <MirrorAction
+          platform={platform}
+          version={preview.version}
+          entry={first}
+          label={platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`}
+          ariaLabel={platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`}
+          className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-btn px-5 py-2 text-center text-[15px] leading-snug font-semibold text-btn-fg no-underline shadow-btn transition-[transform,filter] duration-150 hover:-translate-y-px hover:text-btn-fg hover:brightness-[1.06]"
+        />
         <a
           className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
           href={first.url}
           rel="noreferrer"
           onClick={reportPackage(platform, preview.version, first)}
         >
-          {t(platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`)}
+          <GitHubIcon size={18} className="flex-none" />
+          {t(first.mirrorUrl ? "GitHub 下载" : platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`)}
         </a>
-        <MirrorAction
-          platform={platform}
-          version={preview.version}
-          entry={first}
-          className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
-        />
       </div>
       <p className="m-0 mt-3 text-sm leading-[1.8] text-muted">{t(note)}</p>
       {others.length > 0 && <MorePackages platform={platform} version={preview.version} downloads={others} />}
@@ -404,11 +409,11 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
               {/* android-v 发布里的 APK：和蒲公英是同一个应用，给装不了蒲公英、或者要特定版本（五笔、日语……）的人直接下载。 */}
               {entry.release && apk && (
                 <>
+                  <MirrorAction platform="android" version={entry.release.version} entry={apk} className={MIRROR_ACTION} />
                   <a className={MIRROR_ACTION} href={apk.url} rel="noreferrer" aria-label={t(`从 GitHub 下载 Android 版 v${entry.release.version}`)} onClick={reportPackage("android", entry.release.version, apk)}>
                     <GitHubIcon size={18} />
                     {t("GitHub 下载")}
                   </a>
-                  <MirrorAction platform="android" version={entry.release.version} entry={apk} className={MIRROR_ACTION} />
                 </>
               )}
             </div>
@@ -466,13 +471,22 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
   const linuxPackage = entry.id === "linux" && primary ? describeLinuxPackage(primary) : null;
   const moreId = `more-packages-${entry.id}`;
   const mirrorEntry = primary && entry.windowsVariant === "online" && !primary.mirrorUrl ? { ...primary, mirrorUrl: previewMirrorUrl(primary.url) } : primary;
+  const hasMirror = Boolean(release && mirrorEntry?.mirrorUrl);
+  const packageLabel = entry.windowsVariant && primary && release
+    ? `下载${entry.windowsVariant === "pure" ? "正式版" : entry.windowsVariant === "online" ? "新版预览" : "Windows 7 版"} v${release.version}${entry.windowsVariant === "win7" ? `（${primary.arch}）` : ""}`
+    : linuxPackage
+      ? `下载 ${linuxPackage}`
+      : primary
+        ? "GitHub 下载"
+        : "GitHub 发布页";
+  const mirrorLabel = packageLabel === "GitHub 下载" ? "下载" : packageLabel;
 
   return (
     <div>
       <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-3">
-        {mirrorEntry && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={mirrorEntry} className={MIRROR_ACTION} />}
+        {mirrorEntry && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={mirrorEntry} label={mirrorLabel} ariaLabel={mirrorLabel} className={hasMirror ? PRIMARY_ACTION : MIRROR_ACTION} />}
         <a
-          className={PRIMARY_ACTION}
+          className={hasMirror ? MIRROR_ACTION : PRIMARY_ACTION}
           href={primary?.url ?? entry.href}
           rel="noreferrer"
           target={primary ? undefined : "_blank"}
@@ -480,7 +494,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
           aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name} v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}${entry.windowsVariant === "win7" ? ` ${primary.arch}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
         >
           <GitHubIcon size={18} />
-          {t(entry.windowsVariant && primary && release ? `下载${entry.windowsVariant === "pure" ? "正式版" : entry.windowsVariant === "online" ? "新版预览" : "Windows 7 版"} v${release.version}${entry.windowsVariant === "win7" ? `（${primary.arch}）` : ""}` : linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
+          {t(hasMirror ? "GitHub 下载" : packageLabel)}
           {!primary && <ExternalIcon />}
         </a>
         {(entry.windowsVariant === "pure" || entry.windowsVariant === "online") && <WindowsMirrors release={release} cloudDrives={entry.windowsVariant === "pure"} />}
