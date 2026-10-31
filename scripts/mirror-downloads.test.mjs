@@ -29,7 +29,7 @@ const pkg = (url, extra = {}) => ({ label: '安装程序', arch: 'x64', name: ur
 
 test('正式版、预览版和实验版包都获得镜像，没有镜像基址时保持不变', () => {
   const platforms = {
-    windows: { version: '0.9.5', downloads: [pkg(WINDOWS)], preview: null, experimental: { version: '0.4.0', downloads: [pkg(WINDOWS.replace('MSIME-Windows/v0.9.5', 'msime/windows-v0.4.0'))] } },
+    windows: { version: '0.9.5', downloads: [pkg(WINDOWS)], preview: null, experimental: { version: '0.4.0', downloads: [pkg('https://github.com/metasequoiaime/msime/releases/download/windows-v0.4.0/MetasequoiaIME_Setup_v0.4.0.exe')] } },
     macos: { version: '0.52.0', downloads: [pkg(MACOS)], preview: { version: '0.53.0-build.1', downloads: [pkg(MACOS.replaceAll('0.52.0', '0.53.0'))] } },
   };
   assert.equal(attachMirrors(platforms, null), platforms);
