@@ -138,7 +138,7 @@ export function HomePage() {
               {t("隐私边界，应该能被任何人读代码检查")}
             </h2>
             <p className="m-0 mt-4 max-w-[46em] text-base leading-[1.9] text-[#E4EEE6]">
-              {t("新装后默认会把输入内容发出设备的，只有 Windows 正式版的云联想（正在输入的拼音，安装时可取消勾选）；其他版本的云联想和候选翻译都要你自己打开。Windows 正式版以外的各版本默认发送不含输入内容的匿名使用统计。每一项都能在设置里关闭。")}
+              {t("新装后默认会把输入内容发出设备的，只有 Windows 正式版的云联想（正在输入的拼音，安装时可取消勾选）；其他版本的云联想要你自己打开，各版本的候选翻译都要你先配置好翻译服务。Windows 正式版以外的各版本默认发送不含输入内容的匿名使用统计（HarmonyOS 在你同意隐私授权之后）。每一项都能在设置里关闭。")}
             </p>
             <div className="mt-[26px] flex flex-wrap gap-3">
               <LocaleLink
