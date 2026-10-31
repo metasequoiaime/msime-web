@@ -469,7 +469,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
           rel="noreferrer"
           target={primary ? undefined : "_blank"}
           onClick={primary && release ? reportPackage(entry.id as ReleasePlatform, release.version, primary) : undefined}
-          aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name}${entry.windowsVariant === "pure" ? " 正式版" : " 版"} v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}${entry.windowsVariant === "win7" ? ` ${primary.arch}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
+          aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name} v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}${entry.windowsVariant === "win7" ? ` ${primary.arch}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
         >
           <GitHubIcon size={18} />
           {t(entry.windowsVariant && primary && release ? `下载${entry.windowsVariant === "pure" ? "正式版" : entry.windowsVariant === "online" ? "新版预览" : "Windows 7 版"} v${release.version}${entry.windowsVariant === "win7" ? `（${primary.arch}）` : ""}` : linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
