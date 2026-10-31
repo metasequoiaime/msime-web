@@ -82,7 +82,7 @@ const macosInstallBlocks = (source: string, macos: PlatformRelease | undefined) 
 
 /** The same AppTest invitation and manual code as the download panel, including in Markdown exports. */
 const harmonyStatus = () =>
-  `HarmonyOS 版通过华为 AppTest 公开测试。用华为手机扫描上方二维码，或打开[AppTest 测试邀请链接](${HARMONY_APPGALLERY_URL})加入并安装。\n\n手动加入：在华为应用市场下载 AppTest，打开后输入邀请码 \`${HARMONY_APPTEST_CODE}\`，加入水杉输入法测试并安装。`;
+  `HarmonyOS 版通过华为 AppTest 公开测试。用华为手机扫描上方二维码，或打开[AppTest 测试邀请链接](${HARMONY_APPGALLERY_URL})加入并安装。\n\n加入前：先到 QQ 群 \`829919142\` 把你的华为账号发给小莫，登记到测试名单后再扫码或输入邀请码。\n\n手动加入：在华为应用市场下载 AppTest，打开后输入邀请码 \`${HARMONY_APPTEST_CODE}\`，加入水杉输入法测试并安装。`;
 
 /** Fills the placeholders in `content/download.md`. A manifest that failed to load is passed as `{}`, which makes every derived statement fall back to "check the release page" rather than guess. */
 export const fillTemplate = (manifest: Partial<UpdateManifest>, platforms: Partial<Platforms> | undefined) =>

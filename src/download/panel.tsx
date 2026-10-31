@@ -354,7 +354,13 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
             {entry.publishedVersion && <p className="m-0 text-sm leading-[1.8] text-muted">{t("显示最新公开发布版本；可安装版本以 AppTest 为准。")}</p>}
           </div>
         </div>
+        {/* AppTest 只放行已登记的华为账号，没登记时扫码或输入邀请码都加不进测试。 */}
         <p className="m-0 mt-4 text-sm leading-[1.8] text-body">
+          {t("加入前：先到 QQ 群 ")}
+          <span className="select-all font-semibold text-ink tabular-nums">{QQ_GROUP}</span>
+          {t(" 把你的华为账号发给小莫，登记到测试名单后再扫码或输入邀请码。")}
+        </p>
+        <p className="m-0 mt-2 text-sm leading-[1.8] text-body">
           {t("手动加入：在华为应用市场下载 AppTest，打开后输入邀请码 ")}
           <code className="select-all break-all font-semibold text-ink">{HARMONY_APPTEST_CODE}</code>
           {t("，加入水杉输入法测试并安装。")}
