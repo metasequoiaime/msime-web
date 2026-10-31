@@ -72,7 +72,7 @@ wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
 
 ### 下载统计
 
-下载页统一展示「累计下载」和各平台下载量：GitHub 安装包累计、国内镜像历史与新的文件请求计数，蒲公英 Android 各版本累计，以及 iOS 的 TestFlight 安装次数相加，各平台分项之和等于总数。Windows 纯净版与 Rust 新版保留分项；新的 Rust 镜像事件按真实包仓库标记为 `windows-rust`，旧 Windows 事件缺少仓库信息，无法精确还原过去 Rust 镜像的分项。
+下载页统一展示「累计下载」和各平台下载量：GitHub 安装包累计、国内镜像历史与新的文件请求计数，蒲公英 Android 各版本累计，以及 iOS 的 TestFlight 安装次数相加，各平台分项之和等于总数。Windows 正式版与新版预览保留分项；新的 Rust 镜像事件按真实包仓库标记为 `windows-rust`，旧 Windows 事件缺少仓库信息，无法精确还原过去 Rust 镜像的分项。
 
 `/api/download-stats` 代理后端公开只读的 `/v1/site/download-stats`，每分钟刷新，失联时保留最近成功缓存。`scripts/generate-platforms.mjs` 继续完整分页统计 GitHub 安装包，并把镜像汇总存入 `platforms.json` 的 `mirrorDownloadStats`，简繁静态 HTML 和浏览器共用同一合计口径。快照与实时镜像计数只取较新的一份，不重复相加；缺少完整镜像数据时不将 GitHub 部分数冒充总数。镜像值为零只有在接口成功返回零时才成立，未知平台镜像计数仍进入总数并列入「其他下载」。
 

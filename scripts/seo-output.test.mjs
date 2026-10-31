@@ -502,12 +502,12 @@ test('the initial release filter follows the selected download platform in both 
   }
 });
 
-test('简繁下载页展示九个入口，Windows 版本分开且旧链接默认纯净版', () => {
+test('简繁下载页展示九个入口，Windows 版本分开且旧链接默认正式版', () => {
   for (const path of ['/download/', '/zh-TW/download/']) {
     const tiles = [...document(path).querySelectorAll('.download-panel button[aria-pressed]')];
     assert.equal(tiles.length, 9);
-    assert.match(tiles[0].textContent, /Windows 10\/11（[纯純][净淨]版）/);
-    assert.match(tiles[1].textContent, /Windows 10\/11（[联聯][网網]版）/);
+    assert.match(tiles[0].textContent, /Windows 10\/11（[正]式版）/);
+    assert.match(tiles[1].textContent, /Windows 10\/11（新版預覽|新版预览）/);
     assert.match(tiles[2].textContent, /Windows 7/);
     assert.equal(tiles[0].getAttribute('aria-pressed'), 'true');
     assert.ok(tiles.slice(1).every(tile => tile.getAttribute('aria-pressed') === 'false'));

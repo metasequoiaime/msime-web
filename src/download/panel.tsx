@@ -72,7 +72,7 @@ const tileStatus = (entry: DownloadEntry) => {
 };
 
 /**
- * 九个下载入口每行三张，前三张分别对应 Windows 纯净版、联网版和 Windows 7。手机上图标、名称和版本纵向排列；较宽屏幕上横向排列，宽度不足时允许名称和版本换行。
+ * 九个下载入口每行三张，前三张分别对应 Windows 正式版、新版预览和 Windows 7。手机上图标、名称和版本纵向排列；较宽屏幕上横向排列，宽度不足时允许名称和版本换行。
  *
  * The status uses the body font, not `font-mono`: JetBrains Mono is not bundled, and where it is missing the monospace fallback on Windows is a serif face.
  */
@@ -145,7 +145,7 @@ function MorePackages({ platform, version, downloads, id }: { platform: ReleaseP
  *
  * 上游每次合并都会自动发一个 Pre-release，却只把人工挑过的那个标成正式版。只展示正式版，想试最新改动的人得自己去 GitHub 翻；只展示预览版，又等于把没挑过的构建推给所有人。所以两个都给，正式版占主按钮，预览版在下面明确标出来。
  *
- * Windows 联网版有独立选择卡，不再使用此预览版区域。
+ * Windows 新版预览有独立选择卡，不再使用此预览版区域。
  */
 function PreviewPanel({
   platform,
@@ -314,7 +314,7 @@ function LinuxOthers({ primary, moreId }: { primary: PlatformRelease["downloads"
 function PlatformAction({ entry }: { entry: DownloadEntry }) {
   const { t } = useLocale();
   const arm64 = useArm64(entry.id === "linux");
-  const hintText = entry.windowsVariant === "online" ? "联网版当前为新版测试版本，可能不稳定；可与纯净版同时安装。" : entry.windowsVariant === "win7" ? (entry.release ? "适用于 Windows 7 SP1；请按系统架构选择 x64 或 x86 安装包。" : "Windows 7 专用安装包尚未公开发布，发布后会在此提供下载。") : platformHint(entry);
+  const hintText = entry.windowsVariant === "online" ? "新版预览是 Rust 重写版，仍在测试，可能不稳定；可与正式版同时安装。" : entry.windowsVariant === "win7" ? (entry.release ? "适用于 Windows 7 SP1；请按系统架构选择 x64 或 x86 安装包。" : "Windows 7 专用安装包尚未公开发布，发布后会在此提供下载。") : platformHint(entry);
   const hint = hintText ? <p className="m-0 text-sm leading-[1.8] text-muted">{t(hintText)}</p> : null;
 
   if (entry.distribution === "testflight") {
@@ -472,7 +472,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
           aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name}${entry.windowsVariant === "pure" ? " 正式版" : " 版"} v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}${entry.windowsVariant === "win7" ? ` ${primary.arch}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
         >
           <GitHubIcon size={18} />
-          {t(entry.windowsVariant && primary && release ? `下载${entry.windowsVariant === "pure" ? "纯净版" : entry.windowsVariant === "online" ? "联网版" : "Windows 7 版"} v${release.version}${entry.windowsVariant === "win7" ? `（${primary.arch}）` : ""}` : linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
+          {t(entry.windowsVariant && primary && release ? `下载${entry.windowsVariant === "pure" ? "正式版" : entry.windowsVariant === "online" ? "新版预览" : "Windows 7 版"} v${release.version}${entry.windowsVariant === "win7" ? `（${primary.arch}）` : ""}` : linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
           {!primary && <ExternalIcon />}
         </a>
         {primary && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={primary} className={MIRROR_ACTION} />}
@@ -497,7 +497,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
 /**
  * 页面顶部的下载入口（design-home §6「选择卡」），也是整页的标题区：页面不再有单独的页头，h1 就在这里，平台卡片和下载按钮在首屏内。
  *
- * 七个平台展示为九个入口，Windows 的三个版本各自选择。按 UA 选择平台，Windows 缺省选择纯净版。QQ、夸克与蓝奏云盘仅属于纯净版，不能跟着其他 Windows 入口展示。
+ * 七个平台展示为九个入口，Windows 的三个版本各自选择。按 UA 选择平台，Windows 缺省选择正式版。QQ、夸克与蓝奏云盘仅属于正式版，不能跟着其他 Windows 入口展示。
  *
  * `.download-panel` is a test hook: the static HTML must show the Windows version inside it.
  */
@@ -533,7 +533,7 @@ export function DownloadPanel({ entries, platform, windowsVariant, onSelect }: {
               <span className="flex min-w-0 flex-col items-center gap-x-2.5 sm:flex-row sm:flex-wrap sm:items-baseline">
                 <span className={TILE_NAME}>
                   {entry.windowsVariant === "pure" || entry.windowsVariant === "online" ? (
-                    <>Windows 10/11<span className="block text-xs whitespace-nowrap sm:inline sm:[font-size:inherit]">{t(entry.windowsVariant === "pure" ? "（纯净版）" : "（联网版）")}</span></>
+                    <>Windows 10/11<span className="block text-xs whitespace-nowrap sm:inline sm:[font-size:inherit]">{t(entry.windowsVariant === "pure" ? "（正式版）" : "（新版预览）")}</span></>
                   ) : t(tileName(entry))}
                 </span>
                 <span className={TILE_STATUS}>{t(tileStatus(entry))}</span>
@@ -542,6 +542,10 @@ export function DownloadPanel({ entries, platform, windowsVariant, onSelect }: {
           );
         })}
       </div>
+
+      <p className="m-0 mt-4 text-sm leading-[1.8] text-muted">
+        {t("Windows 的正式版和新版预览不是“离线版”和“联网版”：正式版来自 msime-windows，新版预览来自 msime 的 Rust 重写，仍在测试。两者都支持本地输入；是否联网由云候选、AI 联想、翻译、语音和更新等功能设置决定，两个版本的数据目录彼此独立，可以同时安装。")}
+      </p>
 
       <div className="mt-5 pt-5 shadow-divider-t sm:mt-7 sm:pt-7" aria-live="polite">
         <PlatformAction entry={selected} />

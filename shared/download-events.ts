@@ -14,12 +14,12 @@ export function serverCountsMirror(value: string | undefined): boolean {
   } catch { return false; }
 }
 
-/** Rust 版与纯净版都叫 Windows，按真实包地址标记产品，保留现有事件协议。 */
+/** Rust 版与正式版都叫 Windows，按真实包地址标记产品，保留现有事件协议。 */
 export const mirrorDownloadPlatform = (platform: string, url: string) =>
   platform === "windows" && /^https:\/\/github\.com\/metasequoiaime\/msime\/releases\/download\//i.test(url) ? "windows-rust" : platform;
 
 export type MirrorDownload = {
-  /** 安装包平台；Rust Windows 用 windows-rust，与纯净版区分。 */
+  /** 安装包平台；Rust Windows 用 windows-rust，与正式版区分。 */
   platform: string;
   /** The release version the mirror is offered for, e.g. `0.9.3`. */
   version: string;

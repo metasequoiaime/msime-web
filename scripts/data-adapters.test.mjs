@@ -304,7 +304,7 @@ test('九个下载入口保持独立 Windows 版本、下载来源和缺失状�
   const choices = downloadChoices(sitePlatforms(manifest.platforms));
   assert.equal(choices.length, 9);
   assert.deepEqual(choices.slice(0, 3).map(entry => entry.windowsVariant), ['pure', 'online', 'win7']);
-  assert.deepEqual(choices.slice(0, 3).map(entry => entry.name), ['Windows 10/11（纯净版）', 'Windows 10/11（联网版）', 'Windows 7']);
+  assert.deepEqual(choices.slice(0, 3).map(entry => entry.name), ['Windows 10/11（正式版）', 'Windows 10/11（新版预览）', 'Windows 7']);
   assert.equal(choices[0].publishedVersion, manifest.platforms.windows.version);
   assert.equal(choices[1].publishedVersion, manifest.platforms.windows.experimental.version);
   assert.equal(choices[1].release.downloads[0].url, manifest.platforms.windows.experimental.downloads[0].url);

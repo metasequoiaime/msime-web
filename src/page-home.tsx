@@ -45,8 +45,8 @@ const DISTRIBUTION_LABELS: Record<Distribution, { label: string; tone: "accent" 
 };
 
 const HOME_PLATFORM_ITEMS = [
-  { id: "windows", catalogId: "windows", name: "Windows 10/11（纯净版）", statKey: "windows", status: DISTRIBUTION_LABELS.release },
-  { id: "windowsRust", catalogId: "windows", name: "Windows 10/11（Rust 新版）", statKey: "windowsRust", status: DISTRIBUTION_LABELS.pgyer },
+  { id: "windows", catalogId: "windows", name: "Windows 10/11（正式版）", statKey: "windows", status: DISTRIBUTION_LABELS.release },
+  { id: "windowsRust", catalogId: "windows", name: "Windows 10/11（新版预览）", statKey: "windowsRust", status: DISTRIBUTION_LABELS.pgyer },
   { id: "windows7", catalogId: "windows", name: "Windows 7", statKey: "windows7", status: { label: "尚未发布", tone: "neutral" as const } },
   ...SITE_PLATFORMS.filter(id => id !== "windows").map(id => ({ id, catalogId: id, name: PLATFORM_CATALOG[id].name, statKey: id, status: DISTRIBUTION_LABELS[PLATFORM_CATALOG[id].distribution] })),
 ] as const;

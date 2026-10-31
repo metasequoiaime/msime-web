@@ -1,7 +1,7 @@
 import { RELEASE_FILTERS, SITE_PLATFORMS, type ReleaseFilter, type SitePlatform } from "./data/platforms.ts";
 import { WINDOWS_VARIANTS, type WindowsVariant } from "./download/windows.ts";
 
-/** 下载页拥有的查询参数；非法值丢弃，旧链接沿用原平台与 Windows 纯净版默认值。 */
+/** 下载页拥有的查询参数；非法值丢弃，旧链接沿用原平台与 Windows 正式版默认值。 */
 export function downloadSearchSchema(search: Record<string, unknown>): { platform?: SitePlatform; release?: ReleaseFilter; windows?: WindowsVariant } {
   const result: { platform?: SitePlatform; release?: ReleaseFilter; windows?: WindowsVariant } = {};
   const platform = search.platform;

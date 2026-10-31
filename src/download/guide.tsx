@@ -7,7 +7,7 @@ import { cx } from "../ui";
 import { useInternalLinks } from "../use-internal-links";
 import { useLocale } from "../use-locale";
 import { type GuideBlock, type GuideSection, splitTabs } from "./template";
-import type { DownloadEntry } from "./windows";
+import { WINDOWS_NAMES, type DownloadEntry } from "./windows";
 
 type Tone = "warn" | "safe" | "note";
 
@@ -180,7 +180,7 @@ export function DownloadGuide({ sections, platform, filter, windowsEntry }: { se
       )}
       {rendered?.map((section, index) =>
         section.platform ? (
-          <PlatformSection key={section.heading} section={section} name={section.platform === "windows" ? "Windows 10/11（纯净版）" : PLATFORM_LABELS[section.platform]} hidden={filter && (section.platform !== platform || (section.platform === "windows" && (windowsEntry?.windowsVariant ?? "pure") !== "pure"))} />
+          <PlatformSection key={section.heading} section={section} name={section.platform === "windows" ? WINDOWS_NAMES.pure : PLATFORM_LABELS[section.platform]} hidden={filter && (section.platform !== platform || (section.platform === "windows" && (windowsEntry?.windowsVariant ?? "pure") !== "pure"))} />
         ) : (
           <section key={section.heading} aria-labelledby={`download-note-${index}`} className="rounded-tile bg-panel-2 p-[clamp(22px,3vw,32px)]">
             <h2 id={`download-note-${index}`} className="m-0 font-heading text-xl leading-[1.4] font-bold text-ink">
