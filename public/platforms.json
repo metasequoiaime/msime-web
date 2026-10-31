@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-31T23:44:09.699Z",
+  "generatedAt": "2026-10-31T23:48:24.564Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -603,12 +603,12 @@
     ]
   },
   "downloadStats": {
-    "total": 66725,
+    "total": 66727,
     "platforms": {
       "windows": 42192,
       "windowsRust": 2116,
       "windows7": 123,
-      "macos": 5117,
+      "macos": 5119,
       "linux": 11189,
       "android": 5585,
       "harmony": 403
@@ -5965,7 +5965,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695455860,
       "name": "msime-macos-pinyin-0.56.0-universal.dmg",
-      "download_count": 1
+      "download_count": 3
     },
     {
       "repository": "metasequoiaime/msime",
@@ -7550,10 +7550,10 @@
       "windows": 8453,
       "windowsRust": 61
     },
-    "generatedAt": "2026-10-31T23:44:08.712071Z"
+    "generatedAt": "2026-10-31T23:48:23.674196Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-31T23:44:08.224Z",
+    "generatedAt": "2026-10-31T23:48:23.502Z",
     "total": 5078,
     "builds": [
       {
@@ -7603,7 +7603,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-10-31T23:44:08.863Z",
+    "generatedAt": "2026-10-31T23:48:23.807Z",
     "downloads": 2472,
     "periodStart": "2025-10-31",
     "periodEnd": "2026-10-31"
