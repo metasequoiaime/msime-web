@@ -98,13 +98,13 @@ const previewMirrorUrl = (url: string) => {
 };
 
 /** 国内优先的下载入口；没有可用国内副本时不显示。 */
-function MirrorAction({ platform, version, entry, className }: { platform: ReleasePlatform; version: string; entry: PlatformRelease["downloads"][number]; className: string }) {
+function MirrorAction({ platform, version, entry, className, label = "下载", ariaLabel }: { platform: ReleasePlatform; version: string; entry: PlatformRelease["downloads"][number]; className: string; label?: string; ariaLabel?: string }) {
   const { t } = useLocale();
   if (!entry.mirrorUrl) return null;
   return (
-    <a className={className} href={entry.mirrorUrl} rel="noreferrer" aria-label={t(`下载 ${entry.name}`)} onClick={reportMirror(platform, version, entry)}>
+    <a className={className} href={entry.mirrorUrl} rel="noreferrer" aria-label={t(ariaLabel ?? `下载 ${entry.name}`)} onClick={reportMirror(platform, version, entry)}>
       <CloudDownloadIcon size={20} className="flex-none" />
-      {t("下载")}
+      {t(label)}
     </a>
   );
 }
@@ -181,7 +181,9 @@ function PreviewPanel({
           platform={platform}
           version={preview.version}
           entry={first}
-          className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
+          label={platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`}
+          ariaLabel={platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`}
+          className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-btn px-5 py-2 text-center text-[15px] leading-snug font-semibold text-btn-fg no-underline shadow-btn transition-[transform,filter] duration-150 hover:-translate-y-px hover:text-btn-fg hover:brightness-[1.06]"
         />
         <a
           className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-btn bg-panel px-5 py-2 text-center text-[15px] leading-snug font-semibold text-ink no-underline shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink"
@@ -189,7 +191,8 @@ function PreviewPanel({
           rel="noreferrer"
           onClick={reportPackage(platform, preview.version, first)}
         >
-          {t(platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`)}
+          <GitHubIcon size={18} className="flex-none" />
+          {t(first.mirrorUrl ? "GitHub 下载" : platform === "linux" ? `下载${kind} v${preview.version} ${describeLinuxPackage(first)}` : `下载${kind} v${preview.version}`)}
         </a>
       </div>
       <p className="m-0 mt-3 text-sm leading-[1.8] text-muted">{t(note)}</p>
@@ -468,13 +471,22 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
   const linuxPackage = entry.id === "linux" && primary ? describeLinuxPackage(primary) : null;
   const moreId = `more-packages-${entry.id}`;
   const mirrorEntry = primary && entry.windowsVariant === "online" && !primary.mirrorUrl ? { ...primary, mirrorUrl: previewMirrorUrl(primary.url) } : primary;
+  const hasMirror = Boolean(release && mirrorEntry?.mirrorUrl);
+  const packageLabel = entry.windowsVariant && primary && release
+    ? `下载${entry.windowsVariant === "pure" ? "正式版" : entry.windowsVariant === "online" ? "新版预览" : "Windows 7 版"} v${release.version}${entry.windowsVariant === "win7" ? `（${primary.arch}）` : ""}`
+    : linuxPackage
+      ? `下载 ${linuxPackage}`
+      : primary
+        ? "GitHub 下载"
+        : "GitHub 发布页";
+  const mirrorLabel = packageLabel === "GitHub 下载" ? "下载" : packageLabel;
 
   return (
     <div>
       <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-3">
-        {mirrorEntry && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={mirrorEntry} className={MIRROR_ACTION} />}
+        {mirrorEntry && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={mirrorEntry} label={mirrorLabel} ariaLabel={mirrorLabel} className={hasMirror ? PRIMARY_ACTION : MIRROR_ACTION} />}
         <a
-          className={PRIMARY_ACTION}
+          className={hasMirror ? MIRROR_ACTION : PRIMARY_ACTION}
           href={primary?.url ?? entry.href}
           rel="noreferrer"
           target={primary ? undefined : "_blank"}
@@ -482,7 +494,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
           aria-label={t(primary && release ? `从 GitHub 下载 ${entry.name} v${release.version}${linuxPackage ? ` ${linuxPackage}` : ""}${entry.windowsVariant === "win7" ? ` ${primary.arch}` : ""}` : `前往 GitHub 上的 ${entry.name} 发布页`)}
         >
           <GitHubIcon size={18} />
-          {t(entry.windowsVariant && primary && release ? `下载${entry.windowsVariant === "pure" ? "正式版" : entry.windowsVariant === "online" ? "新版预览" : "Windows 7 版"} v${release.version}${entry.windowsVariant === "win7" ? `（${primary.arch}）` : ""}` : linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
+          {t(hasMirror ? "GitHub 下载" : packageLabel)}
           {!primary && <ExternalIcon />}
         </a>
         {(entry.windowsVariant === "pure" || entry.windowsVariant === "online") && <WindowsMirrors release={release} cloudDrives={entry.windowsVariant === "pure"} />}
