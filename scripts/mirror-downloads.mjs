@@ -33,13 +33,14 @@ export function mirrorBase(value) {
 
 const withMirror = (base, downloads) => downloads.map(entry => ({ ...entry, mirrorUrl: mirrorUrl(base, entry.url) }));
 
-/** 给清单里每个平台的正式版和预览版的每个包补上 mirrorUrl。没有配置镜像时原样返回。 */
+/** 给清单里每个平台的正式版、预览版和实验版的每个包补上 mirrorUrl。没有配置镜像时原样返回。 */
 export function attachMirrors(platforms, base) {
   if (!base) return platforms;
   return Object.fromEntries(Object.entries(platforms).map(([platform, release]) => [platform, {
     ...release,
     downloads: withMirror(base, release.downloads),
     preview: release.preview ? { ...release.preview, downloads: withMirror(base, release.preview.downloads) } : null,
+    experimental: release.experimental ? { ...release.experimental, downloads: withMirror(base, release.experimental.downloads) } : null,
   }]));
 }
 
@@ -47,7 +48,7 @@ export function attachMirrors(platforms, base) {
 export function mirroredDownloads(manifest) {
   const entries = new Map();
   for (const release of Object.values(manifest.platforms)) {
-    for (const entry of [...release.downloads, ...(release.preview?.downloads ?? [])]) {
+    for (const entry of [...release.downloads, ...(release.preview?.downloads ?? []), ...(release.experimental?.downloads ?? [])]) {
       if (entry.mirrorUrl) entries.set(mirrorKey(entry.url), entry);
     }
   }
@@ -103,6 +104,7 @@ export function dropMirrors(manifest, failedKeys) {
       ...release,
       downloads: strip(release.downloads),
       preview: release.preview ? { ...release.preview, downloads: strip(release.preview.downloads) } : null,
+      experimental: release.experimental ? { ...release.experimental, downloads: strip(release.experimental.downloads) } : null,
     }])),
   };
 }

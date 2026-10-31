@@ -27,18 +27,20 @@ test('the mirror base must be a plain https URL and loses its trailing slash', (
 
 const pkg = (url, extra = {}) => ({ label: '安装程序', arch: 'x64', name: url.split('/').at(-1), url, size: 5, sha256: null, ...extra });
 
-test('every stable and preview package gets a mirror, and none without a base', () => {
+test('正式版、预览版和实验版包都获得镜像，没有镜像基址时保持不变', () => {
   const platforms = {
-    windows: { version: '0.9.5', downloads: [pkg(WINDOWS)], preview: null },
+    windows: { version: '0.9.5', downloads: [pkg(WINDOWS)], preview: null, experimental: { version: '0.4.0', downloads: [pkg('https://github.com/metasequoiaime/msime/releases/download/windows-v0.4.0/MetasequoiaIME_Setup_v0.4.0.exe')] } },
     macos: { version: '0.52.0', downloads: [pkg(MACOS)], preview: { version: '0.53.0-build.1', downloads: [pkg(MACOS.replaceAll('0.52.0', '0.53.0'))] } },
   };
   assert.equal(attachMirrors(platforms, null), platforms);
   const mirrored = attachMirrors(platforms, BASE);
   assert.equal(mirrored.windows.downloads[0].mirrorUrl, `${BASE}/releases/MSIME-Windows/v0.9.5/MetasequoiaIME_Setup_v0.9.5.exe`);
+  assert.equal(mirrored.windows.experimental.downloads[0].mirrorUrl, `${BASE}/releases/msime/windows-v0.4.0/MetasequoiaIME_Setup_v0.4.0.exe`);
   assert.equal(mirrored.macos.preview.downloads[0].mirrorUrl, `${BASE}/releases/msime/macos-v0.53.0/msime-macos-0.53.0-universal.dmg`);
   assert.equal(mirrored.windows.preview, null);
   assert.deepEqual(mirroredDownloads({ platforms: mirrored }).map(entry => entry.key), [
     'releases/MSIME-Windows/v0.9.5/MetasequoiaIME_Setup_v0.9.5.exe',
+    'releases/msime/windows-v0.4.0/MetasequoiaIME_Setup_v0.4.0.exe',
     'releases/msime/macos-v0.52.0/msime-macos-0.52.0-universal.dmg',
     'releases/msime/macos-v0.53.0/msime-macos-0.53.0-universal.dmg',
   ]);

@@ -91,7 +91,13 @@ const reportPackage = (platform: ReleasePlatform, version: string, entry: Platfo
   reportDownloadClick({ platform: mirrorDownloadPlatform(platform, entry.url), version, artifact: entry.name, channel: "github" });
 };
 
-/** The mirror copy of the selected package, beside the GitHub button. Left out when the manifest carries no mirror. */
+/** 预览版镜像尚未进入旧快照时仍给出确定的镜像地址；同步任务会随后把它写入清单并预热。 */
+const previewMirrorUrl = (url: string) => {
+  const match = /^https:\/\/github\.com\/metasequoiaime\/msime\/releases\/download\/([^/]+)\/([^/]+)$/.exec(url);
+  return match ? `https://dl.msime.app/releases/msime/${encodeURIComponent(match[1])}/${encodeURIComponent(match[2])}` : undefined;
+};
+
+/** The mirror copy of the selected package, before the GitHub button. Left out when the manifest carries no mirror. */
 function MirrorAction({ platform, version, entry, className }: { platform: ReleasePlatform; version: string; entry: PlatformRelease["downloads"][number]; className: string }) {
   const { t } = useLocale();
   if (!entry.mirrorUrl) return null;
@@ -191,11 +197,11 @@ function PreviewPanel({
 }
 
 /**
- * Windows-only mirrors after the GitHub and mirror buttons. The QQ group number is copied rather than linked: QQ has no web link that opens a group's files. The Lanzou link is set by admins in msime-backend and left out until one is configured or while the backend cannot be reached.
+ * Windows 专属的 QQ 群文件和网盘入口。QQ 群号只复制不跳转：QQ 没有能直接打开群文件的网页链接。蓝奏云链接由 msime-backend 管理员设置，未配置或后端不可用时不显示。
  *
  * A click on the Lanzou link is reported as an anonymous download count (shared/download-events.ts) with the release's installer name and version; without a release manifest there is nothing accurate to report, so the click goes uncounted.
  */
-function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
+function WindowsMirrors({ release, cloudDrives }: { release: PlatformRelease | null; cloudDrives: boolean }) {
   const { t } = useLocale();
   const { show } = useToast();
   const lanzouUrl = useDownloadMirrorsQuery().data?.lanzouUrl;
@@ -221,7 +227,7 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
           <span className="block text-[13px] font-medium text-muted tabular-nums">{QQ_GROUP}</span>
         </span>
       </button>
-      <div className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2 rounded-btn bg-panel px-3 py-2 text-[15px] leading-snug font-semibold whitespace-nowrap text-ink shadow-ring-2 sm:gap-2.5 sm:px-5 md:flex-none">
+      {cloudDrives && <div className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2 rounded-btn bg-panel px-3 py-2 text-[15px] leading-snug font-semibold whitespace-nowrap text-ink shadow-ring-2 sm:gap-2.5 sm:px-5 md:flex-none">
         <CloudDownloadIcon size={20} className="flex-none" />
         <div>
           <a className="flex items-center gap-2 text-ink no-underline hover:text-accent-ink" href={`https://pan.quark.cn/s/50f95054d569?pwd=${QUARK_CODE}`} target="_blank" rel="noreferrer" onClick={reportWindowsMirror}>
@@ -242,8 +248,8 @@ function WindowsMirrors({ release }: { release: PlatformRelease | null }) {
             </button>
           </div>
         </div>
-      </div>
-      {lanzouUrl && (
+      </div>}
+      {cloudDrives && lanzouUrl && (
         <a
           className={MIRROR_ACTION}
           href={lanzouUrl}
@@ -455,14 +461,16 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
   }
 
   const release = entry.release;
-  // Linux 的主按钮只给一个包：完整版 deb，arm64 机器上换成 aarch64 的那个，按钮上写明是哪个包；国内镜像按钮跟着给同一个包。
+  // Linux 的主按钮只给一个包：完整版 deb，arm64 机器上换成 aarch64 的那个，按钮上写明是哪个包；国内镜像按钮放在 GitHub 前面。
   const { primary, others } = pickPrimary(entry.id, release?.downloads ?? [], arm64);
   const linuxPackage = entry.id === "linux" && primary ? describeLinuxPackage(primary) : null;
   const moreId = `more-packages-${entry.id}`;
+  const mirrorEntry = primary && entry.windowsVariant === "online" && !primary.mirrorUrl ? { ...primary, mirrorUrl: previewMirrorUrl(primary.url) } : primary;
 
   return (
     <div>
       <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-3">
+        {mirrorEntry && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={mirrorEntry} className={MIRROR_ACTION} />}
         <a
           className={PRIMARY_ACTION}
           href={primary?.url ?? entry.href}
@@ -475,8 +483,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
           {t(entry.windowsVariant && primary && release ? `下载${entry.windowsVariant === "pure" ? "正式版" : entry.windowsVariant === "online" ? "新版预览" : "Windows 7 版"} v${release.version}${entry.windowsVariant === "win7" ? `（${primary.arch}）` : ""}` : linuxPackage ? `下载 ${linuxPackage}` : primary ? "GitHub 下载" : "GitHub 发布页")}
           {!primary && <ExternalIcon />}
         </a>
-        {primary && release && <MirrorAction platform={entry.id as ReleasePlatform} version={release.version} entry={primary} className={MIRROR_ACTION} />}
-        {entry.windowsVariant === "pure" && <WindowsMirrors release={release} />}
+        {(entry.windowsVariant === "pure" || entry.windowsVariant === "online") && <WindowsMirrors release={release} cloudDrives={entry.windowsVariant === "pure"} />}
         {!release && entry.windowsVariant !== "win7" ? (
           <p className="m-0 text-sm leading-[1.8] text-muted">{t("暂时无法读取发布清单，请在发布页选择安装包并核对校验值。")}</p>
         ) : linuxPackage && primary ? (
