@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-01T01:28:54.661Z",
+  "generatedAt": "2026-11-01T01:31:57.457Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -7496,19 +7496,19 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 12129,
+    "total": 12132,
     "platforms": {
       "android": 1604,
       "harmony": 93,
       "linux": 754,
       "macos": 1144,
-      "windows": 8467,
+      "windows": 8470,
       "windowsRust": 67
     },
-    "generatedAt": "2026-11-01T01:28:53.940495Z"
+    "generatedAt": "2026-11-01T01:31:56.559711Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-01T01:28:53.493Z",
+    "generatedAt": "2026-11-01T01:31:55.983Z",
     "total": 5086,
     "builds": [
       {
@@ -7558,7 +7558,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-01T01:28:54.127Z",
+    "generatedAt": "2026-11-01T01:31:56.701Z",
     "downloads": 2472,
     "periodStart": "2025-11-01",
     "periodEnd": "2026-11-01"
