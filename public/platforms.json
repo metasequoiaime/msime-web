@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-01T15:45:18.244Z",
+  "generatedAt": "2026-11-01T15:46:48.981Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -21,19 +21,19 @@
       ],
       "preview": null,
       "experimental": {
-        "version": "0.3.0",
-        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/windows-v0.3.0",
-        "publishedAt": "2026-10-23T08:02:01Z",
+        "version": "0.4.1",
+        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/windows-v0.4.1",
+        "publishedAt": "2026-11-01T15:46:06Z",
         "signed": null,
         "downloads": [
           {
             "label": "完整版 · 安装程序",
             "arch": "x64",
-            "name": "MetasequoiaIME-Full_Setup_v0.3.0.exe",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.3.0/MetasequoiaIME-Full_Setup_v0.3.0.exe",
-            "size": 150276896,
-            "sha256": "3895cd8e9f7b28cd6ac210db469ec7a42c77e572ea534eb48c96c6c3d6e2a12c",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/windows-v0.3.0/MetasequoiaIME-Full_Setup_v0.3.0.exe"
+            "name": "MetasequoiaIME-Full_Setup_v0.4.1.exe",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.4.1/MetasequoiaIME-Full_Setup_v0.4.1.exe",
+            "size": 180757232,
+            "sha256": "c3ed2d0c5ec5f31add7c735ebb06180168b85b193b241d684c0544ab6fedc38a",
+            "mirrorUrl": "https://dl.msime.app/releases/msime/windows-v0.4.1/MetasequoiaIME-Full_Setup_v0.4.1.exe"
           }
         ]
       },
@@ -558,13 +558,13 @@
     ]
   },
   "downloadStats": {
-    "total": 67382,
+    "total": 67385,
     "platforms": {
       "windows": 42388,
       "windowsRust": 2151,
       "windows7": 140,
       "macos": 5176,
-      "linux": 11410,
+      "linux": 11413,
       "android": 5698,
       "harmony": 419
     }
@@ -6022,7 +6022,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584404,
       "name": "msime-linux_0.15.0_amd64.deb",
-      "download_count": 76
+      "download_count": 77
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6040,7 +6040,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584512,
       "name": "msime-linux-0.15.0-1.x86_64.rpm",
-      "download_count": 7
+      "download_count": 9
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6688,6 +6688,12 @@
       "repository": "metasequoiaime/msime",
       "id": 698750067,
       "name": "msime-macos-wubi-0.56.1-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 698752332,
+      "name": "MetasequoiaIME-Full_Setup_v0.4.1.exe",
       "download_count": 0
     },
     {
@@ -7532,19 +7538,19 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 12757,
+    "total": 12759,
     "platforms": {
-      "android": 1671,
+      "android": 1672,
       "harmony": 94,
       "linux": 798,
-      "macos": 1183,
+      "macos": 1184,
       "windows": 8855,
       "windowsRust": 156
     },
-    "generatedAt": "2026-11-01T15:45:17.548248Z"
+    "generatedAt": "2026-11-01T15:46:48.480826Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-01T15:45:17.140Z",
+    "generatedAt": "2026-11-01T15:46:48.146Z",
     "total": 5167,
     "builds": [
       {
@@ -7594,7 +7600,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-01T15:45:17.736Z",
+    "generatedAt": "2026-11-01T15:46:48.633Z",
     "downloads": 2472,
     "periodStart": "2025-11-01",
     "periodEnd": "2026-11-01"
