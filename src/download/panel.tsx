@@ -11,6 +11,7 @@ import { useLocale } from "../use-locale";
 import { mirrorDownloadPlatform, reportMirrorDownload, serverCountsMirror } from "../../shared/download-events";
 import { reportDownloadClick } from "../../shared/site-analytics";
 import { describeLinuxPackage, detectArm64, pickPrimary } from "./linux-primary";
+import { isCurrentMacosPackage } from "./macos-format";
 import { groupByArch, readableSize } from "./template";
 import { downloadChoices, type DownloadEntry, type WindowsVariant } from "./windows";
 
@@ -27,7 +28,7 @@ const PLATFORM_HINTS: Partial<Record<Platform, string>> = {
 };
 
 /** macOS 的最低版本跟着安装包格式走，理由见下面 `platformHint`。 */
-const macosMinimum = (entry: SitePlatformEntry) => (entry.release?.downloads.some((download) => /\.dmg$/i.test(download.name)) ? 13 : 12);
+const macosMinimum = (entry: SitePlatformEntry) => (entry.release?.downloads.some((download) => isCurrentMacosPackage(download.name)) ? 13 : 12);
 
 /** 选择卡上的平台名带上系统要求，免得在下面的提示里再找一遍 */
 const tileName = (entry: SitePlatformEntry) => {
@@ -38,13 +39,13 @@ const tileName = (entry: SitePlatformEntry) => {
 };
 
 /*
- * DMG 的系统要求与此前的 universal pkg 不同：package-release.sh 以 macOS 13 为最低版本，可能按构建机架构分别出包，也可能提供一个 universal 包。按清单里实际有的 DMG 说，不写死「Apple 芯片」——哪天多发一个 Intel 包，这句话就不该再把 Intel 用户挡在外面。
+ * DMG 与 0.57.0 起的 msime-macos pkg 的系统要求与最早的 universal pkg 不同：package-release.sh 以 macOS 13 为最低版本，可能按构建机架构分别出包，也可能提供一个 universal 包。按清单里实际有的包说，不写死「Apple 芯片」——哪天多发一个 Intel 包，这句话就不该再把 Intel 用户挡在外面。
  */
 const platformHint = (entry: SitePlatformEntry) => {
-  const dmgs = entry.id === "macos" ? (entry.release?.downloads.filter((download) => /\.dmg$/i.test(download.name)) ?? []) : [];
-  if (!dmgs.length) return PLATFORM_HINTS[entry.id];
-  const arm = dmgs.some((download) => download.arch === "arm64");
-  const intel = dmgs.some((download) => download.arch === "x86_64");
+  const packages = entry.id === "macos" ? (entry.release?.downloads.filter((download) => isCurrentMacosPackage(download.name)) ?? []) : [];
+  if (!packages.length) return PLATFORM_HINTS[entry.id];
+  const arm = packages.some((download) => download.arch === "arm64");
+  const intel = packages.some((download) => download.arch === "x86_64");
   const machines = arm && intel ? "Apple 芯片与 Intel 芯片的 Mac" : arm ? "Apple 芯片的 Mac" : intel ? "Intel 芯片的 Mac" : "Mac";
   return `适用于 macOS 13 及以上、${machines}`;
 };

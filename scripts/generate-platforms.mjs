@@ -69,6 +69,11 @@ const linuxPackage = (name, suffix) => {
 };
 
 /*
+ * macOS 从 0.57.0 起只发的 pkg：完整版是 msime-macos-<版本>-universal.pkg，其他版本是 msime-macos-<版本 id>-<版本>-universal.pkg，下载页只展示完整版。它装的是设置应用 MSIME，再由 MSIME 把输入法装进用户目录，和最早直接装输入法本体的 MetasequoiaIME-…-macos-universal.pkg 安装步骤不同，所以按完整的文件名形状认，不按 .pkg 后缀认。
+ */
+const MACOS_PKG = /^msime-macos-\d+\.\d+\.\d+-universal\.pkg$/i;
+
+/*
  * 每个平台把产物翻译成人看得懂的名字。顺序就是页面上的展示顺序，第一个是主推。
  *
  * 用精确的形状去匹配，不做「含 .deb 就算」的模糊判断：认不出来的产物宁可不展示，也不要在下载按钮上标错架构。
@@ -76,8 +81,9 @@ const linuxPackage = (name, suffix) => {
 const RULES = {
   windows: [[/^MetasequoiaIME_Setup_v[\w.-]+\.exe$/i, '安装程序', 'x64']],
   // iOS 的 ipa 也在这个仓库里发，但站点把 iOS 标为开发中，把一个能下的包摆在 macOS 名下只会让人误解。
-  // 现行打包是 platforms/macos/package-release.sh 产出的 msime-macos-<版本>-<架构>.dmg（release-macos.yml 以 macos-v<版本> 发布）；架构可以是 universal，也可以分别发布 arm64 / x86_64，Apple 芯片排在前面做主推。pkg / zip 是此前的打包形状，只在还没有 DMG 发布时展示（见 selectRelease）。
+  // 打包形状换过两次，按代际排（见 SUPERSEDING_FORMAT）：最早是 MetasequoiaIME-…-macos-universal 的 pkg / zip；从 0.51.1 到 0.56.x 是 platforms/macos/package-release.sh 产出的 msime-macos-<版本>-<架构>.dmg（release-macos.yml 以 macos-v<版本> 发布），架构可以是 universal，也可以分别发布 arm64 / x86_64，Apple 芯片排在前面做主推；从 0.57.0 起改发 msime-macos-<版本>-universal.pkg（只装设置应用，和最早的 pkg 不是一回事）。同一个发布里只会有其中一种，新 pkg 排在最前，万一同时出现也由最新的形状做主推。
   macos: [
+    [MACOS_PKG, '通用 · pkg', 'Universal'],
     [/^msime-macos-\d+\.\d+\.\d+-universal\.dmg$/i, '通用 · dmg', 'Universal'],
     [/^msime-macos-\d+\.\d+\.\d+-arm64\.dmg$/i, 'Apple 芯片 · dmg', 'arm64'],
     [/^msime-macos-\d+\.\d+\.\d+-x86_64\.dmg$/i, 'Intel · dmg', 'x86_64'],
@@ -178,7 +184,7 @@ export function classifyAssets(platform, assets, { repository = SOURCES[platform
 /*
  * 签名状态：true / false / null（不知道）。
  *
- * 文件名里带 unsigned 一定是没签名，这条对哪个平台都成立。反过来不成立：只有 Windows 安装包和 macOS 旧的 pkg / zip 发布流水线用「没签名就把 unsigned 写进文件名」这个约定，所以名字里没有 unsigned 才能推出已签名。Linux 包不走这个约定，名字里本来就不会有 unsigned，据此判成「已签名」是在页面上说假话 —— 站点自己的下载说明写的是 Linux 未经签名。macOS 的 DMG 也不走：缺少 Developer ID 时 package-release.sh 照样产出同名的 ad-hoc 签名 DMG。
+ * 文件名里带 unsigned 一定是没签名，这条对哪个平台都成立。反过来不成立：只有 Windows 安装包和 macOS 最早的 MetasequoiaIME-…-macos-universal pkg / zip 发布流水线用「没签名就把 unsigned 写进文件名」这个约定，所以名字里没有 unsigned 才能推出已签名。Linux 包不走这个约定，名字里本来就不会有 unsigned，据此判成「已签名」是在页面上说假话 —— 站点自己的下载说明写的是 Linux 未经签名。macOS 的 DMG 和 0.57.0 起的 msime-macos-…-universal.pkg 也不走：缺少签名身份时流水线照样产出同名的包，名字里不会出现 unsigned。下面的 `-macos-universal` 只认得最早那种名字，新 pkg 的名字是 `-macos-<版本>-universal`，因此落到 null。
  *
  * 判不出来就返回 null，页面对这种情况什么都不说，而不是猜一个。
  */
@@ -219,16 +225,37 @@ const toRelease = (platform, release, source = {}) => {
  *
  * 一个正式版都没有的平台（上游只发过 Pre-release）用最高的预览版顶上主位，preview 留空：平台不能从清单里消失。
  *
- * 换了打包形状的平台，一旦出现新形状的发布，旧形状的发布就不再参与挑选：macOS 从 pkg / zip 换成 DMG 后，安装步骤完全不同（DMG 要拖进「应用程序」再打开 MSIME），页面按清单里的格式切换说明，主按钮和预览版若一个是 DMG、一个是 pkg，说明只能对上其中一个。还没有 DMG 发布时照旧展示 pkg / zip。
+ * 换过打包形状的平台按代际挑选，正式版和预览版只从同一代里出：每一代的安装步骤完全不同，页面按清单里的格式切换说明，主按钮和预览版若不是同一代，说明只能对上其中一个。
+ *
+ * macOS 的代际依次是：最早的 pkg / zip（直接装输入法本体）→ DMG（拖进「应用程序」再打开 MSIME）→ 0.57.0 起的 msime-macos-…-universal.pkg（安装器装好 MSIME 再打开它）。列表按从旧到新排，不属于任何一项的发布算作最早那一代。挑选时取「已经站住」的最新一代，只保留这一代的发布，更早和更新的都不参与：
+ *
+ * - DMG 只要出现过就算站住，预览版也算 —— 只有预览版 DMG 时，它顶上主位，而不是让 pkg / zip 占主按钮。这是当年换 DMG 时的做法，保持不变。
+ * - 新 pkg 必须先有一个正式版才算站住。在那之前它的预览版（比如 macos-v0.57.0-beta）不参与挑选：否则 DMG 正式版会因为不是新一代被筛掉，测试版被顶到主按钮上。也不把它作为 DMG 正式版的预览版展示，因为那会让一页上出现两套安装步骤。
  */
-const SUPERSEDING_FORMAT = { macos: /\.dmg$/i };
+const SUPERSEDING_FORMAT = {
+  macos: [
+    { pattern: /\.dmg$/i, needsStable: false },
+    { pattern: MACOS_PKG, needsStable: true },
+  ],
+};
+
+/** 发布属于第几代：0 是最早那一代，n 是 SUPERSEDING_FORMAT 里第 n 项。同时带有几代产物时按最新的一代算。 */
+const generationOf = (generations, release) => {
+  for (let index = generations.length; index > 0; index -= 1) {
+    if (release.downloads.some(entry => generations[index - 1].pattern.test(entry.name))) return index;
+  }
+  return 0;
+};
 
 export function selectRelease(platform, releases) {
   let eligible = releases.map(release => toRelease(platform, release)).filter(Boolean)
     .sort((left, right) => versionOrder(left.version, right.version));
-  const superseding = SUPERSEDING_FORMAT[platform];
-  if (superseding && eligible.some(release => release.downloads.some(entry => superseding.test(entry.name)))) {
-    eligible = eligible.filter(release => release.downloads.some(entry => superseding.test(entry.name)));
+  const generations = SUPERSEDING_FORMAT[platform];
+  if (generations) {
+    const established = eligible.map(release => generationOf(generations, release))
+      .filter((generation, index) => generation > 0 && !(generations[generation - 1].needsStable && eligible[index].prerelease));
+    const current = Math.max(0, ...established);
+    eligible = eligible.filter(release => generationOf(generations, release) === current);
   }
   const stable = eligible.find(release => !release.prerelease);
   if (!stable) return eligible[0] ? { ...eligible[0], preview: null } : null;

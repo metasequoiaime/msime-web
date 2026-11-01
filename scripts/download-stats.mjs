@@ -3,6 +3,8 @@ const INSTALLERS = [
   ['windows7', /^MetasequoiaIME-[\w]+_Setup_v[\w.-]+_win7_(?:x86|x64)\.exe$/i],
   ['windows', /^MetasequoiaIME(?:-[\w]+)?_Setup_v[\w.-]+\.exe$/i],
   ['macos', /^msime-macos-(?:[a-z]+-)?\d[\w.-]*\.dmg$/i],
+  // 0.57.0 起 macOS 改发 pkg，文件名形状和 DMG 相同（含各版本与 nightly），只换了扩展名。
+  ['macos', /^msime-macos-(?:[a-z]+-)?\d[\w.-]*\.pkg$/i],
   ['macos', /^MetasequoiaIME-[\w.-]+-macos-universal[\w-]*\.pkg$/i],
   ['macos', /^MetasequoiaIME-[\w.-]+-macos-universal(?:-unsigned)?\.zip$/i],
   ['linux', /^(?:msime|metasequoia-ime)-linux[\w.-]*\.(?:deb|rpm|appimage)$/i],

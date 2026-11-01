@@ -41,22 +41,43 @@ gh attestation verify .\{{installerName}} --repo metasequoiaime/MSIME-Windows
 4. 添加输入法（菜单栏里已经有水杉输入法时可跳过）：打开「系统设置」→「键盘」→「文字输入」→「输入法」→「编辑…」，点左下角的「+」，选「简体中文」→「水杉输入法」，再点「添加」。macOS 对所有第三方输入法都会提示「开发者可以访问你通过此输入法键入的任何内容…」，水杉如何处理输入数据见[《隐私政策》](/privacy/)。
 5. 切换：点菜单栏的输入法图标选择水杉输入法，或按 `Control + 空格` 切换输入法。
 {{/macosDmg}}
+{{#macosPkg}}
+1. 双击下载的 pkg 安装包，按安装器的提示继续。安装时要输入管理员密码，管理员账户也要输；没有管理员密码的账户装不了。
+2. 安装完成后会自动打开「应用程序」里的 MSIME。首次安装会出现安装窗口，点「立即安装」，安装完成后点「进入设置」。这一步才会把内嵌的「水杉输入法.app」安装到 `~/Library/Input Methods` 并登记输入源；已经安装过时会直接进入设置。
+3. 首次安装后从苹果菜单选择「退出登录」，再重新登录。
+4. 添加输入法（菜单栏里已经有水杉输入法时可跳过）：打开「系统设置」→「键盘」→「文字输入」→「输入法」→「编辑…」，点左下角的「+」，选「简体中文」→「水杉输入法」，再点「添加」。macOS 对所有第三方输入法都会提示「开发者可以访问你通过此输入法键入的任何内容…」，水杉如何处理输入数据见[《隐私政策》](/privacy/)。
+5. 切换：点菜单栏的输入法图标选择水杉输入法，或按 `Control + 空格` 切换输入法。
+
+也可以用 Homebrew 安装：`brew install --cask metasequoiaime/tap/msime`，安装时会要求输入 sudo 密码。用 Homebrew 或命令行装的 pkg 不会自动打开 MSIME，装完请到「应用程序」里打开一次 MSIME，再从第 2 步继续。
+
+已经装过水杉输入法的，继续用应用内更新升级，不用重新下载安装包。
+{{/macosPkg}}
 {{#macosLegacy}}
 安装包直接双击运行；压缩包解开后把输入法包放进 `~/Library/Input Methods`，再到「系统设置 → 键盘 → 文字输入 → 编辑」中启用「水杉输入法」。
 
 macOS 版内置 Sparkle 自动更新，安装后可从输入法菜单中的「检查更新…」直接升级。
 {{/macosLegacy}}
 
-{{#macosDmg}}
+{{#macosCurrent}}
 ### 装好后找不到水杉输入法？
 
 依次检查：
 
+{{#macosDmg}}
 - **只拖进了「应用程序」，没有完成安装**：打开 MSIME 后还要在安装窗口点「立即安装」，再点「进入设置」。输入法是这一步才装进 `~/Library/Input Methods` 的。
+{{/macosDmg}}
+{{#macosPkg}}
+- **装完 pkg 没有在 MSIME 里完成安装**：pkg 只把 MSIME 装进「应用程序」，还要在 MSIME 的安装窗口点「立即安装」，再点「进入设置」，输入法是这一步才装进 `~/Library/Input Methods` 的。用 Homebrew 或命令行安装时 MSIME 不会自动打开，要自己到「应用程序」里打开一次。
+{{/macosPkg}}
 - **第一次安装后没有注销**：macOS 对全新的输入法标识可能要到下一次登录才会接纳；按提示注销并重新登录，再看菜单栏。
 - **没有添加到输入法列表**：按上面第 4 步添加；在「输入法」列表里删掉过水杉输入法的，也要重新添加。
+{{#macosDmg}}
 - **装过旧版 pkg 安装包**：旧版装在 `~/Library/Input Methods/MetasequoiaIME.app`，和新版用的是同一个输入法标识。打开新版 MSIME 时会自动移除它，更早的预览版 `水杉输入法（预览）.app` 也一样；之后注销并重新登录一次（苹果菜单 →「退出登录」），让系统只认新版。如果旧版装在了 `/Library/Input Methods`（所有用户共用），MSIME 没有权限删除，会提示你手动处理：在访达里按 `Command + Shift + G` 前往 `/Library/Input Methods`，把 `MetasequoiaIME.app` 移到废纸篓（需要输入管理员密码），再注销并重新登录。
 {{/macosDmg}}
+{{#macosPkg}}
+- **装过早期的 `MetasequoiaIME.app`**：早期版本装在 `~/Library/Input Methods/MetasequoiaIME.app`，和现在用的是同一个输入法标识。打开 MSIME 时会自动移除它，更早的预览版 `水杉输入法（预览）.app` 也一样；之后注销并重新登录一次（苹果菜单 →「退出登录」），让系统只认新版。如果它装在了 `/Library/Input Methods`（所有用户共用），MSIME 没有权限删除，会提示你手动处理：在访达里按 `Command + Shift + G` 前往 `/Library/Input Methods`，把 `MetasequoiaIME.app` 移到废纸篓（需要输入管理员密码），再注销并重新登录。
+{{/macosPkg}}
+{{/macosCurrent}}
 
 ### 签名与校验
 

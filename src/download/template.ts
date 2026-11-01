@@ -2,6 +2,7 @@ import { HARMONY_APPGALLERY_URL, HARMONY_APPTEST_CODE } from "../data/platforms.
 import type { UpdateManifest } from "../data/schemas.ts";
 import { PLATFORM_LABELS, PLATFORMS, type Platform } from "../platform.ts";
 import type { PlatformRelease, Platforms } from "../platforms-data.ts";
+import { macosInstallBlocks } from "./macos-format";
 import downloadSourceRaw from "../content/download.md?raw";
 
 // `?raw` 原样带进磁盘上的字节：Windows 上 git 可能把这份 md 签出成 CRLF。下面按 `## ` / `### ` 分段全按 LF 写死，CRLF 会让分段落空，所以在入口处统一归一成 LF。
@@ -66,19 +67,6 @@ const PLATFORM_SIGNING: Record<"macos" | "linux", Record<"signed" | "unsigned" |
 };
 
 const signingKey = (signed: boolean | null | undefined) => (signed === true ? "signed" : signed === false ? "unsigned" : "unknown");
-
-/*
- * macOS 的安装说明跟着清单里的包走。
- *
- * 现行的 DMG 要拖进「应用程序」再打开 MSIME，由它把输入法装进 `~/Library/Input Methods`；此前的 pkg / zip 直接装输入法本体。两套步骤互不适用，给 pkg 的下载按钮配 DMG 的步骤，照着做的人会找不到 MSIME。`{{#macosDmg}}…{{/macosDmg}}` 与 `{{#macosLegacy}}…{{/macosLegacy}}` 只保留与主按钮一致的那段。清单读不到时按现行的 DMG 写。
- */
-const keepBlock = (source: string, name: string, keep: boolean) =>
-  source.replace(new RegExp(`\\{\\{#${name}\\}\\}\\n([^]*?)\\{\\{/${name}\\}\\}\\n`, "g"), keep ? "$1" : "");
-
-const macosInstallBlocks = (source: string, macos: PlatformRelease | undefined) => {
-  const dmg = !macos || macos.downloads.some((entry) => /\.dmg$/i.test(entry.name));
-  return keepBlock(keepBlock(source, "macosDmg", dmg), "macosLegacy", !dmg);
-};
 
 /** The same AppTest invitation and manual code as the download panel, including in Markdown exports. */
 const harmonyStatus = () =>

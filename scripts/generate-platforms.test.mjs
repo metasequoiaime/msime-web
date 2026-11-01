@@ -46,6 +46,22 @@ test('download totals include stable, preview, nightly and archived packages, on
   assert.deepEqual(stats, { total: 1142, platforms: { windows: 1000, windowsRust: 5, windows7: 0, macos: 45, linux: 72, android: 14, harmony: 6 } });
 });
 
+test('macOS pkg downloads count for every edition and nightly, next to the DMG and pkg era packages', () => {
+  const stats = downloadStats(new Map([['metasequoiaime/msime', [
+    statsRelease([
+      countedAsset(1, 'msime-macos-0.57.0-universal.pkg', 20),
+      countedAsset(2, 'msime-macos-wubi-0.57.0-universal.pkg', 8),
+      countedAsset(3, 'msime-macos-tibetan-0.57.0-universal.pkg', 1),
+      countedAsset(4, 'msime-macos-0.56.1-universal.dmg', 30),
+      countedAsset(5, 'MetasequoiaIME-v0.47.2-macos-universal-unsigned.pkg', 4),
+      countedAsset(6, 'SHA256SUMS', 100),
+      countedAsset(7, 'msime-macos-0.57.0-settings.zip', 100),
+    ]),
+    statsRelease([countedAsset(8, 'msime-macos-pinyin-0.57.0-universal-nightly.123.1.pkg', 2)], { tag_name: 'nightly' }),
+  ]]]));
+  assert.deepEqual(stats.platforms, { windows: 0, windowsRust: 0, windows7: 0, macos: 65, linux: 0, android: 0, harmony: 0 });
+});
+
 test('download counts exclude drafts, unpublished releases, update payloads and non-installer assets', () => {
   const names = [
     'SHA256SUMS', 'msime-android.apk.sha256', 'msime-linux-0.13.0.tar.gz',
@@ -408,6 +424,68 @@ test('a DMG name says nothing about its signature', () => {
   // 没有 Developer ID 时 package-release.sh 产出同名的 ad-hoc DMG，所以名字里没有 unsigned 推不出已签名
   assert.equal(signingState('macos', [{ name: 'msime-macos-0.50.0-arm64.dmg' }]), null);
   assert.equal(signingState('macos', [{ name: 'MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg' }]), true);
+});
+
+// 0.57.0 起 release-macos.yml 发布的形状：macos-v<版本> 下只有六个版本的 pkg 和 SHA256SUMS，没有 DMG。测试版的 tag 带 -beta，文件名不带（和 macos-v0.54.1-beta 的 DMG 一样）
+const pkgMacos = (tag, prerelease = false) => {
+  const version = tag.replace(/^macos-v/, '').replace(/-.*$/, '');
+  return macosRelease(tag, [
+    `msime-macos-${version}-universal.pkg`,
+    ...['pinyin', 'wubi', 'japanese', 'vietnamese', 'tibetan'].map(id => `msime-macos-${id}-${version}-universal.pkg`),
+    'SHA256SUMS',
+  ], prerelease);
+};
+const dmgMacos = (tag, prerelease = false) => {
+  const version = tag.replace(/^macos-v/, '').replace(/-.*$/, '');
+  return macosRelease(tag, [`msime-macos-${version}-universal.dmg`, `msime-macos-wubi-${version}-universal.dmg`, 'SHA256SUMS'], prerelease);
+};
+
+test('the macOS pkg is listed as the full edition only, apart from the pkg era installer', () => {
+  const downloads = classifyAssets('macos', pkgMacos('macos-v0.57.0').assets);
+  assert.deepEqual(downloads.map(d => `${d.name} ${d.label} ${d.arch}`), ['msime-macos-0.57.0-universal.pkg 通用 · pkg Universal']);
+  // 最早那种 pkg 仍按原来的规则认，两种 pkg 互不误认
+  assert.deepEqual(classifyAssets('macos', [macosAsset('v0.50.0-build.9', 'MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg')]).map(d => d.label), ['安装包 · pkg']);
+  assert.deepEqual(classifyAssets('macos', [macosAsset('macos-v0.57.0', 'msime-macos-0.57.0-universal-nightly.1.2.pkg')]), []);
+});
+
+test('a stable pkg release supersedes the DMG releases, and only pkg pre-releases ride along as its preview', () => {
+  const releases = [legacyMacos('v0.50.0-build.9'), dmgMacos('macos-v0.56.0'), dmgMacos('macos-v0.56.1'), dmgMacos('macos-v0.56.2-beta', true), pkgMacos('macos-v0.57.0')];
+  const chosen = selectRelease('macos', releases);
+  assert.equal(chosen.version, '0.57.0');
+  assert.deepEqual(chosen.downloads.map(d => d.name), ['msime-macos-0.57.0-universal.pkg']);
+  assert.equal(chosen.prerelease, false);
+  assert.equal(chosen.signed, null);
+  assert.equal(chosen.preview, null);
+
+  const withBeta = selectRelease('macos', [...releases, pkgMacos('macos-v0.57.1-beta', true)]);
+  assert.equal(withBeta.version, '0.57.0');
+  assert.equal(withBeta.preview.version, '0.57.1-beta');
+  assert.deepEqual(withBeta.preview.downloads.map(d => d.name), ['msime-macos-0.57.1-universal.pkg']);
+});
+
+test('a pkg pre-release before the first stable pkg leaves the DMG release and its DMG preview in place', () => {
+  const chosen = selectRelease('macos', [legacyMacos('v0.50.0-build.9'), dmgMacos('macos-v0.56.1'), pkgMacos('macos-v0.57.0-beta', true)]);
+  assert.equal(chosen.version, '0.56.1');
+  assert.deepEqual(chosen.downloads.map(d => d.name), ['msime-macos-0.56.1-universal.dmg']);
+  assert.equal(chosen.prerelease, false);
+  assert.equal(chosen.preview, null, 'the pkg pre-release is not offered next to a DMG');
+
+  const dmgPreview = selectRelease('macos', [dmgMacos('macos-v0.56.1'), dmgMacos('macos-v0.56.2-beta', true), pkgMacos('macos-v0.57.0-beta', true)]);
+  assert.equal(dmgPreview.version, '0.56.1');
+  assert.equal(dmgPreview.preview.version, '0.56.2-beta');
+  assert.deepEqual(dmgPreview.preview.downloads.map(d => d.name), ['msime-macos-0.56.2-universal.dmg']);
+
+  // 只有 pkg 时代之前的发布和一个 pkg 预发布：照旧展示 pkg / zip，不让测试版顶上主位
+  const legacyOnly = selectRelease('macos', [legacyMacos('v0.50.0-build.9'), pkgMacos('macos-v0.57.0-beta', true)]);
+  assert.equal(legacyOnly.version, '0.50.0-build.9');
+  assert.deepEqual(legacyOnly.downloads.map(d => d.label), ['安装包 · pkg', '压缩包 · zip']);
+  assert.equal(legacyOnly.preview, null);
+});
+
+test('a macOS pkg name says nothing about its signature', () => {
+  // 新流水线没有签名身份时照样产出同名 pkg，名字里不带 unsigned
+  assert.equal(signingState('macos', [{ name: 'msime-macos-0.57.0-universal.pkg' }]), null);
+  assert.equal(signingState('macos', [{ name: 'msime-macos-0.57.0-universal-unsigned.pkg' }]), false);
 });
 
 test('android releases offer the full APK first and each edition after it, checksums excluded', () => {
