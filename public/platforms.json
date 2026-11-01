@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-31T23:48:24.564Z",
+  "generatedAt": "2026-11-01T01:28:54.661Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -21,64 +21,19 @@
       ],
       "preview": null,
       "experimental": {
-        "version": "0.4.0",
-        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/windows-v0.4.0",
-        "publishedAt": "2026-10-31T14:49:15Z",
+        "version": "0.3.0",
+        "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/windows-v0.3.0",
+        "publishedAt": "2026-10-23T08:02:01Z",
         "signed": null,
         "downloads": [
           {
             "label": "完整版 · 安装程序",
             "arch": "x64",
-            "name": "MetasequoiaIME-Full_Setup_v0.4.0.exe",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.4.0/MetasequoiaIME-Full_Setup_v0.4.0.exe",
-            "size": 180543609,
-            "sha256": "854e011f8326db1ef26b16330c6ae80dd54885ce89e55832476f2a17a1d1c101",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/windows-v0.4.0/MetasequoiaIME-Full_Setup_v0.4.0.exe"
-          },
-          {
-            "label": "水杉拼音 · 安装程序",
-            "arch": "x64",
-            "name": "MetasequoiaIME-Pinyin_Setup_v0.4.0.exe",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.4.0/MetasequoiaIME-Pinyin_Setup_v0.4.0.exe",
-            "size": 174778964,
-            "sha256": "280c5a43169598d4ac1e341ffa38d94f7ba2025feb42d65e920431aa189207fb",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/windows-v0.4.0/MetasequoiaIME-Pinyin_Setup_v0.4.0.exe"
-          },
-          {
-            "label": "水杉五笔 · 安装程序",
-            "arch": "x64",
-            "name": "MetasequoiaIME-Wubi_Setup_v0.4.0.exe",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.4.0/MetasequoiaIME-Wubi_Setup_v0.4.0.exe",
-            "size": 156801173,
-            "sha256": "db1ffd43e690f711746c4d2b13984e2581e2f2d3c8fc5fa7f3c072526b992711",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/windows-v0.4.0/MetasequoiaIME-Wubi_Setup_v0.4.0.exe"
-          },
-          {
-            "label": "水杉日语 · 安装程序",
-            "arch": "x64",
-            "name": "MetasequoiaIME-Japanese_Setup_v0.4.0.exe",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.4.0/MetasequoiaIME-Japanese_Setup_v0.4.0.exe",
-            "size": 100475592,
-            "sha256": "28499760d12d3522cac84e00151bc8731cefcf79fb6b5a9f992dd3db3a2d055d",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/windows-v0.4.0/MetasequoiaIME-Japanese_Setup_v0.4.0.exe"
-          },
-          {
-            "label": "水杉越南语 · 安装程序",
-            "arch": "x64",
-            "name": "MetasequoiaIME-Vietnamese_Setup_v0.4.0.exe",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.4.0/MetasequoiaIME-Vietnamese_Setup_v0.4.0.exe",
-            "size": 86382732,
-            "sha256": "687a5cd2f95dbb3a55410bf9c122003ad93fbd65cb850b4498d44b48765c50e3",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/windows-v0.4.0/MetasequoiaIME-Vietnamese_Setup_v0.4.0.exe"
-          },
-          {
-            "label": "水杉藏文 · 安装程序",
-            "arch": "x64",
-            "name": "MetasequoiaIME-Tibetan_Setup_v0.4.0.exe",
-            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.4.0/MetasequoiaIME-Tibetan_Setup_v0.4.0.exe",
-            "size": 86385834,
-            "sha256": "2a34c95d9c2763bbab9f5e9f4c8af7a5ce05d7ffbdb290df31cde2ebc33d5beb",
-            "mirrorUrl": "https://dl.msime.app/releases/msime/windows-v0.4.0/MetasequoiaIME-Tibetan_Setup_v0.4.0.exe"
+            "name": "MetasequoiaIME-Full_Setup_v0.3.0.exe",
+            "url": "https://github.com/metasequoiaime/msime/releases/download/windows-v0.3.0/MetasequoiaIME-Full_Setup_v0.3.0.exe",
+            "size": 150276896,
+            "sha256": "3895cd8e9f7b28cd6ac210db469ec7a42c77e572ea534eb48c96c6c3d6e2a12c",
+            "mirrorUrl": "https://dl.msime.app/releases/msime/windows-v0.3.0/MetasequoiaIME-Full_Setup_v0.3.0.exe"
           }
         ]
       },
@@ -603,14 +558,14 @@
     ]
   },
   "downloadStats": {
-    "total": 66727,
+    "total": 66747,
     "platforms": {
-      "windows": 42192,
+      "windows": 42203,
       "windowsRust": 2116,
       "windows7": 123,
       "macos": 5119,
-      "linux": 11189,
-      "android": 5585,
+      "linux": 11194,
+      "android": 5589,
       "harmony": 403
     }
   },
@@ -4501,7 +4456,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675680671,
       "name": "msime-linux_0.14.0_amd64.deb",
-      "download_count": 286
+      "download_count": 288
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4993,7 +4948,7 @@
       "repository": "metasequoiaime/msime",
       "id": 677254675,
       "name": "msime-android.apk",
-      "download_count": 561
+      "download_count": 562
     },
     {
       "repository": "metasequoiaime/msime",
@@ -5701,7 +5656,7 @@
       "repository": "metasequoiaime/msime",
       "id": 693744172,
       "name": "msime-android-nightly.41134921126.1.apk",
-      "download_count": 31
+      "download_count": 34
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6067,7 +6022,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584404,
       "name": "msime-linux_0.15.0_amd64.deb",
-      "download_count": 15
+      "download_count": 18
     },
     {
       "repository": "metasequoiaime/msime",
@@ -7537,24 +7492,24 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 675693188,
       "name": "MetasequoiaIME_Setup_v0.12.0.exe",
-      "download_count": 3188
+      "download_count": 3199
     }
   ],
   "mirrorDownloadStats": {
-    "total": 12101,
+    "total": 12129,
     "platforms": {
-      "android": 1600,
+      "android": 1604,
       "harmony": 93,
       "linux": 754,
-      "macos": 1140,
-      "windows": 8453,
-      "windowsRust": 61
+      "macos": 1144,
+      "windows": 8467,
+      "windowsRust": 67
     },
-    "generatedAt": "2026-10-31T23:48:23.674196Z"
+    "generatedAt": "2026-11-01T01:28:53.940495Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-10-31T23:48:23.502Z",
-    "total": 5078,
+    "generatedAt": "2026-11-01T01:28:53.493Z",
+    "total": 5086,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -7574,7 +7529,7 @@
       },
       {
         "id": "a857688b2ac9baf92450397d5105726782c2a1d75469fa0afa59200d2c03a984",
-        "downloads": 508
+        "downloads": 516
       },
       {
         "id": "bac9145476cafdbddeaf8b216d4a079d7522902d3821c740f7dbf0e31fd5aaab",
@@ -7603,9 +7558,9 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-10-31T23:48:23.807Z",
+    "generatedAt": "2026-11-01T01:28:54.127Z",
     "downloads": 2472,
-    "periodStart": "2025-10-31",
-    "periodEnd": "2026-10-31"
+    "periodStart": "2025-11-01",
+    "periodEnd": "2026-11-01"
   }
 }
