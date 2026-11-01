@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-01T15:30:21.282Z",
+  "generatedAt": "2026-11-01T15:45:18.244Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -64,20 +64,20 @@
     },
     "macos": {
       "repository": "metasequoiaime/msime",
-      "version": "0.56.0",
-      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.56.0",
-      "publishedAt": "2026-10-31T13:25:31Z",
+      "version": "0.56.1",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/macos-v0.56.1",
+      "publishedAt": "2026-11-01T15:44:53Z",
       "prerelease": false,
       "signed": null,
       "downloads": [
         {
           "label": "通用 · dmg",
           "arch": "Universal",
-          "name": "msime-macos-0.56.0-universal.dmg",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.56.0/msime-macos-0.56.0-universal.dmg",
-          "size": 141841730,
-          "sha256": "5ac6d38d58d4fd274a52388a062dbcc384b7f632905734bc71edc88866d43b0c",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.56.0/msime-macos-0.56.0-universal.dmg"
+          "name": "msime-macos-0.56.1-universal.dmg",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/macos-v0.56.1/msime-macos-0.56.1-universal.dmg",
+          "size": 145579155,
+          "sha256": "996faf807a0b7086cb7ea31edc96063046dbf7bd1a0077f982f22eb8f67f459b",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/macos-v0.56.1/msime-macos-0.56.1-universal.dmg"
         }
       ],
       "preview": null,
@@ -558,14 +558,14 @@
     ]
   },
   "downloadStats": {
-    "total": 67363,
+    "total": 67382,
     "platforms": {
-      "windows": 42384,
+      "windows": 42388,
       "windowsRust": 2151,
       "windows7": 140,
-      "macos": 5175,
+      "macos": 5176,
       "linux": 11410,
-      "android": 5684,
+      "android": 5698,
       "harmony": 419
     }
   },
@@ -4918,37 +4918,37 @@
       "repository": "metasequoiaime/msime",
       "id": 677254535,
       "name": "msime-android-pinyin.apk",
-      "download_count": 128
+      "download_count": 129
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677254537,
       "name": "msime-android-tibetan.apk",
-      "download_count": 38
+      "download_count": 39
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677254538,
       "name": "msime-android-wubi.apk",
-      "download_count": 114
+      "download_count": 115
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677254539,
       "name": "msime-android-vietnamese.apk",
-      "download_count": 40
+      "download_count": 41
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677254541,
       "name": "msime-android-japanese.apk",
-      "download_count": 49
+      "download_count": 50
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 677254675,
       "name": "msime-android.apk",
-      "download_count": 601
+      "download_count": 610
     },
     {
       "repository": "metasequoiaime/msime",
@@ -5938,7 +5938,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695455865,
       "name": "msime-macos-0.56.0-universal.dmg",
-      "download_count": 62
+      "download_count": 63
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6652,6 +6652,42 @@
       "repository": "metasequoiaime/msime",
       "id": 696775715,
       "name": "MetasequoiaIME-Wubi_Setup_v0.4.0-nightly.41241947627.2.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 698749845,
+      "name": "msime-macos-tibetan-0.56.1-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 698749849,
+      "name": "msime-macos-0.56.1-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 698749851,
+      "name": "msime-macos-japanese-0.56.1-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 698749854,
+      "name": "msime-macos-vietnamese-0.56.1-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 698749855,
+      "name": "msime-macos-pinyin-0.56.1-universal.dmg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 698750067,
+      "name": "msime-macos-wubi-0.56.1-universal.dmg",
       "download_count": 0
     },
     {
@@ -7492,24 +7528,24 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 675693188,
       "name": "MetasequoiaIME_Setup_v0.12.0.exe",
-      "download_count": 3374
+      "download_count": 3378
     }
   ],
   "mirrorDownloadStats": {
-    "total": 12749,
+    "total": 12757,
     "platforms": {
-      "android": 1669,
+      "android": 1671,
       "harmony": 94,
       "linux": 798,
-      "macos": 1182,
-      "windows": 8854,
-      "windowsRust": 152
+      "macos": 1183,
+      "windows": 8855,
+      "windowsRust": 156
     },
-    "generatedAt": "2026-11-01T15:30:20.446191Z"
+    "generatedAt": "2026-11-01T15:45:17.548248Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-01T15:30:20.038Z",
-    "total": 5165,
+    "generatedAt": "2026-11-01T15:45:17.140Z",
+    "total": 5167,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -7529,7 +7565,7 @@
       },
       {
         "id": "a857688b2ac9baf92450397d5105726782c2a1d75469fa0afa59200d2c03a984",
-        "downloads": 588
+        "downloads": 590
       },
       {
         "id": "bac9145476cafdbddeaf8b216d4a079d7522902d3821c740f7dbf0e31fd5aaab",
@@ -7558,7 +7594,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-01T15:30:20.710Z",
+    "generatedAt": "2026-11-01T15:45:17.736Z",
     "downloads": 2472,
     "periodStart": "2025-11-01",
     "periodEnd": "2026-11-01"
