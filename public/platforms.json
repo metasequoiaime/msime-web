@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-01T20:52:37.558Z",
+  "generatedAt": "2026-11-01T23:13:01.505Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -558,14 +558,14 @@
     ]
   },
   "downloadStats": {
-    "total": 67682,
+    "total": 67702,
     "platforms": {
-      "windows": 42476,
+      "windows": 42488,
       "windowsRust": 2175,
       "windows7": 142,
-      "macos": 5204,
+      "macos": 5210,
       "linux": 11517,
-      "android": 5745,
+      "android": 5747,
       "harmony": 423
     }
   },
@@ -4918,7 +4918,7 @@
       "repository": "metasequoiaime/msime",
       "id": 677254535,
       "name": "msime-android-pinyin.apk",
-      "download_count": 138
+      "download_count": 139
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4930,7 +4930,7 @@
       "repository": "metasequoiaime/msime",
       "id": 677254538,
       "name": "msime-android-wubi.apk",
-      "download_count": 119
+      "download_count": 120
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6664,7 +6664,7 @@
       "repository": "metasequoiaime/msime",
       "id": 698749849,
       "name": "msime-macos-0.56.1-universal.dmg",
-      "download_count": 14
+      "download_count": 18
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6682,7 +6682,7 @@
       "repository": "metasequoiaime/msime",
       "id": 698749855,
       "name": "msime-macos-pinyin-0.56.1-universal.dmg",
-      "download_count": 1
+      "download_count": 3
     },
     {
       "repository": "metasequoiaime/msime",
@@ -7534,7 +7534,7 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 675693188,
       "name": "MetasequoiaIME_Setup_v0.12.0.exe",
-      "download_count": 3393
+      "download_count": 3394
     },
     {
       "repository": "metasequoiaime/msime-windows",
@@ -7546,24 +7546,24 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 699190149,
       "name": "MetasequoiaIME_Setup_v0.13.1.exe",
-      "download_count": 20
+      "download_count": 31
     }
   ],
   "mirrorDownloadStats": {
-    "total": 12852,
+    "total": 12882,
     "platforms": {
-      "android": 1692,
-      "harmony": 94,
-      "linux": 799,
-      "macos": 1196,
-      "windows": 8899,
-      "windowsRust": 172
+      "android": 1699,
+      "harmony": 95,
+      "linux": 800,
+      "macos": 1198,
+      "windows": 8907,
+      "windowsRust": 183
     },
-    "generatedAt": "2026-11-01T20:52:36.326428Z"
+    "generatedAt": "2026-11-01T23:13:00.629095Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-01T20:52:35.943Z",
-    "total": 5184,
+    "generatedAt": "2026-11-01T23:13:00.241Z",
+    "total": 5187,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -7583,7 +7583,7 @@
       },
       {
         "id": "a857688b2ac9baf92450397d5105726782c2a1d75469fa0afa59200d2c03a984",
-        "downloads": 607
+        "downloads": 610
       },
       {
         "id": "bac9145476cafdbddeaf8b216d4a079d7522902d3821c740f7dbf0e31fd5aaab",
@@ -7612,7 +7612,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-01T20:52:37.004Z",
+    "generatedAt": "2026-11-01T23:13:00.852Z",
     "downloads": 2472,
     "periodStart": "2025-11-01",
     "periodEnd": "2026-11-01"
