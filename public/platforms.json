@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-01T15:46:48.981Z",
+  "generatedAt": "2026-11-01T15:49:03.681Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -558,12 +558,12 @@
     ]
   },
   "downloadStats": {
-    "total": 67385,
+    "total": 67387,
     "platforms": {
       "windows": 42388,
       "windowsRust": 2151,
       "windows7": 140,
-      "macos": 5176,
+      "macos": 5178,
       "linux": 11413,
       "android": 5698,
       "harmony": 419
@@ -5938,7 +5938,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695455865,
       "name": "msime-macos-0.56.0-universal.dmg",
-      "download_count": 63
+      "download_count": 65
     },
     {
       "repository": "metasequoiaime/msime",
@@ -7538,19 +7538,19 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 12759,
+    "total": 12761,
     "platforms": {
       "android": 1672,
       "harmony": 94,
       "linux": 798,
-      "macos": 1184,
-      "windows": 8855,
+      "macos": 1185,
+      "windows": 8856,
       "windowsRust": 156
     },
-    "generatedAt": "2026-11-01T15:46:48.480826Z"
+    "generatedAt": "2026-11-01T15:49:03.172081Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-01T15:46:48.146Z",
+    "generatedAt": "2026-11-01T15:49:02.817Z",
     "total": 5167,
     "builds": [
       {
@@ -7600,7 +7600,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-01T15:46:48.633Z",
+    "generatedAt": "2026-11-01T15:49:03.271Z",
     "downloads": 2472,
     "periodStart": "2025-11-01",
     "periodEnd": "2026-11-01"
