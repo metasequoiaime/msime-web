@@ -332,7 +332,7 @@ export function FeedbackPage() {
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-labelledby="feedback-step-target">
                       {Object.entries(targets).map(([key, item]) => <label key={key} className="flex min-h-11 gap-2 cursor-pointer items-center rounded-field bg-panel-2 px-3 py-2 text-sm leading-normal text-ink transition-[background-color,box-shadow] duration-150 [word-break:keep-all] [overflow-wrap:anywhere] hover:bg-accent-soft has-[:checked]:bg-accent-soft has-[:checked]:font-semibold has-[:checked]:text-accent-ink has-[:checked]:shadow-ring-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent">
                         <input className="sr-only" type="radio" name="target" value={key} checked={form.target === key} onChange={() => update({ target: key, template: undefined, tab: "edit" })} />
-                        <PlatformIcon platform={key as keyof typeof targets} size={18} className="flex-none" />
+                        <PlatformIcon platform={item.platform} size={18} className="flex-none" />
                         <span>{t(item.label)}</span>
                       </label>)}
                     </div>
