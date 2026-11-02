@@ -147,6 +147,18 @@ test('issues state the platform first and label targets that share the multi-pla
   assert.deepEqual(formatIssue(feedbackSchema.parse(validForm('android', android)), { ...android, labels: ['enhancement', 'platform/android'] }).labels, ['enhancement', 'platform/android']);
 });
 
+test('the three Windows editions go to the repository that ships each of them', () => {
+  assert.equal(targets.windows.repo, 'MSIME-Windows');
+  for (const target of ['windows-preview', 'windows7']) {
+    assert.equal(targets[target].repo, 'msime');
+    assert.equal(targets[target].issueLabel, 'platform/windows');
+    const issue = formatIssue(feedbackSchema.parse(validForm(target)), templateFor(target));
+    assert.ok(issue.body.startsWith(`### 平台\n\n${targets[target].label}\n\n`));
+    assert.ok(issue.labels.includes('platform/windows'));
+  }
+  assert.equal(new Set(Object.values(targets).map(({ label }) => label)).size, Object.keys(targets).length);
+});
+
 test('the form title is entered without the template prefix and the issue title gets it back once', () => {
   const template=templateFor();
   assert.equal(formatIssue(feedbackSchema.parse({...form,title:'增加候选窗口字号设置'}),template).title,'[Feat] 增加候选窗口字号设置');
