@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-02T11:48:01.059Z",
+  "generatedAt": "2026-11-02T12:35:33.083Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -558,15 +558,15 @@
     ]
   },
   "downloadStats": {
-    "total": 68873,
+    "total": 68932,
     "platforms": {
-      "windows": 43082,
-      "windowsRust": 2246,
-      "windows7": 190,
+      "windows": 43110,
+      "windowsRust": 2249,
+      "windows7": 192,
       "macos": 5288,
-      "linux": 11778,
-      "android": 5854,
-      "harmony": 435
+      "linux": 11784,
+      "android": 5870,
+      "harmony": 439
     }
   },
   "downloadHistory": [
@@ -4918,7 +4918,7 @@
       "repository": "metasequoiaime/msime",
       "id": 677254535,
       "name": "msime-android-pinyin.apk",
-      "download_count": 147
+      "download_count": 158
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4930,7 +4930,7 @@
       "repository": "metasequoiaime/msime",
       "id": 677254538,
       "name": "msime-android-wubi.apk",
-      "download_count": 130
+      "download_count": 131
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4948,7 +4948,7 @@
       "repository": "metasequoiaime/msime",
       "id": 677254675,
       "name": "msime-android.apk",
-      "download_count": 678
+      "download_count": 682
     },
     {
       "repository": "metasequoiaime/msime",
@@ -5650,7 +5650,7 @@
       "repository": "metasequoiaime/msime",
       "id": 691427348,
       "name": "msime-harmony-0.3.2.hap",
-      "download_count": 89
+      "download_count": 93
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6022,7 +6022,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584404,
       "name": "msime-linux_0.15.0_amd64.deb",
-      "download_count": 118
+      "download_count": 120
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6040,7 +6040,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584512,
       "name": "msime-linux-0.15.0-1.x86_64.rpm",
-      "download_count": 16
+      "download_count": 20
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6694,7 +6694,7 @@
       "repository": "metasequoiaime/msime",
       "id": 698752332,
       "name": "MetasequoiaIME-Full_Setup_v0.4.1.exe",
-      "download_count": 74
+      "download_count": 77
     },
     {
       "repository": "metasequoiaime/msime",
@@ -7228,7 +7228,7 @@
       "repository": "metasequoiaime/msime",
       "id": 700632003,
       "name": "MetasequoiaIME-Full_Setup_v0.5.1_win7_x64.exe",
-      "download_count": 14
+      "download_count": 16
     },
     {
       "repository": "metasequoiaime/msime",
@@ -8074,7 +8074,7 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 675693188,
       "name": "MetasequoiaIME_Setup_v0.12.0.exe",
-      "download_count": 3400
+      "download_count": 3401
     },
     {
       "repository": "metasequoiaime/msime-windows",
@@ -8086,24 +8086,24 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 699190149,
       "name": "MetasequoiaIME_Setup_v0.13.1.exe",
-      "download_count": 614
+      "download_count": 641
     }
   ],
   "mirrorDownloadStats": {
-    "total": 13810,
+    "total": 13848,
     "platforms": {
-      "android": 1763,
+      "android": 1765,
       "harmony": 95,
-      "linux": 826,
-      "macos": 1253,
-      "windows": 9556,
-      "windowsRust": 317
+      "linux": 827,
+      "macos": 1256,
+      "windows": 9586,
+      "windowsRust": 319
     },
-    "generatedAt": "2026-11-02T11:48:00.378506Z"
+    "generatedAt": "2026-11-02T12:35:32.194877Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-02T11:47:59.862Z",
-    "total": 5252,
+    "generatedAt": "2026-11-02T12:35:31.798Z",
+    "total": 5257,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -8123,7 +8123,7 @@
       },
       {
         "id": "a857688b2ac9baf92450397d5105726782c2a1d75469fa0afa59200d2c03a984",
-        "downloads": 672
+        "downloads": 677
       },
       {
         "id": "bac9145476cafdbddeaf8b216d4a079d7522902d3821c740f7dbf0e31fd5aaab",
@@ -8152,7 +8152,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-02T11:48:00.522Z",
+    "generatedAt": "2026-11-02T12:35:32.334Z",
     "downloads": 2472,
     "periodStart": "2025-11-02",
     "periodEnd": "2026-11-02"
