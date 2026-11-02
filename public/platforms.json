@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-02T09:14:30.236Z",
+  "generatedAt": "2026-11-02T11:25:33.146Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -558,15 +558,15 @@
     ]
   },
   "downloadStats": {
-    "total": 68700,
+    "total": 68824,
     "platforms": {
-      "windows": 42987,
-      "windowsRust": 2232,
-      "windows7": 185,
-      "macos": 5276,
-      "linux": 11757,
-      "android": 5829,
-      "harmony": 434
+      "windows": 43067,
+      "windowsRust": 2239,
+      "windows7": 187,
+      "macos": 5287,
+      "linux": 11765,
+      "android": 5844,
+      "harmony": 435
     }
   },
   "downloadHistory": [
@@ -4630,7 +4630,7 @@
       "repository": "metasequoiaime/msime",
       "id": 675915776,
       "name": "msime-android-pinyin.apk",
-      "download_count": 20
+      "download_count": 21
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4642,13 +4642,13 @@
       "repository": "metasequoiaime/msime",
       "id": 675915778,
       "name": "msime-android-wubi.apk",
-      "download_count": 9
+      "download_count": 10
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 675916021,
       "name": "msime-android.apk",
-      "download_count": 108
+      "download_count": 109
     },
     {
       "repository": "metasequoiaime/msime",
@@ -4948,7 +4948,7 @@
       "repository": "metasequoiaime/msime",
       "id": 677254675,
       "name": "msime-android.apk",
-      "download_count": 663
+      "download_count": 673
     },
     {
       "repository": "metasequoiaime/msime",
@@ -5650,7 +5650,7 @@
       "repository": "metasequoiaime/msime",
       "id": 691427348,
       "name": "msime-harmony-0.3.2.hap",
-      "download_count": 88
+      "download_count": 89
     },
     {
       "repository": "metasequoiaime/msime",
@@ -5956,7 +5956,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584251,
       "name": "msime-linux-pinyin_0.15.0_amd64.deb",
-      "download_count": 23
+      "download_count": 25
     },
     {
       "repository": "metasequoiaime/msime",
@@ -5980,7 +5980,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584323,
       "name": "msime-linux-pinyin_0.15.0_arm64.deb",
-      "download_count": 15
+      "download_count": 16
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6022,7 +6022,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584404,
       "name": "msime-linux_0.15.0_amd64.deb",
-      "download_count": 113
+      "download_count": 117
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6112,7 +6112,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584672,
       "name": "msime-linux-0.15.0-linux-x86_64.tar.gz",
-      "download_count": 20
+      "download_count": 21
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6664,13 +6664,13 @@
       "repository": "metasequoiaime/msime",
       "id": 698749849,
       "name": "msime-macos-0.56.1-universal.dmg",
-      "download_count": 45
+      "download_count": 51
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 698749851,
       "name": "msime-macos-japanese-0.56.1-universal.dmg",
-      "download_count": 1
+      "download_count": 3
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6682,19 +6682,19 @@
       "repository": "metasequoiaime/msime",
       "id": 698749855,
       "name": "msime-macos-pinyin-0.56.1-universal.dmg",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 698750067,
       "name": "msime-macos-wubi-0.56.1-universal.dmg",
-      "download_count": 2
+      "download_count": 4
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 698752332,
       "name": "MetasequoiaIME-Full_Setup_v0.4.1.exe",
-      "download_count": 60
+      "download_count": 67
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6922,7 +6922,7 @@
       "repository": "metasequoiaime/msime",
       "id": 699955712,
       "name": "msime-android-nightly.41353700583.2.apk",
-      "download_count": 10
+      "download_count": 12
     },
     {
       "repository": "metasequoiaime/msime",
@@ -7228,7 +7228,7 @@
       "repository": "metasequoiaime/msime",
       "id": 700632003,
       "name": "MetasequoiaIME-Full_Setup_v0.5.1_win7_x64.exe",
-      "download_count": 12
+      "download_count": 14
     },
     {
       "repository": "metasequoiaime/msime",
@@ -8074,7 +8074,7 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 675693188,
       "name": "MetasequoiaIME_Setup_v0.12.0.exe",
-      "download_count": 3397
+      "download_count": 3398
     },
     {
       "repository": "metasequoiaime/msime-windows",
@@ -8086,24 +8086,24 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 699190149,
       "name": "MetasequoiaIME_Setup_v0.13.1.exe",
-      "download_count": 522
+      "download_count": 601
     }
   ],
   "mirrorDownloadStats": {
-    "total": 13654,
+    "total": 13777,
     "platforms": {
-      "android": 1751,
+      "android": 1761,
       "harmony": 95,
-      "linux": 815,
-      "macos": 1243,
-      "windows": 9456,
-      "windowsRust": 294
+      "linux": 822,
+      "macos": 1251,
+      "windows": 9537,
+      "windowsRust": 311
     },
-    "generatedAt": "2026-11-02T09:14:29.114863Z"
+    "generatedAt": "2026-11-02T11:25:32.121441Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-02T09:14:28.626Z",
-    "total": 5236,
+    "generatedAt": "2026-11-02T11:25:31.627Z",
+    "total": 5250,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -8123,7 +8123,7 @@
       },
       {
         "id": "a857688b2ac9baf92450397d5105726782c2a1d75469fa0afa59200d2c03a984",
-        "downloads": 656
+        "downloads": 670
       },
       {
         "id": "bac9145476cafdbddeaf8b216d4a079d7522902d3821c740f7dbf0e31fd5aaab",
@@ -8152,7 +8152,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-02T09:14:29.358Z",
+    "generatedAt": "2026-11-02T11:25:32.323Z",
     "downloads": 2472,
     "periodStart": "2025-11-02",
     "periodEnd": "2026-11-02"
