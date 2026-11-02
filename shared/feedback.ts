@@ -3,16 +3,18 @@ import { z } from "zod";
 import type { SitePlatform } from "../src/data/platforms.ts";
 import type { IssueTemplate, Screenshot } from "./feedback-templates.ts";
 
-// MSIME-Apple 改名为 msime 并成为多平台仓库；MSIME-Linux 与 MSIME-Engine 已归档并关闭 Issues，Linux 前端和公共引擎的开发与反馈都并入 msime。官网面向普通用户，只按输入法平台分流（与站点六个平台一致，同一仓库的平台也分开选，Issue 正文首节写明平台，共用仓库的平台另打 platform/* 标签；Web 引擎不是输入法，不在其列），引擎、API、文档和官网的问题留给贡献者直接去 GitHub 提。
+// MSIME-Apple 改名为 msime 并成为多平台仓库；MSIME-Linux 与 MSIME-Engine 已归档并关闭 Issues，Linux 前端和公共引擎的开发与反馈都并入 msime。官网面向普通用户，只按输入法分流（同一仓库的平台也分开选，Issue 正文首节写明平台，共用仓库的平台另打 platform/* 标签；Web 引擎不是输入法，不在其列），引擎、API、文档和官网的问题留给贡献者直接去 GitHub 提。Windows 和下载页一样分三个版本：正式版在 MSIME-Windows 仓库，新版预览（Rust 重写版）和 Windows 7 版都由 msime 构建发布（`windows-v*`、`windows7-v*` 标签），反馈要进 msime，否则会落进不负责它们的仓库。`platform` 只决定选项上显示哪个平台图标。
 export const targets = {
-  windows: { label: "Windows 输入法", repo: "MSIME-Windows" },
-  macos: { label: "macOS 输入法", repo: "msime", issueLabel: "platform/macos" },
-  linux: { label: "Linux 输入法", repo: "msime", issueLabel: "platform/linux" },
-  android: { label: "Android 输入法", repo: "msime", issueLabel: "platform/android" },
-  ios: { label: "iOS 输入法", repo: "msime", issueLabel: "platform/ios" },
-  harmony: { label: "HarmonyOS 输入法", repo: "msime", issueLabel: "platform/harmony" },
-} as const satisfies Partial<Record<SitePlatform, { label: string; repo: string; issueLabel?: string }>>;
-export const targetSchema = z.enum(["windows", "macos", "linux", "android", "ios", "harmony"]);
+  windows: { label: "Windows 正式版", platform: "windows", repo: "MSIME-Windows" },
+  "windows-preview": { label: "Windows 新版预览", platform: "windows", repo: "msime", issueLabel: "platform/windows" },
+  windows7: { label: "Windows 7 版", platform: "windows", repo: "msime", issueLabel: "platform/windows" },
+  macos: { label: "macOS 输入法", platform: "macos", repo: "msime", issueLabel: "platform/macos" },
+  linux: { label: "Linux 输入法", platform: "linux", repo: "msime", issueLabel: "platform/linux" },
+  android: { label: "Android 输入法", platform: "android", repo: "msime", issueLabel: "platform/android" },
+  ios: { label: "iOS 输入法", platform: "ios", repo: "msime", issueLabel: "platform/ios" },
+  harmony: { label: "HarmonyOS 输入法", platform: "harmony", repo: "msime", issueLabel: "platform/harmony" },
+} as const satisfies Record<string, { label: string; platform: SitePlatform; repo: string; issueLabel?: string }>;
+export const targetSchema = z.enum(["windows", "windows-preview", "windows7", "macos", "linux", "android", "ios", "harmony"]);
 export const contactFields = [
   { name: "github", label: "GitHub 用户名", placeholder: "例如 octocat，无需 @ 或链接", type: "text", max: 39 },
   { name: "email", label: "Email", placeholder: "name@example.com", type: "email", max: 254 },
