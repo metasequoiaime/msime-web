@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-03T02:21:18.350Z",
+  "generatedAt": "2026-11-03T02:22:44.330Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -7459,6 +7459,42 @@
       "download_count": 0
     },
     {
+      "repository": "metasequoiaime/msime",
+      "id": 703952377,
+      "name": "MetasequoiaIME-Tibetan_Setup_v0.4.1-nightly.41554246568.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 703952378,
+      "name": "MetasequoiaIME-Full_Setup_v0.4.1-nightly.41554246568.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 703952379,
+      "name": "MetasequoiaIME-Japanese_Setup_v0.4.1-nightly.41554246568.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 703952382,
+      "name": "MetasequoiaIME-Vietnamese_Setup_v0.4.1-nightly.41554246568.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 703952384,
+      "name": "MetasequoiaIME-Pinyin_Setup_v0.4.1-nightly.41554246568.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 703952554,
+      "name": "MetasequoiaIME-Wubi_Setup_v0.4.1-nightly.41554246568.1.exe",
+      "download_count": 0
+    },
+    {
       "repository": "metasequoiaime/msime-linux",
       "id": 545412939,
       "name": "metasequoia-ime-linux-0.2.0-Linux.rpm",
@@ -8321,10 +8357,10 @@
       "windows": 9898,
       "windowsRust": 352
     },
-    "generatedAt": "2026-11-03T02:21:17.767977Z"
+    "generatedAt": "2026-11-03T02:22:43.809129Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-03T02:21:17.552Z",
+    "generatedAt": "2026-11-03T02:22:43.242Z",
     "total": 5298,
     "builds": [
       {
@@ -8374,7 +8410,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-03T02:21:17.874Z",
+    "generatedAt": "2026-11-03T02:22:43.920Z",
     "downloads": 2777,
     "periodStart": "2025-11-03",
     "periodEnd": "2026-11-03"
