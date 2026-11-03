@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-03T01:56:44.825Z",
+  "generatedAt": "2026-11-03T01:58:47.058Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -558,13 +558,13 @@
     ]
   },
   "downloadStats": {
-    "total": 69564,
+    "total": 69567,
     "platforms": {
       "windows": 43357,
       "windowsRust": 2271,
       "windows7": 201,
       "macos": 5342,
-      "linux": 11980,
+      "linux": 11983,
       "android": 5962,
       "harmony": 451
     }
@@ -5956,7 +5956,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584251,
       "name": "msime-linux-pinyin_0.15.0_amd64.deb",
-      "download_count": 29
+      "download_count": 30
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6064,7 +6064,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584518,
       "name": "msime-linux-pinyin-0.15.0-1.x86_64.rpm",
-      "download_count": 21
+      "download_count": 22
     },
     {
       "repository": "metasequoiaime/msime",
@@ -6136,7 +6136,7 @@
       "repository": "metasequoiaime/msime",
       "id": 695584797,
       "name": "msime-linux-pinyin-0.15.0-linux-x86_64.tar.gz",
-      "download_count": 23
+      "download_count": 24
     },
     {
       "repository": "metasequoiaime/msime",
@@ -8126,19 +8126,19 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 14250,
+    "total": 14254,
     "platforms": {
       "android": 1811,
       "harmony": 95,
       "linux": 843,
       "macos": 1273,
-      "windows": 9877,
+      "windows": 9881,
       "windowsRust": 351
     },
-    "generatedAt": "2026-11-03T01:56:43.957079Z"
+    "generatedAt": "2026-11-03T01:58:46.617677Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-03T01:56:43.377Z",
+    "generatedAt": "2026-11-03T01:58:46.268Z",
     "total": 5296,
     "builds": [
       {
@@ -8188,7 +8188,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-03T01:56:44.096Z",
+    "generatedAt": "2026-11-03T01:58:46.695Z",
     "downloads": 2777,
     "periodStart": "2025-11-03",
     "periodEnd": "2026-11-03"
