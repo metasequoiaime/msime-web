@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-04T01:18:20.761Z",
-  "totalStars": 5471,
+  "generatedAt": "2026-11-04T08:00:20.609Z",
+  "totalStars": 5484,
   "repoCount": 8,
   "starHistory": [
     {
@@ -141,19 +141,19 @@
     },
     {
       "month": "2026-08",
-      "stars": 826
+      "stars": 825
     },
     {
       "month": "2026-09",
-      "stars": 1715
+      "stars": 1714
     },
     {
       "month": "2026-10",
-      "stars": 5338
+      "stars": 5336
     },
     {
       "month": "2026-11",
-      "stars": 5471
+      "stars": 5484
     }
   ],
   "starSeries": [
@@ -298,19 +298,19 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 781
+          "stars": 780
         },
         {
           "date": "2026-09-30",
-          "stars": 1546
+          "stars": 1545
         },
         {
           "date": "2026-10-31",
-          "stars": 3275
+          "stars": 3274
         },
         {
           "date": "2026-11-04",
-          "stars": 3328
+          "stars": 3332
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-04",
-          "stars": 1146
+          "stars": 1156
         }
       ]
     },
@@ -384,11 +384,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 897
+          "stars": 896
         },
         {
           "date": "2026-11-04",
-          "stars": 907
+          "stars": 906
         }
       ]
     },
@@ -770,13 +770,13 @@
       ]
     }
   ],
-  "starDelta30d": 3353,
+  "starDelta30d": 3367,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 25571,
+      "contributions": 25602,
       "repos": 8
     },
     {
@@ -790,7 +790,7 @@
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 175,
+      "contributions": 176,
       "repos": 3
     },
     {
@@ -846,7 +846,7 @@
       "login": "yangkx1024",
       "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
       "url": "https://github.com/yangkx1024",
-      "contributions": 27,
+      "contributions": 28,
       "repos": 1
     },
     {
