@@ -4,6 +4,14 @@ import { useLocale } from "../use-locale";
 /** 友链。图标放在 public/img/friends/ 自托管：CSP 的 img-src 不放行第三方图床。加一个项目就在这里加一项。 */
 const FRIEND_LINKS = [
   {
+    name: "TempX",
+    tag: "临时邮箱",
+    url: "https://tempx.yldm.ai/",
+    host: "tempx.yldm.ai",
+    icon: "/img/friends/tempx.svg",
+    desc: "提供免注册的临时邮箱，以及在线收短信和邮箱别名功能，适合临时注册和保护日常邮箱隐私。",
+  },
+  {
     name: "指尖冒险 TapTapGo",
     tag: "打字练习",
     url: "https://taptapgo.yldm.ai/",
