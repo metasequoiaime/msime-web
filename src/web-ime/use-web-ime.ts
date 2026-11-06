@@ -34,7 +34,7 @@ const WEB_IME_NAMES: Record<WebImeScheme, string> = {
 };
 
 /** SDK 的 `HELPCODES`，顺序相同。这里另写一份是因为 SDK 的入口在按需加载的 chunk 里，顶栏菜单不该为了几个名字把它拉进主包。 */
-export const HELPCODE_SCHEMES: readonly HelpcodeName[] = ["lantian", "ziranma", "shouyou2_0", "shouyouplus", "xiaohe", "jiajia"];
+export const HELPCODE_SCHEMES: readonly HelpcodeName[] = ["lantian", "ziranma", "shouyou2_0", "shouyouplus", "xiaohe", "jiajia", "wubi86"];
 
 export const HELPCODE_LABELS: Record<HelpcodeName, string> = {
   lantian: "蓝天",
@@ -43,6 +43,7 @@ export const HELPCODE_LABELS: Record<HelpcodeName, string> = {
   shouyouplus: "首右 plus",
   xiaohe: "小鹤",
   jiajia: "加加",
+  wubi86: "五笔",
 };
 
 const HELPCODE_NAMES: Record<HelpcodeName, string> = {
@@ -52,6 +53,7 @@ const HELPCODE_NAMES: Record<HelpcodeName, string> = {
   shouyouplus: "首右 plus",
   xiaohe: "小鹤形码",
   jiajia: "加加辅助码",
+  wubi86: "五笔 86 前两码",
 };
 
 export const isShuangpin = (scheme: WebImeScheme | null): scheme is ShuangpinLayout => SHUANGPIN_LAYOUTS.includes(scheme as ShuangpinLayout);
