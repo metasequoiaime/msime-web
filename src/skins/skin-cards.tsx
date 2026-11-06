@@ -6,7 +6,7 @@ import type { CandidateSkin, KeyboardSkin, V1CandidateSkin, V1KeyboardSkin } fro
 import { CANDIDATE_SKIN_CATEGORY_LABELS } from "../data/skin-categories";
 import { Card, cx, Pill } from "../ui";
 import { CatalogDescription, CatalogTitle } from "../community/card-content";
-import { candidatePreviewKey } from "./candidate-card-data";
+import { candidatePreviewKey, candidateTraits } from "./candidate-card-data";
 import { samplePreviewPalette, type PreviewPalette } from "./preview-palette";
 import { useLocale } from "../use-locale";
 import { mayHavePhoto, type KeyboardPreviewLayout } from "./keyboard-art";
@@ -122,12 +122,13 @@ const previewImageClass = "block h-auto max-h-[220px] w-full object-contain obje
 
 // The card is a size container, so the hero lays out by the card's own width: the 2-column gallery, the 1-column phone list and the narrower 我的 page all get the arrangement that fits them.
 const previewBoxClass = cx(
-  "relative flex min-h-[132px] flex-1 items-end justify-end px-5 pt-4 pb-5",
-  "@min-[30rem]:min-h-0 @min-[30rem]:px-8 @min-[30rem]:pb-7",
+  "relative flex min-h-[132px] items-end justify-end px-5 pt-4 pb-5",
+  "@min-[30rem]:min-h-0 @min-[30rem]:flex-1 @min-[30rem]:px-8 @min-[30rem]:pb-7",
+  "@min-[30rem]:data-[overlap=true]:absolute @min-[30rem]:data-[overlap=true]:right-7 @min-[30rem]:data-[overlap=true]:bottom-7 @min-[30rem]:data-[overlap=true]:h-[66%] @min-[30rem]:data-[overlap=true]:w-[84%] @min-[30rem]:data-[overlap=true]:p-0",
 );
 
 /**
- * A candidate-window skin as a large card: a compact, tinted preview followed by one clear information block. The old hero repeated the name and metadata above the same information in the body, which made cards with a missing preview look mostly empty.
+ * A candidate-window skin as a large card: a hero tinted with the skin's own colours (read from its preview, see preview-palette.ts) with the name, a subtitle and traits on the left and the preview on the right, then the name with its category, the description, the author line, and the gallery footer or, with `own`, the 我的 footer.
  */
 export function CandidateSkinCard({ skin, own = false }: { skin: CandidateCardSkin; own?: boolean }) {
   const { t } = useLocale();
@@ -138,14 +139,32 @@ export function CandidateSkinCard({ skin, own = false }: { skin: CandidateCardSk
     setPalette(samplePreviewPalette(image));
     setLoaded(true);
   };
+  const traits = candidateTraits(skin);
+  // Most names are two to seven characters; a longer one steps down a size so it still fits on one line in the 2-column gallery.
+  const longName = [...skin.name].length > 7;
   const details = [skin.version && `v${skin.version}`, skin.license].filter(Boolean).join(" · ");
   return (
     <Card as="li" tone="raised" className="@container flex min-w-0 flex-col overflow-hidden rounded-card">
-      <div className="relative isolate flex min-h-[188px] flex-col overflow-hidden bg-(--hero-surface) @min-[30rem]:h-[clamp(220px,42cqw,300px)]" style={heroStyle(palette)}>
-        {/* The glow washes over the preview's backdrop, so an opaque preview whose border matches the surface shows no frame. */}
+      <div className="relative isolate flex flex-col overflow-hidden bg-(--hero-surface) @min-[30rem]:h-[clamp(300px,62cqw,390px)]" style={heroStyle(palette)}>
+        {/* The glow washes over the preview's backdrop as much as over the hero, so an opaque preview whose border matches the surface shows no frame. */}
         <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(130%_95%_at_0%_0%,var(--hero-glow)_0%,transparent_62%)]" aria-hidden="true" />
-        {/* The preview owns the hero now; the card body below carries the name and metadata once. */}
-        <div className={previewBoxClass}>
+        <div className="relative z-20 px-6 pt-6 @min-[30rem]:max-w-[62%] @min-[30rem]:px-8 @min-[30rem]:pt-8">
+          <p className={cx("m-0 line-clamp-2 font-heading leading-[1.12] font-bold tracking-[0.02em] text-(--hero-title) [overflow-wrap:anywhere] [text-wrap:balance]", longName ? "text-[clamp(24px,7cqw,38px)] @min-[30rem]:text-[clamp(26px,5.8cqw,38px)]" : "text-[clamp(28px,8.4cqw,46px)] @min-[30rem]:text-[clamp(30px,7cqw,46px)]")} aria-hidden="true">
+            {skin.name}
+          </p>
+          <p className="m-0 mt-3 text-[15px] leading-6 text-(--hero-text)" aria-hidden="true">{t("水杉输入法皮肤")}</p>
+          <p className="m-0 mt-1.5 flex flex-wrap items-center gap-x-2 text-[13.5px] leading-6 text-(--hero-text)">
+            <span className="sr-only">{t("特点：")}</span>
+            {traits.map((trait, index) => (
+              <span key={trait} className="inline-flex items-center gap-x-2">
+                {index > 0 && <span className="opacity-60" aria-hidden="true">·</span>}
+                {t(trait)}
+              </span>
+            ))}
+          </p>
+        </div>
+        {/* A preview whose top left is empty backdrop is drawn large, under the text; any other sits below the text so nothing covers the window or its decoration. */}
+        <div className={previewBoxClass} data-overlap={palette?.clearTopLeft ?? false}>
           {failed ? (
             <span className="m-auto text-[13px] text-(--hero-text)">{t("暂无预览")}</span>
           ) : skin.visibility === "private" ? (
