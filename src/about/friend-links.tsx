@@ -27,6 +27,14 @@ const FRIEND_LINKS = [
     icon: "/img/friends/petra.png",
     desc: "跨 Windows、macOS、Linux 的开源 AI 桌宠：会漫游、会躲鼠标、视线追着光标跑，还能陪你聊天、帮你打开想用的软件。",
   },
+  {
+    name: "sugi.moe",
+    tag: "图床",
+    url: "https://sugi.moe/",
+    host: "sugi.moe",
+    icon: "/img/friends/sugi.svg",
+    desc: "免注册的匿名免费图床：拖进图片或短视频就拿到直链，可以永久保存，也可以设成 1 小时到 3 天后自动删除。",
+  },
 ] as const;
 
 /** 关于页底部的友情链接：互相推荐的项目，整张卡片可点，新标签页打开。 */
