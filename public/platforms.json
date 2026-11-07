@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-07T09:27:17.908Z",
+  "generatedAt": "2026-11-07T09:34:10.530Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -85,353 +85,353 @@
     },
     "linux": {
       "repository": "metasequoiaime/msime",
-      "version": "0.15.0",
-      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/linux-v0.15.0",
-      "publishedAt": "2026-10-31T14:23:32Z",
+      "version": "0.16.0",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/linux-v0.16.0",
+      "publishedAt": "2026-11-07T09:27:42Z",
       "prerelease": false,
       "signed": null,
       "downloads": [
         {
           "label": "Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "x86_64",
-          "name": "msime-linux_0.15.0_amd64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux_0.15.0_amd64.deb",
-          "size": 42449856,
-          "sha256": "ec755bf38bd4fe421aa3058e0a179b99cdc610961ca406bcc85234e52fc9d4e6",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux_0.15.0_amd64.deb"
+          "name": "msime-linux_0.16.0_amd64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux_0.16.0_amd64.deb",
+          "size": 69647208,
+          "sha256": "f12beb381a631d570d7c979e0d6626c2b5b80b08d3d3137c391fdff618f43336",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux_0.16.0_amd64.deb"
         },
         {
           "label": "Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "aarch64",
-          "name": "msime-linux_0.15.0_arm64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux_0.15.0_arm64.deb",
-          "size": 41218236,
-          "sha256": "98e53b146a8967444ac620c2a6a3232026e7ca702ffdd3b30fc1593331a96bb3",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux_0.15.0_arm64.deb"
+          "name": "msime-linux_0.16.0_arm64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux_0.16.0_arm64.deb",
+          "size": 68234740,
+          "sha256": "9bdd0f6842ac4edd72c2d01965b63df0e1112202de1e892d4cb5178af4a7e8e5",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux_0.16.0_arm64.deb"
         },
         {
           "label": "Fedora 44 · rpm",
           "arch": "x86_64",
-          "name": "msime-linux-0.15.0-1.x86_64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-0.15.0-1.x86_64.rpm",
-          "size": 42597469,
-          "sha256": "6d56f20937967912ac761c0977ced08694e05c32c275c7a449263a3876a5064d",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-0.15.0-1.x86_64.rpm"
+          "name": "msime-linux-0.16.0-1.x86_64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-0.16.0-1.x86_64.rpm",
+          "size": 70007721,
+          "sha256": "b966dd487b2df9238892d717a31e7209b23756674c335200bfb9a435a7fbdd0d",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-0.16.0-1.x86_64.rpm"
         },
         {
           "label": "Fedora 44 · rpm",
           "arch": "aarch64",
-          "name": "msime-linux-0.15.0-1.aarch64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-0.15.0-1.aarch64.rpm",
-          "size": 38837109,
-          "sha256": "8795429239643af2328377296e26f003d403abfab8b5db628988d763bb03919f",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-0.15.0-1.aarch64.rpm"
+          "name": "msime-linux-0.16.0-1.aarch64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-0.16.0-1.aarch64.rpm",
+          "size": 65825309,
+          "sha256": "82a676f13bc118c1d60b7311f0f67a6d80f25edc1e9d4c9c6181630503bb8ef7",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-0.16.0-1.aarch64.rpm"
         },
         {
           "label": "Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "x86_64",
-          "name": "msime-linux-0.15.0-linux-x86_64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-0.15.0-linux-x86_64.tar.gz",
-          "size": 78896921,
-          "sha256": "9919615f56ce6b16add5252ee552c3dbfd010fbcca92bd553b9cf69d80828de9",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-0.15.0-linux-x86_64.tar.gz"
+          "name": "msime-linux-0.16.0-linux-x86_64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-0.16.0-linux-x86_64.tar.gz",
+          "size": 111007994,
+          "sha256": "a257ced164957b6713e6251a8adba71bf06da877ac16a0e987d880a12fe0acc2",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-0.16.0-linux-x86_64.tar.gz"
         },
         {
           "label": "Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "aarch64",
-          "name": "msime-linux-0.15.0-linux-aarch64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-0.15.0-linux-aarch64.tar.gz",
-          "size": 78067638,
-          "sha256": "347da24b7e9a45e74737cae2b543686d460a72e315240860688c6ae15bea1770",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-0.15.0-linux-aarch64.tar.gz"
+          "name": "msime-linux-0.16.0-linux-aarch64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-0.16.0-linux-aarch64.tar.gz",
+          "size": 109665776,
+          "sha256": "975a4ebaebd4c94458692f38e7ba64980909f7cd54bdd2dbcc2383283ad155c7",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-0.16.0-linux-aarch64.tar.gz"
         },
         {
           "label": "glibc 2.28–2.34（Debian 10/11、Ubuntu 20.04、UOS 20）· 仅 IBus · deb",
           "arch": "x86_64",
-          "name": "msime-linux-legacy_0.15.0_amd64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-legacy_0.15.0_amd64.deb",
-          "size": 40487730,
-          "sha256": "d6b9845e4045f5104ac555fba41f20ee2841eeeb7625b3d5c0281ce18cb8eb53",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-legacy_0.15.0_amd64.deb"
+          "name": "msime-linux-legacy_0.16.0_amd64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-legacy_0.16.0_amd64.deb",
+          "size": 41307798,
+          "sha256": "aa939ad5ae5776ddc494328cf5762ef99d7adca22919d3fcaa85283ad0fce34c",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-legacy_0.16.0_amd64.deb"
         },
         {
           "label": "glibc 2.28–2.34（Debian 10/11、Ubuntu 20.04、UOS 20）· 仅 IBus · deb",
           "arch": "aarch64",
-          "name": "msime-linux-legacy_0.15.0_arm64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-legacy_0.15.0_arm64.deb",
-          "size": 39378048,
-          "sha256": "109d31d1a8f895fe6e0ba57bdb495bf37c5eb172b8d78d6a604c429fdd720528",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-legacy_0.15.0_arm64.deb"
+          "name": "msime-linux-legacy_0.16.0_arm64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-legacy_0.16.0_arm64.deb",
+          "size": 39980172,
+          "sha256": "86fa7229fed02d81ec637673d0d703e27f4b8332a433548ef6aef4647f5dd1cd",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-legacy_0.16.0_arm64.deb"
         },
         {
           "label": "水杉拼音 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "x86_64",
-          "name": "msime-linux-pinyin_0.15.0_amd64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-pinyin_0.15.0_amd64.deb",
-          "size": 36695636,
-          "sha256": "31a2f16ed710b6eb38eff419e83a83f41722bccaa19a4e4ccba8d3c46689a4cc",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-pinyin_0.15.0_amd64.deb"
+          "name": "msime-linux-pinyin_0.16.0_amd64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-pinyin_0.16.0_amd64.deb",
+          "size": 64055392,
+          "sha256": "54656b3e9b98ad264327cf3cc11f89bd990e0f34f1c01deee4cf497d20659d11",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-pinyin_0.16.0_amd64.deb"
         },
         {
           "label": "水杉拼音 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "aarch64",
-          "name": "msime-linux-pinyin_0.15.0_arm64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-pinyin_0.15.0_arm64.deb",
-          "size": 35340000,
-          "sha256": "c63864a001d04002410245414cd4de82e7ce6eb40c7c96c7f02276d439686c2b",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-pinyin_0.15.0_arm64.deb"
+          "name": "msime-linux-pinyin_0.16.0_arm64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-pinyin_0.16.0_arm64.deb",
+          "size": 62617340,
+          "sha256": "32335907df210a81009fbd86e86c08f360d1448a0437a06e19c9102f4014b452",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-pinyin_0.16.0_arm64.deb"
         },
         {
           "label": "水杉拼音 · Fedora 44 · rpm",
           "arch": "x86_64",
-          "name": "msime-linux-pinyin-0.15.0-1.x86_64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-pinyin-0.15.0-1.x86_64.rpm",
-          "size": 36943729,
-          "sha256": "3c5eea9f4ad3dac5fc04d59ea0430b0d6d34747ae32cadadffd145e3750a449e",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-pinyin-0.15.0-1.x86_64.rpm"
+          "name": "msime-linux-pinyin-0.16.0-1.x86_64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-pinyin-0.16.0-1.x86_64.rpm",
+          "size": 64563493,
+          "sha256": "29123c21a1bbd7f0cd99080bdd0c2a80ce3339dd8e4280af203701a53d357117",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-pinyin-0.16.0-1.x86_64.rpm"
         },
         {
           "label": "水杉拼音 · Fedora 44 · rpm",
           "arch": "aarch64",
-          "name": "msime-linux-pinyin-0.15.0-1.aarch64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-pinyin-0.15.0-1.aarch64.rpm",
-          "size": 32989049,
-          "sha256": "fcc7635c776dadd0e6eaec91cd15e52afbd5d1b20518117cf15c11de72f78e44",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-pinyin-0.15.0-1.aarch64.rpm"
+          "name": "msime-linux-pinyin-0.16.0-1.aarch64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-pinyin-0.16.0-1.aarch64.rpm",
+          "size": 60255869,
+          "sha256": "fca78dd76368d64c0a707e3cad59ef3fd63c4179876ed05729f061e5693921a5",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-pinyin-0.16.0-1.aarch64.rpm"
         },
         {
           "label": "水杉拼音 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "x86_64",
-          "name": "msime-linux-pinyin-0.15.0-linux-x86_64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-pinyin-0.15.0-linux-x86_64.tar.gz",
-          "size": 68854078,
-          "sha256": "790b7eaa43ce9c524cc86d09e868fdb2cc5531a90dd773017a7c9ee94a5fa4f7",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-pinyin-0.15.0-linux-x86_64.tar.gz"
+          "name": "msime-linux-pinyin-0.16.0-linux-x86_64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-pinyin-0.16.0-linux-x86_64.tar.gz",
+          "size": 101284624,
+          "sha256": "f43f3454eacfa8fe8acaa36d0806ae3501d780bc53b6f35d64c50c98ee43fe96",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-pinyin-0.16.0-linux-x86_64.tar.gz"
         },
         {
           "label": "水杉拼音 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "aarch64",
-          "name": "msime-linux-pinyin-0.15.0-linux-aarch64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-pinyin-0.15.0-linux-aarch64.tar.gz",
-          "size": 68028926,
-          "sha256": "44a3c79f361358a8a3431475d11cc0c8b64d06eca8f63fa79ec47301604132e0",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-pinyin-0.15.0-linux-aarch64.tar.gz"
+          "name": "msime-linux-pinyin-0.16.0-linux-aarch64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-pinyin-0.16.0-linux-aarch64.tar.gz",
+          "size": 99935591,
+          "sha256": "8c48d08e78613e8c68e3375a31e154247809ee0c4b3fe166db96583dda943a62",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-pinyin-0.16.0-linux-aarch64.tar.gz"
         },
         {
           "label": "水杉五笔 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "x86_64",
-          "name": "msime-linux-wubi_0.15.0_amd64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-wubi_0.15.0_amd64.deb",
-          "size": 36697952,
-          "sha256": "6bc82b8c5987eb3915984df1c69c2659b39bc90e81d1b2956a7dc26a8edad086",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-wubi_0.15.0_amd64.deb"
+          "name": "msime-linux-wubi_0.16.0_amd64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-wubi_0.16.0_amd64.deb",
+          "size": 39449756,
+          "sha256": "c225a3ef2ce09e0b7b0ae3db8060b5bc31ea5bff415defc47baf076c92f8d9c7",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-wubi_0.16.0_amd64.deb"
         },
         {
           "label": "水杉五笔 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "aarch64",
-          "name": "msime-linux-wubi_0.15.0_arm64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-wubi_0.15.0_arm64.deb",
-          "size": 35337508,
-          "sha256": "55fa9d79c8ba7eb3777c57639d9ca2f99ad1eeb9b25fea64c4cc0aff98def204",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-wubi_0.15.0_arm64.deb"
+          "name": "msime-linux-wubi_0.16.0_arm64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-wubi_0.16.0_arm64.deb",
+          "size": 37873412,
+          "sha256": "e77999ea012f9aa9f5f8574a58dd1f434cb6a925da5f4aadaecd57a761101988",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-wubi_0.16.0_arm64.deb"
         },
         {
           "label": "水杉五笔 · Fedora 44 · rpm",
           "arch": "x86_64",
-          "name": "msime-linux-wubi-0.15.0-1.x86_64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-wubi-0.15.0-1.x86_64.rpm",
-          "size": 36939065,
-          "sha256": "eb4b5f358d1380228409ac7d037d6c12ee1ed6edea5afae76d25f9de82af33e5",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-wubi-0.15.0-1.x86_64.rpm"
+          "name": "msime-linux-wubi-0.16.0-1.x86_64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-wubi-0.16.0-1.x86_64.rpm",
+          "size": 39846073,
+          "sha256": "5c4aa799f865111135d1488fe0af7a0e25d510dde5bd900fa791fb879e93e2b4",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-wubi-0.16.0-1.x86_64.rpm"
         },
         {
           "label": "水杉五笔 · Fedora 44 · rpm",
           "arch": "aarch64",
-          "name": "msime-linux-wubi-0.15.0-1.aarch64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-wubi-0.15.0-1.aarch64.rpm",
-          "size": 32997025,
-          "sha256": "56ebb6192eb72351ea746c4187d01562b1df984f68785dad1f9a9576aae13b6c",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-wubi-0.15.0-1.aarch64.rpm"
+          "name": "msime-linux-wubi-0.16.0-1.aarch64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-wubi-0.16.0-1.aarch64.rpm",
+          "size": 35537933,
+          "sha256": "16ecc305e6baf3304b7a7180ffed2dd6ee2da84ace2162cebdb1adb30488a755",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-wubi-0.16.0-1.aarch64.rpm"
         },
         {
           "label": "水杉五笔 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "x86_64",
-          "name": "msime-linux-wubi-0.15.0-linux-x86_64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-wubi-0.15.0-linux-x86_64.tar.gz",
-          "size": 68852947,
-          "sha256": "36e530b2b876d3ed3d7bfc24e2491b1fe0a8fe65bb4cbe7994539e6bb7ac22f6",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-wubi-0.15.0-linux-x86_64.tar.gz"
+          "name": "msime-linux-wubi-0.16.0-linux-x86_64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-wubi-0.16.0-linux-x86_64.tar.gz",
+          "size": 74585775,
+          "sha256": "b278389e23b71a06fb4ff3dc081037dfbd1647d3a100927ace93443c7ad950ea",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-wubi-0.16.0-linux-x86_64.tar.gz"
         },
         {
           "label": "水杉五笔 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "aarch64",
-          "name": "msime-linux-wubi-0.15.0-linux-aarch64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-wubi-0.15.0-linux-aarch64.tar.gz",
-          "size": 68032754,
-          "sha256": "2535f54fed51002aa1dd8c30d649e22c1ee269a3c2bc44e59572f012e09e6fc2",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-wubi-0.15.0-linux-aarch64.tar.gz"
+          "name": "msime-linux-wubi-0.16.0-linux-aarch64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-wubi-0.16.0-linux-aarch64.tar.gz",
+          "size": 73252646,
+          "sha256": "4d3d3f8ab80baced8b603a636d3233c29025709510e61aa030cc1f1eac1fcbb5",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-wubi-0.16.0-linux-aarch64.tar.gz"
         },
         {
           "label": "水杉日语 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "x86_64",
-          "name": "msime-linux-japanese_0.15.0_amd64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-japanese_0.15.0_amd64.deb",
-          "size": 33964448,
-          "sha256": "e2170959d6ff8d1526611ba8d401effaecbdf27d709615e8bcab9fef4c79b96e",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-japanese_0.15.0_amd64.deb"
+          "name": "msime-linux-japanese_0.16.0_amd64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-japanese_0.16.0_amd64.deb",
+          "size": 36713092,
+          "sha256": "67d551274cb2f3dd19634d408b553753b97760f10caf6deefd2e015b575ac054",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-japanese_0.16.0_amd64.deb"
         },
         {
           "label": "水杉日语 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "aarch64",
-          "name": "msime-linux-japanese_0.15.0_arm64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-japanese_0.15.0_arm64.deb",
-          "size": 32610972,
-          "sha256": "d9ab3a43b6dcf8c3b8d26956c45f454fb99b992c7a1b0ceeb80dca7007cee026",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-japanese_0.15.0_arm64.deb"
+          "name": "msime-linux-japanese_0.16.0_arm64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-japanese_0.16.0_arm64.deb",
+          "size": 35147680,
+          "sha256": "534398f6268eb1ed39bb3fc395e515193fdfedbe3a380fd74a75718d0ab3eedc",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-japanese_0.16.0_arm64.deb"
         },
         {
           "label": "水杉日语 · Fedora 44 · rpm",
           "arch": "x86_64",
-          "name": "msime-linux-japanese-0.15.0-1.x86_64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-japanese-0.15.0-1.x86_64.rpm",
-          "size": 34193517,
-          "sha256": "ee02d8190d9b104c4b89a2749fc23607577c498f8c75fd12cfdc3a7dcd67893e",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-japanese-0.15.0-1.x86_64.rpm"
+          "name": "msime-linux-japanese-0.16.0-1.x86_64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-japanese-0.16.0-1.x86_64.rpm",
+          "size": 37115729,
+          "sha256": "ecc5f756ddef48cf131b31961328ff61300de10c6bd714e5801b04db862be183",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-japanese-0.16.0-1.x86_64.rpm"
         },
         {
           "label": "水杉日语 · Fedora 44 · rpm",
           "arch": "aarch64",
-          "name": "msime-linux-japanese-0.15.0-1.aarch64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-japanese-0.15.0-1.aarch64.rpm",
-          "size": 30257289,
-          "sha256": "3ef612c6fe10fc796ea7af809e5898b225e69506d05c253578ffe70b5f0dca97",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-japanese-0.15.0-1.aarch64.rpm"
+          "name": "msime-linux-japanese-0.16.0-1.aarch64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-japanese-0.16.0-1.aarch64.rpm",
+          "size": 32819601,
+          "sha256": "a62f4dfa9137321f3f1a26df92ecb03f386c8c162826924809a5e3f09ec6cafa",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-japanese-0.16.0-1.aarch64.rpm"
         },
         {
           "label": "水杉日语 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "x86_64",
-          "name": "msime-linux-japanese-0.15.0-linux-x86_64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-japanese-0.15.0-linux-x86_64.tar.gz",
-          "size": 64419806,
-          "sha256": "47d394a0888b88fe45dbd3a401acdb460441baf192a8837bf1f126e5cc139ca3",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-japanese-0.15.0-linux-x86_64.tar.gz"
+          "name": "msime-linux-japanese-0.16.0-linux-x86_64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-japanese-0.16.0-linux-x86_64.tar.gz",
+          "size": 70154358,
+          "sha256": "28e5b0c06f2ef26ab0af4cf8d8c2addc4693e76b964fb35278d4922ebaac1279",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-japanese-0.16.0-linux-x86_64.tar.gz"
         },
         {
           "label": "水杉日语 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "aarch64",
-          "name": "msime-linux-japanese-0.15.0-linux-aarch64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-japanese-0.15.0-linux-aarch64.tar.gz",
-          "size": 63595267,
-          "sha256": "7646bc9fec10b518832e538852a6a86189be0b963a4177d1243736e2098e8088",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-japanese-0.15.0-linux-aarch64.tar.gz"
+          "name": "msime-linux-japanese-0.16.0-linux-aarch64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-japanese-0.16.0-linux-aarch64.tar.gz",
+          "size": 68822043,
+          "sha256": "5b0157be06a60683a84497c54e1b9aae67a543dbea5fe7cbc7b85ae65ad3f4ae",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-japanese-0.16.0-linux-aarch64.tar.gz"
         },
         {
           "label": "水杉越南语 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "x86_64",
-          "name": "msime-linux-vietnamese_0.15.0_amd64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-vietnamese_0.15.0_amd64.deb",
-          "size": 33964604,
-          "sha256": "f0fcd4f60806b228c2df5f40a865d1f206c4305e7eb01fdc3657d34670eb1bde",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-vietnamese_0.15.0_amd64.deb"
+          "name": "msime-linux-vietnamese_0.16.0_amd64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-vietnamese_0.16.0_amd64.deb",
+          "size": 36711496,
+          "sha256": "66e831db2b13f131f1059f3912e7bea5743011b89b7b1b0115f559e964efae76",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-vietnamese_0.16.0_amd64.deb"
         },
         {
           "label": "水杉越南语 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "aarch64",
-          "name": "msime-linux-vietnamese_0.15.0_arm64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-vietnamese_0.15.0_arm64.deb",
-          "size": 32617284,
-          "sha256": "c9e93a608c170379f8d7436efbc516b72a0c760abab06952a23e9066f9960845",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-vietnamese_0.15.0_arm64.deb"
+          "name": "msime-linux-vietnamese_0.16.0_arm64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-vietnamese_0.16.0_arm64.deb",
+          "size": 35150720,
+          "sha256": "85c6240292dc57c84f2f032b7a06515c276bec494c54164a49be7e9eb2ff0860",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-vietnamese_0.16.0_arm64.deb"
         },
         {
           "label": "水杉越南语 · Fedora 44 · rpm",
           "arch": "x86_64",
-          "name": "msime-linux-vietnamese-0.15.0-1.x86_64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-vietnamese-0.15.0-1.x86_64.rpm",
-          "size": 34250373,
-          "sha256": "2f918fed46e891c7e0fd257b6120566618f57d7c2b438adbeb0baadc3439317c",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-vietnamese-0.15.0-1.x86_64.rpm"
+          "name": "msime-linux-vietnamese-0.16.0-1.x86_64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-vietnamese-0.16.0-1.x86_64.rpm",
+          "size": 37115077,
+          "sha256": "5d9c35b3b770b4c5f5bc214db0e3c6c1a04601f1d0983dee2666d684db9ca8b6",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-vietnamese-0.16.0-1.x86_64.rpm"
         },
         {
           "label": "水杉越南语 · Fedora 44 · rpm",
           "arch": "aarch64",
-          "name": "msime-linux-vietnamese-0.15.0-1.aarch64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-vietnamese-0.15.0-1.aarch64.rpm",
-          "size": 30270157,
-          "sha256": "f723f4d29a7ea2cbf5cfbcaa06839c0f7100930ef85c8e8a721759adee3c1109",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-vietnamese-0.15.0-1.aarch64.rpm"
+          "name": "msime-linux-vietnamese-0.16.0-1.aarch64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-vietnamese-0.16.0-1.aarch64.rpm",
+          "size": 32813829,
+          "sha256": "7daedd8a62dfe00588080e839b2fbe6274cce6c4963af94ba70700989d3646de",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-vietnamese-0.16.0-1.aarch64.rpm"
         },
         {
           "label": "水杉越南语 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "x86_64",
-          "name": "msime-linux-vietnamese-0.15.0-linux-x86_64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-vietnamese-0.15.0-linux-x86_64.tar.gz",
-          "size": 64419894,
-          "sha256": "136cd8b2612a44581d784ab1a3585f6ad42cba4b64deaec696473cb5d86e626b",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-vietnamese-0.15.0-linux-x86_64.tar.gz"
+          "name": "msime-linux-vietnamese-0.16.0-linux-x86_64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-vietnamese-0.16.0-linux-x86_64.tar.gz",
+          "size": 70151331,
+          "sha256": "ca436281b6d8516de1f4cfb678baeb150d9d5ef60dea90b9a48bf3abdd7f7b63",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-vietnamese-0.16.0-linux-x86_64.tar.gz"
         },
         {
           "label": "水杉越南语 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "aarch64",
-          "name": "msime-linux-vietnamese-0.15.0-linux-aarch64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-vietnamese-0.15.0-linux-aarch64.tar.gz",
-          "size": 63595485,
-          "sha256": "770da7444990291f75bf7baa1300933dd2d8cc939fd37e75e69c982dea8d1faf",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-vietnamese-0.15.0-linux-aarch64.tar.gz"
+          "name": "msime-linux-vietnamese-0.16.0-linux-aarch64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-vietnamese-0.16.0-linux-aarch64.tar.gz",
+          "size": 68820756,
+          "sha256": "f1dfa03fab4c2c9d0949726864c2591fedd674a73c91d1ca9f1990d962936fc3",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-vietnamese-0.16.0-linux-aarch64.tar.gz"
         },
         {
           "label": "水杉藏文 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "x86_64",
-          "name": "msime-linux-tibetan_0.15.0_amd64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-tibetan_0.15.0_amd64.deb",
-          "size": 33956356,
-          "sha256": "7ae3c64223e4912413522e518d687ab29bf8d7e636b82ac044256b10c1cf2fcd",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-tibetan_0.15.0_amd64.deb"
+          "name": "msime-linux-tibetan_0.16.0_amd64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-tibetan_0.16.0_amd64.deb",
+          "size": 36720116,
+          "sha256": "e36867469d47cd9f3d619e0845e28f74dbacd012533d0d0656513468d7fb27f8",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-tibetan_0.16.0_amd64.deb"
         },
         {
           "label": "水杉藏文 · Debian 12+ / Ubuntu 22.04+ · deb",
           "arch": "aarch64",
-          "name": "msime-linux-tibetan_0.15.0_arm64.deb",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-tibetan_0.15.0_arm64.deb",
-          "size": 32611984,
-          "sha256": "19bd0b649cbd38c5bcd626e9bbb5030ed3a31375196e6e415cf20356af459e77",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-tibetan_0.15.0_arm64.deb"
+          "name": "msime-linux-tibetan_0.16.0_arm64.deb",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-tibetan_0.16.0_arm64.deb",
+          "size": 35147916,
+          "sha256": "535144d7bb6723189f1639dc97e02a66ea62692609c93037e2b8153e57e0ad98",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-tibetan_0.16.0_arm64.deb"
         },
         {
           "label": "水杉藏文 · Fedora 44 · rpm",
           "arch": "x86_64",
-          "name": "msime-linux-tibetan-0.15.0-1.x86_64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-tibetan-0.15.0-1.x86_64.rpm",
-          "size": 34192957,
-          "sha256": "6f48c0b75f200650d28c4d75c5da13008f6ff99c034dc745794c9182c0653ead",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-tibetan-0.15.0-1.x86_64.rpm"
+          "name": "msime-linux-tibetan-0.16.0-1.x86_64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-tibetan-0.16.0-1.x86_64.rpm",
+          "size": 37111073,
+          "sha256": "c38b807530b1f4fb2efb65d44f7e8cffba68b90b3fa574e626a0d965f8878cc7",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-tibetan-0.16.0-1.x86_64.rpm"
         },
         {
           "label": "水杉藏文 · Fedora 44 · rpm",
           "arch": "aarch64",
-          "name": "msime-linux-tibetan-0.15.0-1.aarch64.rpm",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-tibetan-0.15.0-1.aarch64.rpm",
-          "size": 30262213,
-          "sha256": "2fe18d1b9d8cbf6b424ff0389e54cf6b8b9de0841c671d4f5ac6037acd052cce",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-tibetan-0.15.0-1.aarch64.rpm"
+          "name": "msime-linux-tibetan-0.16.0-1.aarch64.rpm",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-tibetan-0.16.0-1.aarch64.rpm",
+          "size": 32820153,
+          "sha256": "930caa9ae46dc662fe989e8648cf38ae5600e6aeec61fcba0d1524d191a6defc",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-tibetan-0.16.0-1.aarch64.rpm"
         },
         {
           "label": "水杉藏文 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "x86_64",
-          "name": "msime-linux-tibetan-0.15.0-linux-x86_64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-tibetan-0.15.0-linux-x86_64.tar.gz",
-          "size": 64418548,
-          "sha256": "d643401d4b8fc2f452c204fd5a36aca19a5e8fb80fa0526ce84d094d025ca524",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-tibetan-0.15.0-linux-x86_64.tar.gz"
+          "name": "msime-linux-tibetan-0.16.0-linux-x86_64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-tibetan-0.16.0-linux-x86_64.tar.gz",
+          "size": 70147118,
+          "sha256": "ca018a9e22af66ae3b16c6b88a34902586be10c7e2c844699335ab676909e5d0",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-tibetan-0.16.0-linux-x86_64.tar.gz"
         },
         {
           "label": "水杉藏文 · Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz",
           "arch": "aarch64",
-          "name": "msime-linux-tibetan-0.15.0-linux-aarch64.tar.gz",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.15.0/msime-linux-tibetan-0.15.0-linux-aarch64.tar.gz",
-          "size": 63593701,
-          "sha256": "db46378ef9b56d43376315ceba3dd5081a0ebcc138a4cd6082d9a6cd2b18c401",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.15.0/msime-linux-tibetan-0.15.0-linux-aarch64.tar.gz"
+          "name": "msime-linux-tibetan-0.16.0-linux-aarch64.tar.gz",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/linux-v0.16.0/msime-linux-tibetan-0.16.0-linux-aarch64.tar.gz",
+          "size": 68817355,
+          "sha256": "bbf04156f36b810bf55e83a1d46f40fc3c1aa04013216bd51e84e9ca847ad82f",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/linux-v0.16.0/msime-linux-tibetan-0.16.0-linux-aarch64.tar.gz"
         }
       ],
       "preview": null,
@@ -558,10 +558,10 @@
     ]
   },
   "downloadStats": {
-    "total": 74273,
+    "total": 74280,
     "platforms": {
-      "windows": 45216,
-      "windowsRust": 2513,
+      "windows": 45221,
+      "windowsRust": 2515,
       "windows7": 290,
       "macos": 5857,
       "linux": 13208,
@@ -7732,7 +7732,7 @@
       "repository": "metasequoiaime/msime",
       "id": 707676139,
       "name": "MetasequoiaIME-Full_Setup_v0.4.1-nightly.41735201582.1.exe",
-      "download_count": 50
+      "download_count": 52
     },
     {
       "repository": "metasequoiaime/msime",
@@ -8321,6 +8321,234 @@
       "id": 720194532,
       "name": "msime-harmony-0.4.0.hap",
       "download_count": 2
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227098,
+      "name": "msime-linux-pinyin_0.16.0_amd64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227099,
+      "name": "msime-linux-legacy_0.16.0_amd64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227101,
+      "name": "msime-linux-japanese_0.16.0_arm64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227102,
+      "name": "msime-linux-legacy_0.16.0_arm64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227103,
+      "name": "msime-linux-japanese_0.16.0_amd64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227295,
+      "name": "msime-linux-pinyin_0.16.0_arm64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227299,
+      "name": "msime-linux-tibetan_0.16.0_amd64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227318,
+      "name": "msime-linux-tibetan_0.16.0_arm64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227322,
+      "name": "msime-linux-vietnamese_0.16.0_amd64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227337,
+      "name": "msime-linux-vietnamese_0.16.0_arm64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227407,
+      "name": "msime-linux-wubi_0.16.0_amd64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227437,
+      "name": "msime-linux-wubi_0.16.0_arm64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227442,
+      "name": "msime-linux_0.16.0_amd64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227454,
+      "name": "msime-linux_0.16.0_arm64.deb",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227455,
+      "name": "msime-linux-0.16.0-1.aarch64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227471,
+      "name": "msime-linux-0.16.0-1.x86_64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227519,
+      "name": "msime-linux-japanese-0.16.0-1.aarch64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227693,
+      "name": "msime-linux-japanese-0.16.0-1.x86_64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227694,
+      "name": "msime-linux-pinyin-0.16.0-1.aarch64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227707,
+      "name": "msime-linux-pinyin-0.16.0-1.x86_64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227749,
+      "name": "msime-linux-tibetan-0.16.0-1.x86_64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227750,
+      "name": "msime-linux-tibetan-0.16.0-1.aarch64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227808,
+      "name": "msime-linux-vietnamese-0.16.0-1.aarch64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227879,
+      "name": "msime-linux-vietnamese-0.16.0-1.x86_64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227887,
+      "name": "msime-linux-wubi-0.16.0-1.aarch64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227901,
+      "name": "msime-linux-wubi-0.16.0-1.x86_64.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227902,
+      "name": "msime-linux-0.16.0-linux-aarch64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720227926,
+      "name": "msime-linux-0.16.0-linux-x86_64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228020,
+      "name": "msime-linux-japanese-0.16.0-linux-aarch64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228027,
+      "name": "msime-linux-japanese-0.16.0-linux-x86_64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228048,
+      "name": "msime-linux-pinyin-0.16.0-linux-aarch64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228253,
+      "name": "msime-linux-pinyin-0.16.0-linux-x86_64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228430,
+      "name": "msime-linux-tibetan-0.16.0-linux-aarch64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228451,
+      "name": "msime-linux-tibetan-0.16.0-linux-x86_64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228455,
+      "name": "msime-linux-vietnamese-0.16.0-linux-aarch64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228491,
+      "name": "msime-linux-vietnamese-0.16.0-linux-x86_64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228576,
+      "name": "msime-linux-wubi-0.16.0-linux-aarch64.tar.gz",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 720228764,
+      "name": "msime-linux-wubi-0.16.0-linux-x86_64.tar.gz",
+      "download_count": 0
     },
     {
       "repository": "metasequoiaime/msime-linux",
@@ -9178,24 +9406,24 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 708052861,
       "name": "MetasequoiaIME_Setup_v0.13.2.exe",
-      "download_count": 1340
+      "download_count": 1345
     }
   ],
   "mirrorDownloadStats": {
-    "total": 17696,
+    "total": 17698,
     "platforms": {
-      "android": 2195,
+      "android": 2196,
       "harmony": 99,
       "linux": 1123,
       "macos": 1274,
       "windows": 12205,
-      "windowsRust": 800
+      "windowsRust": 801
     },
-    "generatedAt": "2026-11-07T09:27:17.100109Z"
+    "generatedAt": "2026-11-07T09:34:10.006144Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-07T09:27:16.558Z",
-    "total": 5787,
+    "generatedAt": "2026-11-07T09:34:09.529Z",
+    "total": 5789,
     "builds": [
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -9211,11 +9439,11 @@
       },
       {
         "id": "843b43b3c61667a1ef6f37cd926ae1edcc71587152fa26e2d9ebbfaa7f7f794d",
-        "downloads": 74
+        "downloads": 75
       },
       {
         "id": "a857688b2ac9baf92450397d5105726782c2a1d75469fa0afa59200d2c03a984",
-        "downloads": 1174
+        "downloads": 1175
       },
       {
         "id": "bac9145476cafdbddeaf8b216d4a079d7522902d3821c740f7dbf0e31fd5aaab",
@@ -9244,7 +9472,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-07T09:27:17.254Z",
+    "generatedAt": "2026-11-07T09:34:10.164Z",
     "downloads": 3142,
     "periodStart": "2025-11-07",
     "periodEnd": "2026-11-07"
