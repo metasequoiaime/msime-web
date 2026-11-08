@@ -4,6 +4,14 @@ import { useLocale } from "../use-locale";
 /** 友链。图标放在 public/img/friends/ 自托管：CSP 的 img-src 不放行第三方图床。加一个项目就在这里加一项。 */
 const FRIEND_LINKS = [
   {
+    name: "TempX",
+    tag: "临时邮箱",
+    url: "https://tempx.yldm.ai/",
+    host: "tempx.yldm.ai",
+    icon: "/img/friends/tempx.svg",
+    desc: "提供免注册的临时邮箱，以及在线收短信和邮箱别名功能，适合临时注册和保护日常邮箱隐私。",
+  },
+  {
     name: "指尖冒险 TapTapGo",
     tag: "打字练习",
     url: "https://taptapgo.yldm.ai/",
@@ -26,6 +34,22 @@ const FRIEND_LINKS = [
     host: "petra.xin",
     icon: "/img/friends/petra.png",
     desc: "跨 Windows、macOS、Linux 的开源 AI 桌宠：会漫游、会躲鼠标、视线追着光标跑，还能陪你聊天、帮你打开想用的软件。",
+  },
+  {
+    name: "sugi.moe",
+    tag: "图床",
+    url: "https://sugi.moe/",
+    host: "sugi.moe",
+    icon: "/img/friends/sugi.svg",
+    desc: "免注册的匿名免费图床：拖进图片或短视频就拿到直链，可以永久保存，也可以设成 1 小时到 3 天后自动删除。",
+  },
+  {
+    name: "Awesome MyGo",
+    tag: "Go 桌面 GUI",
+    url: "https://awesomemygo.dev/",
+    host: "awesomemygo.dev",
+    icon: "/img/friends/awesome-mygo.png",
+    desc: "Go 语言跨平台桌面 GUI 框架 MyGo 的作品集：收录用它做的应用、UI 组件、插件和文档，原生 UI 或 WebView 前端都能写 macOS、Windows、Linux 应用。",
   },
 ] as const;
 

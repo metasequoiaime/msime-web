@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-04T08:00:20.609Z",
-  "totalStars": 5484,
+  "generatedAt": "2026-11-08T02:25:55.334Z",
+  "totalStars": 5583,
   "repoCount": 8,
   "starHistory": [
     {
@@ -141,19 +141,19 @@
     },
     {
       "month": "2026-08",
-      "stars": 825
+      "stars": 824
     },
     {
       "month": "2026-09",
-      "stars": 1714
+      "stars": 1711
     },
     {
       "month": "2026-10",
-      "stars": 5336
+      "stars": 5324
     },
     {
       "month": "2026-11",
-      "stars": 5484
+      "stars": 5583
     }
   ],
   "starSeries": [
@@ -298,19 +298,19 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 780
+          "stars": 779
         },
         {
           "date": "2026-09-30",
-          "stars": 1545
+          "stars": 1542
         },
         {
           "date": "2026-10-31",
-          "stars": 3274
+          "stars": 3265
         },
         {
-          "date": "2026-11-04",
-          "stars": 3332
+          "date": "2026-11-08",
+          "stars": 3380
         }
       ]
     },
@@ -327,11 +327,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 1078
+          "stars": 1075
         },
         {
-          "date": "2026-11-04",
-          "stars": 1156
+          "date": "2026-11-08",
+          "stars": 1201
         }
       ]
     },
@@ -387,8 +387,8 @@
           "stars": 896
         },
         {
-          "date": "2026-11-04",
-          "stars": 906
+          "date": "2026-11-08",
+          "stars": 911
         }
       ]
     },
@@ -448,7 +448,7 @@
           "stars": 65
         },
         {
-          "date": "2026-11-04",
+          "date": "2026-11-08",
           "stars": 65
         }
       ]
@@ -605,7 +605,7 @@
           "stars": 11
         },
         {
-          "date": "2026-11-04",
+          "date": "2026-11-08",
           "stars": 12
         }
       ]
@@ -622,8 +622,8 @@
           "stars": 4
         },
         {
-          "date": "2026-11-04",
-          "stars": 5
+          "date": "2026-11-08",
+          "stars": 6
         }
       ]
     },
@@ -663,7 +663,7 @@
           "stars": 5
         },
         {
-          "date": "2026-11-04",
+          "date": "2026-11-08",
           "stars": 5
         }
       ]
@@ -764,19 +764,19 @@
           "stars": 3
         },
         {
-          "date": "2026-11-04",
+          "date": "2026-11-08",
           "stars": 3
         }
       ]
     }
   ],
-  "starDelta30d": 3367,
+  "starDelta30d": 2465,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 25602,
+      "contributions": 25893,
       "repos": 8
     },
     {
@@ -790,7 +790,7 @@
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 176,
+      "contributions": 191,
       "repos": 3
     },
     {
@@ -825,7 +825,7 @@
       "login": "Neptrue-Lin",
       "avatarUrl": "https://avatars.githubusercontent.com/u/29837162?v=4",
       "url": "https://github.com/Neptrue-Lin",
-      "contributions": 33,
+      "contributions": 40,
       "repos": 1
     },
     {
@@ -839,7 +839,7 @@
       "login": "luojiyin1987",
       "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
       "url": "https://github.com/luojiyin1987",
-      "contributions": 28,
+      "contributions": 29,
       "repos": 3
     },
     {
