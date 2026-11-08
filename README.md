@@ -94,7 +94,7 @@ GitHub Release 在国内下载很慢，所以下载页的安装包、客户端�
 
 两种地址，对象名就是路径：
 
-- `gh/<GitHub 原地址>`：`https://dl.msime.app/gh/` 加原地址即可，客户端和官方词库包（`shared/official-packs.ts`）用的是这种。
+- `gh/<GitHub 原地址>`：`https://dl.msime.app/gh/` 加原地址即可，客户端和官方词库包（`shared/official-packs.ts`）用的是这种。为兼容迁移前的链接，`gh/<所有者>/<仓库>/releases/download/<标签>/<文件名>` 也可用于放行的 Release 资产。
 - `releases/<仓库>/<tag>/<文件名>`：下载页的安装包，对应 `metasequoiaime/<仓库>` 的 release 资产。
 
 R2 里没有的对象由 Worker 在第一次 GET 时从 GitHub 取来存下，之后都从 R2 读；HEAD 不会触发回源。只放行这些地址，其余一律 403：`metasequoiaime` 的 msime-dictionary、chinese-ime-lm、msime、MSIME-Windows、msime-plugins 与 `k2-fsa/sherpa-onnx` 的 `releases/download/`，以及 `raw.githubusercontent.com` 上的 `metasequoiaime/msime-engine/` 和 `metasequoiaime/msime-dictionary/`。缓存不会重新校验，所以只有内容不再变化的地址才能走镜像：发布资产，以及钉在提交上的 raw 文件；客户端的资源包、语音模型和应用更新都按锁文件或校验值核对，镜像出错时退回原地址。官方词库包的链接因此钉在每一轮读到的提交上。镜像不设自动清理：R2 存储很便宜，而且 `metasequoiaime/msime-plugins` 仓库已经不在了，`gh/` 下它的九个插件包只剩镜像里这一份（2026-10-11 从 OSS 原样拷过来的），清掉就再也取不回来。
