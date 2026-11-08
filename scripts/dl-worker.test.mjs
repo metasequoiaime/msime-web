@@ -4,16 +4,20 @@ import worker, { BUFFER_LIMIT, objectKey, originFor } from '../workers/dl/index.
 import { DOWNLOAD_OUTBOX, flushDownloads } from '../workers/dl/download-stats.mjs';
 
 const DICTIONARY = 'https://github.com/metasequoiaime/msime-dictionary/releases/download/dict-v2.0.14/msime-pinyin.db';
+const LEGACY_DICTIONARY = 'metasequoiaime/msime-dictionary/releases/download/dict-v2.0.14/msime-pinyin.db';
 const ENGINE_RAW = 'https://raw.githubusercontent.com/metasequoiaime/msime-engine/a9b9f092219505166c927843762b650d1e0e501d/handwriting/models/handwriting-zh_CN.model';
 
 test('a gh/ path maps to the GitHub address it carries, only inside the allowed prefixes', () => {
   assert.equal(originFor(objectKey(`/gh/${DICTIONARY}`)), DICTIONARY);
+  assert.equal(originFor(objectKey(`/gh/${LEGACY_DICTIONARY}`)), DICTIONARY);
   assert.equal(originFor(objectKey(`/gh/${ENGINE_RAW}`)), ENGINE_RAW);
   assert.equal(originFor(objectKey('/gh/https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/model.tar.bz2')), 'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/model.tar.bz2');
   for (const path of [
     '/gh/https://github.com/someone-else/repo/releases/download/v1/file.exe',
     '/gh/https://github.com/metasequoiaime/msime/archive/refs/heads/main.zip',
     '/gh/https://raw.githubusercontent.com/metasequoiaime/msime-dictionary/',
+    '/gh/metasequoiaime/not-allowed/releases/download/v1/file.exe',
+    '/gh/someone-else/msime-dictionary/releases/download/v1/file.exe',
     '/gh/http://github.com/metasequoiaime/msime/releases/download/v1/a.apk',
     '/avatars/someone.png',
     '/',
@@ -120,6 +124,19 @@ test('a missing object is fetched from GitHub once, stored, then served from R2'
   assert.equal(await second.text(), 'dictionary');
   assert.deepEqual(calls, [DICTIONARY], 'GitHub is asked only once');
   assert.deepEqual(env.BUCKET.puts, [`gh/${DICTIONARY}`]);
+});
+
+test('the legacy shorthand release path fetches the same allowed asset', async () => {
+  const env = { BUCKET: fakeBucket({ [`gh/${DICTIONARY}`]: 'dictionary' }) };
+  const calls = fakeGitHub({});
+  const head = await get(env, `/gh/${LEGACY_DICTIONARY}`, { method: 'HEAD' });
+  assert.equal(head.status, 200);
+  assert.equal(head.headers.get('content-length'), String('dictionary'.length));
+  const response = await get(env, `/gh/${LEGACY_DICTIONARY}`);
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), 'dictionary');
+  assert.deepEqual(calls, []);
+  assert.deepEqual(env.BUCKET.puts, []);
 });
 
 test('a range request on a missing object is answered from the stored copy with 206', async () => {

@@ -3,6 +3,7 @@
  *
  * 两种地址，对象名就是去掉开头 `/` 的路径：
  * - `gh/<GitHub 原地址>`：客户端的资源包、语音模型、应用更新和官方词库包，前缀加原地址即可。
+ * - `gh/<所有者>/<仓库>/releases/download/<标签>/<文件名>`：兼容迁移前镜像使用的简写形式；只接受放行的发布仓库。
  * - `releases/<仓库>/<tag>/<文件名>`：下载页的安装包（scripts/mirror-downloads.mjs），对应 metasequoiaime/<仓库> 的 release 资产。
  *
  * R2 里没有的对象由 Worker 从 GitHub 取一次存下，之后都从 R2 读。缓存不会重新校验，所以只放行内容不再变化的地址：发布资产，以及钉在提交上的 raw 文件；客户端按锁文件或校验值核对，镜像出错时退回原地址。名单之外一律 403，客户端照样按换源规则落回原地址。
@@ -28,6 +29,20 @@ export const ALLOWED_ORIGINS = [
 export const BUFFER_LIMIT = 64 * 1024 * 1024;
 
 const RELEASE_KEY = /^releases\/([\w.-]+)\/([^/]+)\/([^/]+)$/;
+const LEGACY_GH_RELEASE_KEY = /^gh\/((?:metasequoiaime|k2-fsa)\/[\w.-]+)\/releases\/download\/([^/]+)\/([^/]+)$/;
+
+function legacyReleaseUrl(key) {
+  const match = LEGACY_GH_RELEASE_KEY.exec(key ?? '');
+  if (!match) return null;
+  const [, repository, tag, name] = match;
+  return `https://github.com/${repository}/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(name)}`;
+}
+
+/** 把迁移前的简写键归一到现行键，避免同一个文件在 R2 中出现两份。 */
+function canonicalKey(key) {
+  const url = legacyReleaseUrl(key);
+  return url ? `gh/${url}` : key;
+}
 
 /** 请求路径对应的对象名：逐段解码。带 `.`、`..`、空段或反斜线的路径不认，免得拼回 GitHub 地址后跳出放行的前缀。 */
 export function objectKey(pathname) {
@@ -48,7 +63,10 @@ export function originFor(key) {
   if (!key) return null;
   if (key.startsWith('gh/')) {
     const url = key.slice('gh/'.length);
-    return ALLOWED_ORIGINS.some(prefix => url.startsWith(prefix) && url.length > prefix.length) ? url : null;
+    if (ALLOWED_ORIGINS.some(prefix => url.startsWith(prefix) && url.length > prefix.length)) return url;
+    const legacyUrl = legacyReleaseUrl(key);
+    if (!legacyUrl) return null;
+    return ALLOWED_ORIGINS.some(prefix => legacyUrl.startsWith(prefix)) ? legacyUrl : null;
   }
   const release = RELEASE_KEY.exec(key);
   if (!release) return null;
@@ -118,7 +136,7 @@ export default {
   async scheduled(_event, env) { await flushDownloads(env); },
   async fetch(request, env) {
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405, headers: { allow: 'GET, HEAD' } });
-    const key = objectKey(new URL(request.url).pathname);
+    const key = canonicalKey(objectKey(new URL(request.url).pathname));
     const url = originFor(key);
     if (!url) return new Response('Forbidden', { status: 403 });
 
