@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-08T22:48:29.757Z",
+  "generatedAt": "2026-11-08T23:37:09.874Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -558,14 +558,14 @@
     ]
   },
   "downloadStats": {
-    "total": 75944,
+    "total": 75951,
     "platforms": {
-      "windows": 45690,
+      "windows": 45692,
       "windowsRust": 2554,
       "windows7": 346,
       "macos": 5958,
       "linux": 13688,
-      "android": 7018,
+      "android": 7023,
       "harmony": 690
     }
   },
@@ -8560,7 +8560,7 @@
       "repository": "metasequoiaime/msime",
       "id": 721975634,
       "name": "msime-android-wubi.apk",
-      "download_count": 45
+      "download_count": 46
     },
     {
       "repository": "metasequoiaime/msime",
@@ -8572,7 +8572,7 @@
       "repository": "metasequoiaime/msime",
       "id": 721975636,
       "name": "msime-android-japanese.apk",
-      "download_count": 12
+      "download_count": 13
     },
     {
       "repository": "metasequoiaime/msime",
@@ -8584,7 +8584,7 @@
       "repository": "metasequoiaime/msime",
       "id": 721976009,
       "name": "msime-android.apk",
-      "download_count": 221
+      "download_count": 224
     },
     {
       "repository": "metasequoiaime/msime",
@@ -8806,6 +8806,78 @@
       "repository": "metasequoiaime/msime",
       "id": 722259195,
       "name": "MetasequoiaIME-Wubi_Setup_v0.4.1-nightly.42416145111.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725548816,
+      "name": "msime-android-nightly.42526762836.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725548818,
+      "name": "msime-android-vietnamese-nightly.42526762836.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725548821,
+      "name": "msime-android-tibetan-nightly.42526762836.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725548823,
+      "name": "msime-android-japanese-nightly.42526762836.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725548824,
+      "name": "msime-android-pinyin-nightly.42526762836.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725549146,
+      "name": "msime-android-wubi-nightly.42526762836.1.apk",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725549453,
+      "name": "msime-macos-japanese-0.59.1-universal-nightly.42526762836.1.pkg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725549454,
+      "name": "msime-macos-0.59.1-universal-nightly.42526762836.1.pkg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725549455,
+      "name": "msime-macos-pinyin-0.59.1-universal-nightly.42526762836.1.pkg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725549457,
+      "name": "msime-macos-tibetan-0.59.1-universal-nightly.42526762836.1.pkg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725549458,
+      "name": "msime-macos-vietnamese-0.59.1-universal-nightly.42526762836.1.pkg",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 725549673,
+      "name": "msime-macos-wubi-0.59.1-universal-nightly.42526762836.1.pkg",
       "download_count": 0
     },
     {
@@ -9664,23 +9736,23 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 708052861,
       "name": "MetasequoiaIME_Setup_v0.13.2.exe",
-      "download_count": 1808
+      "download_count": 1810
     }
   ],
   "mirrorDownloadStats": {
-    "total": 18835,
+    "total": 18843,
     "platforms": {
-      "android": 2530,
+      "android": 2533,
       "harmony": 100,
       "linux": 1219,
       "macos": 1274,
-      "windows": 12803,
+      "windows": 12808,
       "windowsRust": 909
     },
-    "generatedAt": "2026-11-08T22:48:29.272254Z"
+    "generatedAt": "2026-11-08T23:37:09.249408Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-08T22:48:28.897Z",
+    "generatedAt": "2026-11-08T23:37:08.846Z",
     "total": 6048,
     "builds": [
       {
@@ -9734,7 +9806,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-08T22:48:29.358Z",
+    "generatedAt": "2026-11-08T23:37:09.417Z",
     "downloads": 3327,
     "periodStart": "2025-11-08",
     "periodEnd": "2026-11-08"
