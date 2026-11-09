@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-08T20:45:47.787Z",
-  "totalStars": 5605,
+  "generatedAt": "2026-11-09T00:50:22.647Z",
+  "totalStars": 5604,
   "repoCount": 8,
   "starHistory": [
     {
@@ -149,11 +149,11 @@
     },
     {
       "month": "2026-10",
-      "stars": 5323
+      "stars": 5322
     },
     {
       "month": "2026-11",
-      "stars": 5605
+      "stars": 5604
     }
   ],
   "starSeries": [
@@ -309,7 +309,7 @@
           "stars": 3265
         },
         {
-          "date": "2026-11-08",
+          "date": "2026-11-09",
           "stars": 3386
         }
       ]
@@ -327,11 +327,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 1074
+          "stars": 1073
         },
         {
-          "date": "2026-11-08",
-          "stars": 1216
+          "date": "2026-11-09",
+          "stars": 1215
         }
       ]
     },
@@ -387,7 +387,7 @@
           "stars": 896
         },
         {
-          "date": "2026-11-08",
+          "date": "2026-11-09",
           "stars": 912
         }
       ]
@@ -448,7 +448,7 @@
           "stars": 65
         },
         {
-          "date": "2026-11-08",
+          "date": "2026-11-09",
           "stars": 65
         }
       ]
@@ -605,7 +605,7 @@
           "stars": 11
         },
         {
-          "date": "2026-11-08",
+          "date": "2026-11-09",
           "stars": 12
         }
       ]
@@ -622,7 +622,7 @@
           "stars": 4
         },
         {
-          "date": "2026-11-08",
+          "date": "2026-11-09",
           "stars": 6
         }
       ]
@@ -663,7 +663,7 @@
           "stars": 5
         },
         {
-          "date": "2026-11-08",
+          "date": "2026-11-09",
           "stars": 5
         }
       ]
@@ -764,19 +764,19 @@
           "stars": 3
         },
         {
-          "date": "2026-11-08",
+          "date": "2026-11-09",
           "stars": 3
         }
       ]
     }
   ],
-  "starDelta30d": 2487,
+  "starDelta30d": 2323,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 25905,
+      "contributions": 25926,
       "repos": 8
     },
     {
@@ -836,18 +836,18 @@
       "repos": 1
     },
     {
+      "login": "yangkx1024",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
+      "url": "https://github.com/yangkx1024",
+      "contributions": 30,
+      "repos": 1
+    },
+    {
       "login": "luojiyin1987",
       "avatarUrl": "https://avatars.githubusercontent.com/u/6524977?v=4",
       "url": "https://github.com/luojiyin1987",
       "contributions": 29,
       "repos": 3
-    },
-    {
-      "login": "yangkx1024",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
-      "url": "https://github.com/yangkx1024",
-      "contributions": 28,
-      "repos": 1
     },
     {
       "login": "claude",
