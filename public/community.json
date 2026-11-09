@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-09T07:55:11.386Z",
-  "totalStars": 5619,
+  "generatedAt": "2026-11-09T18:43:45.078Z",
+  "totalStars": 5633,
   "repoCount": 8,
   "starHistory": [
     {
@@ -141,19 +141,19 @@
     },
     {
       "month": "2026-08",
-      "stars": 824
+      "stars": 823
     },
     {
       "month": "2026-09",
-      "stars": 1711
+      "stars": 1710
     },
     {
       "month": "2026-10",
-      "stars": 5322
+      "stars": 5321
     },
     {
       "month": "2026-11",
-      "stars": 5619
+      "stars": 5633
     }
   ],
   "starSeries": [
@@ -298,19 +298,19 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 779
+          "stars": 778
         },
         {
           "date": "2026-09-30",
-          "stars": 1542
+          "stars": 1541
         },
         {
           "date": "2026-10-31",
-          "stars": 3265
+          "stars": 3264
         },
         {
           "date": "2026-11-09",
-          "stars": 3391
+          "stars": 3397
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-09",
-          "stars": 1225
+          "stars": 1233
         }
       ]
     },
@@ -770,13 +770,13 @@
       ]
     }
   ],
-  "starDelta30d": 2338,
+  "starDelta30d": 2353,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 25934,
+      "contributions": 25961,
       "repos": 8
     },
     {
@@ -850,11 +850,11 @@
       "repos": 3
     },
     {
-      "login": "claude",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/81847?v=4",
-      "url": "https://github.com/claude",
-      "contributions": 24,
-      "repos": 1
+      "login": "nuthatadf",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
+      "url": "https://github.com/nuthatadf",
+      "contributions": 25,
+      "repos": 2
     }
   ]
 }
