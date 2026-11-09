@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-09T09:56:50.414Z",
+  "generatedAt": "2026-11-09T10:05:54.508Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -505,20 +505,20 @@
     },
     "harmony": {
       "repository": "metasequoiaime/msime",
-      "version": "0.4.0",
-      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/harmony-v0.4.0",
-      "publishedAt": "2026-11-07T09:11:57Z",
+      "version": "0.4.1",
+      "releaseUrl": "https://github.com/metasequoiaime/msime/releases/tag/harmony-v0.4.1",
+      "publishedAt": "2026-11-09T09:57:21Z",
       "prerelease": false,
       "signed": null,
       "downloads": [
         {
           "label": "HarmonyOS · HAP",
           "arch": "arm64-v8a",
-          "name": "msime-harmony-0.4.0.hap",
-          "url": "https://github.com/metasequoiaime/msime/releases/download/harmony-v0.4.0/msime-harmony-0.4.0.hap",
-          "size": 187612459,
-          "sha256": "b0f2dffc607b461a9ceac55dc2a606a18531e84d5e416528a16424e9b3f66b31",
-          "mirrorUrl": "https://dl.msime.app/releases/msime/harmony-v0.4.0/msime-harmony-0.4.0.hap"
+          "name": "msime-harmony-0.4.1.hap",
+          "url": "https://github.com/metasequoiaime/msime/releases/download/harmony-v0.4.1/msime-harmony-0.4.1.hap",
+          "size": 187609511,
+          "sha256": "a2728ffa65aecf6536142296a54391402009d83c57dec18f55b5bf1842ad954c",
+          "mirrorUrl": "https://dl.msime.app/releases/msime/harmony-v0.4.1/msime-harmony-0.4.1.hap"
         }
       ],
       "preview": null,
@@ -558,14 +558,14 @@
     ]
   },
   "downloadStats": {
-    "total": 76632,
+    "total": 76639,
     "platforms": {
-      "windows": 45879,
+      "windows": 45883,
       "windowsRust": 2593,
       "windows7": 357,
       "macos": 6024,
       "linux": 13886,
-      "android": 7191,
+      "android": 7194,
       "harmony": 702
     }
   },
@@ -9058,7 +9058,13 @@
       "repository": "metasequoiaime/msime",
       "id": 725983380,
       "name": "msime-android.apk",
-      "download_count": 69
+      "download_count": 72
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 726990623,
+      "name": "msime-harmony-0.4.1.hap",
+      "download_count": 0
     },
     {
       "repository": "metasequoiaime/msime-linux",
@@ -9916,23 +9922,23 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 708052861,
       "name": "MetasequoiaIME_Setup_v0.13.2.exe",
-      "download_count": 1997
+      "download_count": 2001
     }
   ],
   "mirrorDownloadStats": {
-    "total": 19357,
+    "total": 19360,
     "platforms": {
-      "android": 2670,
+      "android": 2671,
       "harmony": 100,
       "linux": 1253,
       "macos": 1274,
-      "windows": 13102,
+      "windows": 13104,
       "windowsRust": 958
     },
-    "generatedAt": "2026-11-09T09:56:49.128017Z"
+    "generatedAt": "2026-11-09T10:05:53.906229Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-09T09:56:48.533Z",
+    "generatedAt": "2026-11-09T10:05:53.407Z",
     "total": 6095,
     "builds": [
       {
@@ -9990,7 +9996,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-09T09:56:49.441Z",
+    "generatedAt": "2026-11-09T10:05:54.056Z",
     "downloads": 3398,
     "periodStart": "2025-11-09",
     "periodEnd": "2026-11-09"
