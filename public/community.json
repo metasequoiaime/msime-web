@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-10T09:44:09.875Z",
-  "totalStars": 5645,
+  "generatedAt": "2026-11-10T17:46:17.180Z",
+  "totalStars": 5661,
   "repoCount": 8,
   "starHistory": [
     {
@@ -149,11 +149,11 @@
     },
     {
       "month": "2026-10",
-      "stars": 5317
+      "stars": 5314
     },
     {
       "month": "2026-11",
-      "stars": 5645
+      "stars": 5661
     }
   ],
   "starSeries": [
@@ -306,11 +306,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 3260
+          "stars": 3258
         },
         {
           "date": "2026-11-10",
-          "stars": 3402
+          "stars": 3405
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-10",
-          "stars": 1240
+          "stars": 1254
         }
       ]
     },
@@ -384,11 +384,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 896
+          "stars": 895
         },
         {
           "date": "2026-11-10",
-          "stars": 912
+          "stars": 911
         }
       ]
     },
@@ -770,20 +770,20 @@
       ]
     }
   ],
-  "starDelta30d": 2272,
+  "starDelta30d": 2290,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26011,
+      "contributions": 26049,
       "repos": 8
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 1967,
+      "contributions": 1968,
       "repos": 7
     },
     {
