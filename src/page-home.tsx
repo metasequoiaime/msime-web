@@ -186,7 +186,7 @@ export function HomePage() {
             return (
               <li key={item.id} className={cx("min-w-0 rounded-tile bg-panel-2 p-4 shadow-hair sm:p-6", embedded && "lg:col-span-2")} data-platform={item.id} data-reveal>
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <PlatformIcon platform={id} size={24} className="flex-none text-ink" />
+                  <PlatformIcon platform={item.id === "windows7" ? "windows7" : id} size={24} className="flex-none text-ink" />
                   <Pill tone={status.tone}>{t(status.label)}</Pill>
                 </div>
                 <h3 className="m-0 mt-4 text-[17px] font-bold text-ink sm:mt-5 sm:min-h-[3.5rem] sm:text-[22px]">{t(item.name)}</h3>
