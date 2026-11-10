@@ -19,7 +19,7 @@ const PLATFORM_COLORS: Record<PlatformIconId, string> = {
   windows: "#0078d4",
   windows7: "#0078d4",
   macos: "#a2aaad",
-  linux: "#fcc624",
+  linux: "#111111",
   android: "#3ddc84",
   ios: "#555555",
   harmony: "#e60012",
