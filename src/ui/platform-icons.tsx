@@ -42,10 +42,10 @@ export function Windows7Icon({ size = 22, ...props }: IconProps) {
         <linearGradient id="windows7-blue" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#1757a6" /><stop offset="0.58" stopColor="#35a9df" /><stop offset="1" stopColor="#b2e1f2" /></linearGradient>
         <linearGradient id="windows7-yellow" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#ffdc38" /><stop offset="0.58" stopColor="#ffc400" /><stop offset="1" stopColor="#ff8b00" /></linearGradient>
       </defs>
-      <path fill="url(#windows7-red)" d="M2.1 4.05C5.55 2.75 9.05 1.75 12.4 1.2l-1.15 10.85c-3.35.02-6.65.45-9.8 1.15z" />
-      <path fill="url(#windows7-green)" d="M14.15 1.1c3.1.25 5.9.8 8.45 1.6l-1.75 10.65c-2.55-.62-5.25-1-8-1.25z" />
-      <path fill="url(#windows7-blue)" d="M1.15 14.45c3.2-.78 6.55-1.2 9.95-1.28l-.65 9.7c-3.3-.47-6.4-1.2-9.3-2.18z" />
-      <path fill="url(#windows7-yellow)" d="M12.45 13.18c2.9.18 5.7.62 8.35 1.3l1.55 9.15c-3.15-.33-6.4-.85-9.75-1.55z" />
+      <path fill="url(#windows7-red)" d="M2.1 4.05C5.55 2.75 9.05 1.75 12.4 1.2c-.2 3.55-.55 7.1-1.1 10.7-3.35.02-6.65.45-9.8 1.15.18-3.1.38-6.1.6-9z" />
+      <path fill="url(#windows7-green)" d="M14.15 1.1c3.1.25 5.9.8 8.45 1.6-.62 3.45-1.3 6.85-2.05 10.25-2.55-.62-5.25-1-8-1.25.55-3.55 1.05-7.1 1.6-10.6z" />
+      <path fill="url(#windows7-blue)" d="M1.15 14.45c3.2-.78 6.55-1.2 9.95-1.28-.25 3.25-.48 6.5-.65 9.7-3.3-.47-6.4-1.2-9.3-2.18.02-2.15.02-4.23 0-6.24z" />
+      <path fill="url(#windows7-yellow)" d="M12.45 13.18c2.9.18 5.7.62 8.35 1.3.5 2.85 1.02 5.85 1.55 9.15-3.15-.33-6.4-.85-9.75-1.55-.02-3.02-.07-5.98-.15-8.9z" />
     </svg>
   );
 }
