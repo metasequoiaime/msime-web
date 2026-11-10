@@ -52,6 +52,14 @@ const FRIEND_LINKS = [
     desc: "Go 语言跨平台桌面 GUI 框架 MyGo 的作品集：收录用它做的应用、UI 组件、插件和文档，原生 UI 或 WebView 前端都能写 macOS、Windows、Linux 应用。",
   },
   {
+    name: "看懂 Kando",
+    tag: "语言学习",
+    url: "https://kando.yldm.ai/",
+    host: "kando.yldm.ai",
+    icon: "/img/friends/kando.png",
+    desc: "免费开源的桌面应用：在电脑上转录原声视频、逐句翻译，播放时同时显示原文和译文，用视频学习视频里的语言。",
+  },
+  {
     name: "鼠输入法 NanoMouse",
     tag: "iOS 输入法",
     url: "https://apps.apple.com/cn/app/%E9%BC%A0%E8%BE%93%E5%85%A5%E6%B3%95-nanomouse/id6757662900",
