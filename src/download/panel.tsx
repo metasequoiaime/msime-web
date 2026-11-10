@@ -551,7 +551,7 @@ export function DownloadPanel({ entries, platform, windowsVariant, onSelect }: {
               }}
               className={cx(TILE, "cursor-pointer", active ? "bg-accent-soft shadow-ring-accent" : "bg-panel-2 hover:bg-accent-soft")}
             >
-              <PlatformIcon platform={entry.id} className="flex-none" />
+              <PlatformIcon platform={entry.windowsVariant === "win7" ? "windows7" : entry.id} className="flex-none" />
               <span className="flex min-w-0 flex-col items-center gap-x-2.5 sm:flex-row sm:flex-wrap sm:items-baseline">
                 <span className={TILE_NAME}>
                   {entry.windowsVariant === "pure" || entry.windowsVariant === "online" ? (
