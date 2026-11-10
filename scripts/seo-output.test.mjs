@@ -510,7 +510,7 @@ test('简繁下载页展示九个入口，Windows 版本分开且旧链接默认
     assert.match(tiles[1].textContent, /Windows 10\/11（新版預覽|新版预览）/);
     assert.match(tiles[2].textContent, /Windows 7/);
     assert.equal(tiles[2].querySelector('[data-platform-icon="windows7"]')?.getAttribute('data-platform-icon'), 'windows7');
-    assert.deepEqual([...tiles[2].querySelectorAll('[data-platform-icon="windows7"] path')].map(path => path.getAttribute('fill')), ['url(#windows7-red)', 'url(#windows7-green)', 'url(#windows7-blue)', 'url(#windows7-yellow)']);
+    assert.equal(tiles[2].querySelector('[data-platform-icon="windows7"] image')?.getAttribute('href'), '/img/icons/windows7.png');
     assert.equal(tiles[0].querySelector('[data-platform-icon="windows"]')?.getAttribute('data-platform-icon'), 'windows');
     assert.deepEqual([...tiles].map(tile => tile.querySelector('svg')?.getAttribute('color')), ['#0078d4', '#0078d4', '#0078d4', '#a2aaad', '#fcc624', '#4285f4', '#555555', '#e60012', '#3ddc84']);
     assert.equal(tiles[0].getAttribute('aria-pressed'), 'true');

@@ -36,16 +36,8 @@ export const WindowsIcon = (props: IconProps) => <Mark d={WINDOWS} {...props} />
 export function Windows7Icon({ size = 22, ...props }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
-      <defs>
-        <linearGradient id="windows7-red" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#d92b12" /><stop offset="0.58" stopColor="#ff4b17" /><stop offset="1" stopColor="#ffd600" /></linearGradient>
-        <linearGradient id="windows7-green" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#5aa511" /><stop offset="0.58" stopColor="#8fd52d" /><stop offset="1" stopColor="#d5ef6a" /></linearGradient>
-        <linearGradient id="windows7-blue" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#1757a6" /><stop offset="0.58" stopColor="#35a9df" /><stop offset="1" stopColor="#b2e1f2" /></linearGradient>
-        <linearGradient id="windows7-yellow" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#ffdc38" /><stop offset="0.58" stopColor="#ffc400" /><stop offset="1" stopColor="#ff8b00" /></linearGradient>
-      </defs>
-      <path fill="url(#windows7-red)" d="M2.2 4.05C5.5 2.85 8.75 2 11.85 1.55c-.25 3.25-.5 6.55-.7 9.9-3.35.05-6.45.4-9.25 1.05.1-2.85.2-5.65.3-8.45z" />
-      <path fill="url(#windows7-green)" d="M13.35 1.8c3.05-.05 5.9.35 8.4 1.15-.45 3.15-.9 6.3-1.4 9.4-2.55-.55-5.05-.85-7.65-.9.2-3.3.4-6.5.65-9.65z" />
-      <path fill="url(#windows7-blue)" d="M1.65 13.35c3.05-.65 6.2-.95 9.45-.95-.15 3.25-.3 6.45-.4 9.6-3.25-.45-6.3-1.05-9.15-1.9.03-2.3.07-4.55.1-6.75z" />
-      <path fill="url(#windows7-yellow)" d="M12.9 12.4c2.75.1 5.3.45 7.75 1 .45 3.1.9 6.1 1.35 9.05-3.05-.35-6.1-.85-9.25-1.45.05-2.9.1-5.75.15-8.6z" />
+      {/* Windows 7 飘旗取自 Wikimedia Commons 的 CC0 Windows 2009 标识裁切图。 */}
+      <image href="/img/icons/windows7.png" width="24" height="24" preserveAspectRatio="xMidYMid meet" />
     </svg>
   );
 }
