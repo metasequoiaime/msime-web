@@ -511,6 +511,7 @@ test('简繁下载页展示九个入口，Windows 版本分开且旧链接默认
     assert.match(tiles[2].textContent, /Windows 7/);
     assert.equal(tiles[2].querySelector('[data-platform-icon="windows7"]')?.getAttribute('data-platform-icon'), 'windows7');
     assert.equal(tiles[2].querySelector('[data-platform-icon="windows7"] image')?.getAttribute('href'), '/img/icons/windows7.png');
+    assert.equal(tiles[4].querySelector('[data-platform-icon="linux"] image')?.getAttribute('href'), '/img/icons/linux-tux.png');
     assert.equal(tiles[0].querySelector('[data-platform-icon="windows"]')?.getAttribute('data-platform-icon'), 'windows');
     assert.deepEqual([...tiles].map(tile => tile.querySelector('svg')?.getAttribute('color')), ['#0078d4', '#0078d4', '#0078d4', '#a2aaad', '#111111', '#4285f4', '#555555', '#e60012', '#3ddc84']);
     assert.equal(tiles[0].getAttribute('aria-pressed'), 'true');
