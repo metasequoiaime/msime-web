@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-11T00:12:42.277Z",
+  "generatedAt": "2026-11-11T03:11:46.598Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -558,15 +558,15 @@
     ]
   },
   "downloadStats": {
-    "total": 78378,
+    "total": 78561,
     "platforms": {
-      "windows": 46360,
-      "windowsRust": 2664,
-      "windows7": 380,
-      "macos": 6226,
-      "linux": 14295,
-      "android": 7703,
-      "harmony": 750
+      "windows": 46392,
+      "windowsRust": 2673,
+      "windows7": 384,
+      "macos": 6263,
+      "linux": 14353,
+      "android": 7742,
+      "harmony": 754
     }
   },
   "downloadHistory": [
@@ -7252,7 +7252,7 @@
       "repository": "metasequoiaime/msime",
       "id": 702618053,
       "name": "msime-macos-vietnamese-0.57.0-universal.pkg",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
@@ -8308,13 +8308,13 @@
       "repository": "metasequoiaime/msime",
       "id": 720160173,
       "name": "MetasequoiaIME-Full_Setup_v0.6.0_win7_x86.exe",
-      "download_count": 22
+      "download_count": 23
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 720160181,
       "name": "MetasequoiaIME-Full_Setup_v0.6.0_win7_x64.exe",
-      "download_count": 73
+      "download_count": 76
     },
     {
       "repository": "metasequoiaime/msime",
@@ -8578,7 +8578,7 @@
       "repository": "metasequoiaime/msime",
       "id": 721975637,
       "name": "msime-android-pinyin.apk",
-      "download_count": 49
+      "download_count": 50
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9064,7 +9064,7 @@
       "repository": "metasequoiaime/msime",
       "id": 726990623,
       "name": "msime-harmony-0.4.1.hap",
-      "download_count": 43
+      "download_count": 46
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9094,7 +9094,7 @@
       "repository": "metasequoiaime/msime",
       "id": 729884229,
       "name": "msime-android-pinyin-nightly.42734362756.1.apk",
-      "download_count": 4
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9328,25 +9328,25 @@
       "repository": "metasequoiaime/msime",
       "id": 730558388,
       "name": "msime-linux-japanese_0.16.1_arm64.deb",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558390,
       "name": "msime-linux-legacy_0.16.1_amd64.deb",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558394,
       "name": "msime-linux-legacy_0.16.1_arm64.deb",
-      "download_count": 6
+      "download_count": 7
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558395,
       "name": "msime-linux-pinyin_0.16.1_amd64.deb",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9358,55 +9358,55 @@
       "repository": "metasequoiaime/msime",
       "id": 730558519,
       "name": "msime-linux-pinyin_0.16.1_arm64.deb",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558522,
       "name": "msime-linux-tibetan_0.16.1_amd64.deb",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558525,
       "name": "msime-linux-tibetan_0.16.1_arm64.deb",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558537,
       "name": "msime-linux-vietnamese_0.16.1_amd64.deb",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558652,
       "name": "msime-linux-vietnamese_0.16.1_arm64.deb",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558717,
       "name": "msime-linux-wubi_0.16.1_amd64.deb",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558720,
       "name": "msime-linux_0.16.1_amd64.deb",
-      "download_count": 22
+      "download_count": 36
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558721,
       "name": "msime-linux-wubi_0.16.1_arm64.deb",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558744,
       "name": "msime-linux_0.16.1_arm64.deb",
-      "download_count": 14
+      "download_count": 15
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9418,61 +9418,61 @@
       "repository": "metasequoiaime/msime",
       "id": 730558864,
       "name": "msime-linux-0.16.1-1.x86_64.rpm",
-      "download_count": 6
+      "download_count": 11
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558865,
       "name": "msime-linux-japanese-0.16.1-1.aarch64.rpm",
-      "download_count": 6
+      "download_count": 7
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558932,
       "name": "msime-linux-japanese-0.16.1-1.x86_64.rpm",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730558938,
       "name": "msime-linux-pinyin-0.16.1-1.aarch64.rpm",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559002,
       "name": "msime-linux-pinyin-0.16.1-1.x86_64.rpm",
-      "download_count": 6
+      "download_count": 10
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559057,
       "name": "msime-linux-tibetan-0.16.1-1.aarch64.rpm",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559060,
       "name": "msime-linux-tibetan-0.16.1-1.x86_64.rpm",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559063,
       "name": "msime-linux-vietnamese-0.16.1-1.aarch64.rpm",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559115,
       "name": "msime-linux-vietnamese-0.16.1-1.x86_64.rpm",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559164,
       "name": "msime-linux-wubi-0.16.1-1.aarch64.rpm",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9484,73 +9484,73 @@
       "repository": "metasequoiaime/msime",
       "id": 730559187,
       "name": "msime-linux-0.16.1-linux-x86_64.tar.gz",
-      "download_count": 11
+      "download_count": 12
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559190,
       "name": "msime-linux-wubi-0.16.1-1.x86_64.rpm",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559240,
       "name": "msime-linux-japanese-0.16.1-linux-aarch64.tar.gz",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559285,
       "name": "msime-linux-japanese-0.16.1-linux-x86_64.tar.gz",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559312,
       "name": "msime-linux-pinyin-0.16.1-linux-aarch64.tar.gz",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559405,
       "name": "msime-linux-pinyin-0.16.1-linux-x86_64.tar.gz",
-      "download_count": 6
+      "download_count": 7
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559465,
       "name": "msime-linux-tibetan-0.16.1-linux-aarch64.tar.gz",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559494,
       "name": "msime-linux-tibetan-0.16.1-linux-x86_64.tar.gz",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559513,
       "name": "msime-linux-vietnamese-0.16.1-linux-aarch64.tar.gz",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559568,
       "name": "msime-linux-vietnamese-0.16.1-linux-x86_64.tar.gz",
-      "download_count": 6
+      "download_count": 7
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559698,
       "name": "msime-linux-wubi-0.16.1-linux-aarch64.tar.gz",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 730559704,
       "name": "msime-linux-wubi-0.16.1-linux-x86_64.tar.gz",
-      "download_count": 5
+      "download_count": 6
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9592,13 +9592,13 @@
       "repository": "metasequoiaime/msime",
       "id": 731296534,
       "name": "msime-android-vietnamese.apk",
-      "download_count": 7
+      "download_count": 8
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 731296535,
       "name": "msime-android-japanese.apk",
-      "download_count": 8
+      "download_count": 9
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9610,19 +9610,19 @@
       "repository": "metasequoiaime/msime",
       "id": 731296537,
       "name": "msime-android-wubi.apk",
-      "download_count": 25
+      "download_count": 27
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 731296538,
       "name": "msime-android-pinyin.apk",
-      "download_count": 28
+      "download_count": 33
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 731296729,
       "name": "msime-android.apk",
-      "download_count": 130
+      "download_count": 157
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9634,7 +9634,7 @@
       "repository": "metasequoiaime/msime",
       "id": 732029622,
       "name": "msime-macos-japanese-0.59.3-universal.pkg",
-      "download_count": 2
+      "download_count": 4
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9646,13 +9646,13 @@
       "repository": "metasequoiaime/msime",
       "id": 732029624,
       "name": "msime-macos-0.59.3-universal.pkg",
-      "download_count": 20
+      "download_count": 48
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 732029629,
       "name": "msime-macos-pinyin-0.59.3-universal.pkg",
-      "download_count": 7
+      "download_count": 13
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9766,7 +9766,7 @@
       "repository": "metasequoiaime/msime",
       "id": 733467882,
       "name": "msime-linux_0.16.1_amd64-nightly.42918887733.1.deb",
-      "download_count": 0
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9844,19 +9844,19 @@
       "repository": "metasequoiaime/msime",
       "id": 733468162,
       "name": "msime-harmony-0.4.1-unsigned-nightly.42918887733.1.hap",
-      "download_count": 0
+      "download_count": 1
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 733468497,
       "name": "MetasequoiaIME-Full_Setup_v0.4.1-nightly.42918887733.1.exe",
-      "download_count": 0
+      "download_count": 7
     },
     {
       "repository": "metasequoiaime/msime",
       "id": 733468498,
       "name": "MetasequoiaIME-Pinyin_Setup_v0.4.1-nightly.42918887733.1.exe",
-      "download_count": 0
+      "download_count": 2
     },
     {
       "repository": "metasequoiaime/msime",
@@ -10426,7 +10426,7 @@
       "repository": "metasequoiaime/msime-linux",
       "id": 546833069,
       "name": "metasequoia-ime-linux-0.9.0-linux-x86_64.tar.gz",
-      "download_count": 4
+      "download_count": 5
     },
     {
       "repository": "metasequoiaime/msime-linux",
@@ -10738,28 +10738,28 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 708052861,
       "name": "MetasequoiaIME_Setup_v0.13.2.exe",
-      "download_count": 2472
+      "download_count": 2504
     }
   ],
   "mirrorDownloadStats": {
-    "total": 20629,
+    "total": 20756,
     "platforms": {
-      "android": 3077,
+      "android": 3115,
       "harmony": 101,
-      "linux": 1385,
+      "linux": 1391,
       "macos": 1274,
-      "windows": 13733,
-      "windowsRust": 1059
+      "windows": 13797,
+      "windowsRust": 1078
     },
-    "generatedAt": "2026-11-11T00:12:41.782133Z"
+    "generatedAt": "2026-11-11T03:11:45.72222Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-11T00:12:41.240Z",
-    "total": 6246,
+    "generatedAt": "2026-11-11T03:11:45.014Z",
+    "total": 6260,
     "builds": [
       {
         "id": "0c06140c932e34bd7048ed1eb31f358dbff0556f3e3399b578f75c11fa59b71f",
-        "downloads": 31
+        "downloads": 45
       },
       {
         "id": "1a7915b03260aa74047c33a6d54ea3cf2d6392f337560359e7e5582bc1bda0ef",
@@ -10816,7 +10816,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-11T00:12:41.918Z",
+    "generatedAt": "2026-11-11T03:11:45.954Z",
     "downloads": 3647,
     "periodStart": "2025-11-11",
     "periodEnd": "2026-11-11"
