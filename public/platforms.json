@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-11T10:07:13.285Z",
+  "generatedAt": "2026-11-11T10:12:18.796Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -558,14 +558,14 @@
     ]
   },
   "downloadStats": {
-    "total": 78940,
+    "total": 78943,
     "platforms": {
-      "windows": 46514,
-      "windowsRust": 2688,
+      "windows": 46515,
+      "windowsRust": 2689,
       "windows7": 390,
       "macos": 6313,
       "linux": 14455,
-      "android": 7814,
+      "android": 7815,
       "harmony": 766
     }
   },
@@ -6694,7 +6694,7 @@
       "repository": "metasequoiaime/msime",
       "id": 698752332,
       "name": "MetasequoiaIME-Full_Setup_v0.4.1.exe",
-      "download_count": 329
+      "download_count": 330
     },
     {
       "repository": "metasequoiaime/msime",
@@ -9622,7 +9622,7 @@
       "repository": "metasequoiaime/msime",
       "id": 731296729,
       "name": "msime-android.apk",
-      "download_count": 201
+      "download_count": 202
     },
     {
       "repository": "metasequoiaime/msime",
@@ -10774,23 +10774,23 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 708052861,
       "name": "MetasequoiaIME_Setup_v0.13.2.exe",
-      "download_count": 2625
+      "download_count": 2626
     }
   ],
   "mirrorDownloadStats": {
-    "total": 20986,
+    "total": 20990,
     "platforms": {
       "android": 3192,
       "harmony": 101,
       "linux": 1403,
       "macos": 1274,
-      "windows": 13908,
-      "windowsRust": 1108
+      "windows": 13910,
+      "windowsRust": 1110
     },
-    "generatedAt": "2026-11-11T10:07:12.579463Z"
+    "generatedAt": "2026-11-11T10:12:18.137827Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-11T10:07:12.091Z",
+    "generatedAt": "2026-11-11T10:12:17.638Z",
     "total": 6291,
     "builds": [
       {
@@ -10852,7 +10852,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-11T10:07:12.700Z",
+    "generatedAt": "2026-11-11T10:12:18.348Z",
     "downloads": 3647,
     "periodStart": "2025-11-11",
     "periodEnd": "2026-11-11"
