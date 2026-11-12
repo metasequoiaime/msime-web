@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-12T01:01:33.395Z",
-  "totalStars": 5686,
+  "generatedAt": "2026-11-12T08:17:12.866Z",
+  "totalStars": 5697,
   "repoCount": 8,
   "starHistory": [
     {
@@ -141,19 +141,19 @@
     },
     {
       "month": "2026-08",
-      "stars": 823
+      "stars": 822
     },
     {
       "month": "2026-09",
-      "stars": 1710
+      "stars": 1709
     },
     {
       "month": "2026-10",
-      "stars": 5312
+      "stars": 5311
     },
     {
       "month": "2026-11",
-      "stars": 5686
+      "stars": 5697
     }
   ],
   "starSeries": [
@@ -298,19 +298,19 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 778
+          "stars": 777
         },
         {
           "date": "2026-09-30",
-          "stars": 1541
+          "stars": 1540
         },
         {
           "date": "2026-10-31",
-          "stars": 3256
+          "stars": 3255
         },
         {
           "date": "2026-11-12",
-          "stars": 3412
+          "stars": 3417
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-12",
-          "stars": 1271
+          "stars": 1277
         }
       ]
     },
@@ -770,13 +770,13 @@
       ]
     }
   ],
-  "starDelta30d": 2113,
+  "starDelta30d": 2125,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26080,
+      "contributions": 26091,
       "repos": 8
     },
     {
@@ -790,7 +790,7 @@
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 191,
+      "contributions": 219,
       "repos": 3
     },
     {
