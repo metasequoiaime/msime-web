@@ -251,6 +251,10 @@ TestFlight 的每个构建有效期为 90 天，到期前在 TestFlight 中更�
 
 适用于 HarmonyOS 5 及以上。本页通过 AppTest 提供测试安装，不提供 HAP 文件下载。安装后打开水杉输入法，按引导到系统设置中启用它，并切换为当前输入法。
 
+### 已启用但切换不过去
+
+先到「设置 → 系统 → 输入法 → 水杉输入法」，打开「完整体验模式」；基础访问模式下系统可能显示已启用，但扩展不会正常驱动。然后回到输入框重新切换水杉试试。
+
 ### 开发者调试
 
 调试签名的 HAP 只能安装在 UDID 已登记到调试 Profile 的设备上，需要打开开发者模式，再用 `hdc install` 安装，普通用户无法这样安装。源码和构建脚本都在 msime 仓库的 `platforms/harmony` 目录，构建需要 DevEco Studio 提供的 OpenHarmony NDK 与 `hvigorw`，步骤见该目录 README 的[「本地构建」](https://github.com/metasequoiaime/msime/blob/develop/platforms/harmony/README.md#本地构建)一节。遇到问题欢迎到[Bug 与需求反馈](/feedback/)反馈。
