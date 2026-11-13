@@ -370,7 +370,7 @@ function PlatformAction({ entry }: { entry: DownloadEntry }) {
         <p className="m-0 mt-4 text-sm leading-[1.8] text-body">
           {t("加入前：先到 QQ 群 ")}
           <span className="select-all font-semibold text-ink tabular-nums">{QQ_GROUP}</span>
-          {t(" 把你的华为账号发给小莫，登记到测试名单后再扫码或输入邀请码。")}
+          {t(" 把你登录华为账号用的邮箱或手机号发给小莫，登记到测试名单后再扫码或输入邀请码。")}
         </p>
         <p className="m-0 mt-2 text-sm leading-[1.8] text-body">
           {t("手动加入：在华为应用市场下载 AppTest，打开后输入邀请码 ")}
