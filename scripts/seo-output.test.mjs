@@ -64,7 +64,7 @@ test('all six guides and FAQ answers are present without JavaScript', () => {
   }
   const faq = document('/faq/');
   const schema = [...faq.querySelectorAll('script[type="application/ld+json"]')].map(script => JSON.parse(script.textContent)).find(data => data['@type'] === 'FAQPage');
-  assert.equal(schema.mainEntity.length, 32);
+  assert.equal(schema.mainEntity.length, 36);
   for (const item of schema.mainEntity) {
     assert.ok(faq.querySelector('#root').textContent.includes(item.name));
     assert.ok(item.acceptedAnswer.text.length > 20);
@@ -403,7 +403,7 @@ test('Traditional documents track complete source and preserve executable exampl
   }
   const doc = document('/zh-TW/faq/');
   const schema = [...doc.querySelectorAll('script[type="application/ld+json"]')].map(node => JSON.parse(node.textContent)).find(item => item['@type'] === 'FAQPage');
-  assert.equal(schema.mainEntity.length, 32);
+  assert.equal(schema.mainEntity.length, 36);
   for (const answer of doc.querySelectorAll('.faq-answer')) assert.ok(answer.textContent.length > 50);
 });
 
