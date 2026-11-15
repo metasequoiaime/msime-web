@@ -1,6 +1,6 @@
 // Shared by the forms that submit through a Turnstile-protected Pages Function.
 export type Turnstile = {
-  render: (element: HTMLElement, options: { sitekey: string; action: string; size: "compact"; language: "zh-TW" | "zh-CN"; callback: (token: string) => void; "expired-callback": () => void; "error-callback": () => void }) => string;
+  render: (element: HTMLElement, options: { sitekey: string; action: string; size: "compact" | "normal" | "flexible"; appearance?: "always" | "execute" | "interaction-only"; language: "zh-TW" | "zh-CN"; callback: (token: string) => void; "expired-callback": () => void; "error-callback": () => void }) => string;
   reset: (id: string) => void;
   remove: (id: string) => void;
 };
