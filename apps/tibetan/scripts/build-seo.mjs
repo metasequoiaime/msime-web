@@ -1,7 +1,6 @@
-import { baseLocalePath, isTraditional, languageAlternates } from "../shared/locales.ts";
+import { basePath, languageAlternates, OG_LOCALE, PAGE_PATHS } from "../shared/locales.ts";
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { parseHTML } from 'linkedom';
 import TurndownService from 'turndown';
@@ -16,31 +15,22 @@ const write = (path, content) => { mkdirSync(dirname(path), { recursive: true })
 const escapeXml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 const markdown = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
 markdown.keep(['table']);
+const NOSCRIPT = {
+  bo: '<p class="noscript-note">ནང་དོན་ཀློག་ཆོག ཁ་དོག་བརྗེ་བར་ JavaScript དགོས།</p>',
+  zh: '<p class="noscript-note">正文与下载链接可以直接阅读，切换配色需要 JavaScript。</p>',
+};
+const PAGE_MODULES = { '/': 'home', '/download/': 'download', '/guide/': 'guide', '/faq/': 'faq' };
 const contents = [];
-const docsCommit = execFileSync('git', ['-C', '../../vendor/MSIME-Docs', 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const pages = [...Object.keys(seoPages), '/404/'];
 // Every page starts from the single Vite entry. Read it once: the loop writes the home page back to dist/index.html, and later pages must not start from that prerendered copy.
 const template = readFileSync(`${dist}/index.html`, 'utf8');
 for (const path of pages) {
   const metadata = pageSeo(path);
-  const basePath = baseLocalePath(path);
+  const base = basePath(path);
   const file = path === '/404/' ? '404.html' : path === '/' ? 'index.html' : `${path.slice(1)}index.html`;
-  const html = parseHTML(template);
-  const document = html.document;
-  // The features page reads the dictionary release from platforms.json, so it is seeded too and its dictionary block is in the static HTML. The home page gets only the counters needed by its social-proof card, not the full release list.
-  // `downloadHistory` is the automation's per-asset download ledger (every nightly included, HarmonyOS HAPs among them). The page never reads it and the schema drops it, so it stays out of the seeded state rather than shipping some 120 KB of asset names with every prerendered page.
-  const { downloadHistory: _downloadHistory, ...platformSnapshot } = JSON.parse(readFileSync('public/platforms.json'));
-  const statsSnapshot = {
-    generatedAt: platformSnapshot.generatedAt,
-    downloadStats: platformSnapshot.downloadStats,
-    mirrorDownloadStats: platformSnapshot.mirrorDownloadStats,
-    pgyerDownloadStats: platformSnapshot.pgyerDownloadStats,
-    npmDownloadStats: platformSnapshot.npmDownloadStats,
-    windows7Available: Boolean(platformSnapshot.platforms.windows.windows7),
-  };
-  const data = basePath === '/download/' ? { platforms: platformSnapshot, 'update-manifest': JSON.parse(readFileSync('public/update.json')), 'testflight-stats': JSON.parse(readFileSync('public/testflight-stats.json')) } : basePath === '/features/' ? { platforms: platformSnapshot } : basePath === '/' ? { community: JSON.parse(readFileSync('public/community.json')), 'download-stats': statsSnapshot, 'testflight-stats': JSON.parse(readFileSync('public/testflight-stats.json')) } : {};
-  const { html: body, bootstrap } = await render(path === '/404/' ? '/__not-found__/' : path, data);
-  if (!body.includes('<h1') || body.includes('data-msg=') || body.includes('data-stck=')) throw new Error(`Static render failed for ${path}: ${body.slice(body.indexOf('data-msg='), body.indexOf('data-msg=') + 500)}`);
+  const { document } = parseHTML(template);
+  const { html: body, bootstrap } = await render(path === '/404/' ? '/__not-found__/' : path);
+  if (!body.includes('<h1')) throw new Error(`Static render failed for ${path}`);
   document.getElementById('root').innerHTML = body;
   const bootstrapCode = bootstrap.join('\n');
   const bootstrapFile = `/assets/router-state-${createHash('sha256').update(bootstrapCode).digest('hex').slice(0, 16)}.js`;
@@ -48,14 +38,9 @@ for (const path of pages) {
   const stateScript = document.createElement('script'); stateScript.src = bootstrapFile; stateScript.setAttribute('defer', ''); stateScript.setAttribute('data-router-state', ''); document.body.append(stateScript);
   const statePreload = document.createElement('link'); statePreload.rel = 'preload'; statePreload.setAttribute('as', 'script'); statePreload.href = bootstrapFile; document.head.append(statePreload);
   document.documentElement.classList.remove('preload');
-  // The résumé is a personal page, not part of the installable site: no web manifest, and its body styling is in place before hydration (src/page-resume.tsx adds the same class at runtime).
-  if (basePath === '/resume/') {
-    document.head.querySelector('link[rel="manifest"]')?.remove();
-    document.body.classList.add('resume-body');
-  }
   document.documentElement.setAttribute('data-prerendered', 'true');
-  const pageModule = basePath.startsWith('/docs/') ? 'docs' : basePath === '/' ? 'home' : basePath.split('/')[1];
-  const routeEntry = Object.keys(manifest).find(key => key === `src/page-${pageModule}.tsx`);
+
+  const module = PAGE_MODULES[base] ? `src/page-${PAGE_MODULES[base]}.tsx` : undefined;
   const visited = new Set();
   const preload = key => {
     if (!key || visited.has(key)) return;
@@ -67,7 +52,11 @@ for (const path of pages) {
     }
     for (const dependency of entry.imports ?? []) preload(dependency);
   };
-  preload(routeEntry);
+  preload(module);
+  const styles = new Set();
+  const collect = key => { for (const css of manifest[key]?.css ?? []) styles.add(css); for (const dependency of manifest[key]?.imports ?? []) collect(dependency); };
+  if (module) collect(module);
+  for (const style of styles) if (!document.querySelector(`link[href="/${style}"]`)) { const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = `/${style}`; document.head.append(link); }
 
   document.title = metadata.title;
   document.documentElement.lang = metadata.language;
@@ -81,7 +70,7 @@ for (const path of pages) {
     element.setAttribute('content', content);
   };
   meta('name', 'description', metadata.description);
-  meta('property', 'og:locale', isTraditional(path) ? 'zh_TW' : 'zh_CN');
+  meta('property', 'og:locale', OG_LOCALE[metadata.locale]);
   meta('name', 'robots', metadata.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large');
   for (const prefix of ['og', 'twitter']) {
     meta(prefix === 'og' ? 'property' : 'name', `${prefix}:title`, metadata.title);
@@ -94,37 +83,32 @@ for (const path of pages) {
   } else document.head.querySelector('meta[property="og:url"]')?.remove();
   const schema = structuredData(path);
   if (schema) { const script = document.createElement('script'); script.id = 'site-structured-data'; script.type = 'application/ld+json'; script.textContent = serializeJsonLd(schema); document.head.append(script); }
-  const module = `src/page-${pageModule}.tsx`;
-  const styles = new Set();
-  const collect = key => { for (const css of manifest[key]?.css ?? []) styles.add(css); for (const dependency of manifest[key]?.imports ?? []) collect(dependency); };
-  collect(module);
-  for (const style of styles) if (!document.querySelector(`link[href="/${style}"]`)) { const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = `/${style}`; document.head.append(link); }
-  if (Object.keys(data).length) { const script = document.createElement('script'); script.type = 'application/json'; script.id = 'static-query-data'; script.textContent = serializeJsonLd(data); document.body.append(script); }
   const noscript = document.querySelector('noscript');
-  if (noscript) noscript.innerHTML = isTraditional(path) ? '<p class="noscript-note">正文與下載連結可直接閱讀。搜尋與表單提交需要 JavaScript。</p>' : '<p class="noscript-note">正文与文档可直接阅读。搜索、表单提交和交互预览需要 JavaScript；也可以前往 <a href="https://github.com/metasequoiaime">GitHub 项目</a> 查看发布与提交反馈。</p>';
-  // Native disclosure remains usable without JS; decorative reveals must never hide static content.
+  if (noscript) noscript.innerHTML = NOSCRIPT[metadata.locale];
+
   if (!metadata.noindex) {
     const link = document.createElement('link'); link.rel = 'alternate'; link.type = 'text/markdown'; link.href = `${SITE_ORIGIN}${markdownPath(path)}`; link.title = 'Markdown'; document.head.append(link);
     const article = document.createElement('div');
-    for (const element of document.querySelectorAll('main, .page-hero')) if (!element.parentElement?.closest('main, .page-hero')) article.append(element.cloneNode(true));
-    // A chart's marks flatten to a run of bare names and numbers in Markdown. Mark the drawing with data-chart-visual and publish a data table beside it, as /model/ does; the table carries the values here.
-    article.querySelectorAll('script, style, nav, aside, button, form, input, select, textarea, video, .faq-filters, .feedback-heading + .feedback-layout, [data-chart-visual]').forEach(element => { element.remove(); });
-    article.querySelectorAll('a[href], img[src]').forEach(element => {
-      const attribute = element.tagName === 'A' ? 'href' : 'src';
-      const value = element.getAttribute(attribute);
-      if (value && !value.startsWith('data:')) element.setAttribute(attribute, new URL(value, metadata.canonical).href);
+    for (const element of document.querySelectorAll('main')) article.append(element.cloneNode(true));
+    article.querySelectorAll('script, style, nav, svg, button').forEach(element => { element.remove(); });
+    article.querySelectorAll('a[href]').forEach(element => {
+      const value = element.getAttribute('href');
+      if (value) element.setAttribute('href', new URL(value, metadata.canonical).href);
     });
-    const text = `# ${metadata.title}\n\n> ${metadata.description}\n\n来源：${metadata.canonical}\n${basePath.startsWith('/docs/') || basePath === '/faq/' ? `文档版本：MSIME-Docs ${docsCommit}\n` : ''}\n${markdown.turndown(article.innerHTML).replace(/^# [^\n]+\n/, '')}\n`;
+    const text = `# ${metadata.title}\n\n> ${metadata.description}\n\n${metadata.canonical}\n\n${markdown.turndown(article.innerHTML).replace(/^# [^\n]+\n/, '')}\n`;
     write(`${dist}${markdownPath(path)}`, text);
     contents.push({ path, ...metadata, text });
   }
   write(`${dist}/${file}`, document.toString());
   console.log(`Static HTML + metadata: ${path}`);
 }
-const canonicalContents = contents.filter(page => page.path === page.canonicalPath);
-write(`${dist}/sitemap.xml`, `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${canonicalContents.map(page => `  <url><loc>${escapeXml(page.canonical)}</loc>${languageAlternates(page.path).map(alternate => `<xhtml:link rel="alternate" hreflang="${alternate.lang}" href="${SITE_ORIGIN}${alternate.path}"/>`).join('')}</url>`).join('\n')}\n</urlset>\n`);
-write(`${dist}/llms.txt`, `# 水杉输入法 MSIME\n\n> 开源中文输入法。本站提供各平台下载、功能介绍、官方使用指南与常见问题，以及给其他输入法开发者的引擎库与神经联想接入说明。\n\n文档内容由固定版本的 MSIME-Docs 生成。版本、下载和签名状态请以下载页及对应发布页为准。\n\n## 页面与文档\n\n${canonicalContents.map(page => `- [${page.title}](${SITE_ORIGIN}${markdownPath(page.path)}): ${page.description}`).join('\n')}\n\n## 完整内容\n\n- [完整 Markdown](${SITE_ORIGIN}/llms-full.txt): 上述页面的合并正文\n- [站点地图](${SITE_ORIGIN}/sitemap.xml): 规范 HTML 地址\n- [GitHub 组织](https://github.com/metasequoiaime): 源码、发布与 Issue\n`);
-write(`${dist}/llms-full.txt`, `# 水杉输入法 MSIME — 网站正文\n\n文档版本：MSIME-Docs ${docsCommit}\n\n${canonicalContents.map(page => page.text).join('\n\n---\n\n')}`);
+
+// Pages are listed in the order of PAGE_PATHS, each Tibetan page before its Chinese counterpart.
+const order = path => PAGE_PATHS.indexOf(basePath(path)) * 2 + (path.startsWith('/zh/') ? 1 : 0);
+contents.sort((a, b) => order(a.path) - order(b.path));
+write(`${dist}/sitemap.xml`, `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${contents.map(page => `  <url><loc>${escapeXml(page.canonical)}</loc>${languageAlternates(page.path).map(alternate => `<xhtml:link rel="alternate" hreflang="${alternate.lang}" href="${SITE_ORIGIN}${alternate.path}"/>`).join('')}</url>`).join('\n')}\n</urlset>\n`);
+write(`${dist}/llms.txt`, `# 水杉藏文 MSIME Tibetan\n\n> The Tibetan-only edition of MSIME (水杉输入法): type Tibetan in EWTS (Extended Wylie) on a Latin keyboard. macOS, Linux, Android and an unsigned Windows preview. Pages are in Tibetan, with Simplified Chinese under /zh/.\n\nVersions and downloads come from the official release manifest; check the download page and the GitHub releases for the current state. The full product is at https://msime.app/.\n\n## Pages\n\n${contents.map(page => `- [${page.title}](${SITE_ORIGIN}${markdownPath(page.path)}): ${page.description}`).join('\n')}\n\n## More\n\n- [All pages as Markdown](${SITE_ORIGIN}/llms-full.txt)\n- [Sitemap](${SITE_ORIGIN}/sitemap.xml)\n- [MSIME](https://msime.app/): the full input method\n- [Source](https://github.com/metasequoiaime/msime)\n`);
+write(`${dist}/llms-full.txt`, `# 水杉藏文 MSIME Tibetan\n\n${contents.map(page => page.text).join('\n\n---\n\n')}`);
 let headers = readFileSync(`${dist}/_headers`, 'utf8');
 for (const page of contents) headers += `\n${markdownPath(page.path)}\n  Content-Type: text/markdown; charset=utf-8\n  Link: <${page.canonical}>; rel="canonical"\n  X-Robots-Tag: noindex\n`;
 headers += '\n/llms.txt\n  Content-Type: text/plain; charset=utf-8\n\n/llms-full.txt\n  Content-Type: text/plain; charset=utf-8\n';

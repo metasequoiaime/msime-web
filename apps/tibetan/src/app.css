@@ -3,7 +3,7 @@
  *
  * Layer order, lowest to highest priority:
  * - theme / base / components / utilities: Tailwind's own layers.
- * - site: design tokens, document-level base styles, motion, the shell hook classes, markdown prose, and the resume sheet (src/styles/resume.css, imported by its page). It outranks Tailwind's preflight but not components/utilities, so a utility class on an element always beats the shared defaults.
+ * - site: design tokens, document-level base styles, motion and this site's shell and copy styles. It outranks Tailwind's preflight but not components/utilities, so a utility class on an element always beats the shared defaults.
  */
 @layer theme, base, site, components, utilities;
 
@@ -11,8 +11,7 @@
 @import "./styles/tokens.css";
 @import "./styles/base.css";
 @import "./styles/motion.css";
-@import "./styles/shell.css";
-@import "./styles/prose.css";
+@import "./styles/site.css";
 
 @font-face {
   font-family: "Cascadia Code";
@@ -43,14 +42,8 @@
   }
 }
 
-/* Season variants for the rare markup that must differ per season (the header's season label, seasonal illustrations). Colours should come from tokens instead. No attribute means summer, so `summer:` also matches the attribute-less static HTML. */
-@custom-variant spring (&:where([data-season="spring"], [data-season="spring"] *));
-@custom-variant autumn (&:where([data-season="autumn"], [data-season="autumn"] *));
-@custom-variant winter (&:where([data-season="winter"], [data-season="winter"] *));
-@custom-variant summer (&:where(:root:not([data-season]), :root:not([data-season]) *, [data-season="summer"], [data-season="summer"] *));
-
 @theme inline {
-  /* Breakpoints follow the design's JS width checks (1180 nav, 960 docs sidebar, 900 platform/footer grid, 760 feature grid, 640 words/releases, 560 footer, 480 platforms). */
+  /* Breakpoints from the official site's design. */
   --breakpoint-*: initial;
   --breakpoint-xs: 30rem;
   --breakpoint-sm: 35rem;
