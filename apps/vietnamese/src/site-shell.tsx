@@ -3,7 +3,6 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type 
 import { basePath, isPagePath, LOCALE_LANG, LOCALE_NAME, LOCALES, localePath, type Locale } from "../shared/locales";
 import { MSIME_ORIGIN } from "../shared/site-seo";
 import { LocaleLink as Link } from "./locale-link";
-import { SEASON_CHOICES, SEASON_OPTIONS } from "./season";
 import { THEME_CHOICES, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, SeasonBackdrop, SunIcon, ToastProvider, cx } from "./ui";
 import { useLocale } from "./use-locale";
@@ -125,11 +124,11 @@ function LanguageOptions({ onCurrent }: { onCurrent: () => void }) {
   );
 }
 
-/** One round palette button: light/dark/system, the seasonal colours and the language switch in a single popover. */
+/** One round palette button: light/dark/system and the language switch in a single popover. This site has one palette, so there is no seasonal choice. */
 function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
   const { messages } = useLocale();
   const text = messages.shell;
-  const { theme, setTheme, season, setSeason } = useTheme();
+  const { theme, setTheme } = useTheme();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const close = useCallback(
@@ -177,15 +176,6 @@ function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boo
                   {THEME_ICONS[choice]}
                 </span>
                 {text.themes[choice]}
-              </OptionButton>
-            ))}
-          </OptionGroup>
-
-          <OptionGroup label={text.season} columns="grid-cols-5">
-            {SEASON_CHOICES.map((choice) => (
-              <OptionButton key={choice} checked={season === choice} onSelect={() => setSeason(choice, buttonCenter(buttonRef.current))}>
-                <span className="size-4 flex-none rounded-full shadow-hair" style={{ background: SEASON_OPTIONS[choice].dot }} aria-hidden="true" />
-                <span title={choice === "auto" ? text.seasonAuto : undefined}>{text.seasons[choice]}</span>
               </OptionButton>
             ))}
           </OptionGroup>

@@ -3,7 +3,6 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type 
 import { basePath } from "../shared/site-seo";
 import { useLocale, type Messages } from "./i18n";
 import { LocaleLink as Link } from "./locale-link";
-import { SEASON_CHOICES, SEASON_DOTS, seasonForMonth } from "./season";
 import { THEME_CHOICES, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, SeasonBackdrop, SunIcon, ToastProvider, cx } from "./ui";
 
@@ -102,11 +101,11 @@ const THEME_ICONS: Record<ThemeChoice, ReactNode> = {
   system: <MonitorIcon />,
 };
 
-/** The round palette button: light/dark/system and the seasonal skin in one popover. It stays open while options are picked; Escape closes it and returns focus to the button. */
+/** The round palette button: light/dark/system in one popover (this site has one palette, so there is no seasonal choice). It stays open while options are picked; Escape closes it and returns focus to the button. */
 function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
   const { messages } = useLocale();
   const shell = messages.shell;
-  const { theme, setTheme, season, setSeason } = useTheme();
+  const { theme, setTheme } = useTheme();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const close = useCallback(
@@ -121,8 +120,6 @@ function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boo
   useEffect(() => {
     if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitemradio"][aria-checked="true"]')?.focus();
   }, [isOpen]);
-
-  const monthSeason = shell.seasons[seasonForMonth(new Date().getMonth() + 1)].name;
 
   return (
     <div className="relative" ref={rootRef}>
@@ -157,18 +154,6 @@ function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boo
                 {shell.themes[choice]}
               </OptionButton>
             ))}
-          </OptionGroup>
-
-          <OptionGroup label={shell.season} columns="grid-cols-5">
-            {SEASON_CHOICES.map((choice) => {
-              const option = shell.seasons[choice];
-              return (
-                <OptionButton key={choice} checked={season === choice} onSelect={() => setSeason(choice, buttonCenter(buttonRef.current))}>
-                  <span className="size-4 flex-none rounded-full shadow-hair" style={{ background: SEASON_DOTS[choice] }} aria-hidden="true" />
-                  <span title={choice === "auto" ? `${option.sub} · ${shell.seasonNow}${monthSeason}` : option.sub}>{option.name}</span>
-                </OptionButton>
-              );
-            })}
           </OptionGroup>
         </div>
       )}
