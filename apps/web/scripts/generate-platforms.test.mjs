@@ -278,6 +278,21 @@ test('macOS keeps the installer and archive but never the iOS build', () => {
   assert.deepEqual(labels, ['安装包 · pkg', '压缩包 · zip']);
 });
 
+test('macOS lists the full pkg first and each single-scheme edition after it', () => {
+  const names = ['msime-macos-0.60.0-universal.pkg', 'msime-macos-japanese-0.60.0-universal.pkg', 'msime-macos-pinyin-0.60.0-universal.pkg',
+    'msime-macos-tibetan-0.60.0-universal.pkg', 'msime-macos-vietnamese-0.60.0-universal.pkg', 'msime-macos-wubi-0.60.0-universal.pkg',
+    'msime-macos-wubi-0.60.0-universal-nightly.12.1.pkg', 'SHA256SUMS'];
+  const downloads = classifyAssets('macos', names.map(n => asset(n, { browser_download_url: `https://github.com/metasequoiaime/msime/releases/download/macos-v0.60.0/${n}` })));
+  assert.deepEqual(downloads.map(d => [d.name, d.label]), [
+    ['msime-macos-0.60.0-universal.pkg', '通用 · pkg'],
+    ['msime-macos-pinyin-0.60.0-universal.pkg', '水杉拼音 · pkg'],
+    ['msime-macos-wubi-0.60.0-universal.pkg', '水杉五笔 · pkg'],
+    ['msime-macos-japanese-0.60.0-universal.pkg', '水杉日语 · pkg'],
+    ['msime-macos-vietnamese-0.60.0-universal.pkg', '水杉越南语 · pkg'],
+    ['msime-macos-tibetan-0.60.0-universal.pkg', '水杉藏文 · pkg'],
+  ]);
+});
+
 test('signing is only claimed where the filenames actually declare it', () => {
   // Windows 和 macOS 的流水线把 unsigned 写进文件名，所以没有它就是签过
   assert.equal(signingState('windows', [{ name: 'MetasequoiaIME_Setup_v0.5.4.exe' }]), true);
@@ -440,9 +455,12 @@ const dmgMacos = (tag, prerelease = false) => {
   return macosRelease(tag, [`msime-macos-${version}-universal.dmg`, `msime-macos-wubi-${version}-universal.dmg`, 'SHA256SUMS'], prerelease);
 };
 
-test('the macOS pkg is listed as the full edition only, apart from the pkg era installer', () => {
+test('the macOS pkg leads with the full edition and keeps each single-scheme edition behind it, apart from the pkg era installer', () => {
   const downloads = classifyAssets('macos', pkgMacos('macos-v0.57.0').assets);
-  assert.deepEqual(downloads.map(d => `${d.name} ${d.label} ${d.arch}`), ['msime-macos-0.57.0-universal.pkg 通用 · pkg Universal']);
+  assert.deepEqual(downloads.map(d => `${d.name} ${d.label} ${d.arch}`), [
+    'msime-macos-0.57.0-universal.pkg 通用 · pkg Universal',
+    ...[['pinyin', '水杉拼音'], ['wubi', '水杉五笔'], ['japanese', '水杉日语'], ['vietnamese', '水杉越南语'], ['tibetan', '水杉藏文']].map(([id, name]) => `msime-macos-${id}-0.57.0-universal.pkg ${name} · pkg Universal`),
+  ]);
   // 最早那种 pkg 仍按原来的规则认，两种 pkg 互不误认
   assert.deepEqual(classifyAssets('macos', [macosAsset('v0.50.0-build.9', 'MetasequoiaIME-v0.50.0-build.9-macos-universal.pkg')]).map(d => d.label), ['安装包 · pkg']);
   assert.deepEqual(classifyAssets('macos', [macosAsset('macos-v0.57.0', 'msime-macos-0.57.0-universal-nightly.1.2.pkg')]), []);
@@ -452,7 +470,7 @@ test('a stable pkg release supersedes the DMG releases, and only pkg pre-release
   const releases = [legacyMacos('v0.50.0-build.9'), dmgMacos('macos-v0.56.0'), dmgMacos('macos-v0.56.1'), dmgMacos('macos-v0.56.2-beta', true), pkgMacos('macos-v0.57.0')];
   const chosen = selectRelease('macos', releases);
   assert.equal(chosen.version, '0.57.0');
-  assert.deepEqual(chosen.downloads.map(d => d.name), ['msime-macos-0.57.0-universal.pkg']);
+  assert.deepEqual(chosen.downloads.map(d => d.name), ['msime-macos-0.57.0-universal.pkg', ...['pinyin', 'wubi', 'japanese', 'vietnamese', 'tibetan'].map(id => `msime-macos-${id}-0.57.0-universal.pkg`)]);
   assert.equal(chosen.prerelease, false);
   assert.equal(chosen.signed, null);
   assert.equal(chosen.preview, null);
@@ -460,7 +478,7 @@ test('a stable pkg release supersedes the DMG releases, and only pkg pre-release
   const withBeta = selectRelease('macos', [...releases, pkgMacos('macos-v0.57.1-beta', true)]);
   assert.equal(withBeta.version, '0.57.0');
   assert.equal(withBeta.preview.version, '0.57.1-beta');
-  assert.deepEqual(withBeta.preview.downloads.map(d => d.name), ['msime-macos-0.57.1-universal.pkg']);
+  assert.deepEqual(withBeta.preview.downloads.map(d => d.name), ['msime-macos-0.57.1-universal.pkg', ...['pinyin', 'wubi', 'japanese', 'vietnamese', 'tibetan'].map(id => `msime-macos-${id}-0.57.1-universal.pkg`)]);
 });
 
 test('a pkg pre-release before the first stable pkg leaves the DMG release and its DMG preview in place', () => {
