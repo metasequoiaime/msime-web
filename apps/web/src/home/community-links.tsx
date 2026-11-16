@@ -3,7 +3,7 @@ import { useLocale } from "../use-locale";
 import { CopyIcon, ExternalIcon, QQIcon, TelegramIcon, copyText, cx, useToast } from "../ui";
 
 const TELEGRAM_URL = "https://t.me/msimegroup";
-const QQ_GROUP = "829919142";
+const QQ_GROUP = "1130214982";
 
 const pillClass =
   "group inline-flex h-8 cursor-pointer items-center gap-2 rounded-full border-0 bg-accent-soft px-3.5 text-[13.5px] font-medium text-ink no-underline transition-colors hover:bg-accent-ring focus-visible:bg-accent-ring";
