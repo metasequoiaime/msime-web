@@ -5,8 +5,8 @@
   "start_url": "/",
   "display": "browser",
   "lang": "vi",
-  "background_color": "#F5FAF6",
-  "theme_color": "#F5FAF6",
+  "background_color": "#FBF5F2",
+  "theme_color": "#FBF5F2",
   "icons": [
     { "src": "/msime-logo.png", "sizes": "128x128", "type": "image/png" },
     { "src": "/msime.png", "sizes": "440x440", "type": "image/png" }
