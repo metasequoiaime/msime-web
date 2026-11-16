@@ -7,7 +7,7 @@
     "dev": "node scripts/sync-release-data.mjs && vite",
     "build": "node scripts/sync-release-data.mjs && tsc && vite build && vite build --ssr src/entry-static.tsx --outDir dist-ssr && node --experimental-strip-types scripts/build-seo.mjs && node scripts/csp-hashes.mjs dist && node --experimental-strip-types --test scripts/seo-output.test.mjs",
     "preview": "vite preview",
-    "test": "node --test scripts/csp-hashes.test.mjs && node --experimental-strip-types --test scripts/site-metadata.test.mjs scripts/release-data.test.mjs scripts/messages.test.mjs",
+    "test": "node scripts/sync-release-data.mjs && node --test scripts/csp-hashes.test.mjs && node --experimental-strip-types --test scripts/site-metadata.test.mjs scripts/release-data.test.mjs scripts/messages.test.mjs",
     "test:seo": "node --experimental-strip-types --test scripts/seo-output.test.mjs"
   },
   "devDependencies": {
