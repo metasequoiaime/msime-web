@@ -68,7 +68,7 @@ const BODY = Buffer.from('hello');
 const SHA = createHash('sha256').update(BODY).digest('hex');
 
 /**
- * The public mirror URL as workers/dl/ answers it. `objects` maps a key to the bytes R2 holds; HEAD reports only those, and a GET for a missing key stores `githubBody` first, the way the worker fills from GitHub. `denied` makes it answer 403 for everything.
+ * The public mirror URL as apps/dl-worker/ answers it. `objects` maps a key to the bytes R2 holds; HEAD reports only those, and a GET for a missing key stores `githubBody` first, the way the worker fills from GitHub. `denied` makes it answer 403 for everything.
  */
 function harness({ objects = {}, githubBody = BODY, denied = false } = {}) {
   const calls = [];

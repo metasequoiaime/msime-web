@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
-import worker, { BUFFER_LIMIT, objectKey, originFor } from '../workers/dl/index.mjs';
-import { DOWNLOAD_OUTBOX, flushDownloads } from '../workers/dl/download-stats.mjs';
+import worker, { BUFFER_LIMIT, objectKey, originFor } from './index.mjs';
+import { DOWNLOAD_OUTBOX, flushDownloads } from './download-stats.mjs';
 
 const DICTIONARY = 'https://github.com/metasequoiaime/msime-dictionary/releases/download/dict-v2.0.14/msime-pinyin.db';
 const LEGACY_DICTIONARY = 'metasequoiaime/msime-dictionary/releases/download/dict-v2.0.14/msime-pinyin.db';

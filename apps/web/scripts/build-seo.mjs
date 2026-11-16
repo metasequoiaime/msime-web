@@ -17,7 +17,7 @@ const escapeXml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;'
 const markdown = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
 markdown.keep(['table']);
 const contents = [];
-const docsCommit = execFileSync('git', ['-C', 'vendor/MSIME-Docs', 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+const docsCommit = execFileSync('git', ['-C', '../../vendor/MSIME-Docs', 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const pages = [...Object.keys(seoPages), '/404/'];
 const translatedTemplates = Object.fromEntries(Object.keys(traditionalPages).map(path => [traditionalPath(path), readFileSync(`${dist}/${path === '/' ? 'index.html' : path.startsWith('/docs/') ? 'docs/index.html' : `${path.slice(1)}index.html`}`, 'utf8')]));
 const docsTemplate = readFileSync(`${dist}/docs/index.html`, 'utf8');

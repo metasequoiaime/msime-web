@@ -1,0 +1,12 @@
+{
+  "name": "@msime-web/dl-worker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test index.test.mjs"
+  },
+  "dependencies": {
+    "@msime-web/download-stats": "workspace:*"
+  }
+}

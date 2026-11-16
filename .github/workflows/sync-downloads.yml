@@ -1,6 +1,6 @@
 name: Sync downloads
 
-# 两份清单都带着 Windows 的版本号：public/update.json 是 Windows 客户端「检查更新」读的接口，public/platforms.json 是下载页的三平台产物清单。构建里有一条断言把它们钉在一起（scripts/seo-output.test.mjs）—— 下载面板渲染的版本必须等于 update.json 里的版本，因为页面上写着「下载 v0.8.0」而客户端自动更新到 0.7.1 是在对用户说假话。
+# 两份清单都带着 Windows 的版本号：apps/web/public/update.json 是 Windows 客户端「检查更新」读的接口，apps/web/public/platforms.json 是下载页的三平台产物清单。构建里有一条断言把它们钉在一起（apps/web/scripts/seo-output.test.mjs）—— 下载面板渲染的版本必须等于 update.json 里的版本，因为页面上写着「下载 v0.8.0」而客户端自动更新到 0.7.1 是在对用户说假话。
 #
 # 所以这两份文件必须在同一个 PR 里一起动。拆成两条自动化各产一个 PR 的时候，两个 PR 各自只改了一半，于是各自都违反那条断言、各自的 Build 都挂、auto-merge 谁也合不了，页面就停在旧版本不动。这不是偶发：0.6.7 和 0.7.1 两次发版都是这么卡住的，两次都靠人手工把两份文件并成一个提交推上去（231040e、af5b998），0.8.0 是第三次，卡了一天。
 #
@@ -8,9 +8,9 @@ name: Sync downloads
 #
 # 半小时一轮的 cron 只是兜底。真正让页面跟上发布的是 repository_dispatch：上游（MSIME-Windows / msime，原 MSIME-Apple / 已归档的 MSIME-Linux）的发布流水线发完版后往本仓库投一个事件即可触发，Windows 发版后 4 秒站上就是新版本。两个历史事件名都保留，上游不用改。
 #
-# 国内镜像：配置了仓库变量 DOWNLOAD_MIRROR_BASE_URL 时，platforms.json 里每个包都带一个 dl.msime.app（Cloudflare R2 前面的 Worker，workers/dl/）上的 mirrorUrl。镜像里没有的文件由 Worker 在第一次 GET 时从 GitHub 取来存下，所以这里只是在提 PR 之前把每个包通过镜像地址读一遍、核对大小和校验值，不上传，也不需要任何凭据。某个包镜像失败只会让它暂时没有镜像按钮，不拦发布；这一轮在提完 PR 之后标红。见 README「国内镜像」。
+# 国内镜像：配置了仓库变量 DOWNLOAD_MIRROR_BASE_URL 时，platforms.json 里每个包都带一个 dl.msime.app（Cloudflare R2 前面的 Worker，apps/dl-worker/）上的 mirrorUrl。镜像里没有的文件由 Worker 在第一次 GET 时从 GitHub 取来存下，所以这里只是在提 PR 之前把每个包通过镜像地址读一遍、核对大小和校验值，不上传，也不需要任何凭据。某个包镜像失败只会让它暂时没有镜像按钮，不拦发布；这一轮在提完 PR 之后标红。见 README「国内镜像」。
 #
-# 守卫（scripts/enable-manifest-automerge.py）把分支和它能改的文件绑死：这条分支只能改这两份清单，其余检查（非草稿、base 为 main、head sha 精确匹配、同仓来源、main 必须有 PR 规则和三项必需检查）一律不变。
+# 守卫（.github/scripts/enable-manifest-automerge.py）把分支和它能改的文件绑死：这条分支只能改这两份清单，其余检查（非草稿、base 为 main、head sha 精确匹配、同仓来源、main 必须有 PR 规则和三项必需检查）一律不变。
 
 on:
   schedule:
@@ -56,6 +56,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PGYER_API_KEY: ${{ secrets.PGYER_API_KEY }}
           DOWNLOAD_MIRROR_BASE_URL: ${{ vars.DOWNLOAD_MIRROR_BASE_URL }}
+        working-directory: apps/web
         run: |
           set -euo pipefail
           node --test scripts/generate-update.test.mjs scripts/generate-platforms.test.mjs scripts/manifest-changed.test.mjs
@@ -65,10 +66,12 @@ jobs:
       - name: Fill and check the download mirror
         id: mirror
         if: vars.DOWNLOAD_MIRROR_BASE_URL != ''
+        working-directory: apps/web
         run: node scripts/mirror-downloads.mjs
 
       - name: Detect changes
         id: write
+        working-directory: apps/web
         run: |
           set -euo pipefail
           # update.json 没有时间戳，`git diff` 就是答案。platforms.json 另有一个 generatedAt，每轮都不一样，直接比会让一天 48 轮里的绝大多数都产出一个只挪时间戳的提交。
@@ -91,8 +94,8 @@ jobs:
           # A trusted token triggers PR CI and deployment after merging.
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           add-paths: |
-            public/update.json
-            public/platforms.json
+            apps/web/public/update.json
+            apps/web/public/platforms.json
           branch: automation/downloads
           base: main
           delete-branch: true
@@ -107,7 +110,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ steps.proposal.outputs.pull-request-number }}
           HEAD_SHA: ${{ steps.proposal.outputs.pull-request-head-sha }}
-        run: python3 scripts/enable-manifest-automerge.py --repo "$GH_REPO" --pr "$PR_NUMBER" --sha "$HEAD_SHA"
+        run: python3 .github/scripts/enable-manifest-automerge.py --repo "$GH_REPO" --pr "$PR_NUMBER" --sha "$HEAD_SHA"
 
       - name: Fail when a package could not be mirrored
         if: steps.mirror.outputs.failed != '' && steps.mirror.outputs.failed != '0'

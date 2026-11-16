@@ -37,6 +37,6 @@ jobs:
       - name: Validate generated data
         run: pnpm run test
       - name: Test manifest auto-merge restrictions
-        run: python3 -m unittest discover -s scripts -p 'test_*.py'
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
       - name: Build
         run: pnpm run build

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { appendFile, readFile, writeFile } from 'node:fs/promises';
 
 /*
- * 国内镜像：下载页上的每个安装包在 dl.msime.app（Cloudflare R2 前面的 Worker，workers/dl/）上都有一份，页面在 GitHub 按钮旁边给出镜像地址。
+ * 国内镜像：下载页上的每个安装包在 dl.msime.app（Cloudflare R2 前面的 Worker，apps/dl-worker/）上都有一份，页面在 GitHub 按钮旁边给出镜像地址。
  *
  * GitHub 的 release 下载在国内经常只有几十 KB/s，QQ 群文件、夸克和蓝奏云盘又只有 Windows 安装包、而且要人工上传。这里跟着 sync-downloads 的同一轮走：platforms.json 选出哪些包，就镜像哪些包，不需要任何人手动搬运。
  *
