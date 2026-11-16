@@ -1,5 +1,5 @@
-import faqImageSources from "../vendor/MSIME-Docs/guides/assets/faq/sources.json";
-const faqImages = import.meta.glob<string>("../vendor/MSIME-Docs/guides/assets/faq/*.png", { eager: true, query: "?url&no-inline", import: "default" });
+import faqImageSources from "../../../vendor/MSIME-Docs/guides/assets/faq/sources.json";
+const faqImages = import.meta.glob<string>("../../../vendor/MSIME-Docs/guides/assets/faq/*.png", { eager: true, query: "?url&no-inline", import: "default" });
 import { isTraditional } from "../shared/locales";
 import { toTraditional } from "../shared/translate";
 import { localeHref } from "../shared/locales";
@@ -79,7 +79,7 @@ const localizeSiteLinks = (root: ParentNode, localePath: string) => {
     const match = source.match(/^(?:\.\.\/)?assets\/faq\/([^/]+\.png)$/);
     if (match) {
       const name = match[1] as keyof typeof faqImageSources.images;
-      const asset = faqImages[`../vendor/MSIME-Docs/guides/assets/faq/${name}`];
+      const asset = faqImages[`../../../vendor/MSIME-Docs/guides/assets/faq/${name}`];
       const info = faqImageSources.images[name];
       if (asset && info) {
         element.setAttribute("src", asset);

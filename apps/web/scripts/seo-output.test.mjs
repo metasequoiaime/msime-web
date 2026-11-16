@@ -390,10 +390,10 @@ test('both languages retain the same page structure, controls and complete conte
 
 test('Traditional documents track complete source and preserve executable examples', async () => {
   const { createHash } = await import('node:crypto');
-  const sources = JSON.parse(readFileSync('vendor/MSIME-Docs/guides/zh-TW/sources.json', 'utf8'));
+  const sources = JSON.parse(readFileSync('../../vendor/MSIME-Docs/guides/zh-TW/sources.json', 'utf8'));
   for (const name of ['windows', 'macos', 'macos-voice', 'linux', 'android', 'ios', 'faq']) {
-    const source = readFileSync(`vendor/MSIME-Docs/guides/${name}.md`, 'utf8');
-    const translated = readFileSync(`vendor/MSIME-Docs/guides/zh-TW/${name}.md`, 'utf8');
+    const source = readFileSync(`../../vendor/MSIME-Docs/guides/${name}.md`, 'utf8');
+    const translated = readFileSync(`../../vendor/MSIME-Docs/guides/zh-TW/${name}.md`, 'utf8');
     assert.equal(createHash('sha256').update(source).digest('hex'), sources.files[`${name}.md`].sourceSha256, name);
     assert.deepEqual(translated.match(/```[^\n]*\n[\s\S]*?```/g), source.match(/```[^\n]*\n[\s\S]*?```/g), name);
     if (name !== 'faq') {

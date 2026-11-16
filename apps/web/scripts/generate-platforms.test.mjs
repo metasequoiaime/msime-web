@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { classifyAssets, fetchAllReleases, fetchNpmDownloadStats, selectExperimental, selectRelease, selectWindows7, signingState, versionOrder } from './generate-platforms.mjs';
-import { downloadSnapshot, downloadStats } from './download-stats.mjs';
+import { downloadSnapshot, downloadStats } from '@msime-web/download-stats';
 
 const statsRelease = (assets, extra = {}) => ({ draft: false, published_at: '2026-10-21T00:00:00Z', assets, ...extra });
 const countedAsset = (id, name, count) => ({ id, name, download_count: count });

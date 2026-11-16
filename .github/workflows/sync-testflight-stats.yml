@@ -27,6 +27,7 @@ jobs:
           node-version: 22
       - name: Validate the aggregate and ignore old or unchanged events
         id: write
+        working-directory: apps/web
         run: |
           set -euo pipefail
           node --experimental-strip-types --test scripts/testflight-stats.test.mjs
@@ -43,7 +44,7 @@ jobs:
         id: proposal
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          add-paths: public/testflight-stats.json
+          add-paths: apps/web/public/testflight-stats.json
           branch: automation/testflight-stats
           base: main
           delete-branch: true
@@ -57,4 +58,4 @@ jobs:
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ steps.proposal.outputs.pull-request-number }}
           HEAD_SHA: ${{ steps.proposal.outputs.pull-request-head-sha }}
-        run: python3 scripts/enable-manifest-automerge.py --repo "$GH_REPO" --pr "$PR_NUMBER" --sha "$HEAD_SHA"
+        run: python3 .github/scripts/enable-manifest-automerge.py --repo "$GH_REPO" --pr "$PR_NUMBER" --sha "$HEAD_SHA"

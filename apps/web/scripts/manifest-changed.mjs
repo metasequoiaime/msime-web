@@ -39,6 +39,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const next = readFileSync(file, 'utf8');
   let previous = '';
   // Not tracked in HEAD yet: that is a new manifest, so it counts as changed.
-  try { previous = execFileSync('git', ['show', `HEAD:${file}`], { encoding: 'utf8' }); } catch { previous = ''; }
+  try { previous = execFileSync('git', ['show', `HEAD:./${file}`], { encoding: 'utf8' }); } catch { previous = ''; }
   process.stdout.write(differsBeyondTimestamp(previous, next) ? 'true' : 'false');
 }

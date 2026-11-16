@@ -1,4 +1,4 @@
-import { installerPlatform } from '../../scripts/download-stats.mjs';
+import { installerPlatform } from '@msime-web/download-stats';
 
 const TELEMETRY_URL = 'https://api.msime.app/v1/telemetry/events';
 export const DOWNLOAD_OUTBOX = 'download-events/pending/';

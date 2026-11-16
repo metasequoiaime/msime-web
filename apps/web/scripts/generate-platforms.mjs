@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { canonicalGithubUrl } from './github-url.mjs';
 import { attachMirrors, mirrorBase } from './mirror-downloads.mjs';
-import { downloadSnapshot, DOWNLOAD_STATS_REPOSITORIES } from './download-stats.mjs';
+import { downloadSnapshot, DOWNLOAD_STATS_REPOSITORIES } from '@msime-web/download-stats';
 
 /*
  * public/platforms.json 给下载页提供三个平台各自的最新版本与安装包。

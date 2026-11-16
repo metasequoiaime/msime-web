@@ -9,9 +9,9 @@ REQUIRED = {'Build', 'Workflow validation', 'Dependency review'}
 #
 # The downloads branch owns two files because both of them carry the Windows version and the build asserts the two agree. A pull request that moved only one of them would be a pull request that cannot pass its own checks, so they are proposed together. Changing just one is still allowed here: a macOS or Linux release moves platforms.json on its own, and that says nothing about update.json.
 ALLOWED = {
-    'automation/downloads': frozenset({'public/update.json', 'public/platforms.json'}),
-    'automation/community-snapshot': frozenset({'public/community.json'}),
-    'automation/testflight-stats': frozenset({'public/testflight-stats.json'}),
+    'automation/downloads': frozenset({'apps/web/public/update.json', 'apps/web/public/platforms.json'}),
+    'automation/community-snapshot': frozenset({'apps/web/public/community.json'}),
+    'automation/testflight-stats': frozenset({'apps/web/public/testflight-stats.json'}),
 }
 BRANCH = 'automation/downloads'
 

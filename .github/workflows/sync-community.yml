@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      SNAPSHOT: public/community.json
+      SNAPSHOT: apps/web/public/community.json
     steps:
       - name: Check out the site
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -52,11 +52,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          node --test scripts/generate-community.test.mjs scripts/manifest-changed.test.mjs
-          node scripts/generate-community.mjs
+          node --test apps/web/scripts/generate-community.test.mjs apps/web/scripts/manifest-changed.test.mjs
+          node apps/web/scripts/generate-community.mjs
           # Not `git diff`: generatedAt moves on every run, so that would propose a PR every half hour
           # whether or not a single star or commit had changed.
-          echo "changed=$(node scripts/manifest-changed.mjs "$SNAPSHOT")" >> "$GITHUB_OUTPUT"
+          echo "changed=$(node apps/web/scripts/manifest-changed.mjs "$SNAPSHOT")" >> "$GITHUB_OUTPUT"
 
       - name: Require the PR automation credential
         if: steps.write.outputs.changed == 'true'
@@ -71,7 +71,7 @@ jobs:
         with:
           # A trusted token triggers PR CI and deployment after merging.
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          add-paths: public/community.json
+          add-paths: apps/web/public/community.json
           branch: automation/community-snapshot
           base: main
           delete-branch: true
@@ -86,4 +86,4 @@ jobs:
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ steps.proposal.outputs.pull-request-number }}
           HEAD_SHA: ${{ steps.proposal.outputs.pull-request-head-sha }}
-        run: python3 scripts/enable-manifest-automerge.py --repo "$GH_REPO" --pr "$PR_NUMBER" --sha "$HEAD_SHA"
+        run: python3 .github/scripts/enable-manifest-automerge.py --repo "$GH_REPO" --pr "$PR_NUMBER" --sha "$HEAD_SHA"

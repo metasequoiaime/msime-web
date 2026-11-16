@@ -28,14 +28,28 @@ pnpm install
 pnpm dev                      # 开发服务器
 ```
 
-其余命令：
+### 仓库结构
+
+pnpm workspace，依赖和锁文件只在根目录装一次：
+
+| 目录 | 内容 |
+| --- | --- |
+| `apps/web/` | 官网（Cloudflare Pages 项目的 Root directory）：各页面的 `index.html`、`src/`、Pages Functions `functions/`、前后端共用的 `shared/`、`public/`，以及构建、清单生成与测试脚本 `scripts/` |
+| `apps/dl-worker/` | `dl.msime.app` 下载镜像 Worker，单独用 `wrangler deploy` 发布 |
+| `packages/download-stats/` | 安装包分类与下载统计，官网清单生成和镜像 Worker 共用 |
+| `vendor/MSIME-Docs/` | 用户指南的固定 gitlink |
+| `.github/scripts/` | 自动 PR 的合并守卫 |
+
+下文提到的 `src/`、`shared/`、`functions/`、`public/`、`scripts/` 都在 `apps/web/` 下；`node scripts/...`、`wrangler pages dev dist` 这类命令在 `apps/web/` 目录运行。根目录的 `pnpm` 命令会转发到对应的包。
+
+其余命令（在根目录运行）：
 
 | 命令 | 作用 |
 | --- | --- |
 | `pnpm run build` | `tsc` 类型检查 + 生产构建，CI 跑的就是这条 |
 | `pnpm run preview` | 预览构建产物 |
 | `pnpm run lint` | Biome 静态检查 |
-| `pnpm test` | 校验更新元数据生成逻辑 |
+| `pnpm test` | 运行所有包的测试 |
 
 Biome 只开了 linter，formatter 处于关闭状态——仓库既有代码尚未按 Biome 的风格格式化，统一格式化是一次独立的机械提交，不与功能改动混在一起。
 
@@ -53,7 +67,7 @@ Biome 只开了 linter，formatter 处于关闭状态——仓库既有代码尚
 
 ```sh
 wrangler r2 object put "msime/gallery/<版本>/illustrations/<路径>" \
-  --config workers/dl/wrangler.jsonc --remote \
+  --config apps/dl-worker/wrangler.jsonc --remote \
   --file "output/gallery/illustrations/<路径>" \
   --content-type image/webp --cache-control "public, max-age=31536000, immutable"
 ```
@@ -90,7 +104,7 @@ Apple 返回的可用构建安装次数不等于独立人数或全部历史安�
 
 ### 国内镜像（Cloudflare R2）
 
-GitHub Release 在国内下载很慢，所以下载页的安装包、客户端的资源包、语音模型和应用更新都在 `dl.msime.app` 上有一份镜像。它是 Cloudflare R2（bucket `msime`，和 `media.msime.app` 共用）前面的一个 Worker，代码在 `workers/dl/`。R2 不收流出流量费用；之前用的阿里云 OSS 香港按外网流出计费（约 0.75 元/GB），上线第二天就下载了 118 GB。没有 ICP 备案就用不了国内节点，Cloudflare 在国内没有节点，速度介于 GitHub 和 OSS 香港之间。
+GitHub Release 在国内下载很慢，所以下载页的安装包、客户端的资源包、语音模型和应用更新都在 `dl.msime.app` 上有一份镜像。它是 Cloudflare R2（bucket `msime`，和 `media.msime.app` 共用）前面的一个 Worker，代码在 `apps/dl-worker/`。R2 不收流出流量费用；之前用的阿里云 OSS 香港按外网流出计费（约 0.75 元/GB），上线第二天就下载了 118 GB。没有 ICP 备案就用不了国内节点，Cloudflare 在国内没有节点，速度介于 GitHub 和 OSS 香港之间。
 
 两种地址，对象名就是路径：
 
@@ -103,7 +117,7 @@ R2 里没有的对象由 Worker 在第一次 GET 时从 GitHub 取来存下，�
 
 统计：Worker 将匿名下载事件写入 R2 的私有 `download-events/pending/` 发件箱，每分钟最多投递 100 条到现有后端遥测接口。后端确认 202 后才删除，网络失败和限流保留原 ID 重试，后台唯一键负责去重；不保存访问者地址、Cookie 或请求头。HEAD、非起始 Range、失败响应和带 `X-MSIME-Mirror-Check: 1` 的自动预热不计数。安装包响应使用 `no-store`，让后续实际网络下载经过服务器。原浏览器缓存中的旧页面可能在迁移窗口继续发送旧点击，不能据此推算或扣除历史。R2 写入失败只记录错误码，不阻断用户下载。
 
-部署：Worker 不走 CI，改了 `workers/dl/` 之后在该目录运行 `wrangler deploy`（Cloudflare 账号 Metasequoiaime@gmail.com's Account）。`dl.msime.app` 是 Worker 的自定义域名，证书由 Cloudflare 管理。
+部署：Worker 不走 CI，改了 `apps/dl-worker/` 之后在该目录运行 `wrangler deploy`（Cloudflare 账号 Metasequoiaime@gmail.com's Account）。`dl.msime.app` 是 Worker 的自定义域名，证书由 Cloudflare 管理。
 
 ## Bug 反馈 or 功能建议
 
@@ -127,7 +141,7 @@ R2 里没有的对象由 Worker 在第一次 GET 时从 GitHub 取来存下，�
 
 `/feedback/` 无需 GitHub 登录，按 Windows / Apple / Linux / 公共引擎 / 公共 API / 文档 / 官网分流到组织内对应仓库。前后端共用答案校验与 Issue 格式化函数；模板正文从 GitHub 仓库读取。提交内容公开；可选填 QQ 号码及昵称、微信、GitHub 用户名和 Email，填写的联系方式也会公开；防机器人验证使用 Turnstile。
 
-继续使用现有 Cloudflare Pages Git 集成，构建命令和 `dist` 输出目录不变。根目录 `functions/api/feedback.ts` 提供 `/api/feedback`，`public/_routes.json` 仅将此接口、`/api/feedback-templates` 模板读取接口及 `/api/feedback-images/*` 截图读取路由交给 Functions。不要将 GitHub 凭据放入任何 `VITE_*` 环境变量或前端代码。
+继续使用现有 Cloudflare Pages Git 集成：Root directory 为 `apps/web`，环境变量 `SKIP_DEPENDENCY_INSTALL=1`，构建命令 `pnpm install --frozen-lockfile && pnpm build`（在 workspace 根装依赖，不依赖 Pages 对锁文件位置的自动探测），输出目录 `dist`。`functions/api/feedback.ts` 提供 `/api/feedback`，`public/_routes.json` 仅将此接口、`/api/feedback-templates` 模板读取接口及 `/api/feedback-images/*` 截图读取路由交给 Functions。不要将 GitHub 凭据放入任何 `VITE_*` 环境变量或前端代码。
 
 在现有 Pages 项目的生产环境设置以下运行时变量，再通过正常 PR 发布：
 

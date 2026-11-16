@@ -1,9 +1,9 @@
 import { usePageSearch } from "./use-page-search";
-import traditionalFaqSource from "../vendor/MSIME-Docs/guides/zh-TW/faq.md?raw";
+import traditionalFaqSource from "../../../vendor/MSIME-Docs/guides/zh-TW/faq.md?raw";
 import { useLocale } from "./use-locale";
 import { serializeJsonLd } from "../shared/site-seo";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import faqSource from "../vendor/MSIME-Docs/guides/faq.md?raw";
+import faqSource from "../../../vendor/MSIME-Docs/guides/faq.md?raw";
 import { renderContent } from "./markdown";
 import { PageHero } from "./page-content";
 import { usePageMeta } from "./page-meta";

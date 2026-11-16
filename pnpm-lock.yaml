@@ -7,7 +7,22 @@ settings:
 importers:
 
   .:
+    devDependencies:
+      '@biomejs/biome':
+        specifier: ^2.6.4
+        version: 2.6.4
+
+  apps/dl-worker:
     dependencies:
+      '@msime-web/download-stats':
+        specifier: workspace:*
+        version: link:../../packages/download-stats
+
+  apps/web:
+    dependencies:
+      '@msime-web/download-stats':
+        specifier: workspace:*
+        version: link:../../packages/download-stats
       '@msime/web-engine':
         specifier: ^0.4.1
         version: 0.4.1
@@ -48,9 +63,6 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
     devDependencies:
-      '@biomejs/biome':
-        specifier: ^2.6.4
-        version: 2.6.4
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.5(jiti@2.7.0)(sass@1.103.1)(yaml@2.9.1))
@@ -87,6 +99,8 @@ importers:
       vite:
         specifier: ^8.3.5
         version: 8.3.5(jiti@2.7.0)(sass@1.103.1)(yaml@2.9.1)
+
+  packages/download-stats: {}
 
 packages:
 
@@ -1184,10 +1198,6 @@ packages:
     resolution: {integrity: sha512-j7WyPdf0CJoutMzMoPLF/bVXHtKZIT9Rb4eGeEbWw8X2t5oirjPgpL+OpaENZrILYaXqYwnVH+qgUwVbl+pUJQ==}
     engines: {node: '>= 18'}
 
-  source-map-js@1.2.1:
-    resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
-    engines: {node: '>=0.10.0'}
-
   source-map-js@1.2.2:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
     engines: {node: '>=0.10.0'}
@@ -1464,7 +1474,7 @@ snapshots:
       jiti: 2.7.0
       lightningcss: 1.32.0
       magic-string: 0.30.21
-      source-map-js: 1.2.1
+      source-map-js: 1.2.2
       tailwindcss: 4.3.3
 
   '@tailwindcss/oxide-android-arm64@4.3.3':
@@ -2123,8 +2133,6 @@ snapshots:
   seroval@1.7.6: {}
 
   smol-toml@1.9.1: {}
-
-  source-map-js@1.2.1: {}
 
   source-map-js@1.2.2: {}
 
