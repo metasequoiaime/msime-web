@@ -32,5 +32,5 @@ output/
 .playwright-cli/
 .wrangler/
 
-# 构建时由 apps/web/scripts/copy-web-engine.mjs 从 @msime/web-engine 复制
-apps/web/public/msime/
+# 构建时由各站点的 scripts/copy-web-engine.mjs 从 @msime/web-engine 复制
+apps/*/public/msime/

@@ -1,0 +1,68 @@
+<!doctype html>
+<!-- Source of public/og-cover.png (1200x630). Render with scripts/og-cover/render.sh; the candidates and glosses are the same verified set as the home hero (src/home/hero-cycle.ts). -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --bg: #F5FAF6;
+    --panel: #FFFFFF;
+    --ink: #0F2419;
+    --muted: #5E7266;
+    --accent: #1E8E4E;
+    --accent-soft: rgba(30, 142, 78, .1);
+    --accent-ink: #17783F;
+  }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background-color: var(--bg); color: var(--ink); }
+  body { font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; position: relative; }
+
+  /* Soft light pool behind the mascot so she does not float on a flat fill. */
+  .glow { position: absolute; right: -120px; top: -40px; width: 760px; height: 760px; border-radius: 50%; background: radial-gradient(circle, rgba(30, 142, 78, .13) 0%, rgba(30, 142, 78, .05) 45%, rgba(30, 142, 78, 0) 70%); }
+
+  /* The art is drawn on white; multiply drops the white into the page colour. */
+  .mascot { position: absolute; right: -24px; bottom: -36px; width: 640px; height: 640px; mix-blend-mode: multiply; }
+
+  .brand { position: absolute; left: 72px; top: 60px; display: flex; align-items: center; gap: 14px; }
+  .brand img { width: 46px; height: 46px; }
+  .brand span { font-size: 28px; font-weight: 600; letter-spacing: 1px; }
+  .brand small { font-size: 20px; color: var(--muted); font-weight: 400; margin-left: 2px; letter-spacing: .5px; }
+
+  h1 { position: absolute; left: 68px; top: 132px; margin: 0; font-size: 84px; line-height: 1.12; font-weight: 700; letter-spacing: 2px; }
+  h1 em { font-style: normal; color: var(--accent); }
+
+  .card { position: absolute; left: 72px; top: 352px; width: 400px; background: var(--panel); border-radius: 18px; box-shadow: 0 1px 2px rgba(15, 36, 25, .06), 0 14px 36px rgba(15, 36, 25, .12); overflow: hidden; }
+  .comp { display: flex; align-items: center; height: 50px; padding: 0 18px; border-bottom: 1px solid rgba(15, 36, 25, .07); font-size: 19px; }
+  .caret { display: inline-block; width: 2px; height: 22px; background: var(--accent); margin-left: 2px; vertical-align: -4px; }
+  .pill { margin-left: auto; padding: 3px 11px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: 14px; }
+  ol { list-style: none; margin: 0; padding: 7px; }
+  li { display: flex; align-items: center; gap: 13px; height: 46px; padding: 0 12px; border-radius: 11px; }
+  li:first-child { background: var(--accent-soft); }
+  li b { width: 12px; font-weight: 400; font-size: 15px; color: var(--muted); }
+  li span { font-size: 23px; }
+  li i { font-style: normal; font-size: 17px; color: var(--muted); font-family: "SF Pro Text", "Segoe UI", "Helvetica Neue", sans-serif; }
+  li:first-child i { color: var(--accent-ink); font-weight: 500; }
+
+  .foot { position: absolute; left: 76px; top: 578px; font-size: 19px; color: var(--muted); letter-spacing: .5px; }
+  .foot b { font-weight: 500; color: var(--accent-ink); }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <img class="mascot" src="mascot.png" alt="">
+
+  <div class="brand"><img src="../../public/msime.svg" alt=""><span>水杉输入法</span><small>MSIME</small></div>
+
+  <h1>打字<br>就能<em>背单词</em></h1>
+
+  <div class="card">
+    <div class="comp"><span>shui'shan<span class="caret"></span></span><span class="pill">全拼</span></div>
+    <ol>
+      <li><b>1</b><span>水杉</span><i>metasequoia</i></li>
+      <li><b>2</b><span>水山</span><i>water and mountains</i></li>
+      <li><b>3</b><span>睡衫</span><i>nightshirt</i></li>
+    </ol>
+  </div>
+
+  <div class="foot">开源免费 · 六个平台 · <b>msime.app</b></div>
+</body>
+</html>
