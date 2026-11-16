@@ -42,9 +42,9 @@
     isolation: isolate;
   }
 
-  /* Region-appropriate glyphs for zh-TW without downloading a font. */
-  html:lang(zh-Hant-TW) {
-    --site-font-sans: "Noto Sans TC", "Noto Sans", "Microsoft JhengHei", "PingFang TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Vietnamese stacks several diacritics on one letter (ệ, ở). Latin system faces draw them; a CJK face listed first would win for Latin text and draw them from its own, sparser Latin set. The Chinese faces stay as fallbacks for the product name. */
+  html:lang(vi) {
+    --site-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
   }
 
   body.menu-open {

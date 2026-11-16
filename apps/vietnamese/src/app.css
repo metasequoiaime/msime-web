@@ -3,7 +3,7 @@
  *
  * Layer order, lowest to highest priority:
  * - theme / base / components / utilities: Tailwind's own layers.
- * - site: design tokens, document-level base styles, motion, the shell hook classes, markdown prose, and the resume sheet (src/styles/resume.css, imported by its page). It outranks Tailwind's preflight but not components/utilities, so a utility class on an element always beats the shared defaults.
+ * - site: design tokens, document-level base styles, motion, and the shell hook classes. It outranks Tailwind's preflight but not components/utilities, so a utility class on an element always beats the shared defaults.
  */
 @layer theme, base, site, components, utilities;
 
@@ -12,7 +12,6 @@
 @import "./styles/base.css";
 @import "./styles/motion.css";
 @import "./styles/shell.css";
-@import "./styles/prose.css";
 
 @font-face {
   font-family: "Cascadia Code";
