@@ -1,9 +1,8 @@
 # Domain redirects are configured with Cloudflare Single/Bulk Redirects.
 # Pages _redirects only accepts relative source paths; do not put hostnames here.
 
-/beta.md /download.md 301
-/zh-TW/beta.md /zh-TW/download.md 301
-
-# The release list moved to the end of the download page. The HTML pages redirect through functions/releases.ts, which maps the old `?platform=` filter to `?release=`.
-/releases.md /download.md 301
-/zh-TW/releases.md /zh-TW/download.md 301
+# Until this site became the Wubi edition's own site it served a copy of msime.app; send its guide and Traditional Chinese addresses to the nearest page here.
+/docs /guide/ 301
+/docs/* /guide/ 301
+/zh-TW /  301
+/zh-TW/* /:splat 301
