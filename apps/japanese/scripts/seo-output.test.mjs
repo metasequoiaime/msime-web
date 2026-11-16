@@ -97,7 +97,7 @@ test('no link or asset points at a page or file the site does not have', () => {
   const known = new Set(seoPages);
   for (const file of htmlFiles(dist.pathname)) {
     const document = parseHTML(readFileSync(file, 'utf8')).document;
-    for (const element of document.querySelectorAll('a[href], link[href], script[src], img[src]')) {
+    for (const element of document.querySelectorAll('a[href], link[href], script[src], img[src], image[href]')) {
       const value = element.getAttribute('href') ?? element.getAttribute('src');
       if (!value || value.startsWith('#') || value.startsWith('data:')) continue;
       const url = new URL(value, SITE_ORIGIN);
