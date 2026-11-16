@@ -2,7 +2,7 @@
 /**
  * 把构建产物里内联脚本的 SHA-256 摘要写进 `_headers` 的 `script-src`。
  *
- * 站点的 CSP 是 `script-src 'self'`，不含 `'unsafe-inline'` —— 这是对的，收紧的 CSP 正是这个纯静态站该有的样子。但每个入口 HTML 都带一段内联脚本：它在首帧之前从 localStorage 读出主题写到 `<html>` 上，没有它，关键 CSS 的默认值（深色）会先画出来，等主包执行完再翻成用户真正选的那套。实测 200kbps 下，浅色用户会盯着深色底六秒。
+ * 站点的 CSP 是 `script-src 'self'`，不含 `'unsafe-inline'` —— 这是对的，收紧的 CSP 正是这个纯静态站该有的样子。但每个页面的 HTML 都带一段内联脚本：它在首帧之前从 localStorage 读出主题写到 `<html>` 上，没有它，关键 CSS 的默认值（深色）会先画出来，等主包执行完再翻成用户真正选的那套。实测 200kbps 下，浅色用户会盯着深色底六秒。
  *
  * 所以两者都要：脚本必须留在内联（外链脚本要多一次往返，首帧前的东西经不起这个），CSP 也必须收紧。CSP 给了第三条路 —— 按摘要放行。摘要在构建时算，写进产物里的 `_headers`，脚本内容一变摘要跟着变，不会有人记得手工更新而漏掉。
  */
@@ -12,7 +12,7 @@ import { join } from 'node:path';
 
 const INLINE_SCRIPT = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g;
 
-/** 递归收集 dist 下所有 HTML —— 站点是多入口的，每个目录一个 index.html。 */
+/** 递归收集 dist 下所有 HTML —— 构建为每个页面预渲染一份 index.html。 */
 export const htmlFiles = (dir, found = []) => {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);

@@ -76,7 +76,11 @@ test('noindex pages and Markdown duplicates do not pollute canonical indexing', 
   const notFound = parseHTML(read('404.html')).document;
   assert.match(notFound.querySelector('meta[name=robots]').content, /noindex/);
   assert.equal(notFound.querySelector('link[rel=canonical]'), null);
-  assert.match(document('/resume/').querySelector('meta[name=robots]').content, /noindex/);
+  assert.equal(notFound.querySelector('meta[property="og:url"]'), null, 'the shared template must not leak the home og:url into 404.html');
+  const resume = document('/resume/');
+  assert.match(resume.querySelector('meta[name=robots]').content, /noindex/);
+  assert.equal(resume.querySelector('link[rel=manifest]'), null);
+  assert.ok(resume.body.classList.contains('resume-body'));
   assert.doesNotMatch(read('robots.txt'), /Disallow: \/resume/);
   for (const path of ['/me/', '/zh-TW/me/']) {
     assert.match(document(path).querySelector('meta[name=robots]').content, /noindex/, path);

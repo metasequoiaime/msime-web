@@ -1,0 +1,42 @@
+name: 功能建议 / Feature Request
+description: 提出新功能或改进。Suggest a feature or improvement.
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 平台 / Platform
+      description: 只影响某个平台，还是所有平台都要？
+      multiple: true
+      options:
+        - Windows
+        - macOS
+        - iOS
+        - Linux
+        - 引擎（所有平台共享）/ Engine (shared by all platforms)
+        - 文档 / Docs
+        - 官网 / Website
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决什么问题 / What problem does this solve
+      description: 先说场景，再说方案。你现在是怎么绕过去的？
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 设想的做法 / Proposed behaviour
+      description: 别的输入法是怎么做的？有截图或链接更好。
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 提交前确认 / Checklist
+      options:
+        - label: 我已搜索过现有 Issue 与 Discussions。I searched existing issues and discussions.
+          required: true

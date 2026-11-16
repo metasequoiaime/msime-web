@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.12/schema.json",
   "files": {
-    "includes": ["apps/web/src/**/*.ts", "apps/web/src/**/*.tsx", "apps/web/scripts/**/*.mjs", "apps/web/*.ts", "apps/web/shared/**/*.ts", "apps/web/functions/**/*.ts", "apps/dl-worker/**/*.mjs", "packages/**/*.mjs"]
+    "includes": ["apps/*/src/**/*.ts", "apps/*/src/**/*.tsx", "apps/*/scripts/**/*.mjs", "apps/*/*.ts", "apps/*/shared/**/*.ts", "apps/*/functions/**/*.ts", "apps/dl-worker/**/*.mjs", "packages/**/*.mjs"]
   },
   "formatter": {
     "enabled": false
