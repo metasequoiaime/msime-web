@@ -69,9 +69,10 @@ const linuxPackage = (name, suffix) => {
 };
 
 /*
- * macOS 从 0.57.0 起只发的 pkg：完整版是 msime-macos-<版本>-universal.pkg，其他版本是 msime-macos-<版本 id>-<版本>-universal.pkg，下载页只展示完整版。它装的是设置应用 MSIME，再由 MSIME 把输入法装进用户目录，和最早直接装输入法本体的 MetasequoiaIME-…-macos-universal.pkg 安装步骤不同，所以按完整的文件名形状认，不按 .pkg 后缀认。
+ * macOS 从 0.57.0 起只发的 pkg：完整版是 msime-macos-<版本>-universal.pkg，其他版本是 msime-macos-<版本 id>-<版本>-universal.pkg。完整版排第一做主推，各独立版本按 LINUX_EDITIONS 的顺序排在后面（水杉五笔、水杉日语等专用站点按文件名从这里取各自的安装包）。它装的是设置应用 MSIME，再由 MSIME 把输入法装进用户目录，和最早直接装输入法本体的 MetasequoiaIME-…-macos-universal.pkg 安装步骤不同，所以按完整的文件名形状认，不按 .pkg 后缀认。
  */
 const MACOS_PKG = /^msime-macos-\d+\.\d+\.\d+-universal\.pkg$/i;
+const macosEditionPkg = id => new RegExp(`^msime-macos-${id}-\\d+\\.\\d+\\.\\d+-universal\\.pkg$`, 'i');
 
 /*
  * 每个平台把产物翻译成人看得懂的名字。顺序就是页面上的展示顺序，第一个是主推。
@@ -89,6 +90,7 @@ const RULES = {
     [/^msime-macos-\d+\.\d+\.\d+-x86_64\.dmg$/i, 'Intel · dmg', 'x86_64'],
     [/-macos-universal[\w-]*\.pkg$/i, '安装包 · pkg', 'Universal'],
     [/-macos-universal[\w-]*\.zip$/i, '压缩包 · zip', 'Universal'],
+    ...LINUX_EDITIONS.map(([id, name]) => [macosEditionPkg(id), `${name} · pkg`, 'Universal']),
   ],
   // release-android.yml 按版本表各打一个 APK：full 叫 msime-android.apk，其余是 msime-android-<id>.apk，版本与 Linux 相同。都是 arm64-v8a 单 ABI（build-apk.sh 的默认值，按需资源包的瘦包也只能是 arm64）。
   android: [
