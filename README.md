@@ -141,7 +141,7 @@ R2 里没有的对象由 Worker 在第一次 GET 时从 GitHub 取来存下，�
 
 `/feedback/` 无需 GitHub 登录，按 Windows / Apple / Linux / 公共引擎 / 公共 API / 文档 / 官网分流到组织内对应仓库。前后端共用答案校验与 Issue 格式化函数；模板正文从 GitHub 仓库读取。提交内容公开；可选填 QQ 号码及昵称、微信、GitHub 用户名和 Email，填写的联系方式也会公开；防机器人验证使用 Turnstile。
 
-继续使用现有 Cloudflare Pages Git 集成：Root directory 为 `apps/web`，环境变量 `SKIP_DEPENDENCY_INSTALL=1`，构建命令 `pnpm install --frozen-lockfile && pnpm build`（在 workspace 根装依赖，不依赖 Pages 对锁文件位置的自动探测），输出目录 `dist`。`functions/api/feedback.ts` 提供 `/api/feedback`，`public/_routes.json` 仅将此接口、`/api/feedback-templates` 模板读取接口及 `/api/feedback-images/*` 截图读取路由交给 Functions。不要将 GitHub 凭据放入任何 `VITE_*` 环境变量或前端代码。
+继续使用现有 Cloudflare Pages Git 集成：Root directory 为 `apps/web`，构建命令 `pnpm install --frozen-lockfile && pnpm run build`，输出目录 `dist`（即 `apps/web/dist`），Functions 取自 `apps/web/functions`。Pages 从仓库根的 `packageManager` 识别 pnpm，并安装整个 workspace。`functions/api/feedback.ts` 提供 `/api/feedback`，`public/_routes.json` 仅将此接口、`/api/feedback-templates` 模板读取接口及 `/api/feedback-images/*` 截图读取路由交给 Functions。不要将 GitHub 凭据放入任何 `VITE_*` 环境变量或前端代码。
 
 在现有 Pages 项目的生产环境设置以下运行时变量，再通过正常 PR 发布：
 
