@@ -51,7 +51,7 @@ function LinkButtonComponent(props: ComponentProps<typeof RouterButtonAnchor>) {
   return <RouterButtonAnchor {...props} to={props.to ? (href(props.to) as typeof props.to) : props.to} />;
 }
 
-/** Internal navigation styled as a button, with the router's typed `to` / `params` / `search`. Like LocaleLink, it prefixes `/zh-TW` on Traditional pages. */
+/** Internal navigation styled as a button, with the router's typed `to` / `params` / `search`. Like LocaleLink, it prefixes `/zh` on Chinese pages. */
 export const LinkButton = LinkButtonComponent as typeof RouterButtonAnchor;
 
 /** External link styled as a button. Opens in a new tab unless `target` says otherwise. */

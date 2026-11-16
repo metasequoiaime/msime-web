@@ -41,4 +41,4 @@ export {
   PhraseIcon,
   BookIcon,
 } from "./icons";
-export { PlatformIcon, WindowsIcon, AppleIcon, LinuxIcon, AndroidIcon, HarmonyOSIcon, WebIcon, QQIcon, CloudDownloadIcon } from "./platform-icons";
+export { PlatformIcon, WindowsIcon, AppleIcon, LinuxIcon, AndroidIcon, CloudDownloadIcon, type PlatformId } from "./platform-icons";

@@ -9,7 +9,7 @@ test('only a changed deployment reloads, preserving URL and guarding repeated fa
   let reloads = 0, requests = 0;
   let next = 'old';
   const storage = new Map();
-  const href = 'https://msime.app/zh-TW/price/?source=nav#plans';
+  const href = 'https://vietnamese.msime.app/zh/guide/?source=nav#telex';
   try {
     Object.assign(globalThis, {
       document: new DOMParser().parseFromString(html('old'), 'text/html'), DOMParser,
@@ -17,7 +17,7 @@ test('only a changed deployment reloads, preserving URL and guarding repeated fa
       sessionStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) },
       fetch: async (url, options) => { requests++; assert.equal(url, href); assert.equal(options.cache, 'no-store'); return new Response(html(next)); },
     });
-    const error = new TypeError('Failed to fetch dynamically imported module: https://msime.app/assets/page-price-old.js');
+    const error = new TypeError('Failed to fetch dynamically imported module: https://vietnamese.msime.app/assets/page-guide-old.js');
     assert.equal(await recoverUpdatedPage(new Error('ordinary render error')), false);
     assert.equal(requests, 0);
     assert.equal(await recoverUpdatedPage(error), false, 'network failure on current deployment must not reload');

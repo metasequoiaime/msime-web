@@ -1,10 +1,10 @@
 {
-  "name": "水杉输入法",
-  "short_name": "水杉",
-  "description": "开源多平台中文输入法，覆盖 Windows、macOS、Linux、Android、iOS 与 HarmonyOS，也能嵌入网页使用。",
+  "name": "水杉越南语 MSIME Vietnamese",
+  "short_name": "水杉越南语",
+  "description": "Bộ gõ tiếng Việt Telex, VNI mã nguồn mở, phiên bản chỉ có kiểu gõ tiếng Việt của MSIME.",
   "start_url": "/",
   "display": "browser",
-  "lang": "zh-CN",
+  "lang": "vi",
   "background_color": "#F5FAF6",
   "theme_color": "#F5FAF6",
   "icons": [

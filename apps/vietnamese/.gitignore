@@ -1,0 +1,2 @@
+# Copied from apps/web by scripts/sync-release-data.mjs before every dev and build.
+public/platforms.json
