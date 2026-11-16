@@ -1,0 +1,409 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { loadCandidatePreview, loadCandidateSkins, loadKeyboardPhoto, loadKeyboardSkins, MAX_SKIN_QUERY_BYTES as SERVER_MAX_QUERY, skinListParams } from '../shared/community-skins.ts';
+import { onRequest as keyboardList } from '../functions/api/skins/keyboard/index.ts';
+import { onRequest as candidateList } from '../functions/api/skins/candidate/index.ts';
+import { onRequest as keyboardPhoto } from '../functions/api/skins/keyboard/[id]/photo.ts';
+import { onRequest as candidatePreview } from '../functions/api/skins/candidate/[id]/preview.ts';
+import { MAX_SKIN_QUERY_BYTES, skinListPath, skinsQuery } from '../src/data/queries.ts';
+import { candidateSkinSchema, keyboardSkinDesignSchema } from '../src/data/schemas.ts';
+import { CANDIDATE_SKIN_CATEGORIES, CANDIDATE_SKIN_CATEGORY_LABELS } from '../src/data/skin-categories.ts';
+import { ART_HEIGHT, ART_WIDTH, keyboardArt, keyboardKeyPath, mayHavePhoto, MONOSPACED_FONT, readableSkinText, skinColor } from '../src/skins/keyboard-art.ts';
+import { unzipSync, strFromU8 } from 'fflate';
+import { candidateSkinArchive } from '../src/skins/candidate-archive.ts';
+import { serveCandidateDownload } from '../functions/api/skins/candidate/[id]/download.ts';
+import { ACCESS_COOKIE } from '../shared/site-session.ts';
+
+const ORIGIN = 'https://api.msime.app';
+const KEYBOARD_ID = 'ea041e49-e1ab-48ff-8b06-942ec9c291b9';
+const CANDIDATE_ID = '2d605cc4-f16a-4a76-ae93-a24432263eaa';
+// The smallest byte strings imageExtension accepts as JPEG and PNG.
+const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 0x10]).toString('base64');
+const PNG = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0]).toString('base64');
+
+/** 水杉留白, the App's default template, as production returns it. */
+const plainDesign = { accent: 0x185c47, shadow: 0, pattern: 0, background: 0xe8f0eb, monospaced: false, borderWidth: 0, cornerRadius: 8, keyBackground: 0xffffff, keyForeground: 0x17251d, actionBackground: 0x185c47 };
+/** 极光雪山小屋, an AI photo skin: gradient, ticket keys, raised material, translucent keys and a photo. */
+const photoDesign = { accent: 7062968, shadow: 0.3, pattern: 0, keyShape: 'ticket', background: 1714746, keyOpacity: 0.92, monospaced: false, photoShade: 0.08, borderWidth: 1, gradientEnd: 3809360, keyMaterial: 'raised', cornerRadius: 4, keyBackground: 2965589, keyForeground: 15267064, photoPosition: 0.5, actionBackground: 15243868, gradientHorizontal: true };
+
+const backendKeyboard = (id = KEYBOARD_ID, design = photoDesign) => ({ id, name: '极光雪山小屋', description: '', author: '水杉小莫', design, downloads: 3, rating_count: 2, rating_average: 4.5, owned: false, my_rating: 0 });
+const backendCandidate = (id = CANDIDATE_ID, category = 'other') => ({ id, category, package_id: 'orange-cat', name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: { code: '', assets: 'CC-BY-4.0', source: '' }, size: 13645, file_count: 3, downloads: 0, rating_count: 0, rating_average: 0, owned: false, my_rating: 0, created_at: '2026-10-01T06:47:24.764127Z' });
+
+const memoryCache = () => {
+  const stored = new Map();
+  return { stored, match: async key => stored.get(key.url)?.clone(), put: async (key, value) => { stored.set(key.url, value); } };
+};
+const call = (handler, path, { env = {}, method = 'GET', params } = {}) => handler({ request: new Request(`https://msime.app${path}`, { method }), env, waitUntil: () => {}, params });
+
+// ---- loaders ----
+
+test('list parameters follow the backend limits and normalise the search', () => {
+  const params = path => skinListParams(new URL(path, 'https://msime.app'), 'keyboard');
+  assert.deepEqual(params('/api/skins/keyboard'), { offset: 0, q: '' });
+  assert.deepEqual(params('/api/skins/keyboard?offset=20&q=%20月%20'), { offset: 20, q: '月' });
+  for (const bad of ['?offset=-1', '?offset=1.5', '?offset=abc', '?offset=100001', `?q=${'月'.repeat(43)}`]) assert.equal(params(`/api/skins/keyboard${bad}`), undefined, bad);
+  assert.deepEqual(params(`/api/skins/keyboard?q=${'月'.repeat(42)}`), { offset: 0, q: '月'.repeat(42) }, '42 three-byte characters are 126 bytes');
+  assert.equal(MAX_SKIN_QUERY_BYTES, SERVER_MAX_QUERY, 'the search box and the Function agree on the limit');
+});
+
+test('candidate lists take one of the backend categories, and keyboard lists ignore the parameter as their backend does', () => {
+  const params = (path, kind = 'candidate') => skinListParams(new URL(path, 'https://msime.app'), kind);
+  assert.deepEqual(params('/api/skins/candidate?category=nature&q=猫&offset=20'), { offset: 20, q: '猫', category: 'nature' });
+  assert.deepEqual(params('/api/skins/candidate?category='), { offset: 0, q: '' }, 'an empty category lists every category, as on the backend');
+  for (const bad of ['bogus', 'Nature', ' nature', 'all']) assert.equal(params(`/api/skins/candidate?category=${encodeURIComponent(bad)}`), undefined, bad);
+  assert.deepEqual(params('/api/skins/keyboard?category=bogus', 'keyboard'), { offset: 0, q: '' });
+});
+
+test('the categories match the backend and the App, in the App\'s order', () => {
+  // candidateSkinCategories in msime-backend internal/account/community_candidate.go; labels from the App's filter row.
+  assert.deepEqual(CANDIDATE_SKIN_CATEGORIES, ['nature', 'guofeng', 'acg', 'cute', 'food', 'tech', 'minimal', 'other']);
+  assert.deepEqual(Object.values(CANDIDATE_SKIN_CATEGORY_LABELS), ['自然', '国风', '二次元', '可爱', '美食', '科技夜色', '简约', '其他']);
+  assert.deepEqual(Object.keys(CANDIDATE_SKIN_CATEGORY_LABELS), [...CANDIDATE_SKIN_CATEGORIES]);
+  const item = { id: CANDIDATE_ID, name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: 'CC-BY-4.0', size: 1, downloads: 0, ratingCount: 0, ratingAverage: 0, createdAt: '2026-10-01T06:47:24.764127Z' };
+  assert.equal(candidateSkinSchema.parse(item).category, undefined, 'a copy cached before categories still parses');
+  assert.equal(candidateSkinSchema.safeParse({ ...item, category: 'bogus' }).success, false);
+});
+
+test('keyboard skins are re-keyed, and a row the site cannot draw is left out without shifting the next page', async () => {
+  const urls = [];
+  const broken = { ...backendKeyboard('0b1a87bc-99d9-56ea-a8ef-c6382b14eaf5'), design: { ...plainDesign, background: 'red' } };
+  const page = await loadKeyboardSkins(ORIGIN, { offset: 20, q: '雪 山' }, async url => { urls.push(url); return Response.json({ skins: [backendKeyboard(), broken], has_more: true }); });
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/skins?offset=20&q=%E9%9B%AA+%E5%B1%B1`]);
+  assert.equal(page.items.length, 1);
+  assert.deepEqual(page.items[0], { id: KEYBOARD_ID, name: '极光雪山小屋', description: '', author: '水杉小莫', design: photoDesign, downloads: 3, ratingCount: 2, ratingAverage: 4.5 });
+  assert.equal(page.nextOffset, 22, 'the skipped row still counts towards the offset');
+  assert.equal((await loadKeyboardSkins(ORIGIN, { offset: 0, q: '' }, async url => { urls.push(url); return Response.json({ skins: [], has_more: false }); })).nextOffset, null);
+  assert.equal(urls.at(-1), `${ORIGIN}/v1/community/skins`);
+  await assert.rejects(loadKeyboardSkins(ORIGIN, { offset: 0, q: '' }, async () => new Response(null, { status: 500 })), /HTTP 500/);
+  await assert.rejects(loadKeyboardSkins(ORIGIN, { offset: 0, q: '' }, async () => Response.json({ items: [] })));
+});
+
+test('an optional design field the page cannot use degrades instead of dropping the skin', () => {
+  const design = keyboardSkinDesignSchema.parse({ ...plainDesign, keyShape: 'star', keyOpacity: 3, photo: 'AAAA' });
+  assert.equal(design.keyShape, undefined);
+  assert.equal(design.keyOpacity, undefined);
+  assert.equal('photo' in design, false, 'a photo never travels in the list the page reads');
+  assert.equal(keyboardSkinDesignSchema.safeParse({ ...plainDesign, accent: 0x1000000 }).success, false);
+  assert.equal(keyboardSkinDesignSchema.safeParse({ ...plainDesign, pattern: 4 }).success, false);
+});
+
+test('candidate skins are re-keyed with their asset licence and category', async () => {
+  const urls = [];
+  const page = await loadCandidateSkins(ORIGIN, { offset: 0, q: '猫' }, async url => { urls.push(url); return Response.json({ skins: [backendCandidate()], has_more: false }); });
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB&include=category`], 'the category is always asked for');
+  assert.deepEqual(page, { items: [{ id: CANDIDATE_ID, name: '橘猫', description: '', author: '小莫', version: '1.0.0', license: 'CC-BY-4.0', size: 13645, fileCount: 3, downloads: 0, ratingCount: 0, ratingAverage: 0, createdAt: '2026-10-01T06:47:24.764127Z', category: 'other' }], nextOffset: null, stale: false });
+});
+
+test('a candidate category filter is forwarded, and a category the site does not know yet reads as other', async () => {
+  const urls = [];
+  const second = '0b1a87bc-99d9-56ea-a8ef-c6382b14eaf5';
+  const third = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
+  const { category: _, ...legacy } = backendCandidate(third);
+  const page = await loadCandidateSkins(ORIGIN, { offset: 20, q: '', category: 'nature' }, async url => { urls.push(url); return Response.json({ skins: [backendCandidate(CANDIDATE_ID, 'nature'), backendCandidate(second, 'space'), legacy], has_more: false }); });
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/candidate-skins?offset=20&category=nature&include=category`]);
+  assert.deepEqual(page.items.map(item => item.category), ['nature', 'other', undefined]);
+  assert.equal('category' in page.items[2], false, 'an item without a category has no category key');
+});
+
+test('images are served only when their bytes are PNG, JPEG or WebP', async () => {
+  const urls = [];
+  const detail = photo => async url => { urls.push(url); return Response.json({ ...backendKeyboard(), design: { ...photoDesign, ...(photo ? { photo } : {}) } }); };
+  assert.deepEqual(await loadKeyboardPhoto(ORIGIN, KEYBOARD_ID, detail(JPEG)), { contentType: 'image/jpeg', data: JPEG });
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/skins/${KEYBOARD_ID}`]);
+  assert.equal(await loadKeyboardPhoto(ORIGIN, KEYBOARD_ID, detail()), null, 'photoShade without a photo');
+  assert.equal(await loadKeyboardPhoto(ORIGIN, KEYBOARD_ID, detail(Buffer.from('<svg onload=alert(1)>').toString('base64'))), null);
+  assert.equal(await loadKeyboardPhoto(ORIGIN, KEYBOARD_ID, async () => new Response(null, { status: 404 })), null);
+  await assert.rejects(loadKeyboardPhoto(ORIGIN, KEYBOARD_ID, async () => new Response(null, { status: 502 })), /HTTP 502/);
+  // The declared type is ignored: these bytes are PNG.
+  assert.deepEqual(await loadCandidatePreview(ORIGIN, CANDIDATE_ID, async () => Response.json({ path: 'preview.jpg', content_type: 'image/jpeg', data: PNG })), { contentType: 'image/png', data: PNG });
+  assert.equal(await loadCandidatePreview(ORIGIN, CANDIDATE_ID, async () => Response.json({ path: 'x', content_type: 'image/png', data: 'not base64!' })), null);
+});
+
+// ---- Functions ----
+
+test('GET /api/skins/keyboard proxies the configured origin and asks it at most once a minute per page and search', async t => {
+  globalThis.caches = { default: memoryCache() };
+  const urls = [];
+  t.mock.method(globalThis, 'fetch', async url => { urls.push(url); return Response.json({ skins: [backendKeyboard()], has_more: false }); });
+  const env = { MSIME_API_ORIGIN: 'https://staging.msime.app' };
+  const first = await call(keyboardList, '/api/skins/keyboard', { env });
+  assert.equal(first.status, 200);
+  assert.equal(first.headers.get('Cache-Control'), 'no-store');
+  const body = await first.json();
+  assert.equal(body.items[0].id, KEYBOARD_ID);
+  assert.equal(body.stale, false);
+  await call(keyboardList, '/api/skins/keyboard?offset=0', { env });
+  await call(keyboardList, '/api/skins/keyboard?q=%20雪', { env });
+  await call(keyboardList, '/api/skins/keyboard?q=雪', { env });
+  assert.deepEqual(urls, ['https://staging.msime.app/v1/community/skins', 'https://staging.msime.app/v1/community/skins?q=%E9%9B%AA']);
+  assert.equal((await call(keyboardList, '/api/skins/keyboard?offset=-5', { env })).status, 400);
+  assert.equal((await call(keyboardList, '/api/skins/keyboard', { env, method: 'POST' })).status, 405);
+});
+
+test('GET /api/skins/candidate reads the candidate catalog and answers 503 when the backend never has', async t => {
+  globalThis.caches = { default: memoryCache() };
+  const urls = [];
+  t.mock.method(globalThis, 'fetch', async url => { urls.push(url); return Response.json({ skins: [backendCandidate()], has_more: true }); });
+  const body = await (await call(candidateList, '/api/skins/candidate?offset=20')).json();
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/candidate-skins?offset=20&include=category`]);
+  assert.equal(body.nextOffset, 21);
+  assert.equal(body.items[0].category, 'other');
+  globalThis.caches = { default: memoryCache() };
+  t.mock.method(globalThis, 'fetch', async () => { throw new TypeError('network'); });
+  assert.equal((await call(candidateList, '/api/skins/candidate')).status, 503);
+  globalThis.caches = { default: memoryCache() };
+  assert.equal((await call(candidateList, '/api/skins/candidate', { env: { MSIME_API_ORIGIN: 'https://evil.example/path' } })).status, 503);
+});
+
+test('GET /api/skins/candidate caches each category separately and rejects one the backend would', async t => {
+  const cache = memoryCache();
+  globalThis.caches = { default: cache };
+  const urls = [];
+  t.mock.method(globalThis, 'fetch', async url => { urls.push(url); return Response.json({ skins: [backendCandidate(CANDIDATE_ID, 'nature')], has_more: false }); });
+  assert.equal((await call(candidateList, '/api/skins/candidate?category=nature&q=%20猫')).status, 200);
+  await call(candidateList, '/api/skins/candidate?q=猫&category=nature');
+  await call(candidateList, '/api/skins/candidate?q=猫&category=food');
+  await call(candidateList, '/api/skins/candidate?q=猫&category=');
+  assert.deepEqual(urls, [
+    `${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB&category=nature&include=category`,
+    `${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB&category=food&include=category`,
+    `${ORIGIN}/v1/community/candidate-skins?q=%E7%8C%AB&include=category`,
+  ]);
+  assert.deepEqual([...cache.stored.keys()], ['https://msime.app/api/skins/candidate?q=%E7%8C%AB&category=nature', 'https://msime.app/api/skins/candidate?q=%E7%8C%AB&category=food', 'https://msime.app/api/skins/candidate?q=%E7%8C%AB'], 'the edge cache key is the path the page requests');
+  const rejected = await call(candidateList, '/api/skins/candidate?category=bogus');
+  assert.equal(rejected.status, 400);
+  assert.equal(rejected.headers.get('Cache-Control'), 'no-store');
+  assert.equal(urls.length, 3, 'an unknown category never reaches the backend');
+  await call(keyboardList, '/api/skins/keyboard?category=nature');
+  assert.equal(urls.at(-1), `${ORIGIN}/v1/community/skins`, 'keyboard skins have no categories to forward');
+});
+
+test('the image Functions serve decoded bytes with long caching and reject anything but a skin id', async t => {
+  globalThis.caches = { default: memoryCache() };
+  const urls = [];
+  t.mock.method(globalThis, 'fetch', async url => {
+    urls.push(url);
+    if (url.endsWith('/preview')) return Response.json({ path: 'preview.png', content_type: 'image/png', data: PNG });
+    return Response.json({ ...backendKeyboard(), design: { ...photoDesign, photo: JPEG } });
+  });
+  const photo = await call(keyboardPhoto, `/api/skins/keyboard/${KEYBOARD_ID}/photo`, { params: { id: KEYBOARD_ID } });
+  assert.equal(photo.status, 200);
+  assert.equal(photo.headers.get('Content-Type'), 'image/jpeg');
+  assert.equal(photo.headers.get('Cache-Control'), 'public, max-age=3600');
+  assert.equal(photo.headers.get('X-Content-Type-Options'), 'nosniff');
+  assert.deepEqual(Buffer.from(await photo.arrayBuffer()).toString('base64'), JPEG);
+  await call(keyboardPhoto, `/api/skins/keyboard/${KEYBOARD_ID}/photo`, { params: { id: KEYBOARD_ID } });
+  const preview = await call(candidatePreview, `/api/skins/candidate/${CANDIDATE_ID}/preview?v=1.0.0-13645`, { params: { id: CANDIDATE_ID } });
+  assert.equal(preview.headers.get('Content-Type'), 'image/png');
+  assert.equal(preview.headers.get('Cache-Control'), 'public, max-age=86400');
+  assert.deepEqual(urls, [`${ORIGIN}/v1/community/skins/${KEYBOARD_ID}`, `${ORIGIN}/v1/community/candidate-skins/${CANDIDATE_ID}/preview`], 'the second photo request is served from the edge cache');
+  for (const [handler, path, id] of [[keyboardPhoto, '/api/skins/keyboard/x/photo', '../../v1/admin'], [candidatePreview, `/api/skins/candidate/${CANDIDATE_ID}/preview?v=<script>`, CANDIDATE_ID], [keyboardPhoto, `/api/skins/keyboard/${KEYBOARD_ID}/photo?v=1`, KEYBOARD_ID]]) {
+    assert.equal((await call(handler, path, { params: { id } })).status, 404, path);
+  }
+  assert.equal(urls.length, 2, 'a rejected id never reaches the backend');
+});
+
+test('a skin without a photo answers 404, briefly cached', async t => {
+  globalThis.caches = { default: memoryCache() };
+  t.mock.method(globalThis, 'fetch', async () => Response.json(backendKeyboard()));
+  const response = await call(keyboardPhoto, `/api/skins/keyboard/${KEYBOARD_ID}/photo`, { params: { id: KEYBOARD_ID } });
+  assert.equal(response.status, 404);
+  assert.equal(response.headers.get('Cache-Control'), 'public, max-age=300');
+});
+
+test('Pages routes /api/skins/* to its Functions instead of the static fallback', () => {
+  const routes = JSON.parse(readFileSync(new URL('../public/_routes.json', import.meta.url), 'utf8')).include;
+  assert.ok(routes.includes('/api/skins/*'));
+});
+
+test('the skins query reads the same-origin Function with the same path the Function caches under', () => {
+  assert.equal(skinListPath('keyboard', 0, ''), '/api/skins/keyboard');
+  assert.equal(skinListPath('candidate', 40, ' 猫 '), '/api/skins/candidate?offset=40&q=%E7%8C%AB');
+  assert.equal(skinListPath('candidate', 40, ' 猫 ', 'guofeng'), '/api/skins/candidate?offset=40&q=%E7%8C%AB&category=guofeng', 'the order the Function caches under');
+  assert.equal(skinListPath('keyboard', 0, '', 'guofeng'), '/api/skins/keyboard');
+  assert.deepEqual(skinsQuery('candidate', '猫', 'acg').queryKey, ['skins', 'candidate', '猫', 'acg']);
+  assert.deepEqual(skinsQuery('candidate', '猫').queryKey, ['skins', 'candidate', '猫', '']);
+  const options = skinsQuery('keyboard', ' 雪 ', 'acg');
+  assert.deepEqual(options.queryKey, ['skins', 'keyboard', '雪', '']);
+  assert.ok(options.staleTime >= 60_000);
+  assert.equal(options.initialPageParam, 0);
+  assert.equal(options.getNextPageParam({ items: [], nextOffset: 20, stale: false }), 20);
+  assert.equal(options.getNextPageParam({ items: [], nextOffset: null, stale: false }), undefined);
+});
+
+// ---- drawing ----
+
+test('colours are 0xRRGGBB integers and action keys get readable text', () => {
+  assert.equal(skinColor(0x185c47), '#185c47');
+  assert.equal(skinColor(0), '#000000');
+  assert.equal(skinColor(0x1000000), '#ffffff');
+  assert.equal(readableSkinText(0xffffff), 0);
+  assert.equal(readableSkinText(0x185c47), 0xffffff);
+});
+
+test('a plain design draws flat rounded keys in its own colours', () => {
+  const art = keyboardArt(keyboardSkinDesignSchema.parse(plainDesign));
+  assert.equal(art.width, ART_WIDTH);
+  assert.equal(art.height, ART_HEIGHT);
+  assert.equal(art.background, '#e8f0eb');
+  assert.equal(art.gradient, undefined);
+  assert.equal(art.keyColor, '#ffffff');
+  assert.equal(art.keyText, '#17251d');
+  assert.equal(art.actionColor, '#185c47');
+  assert.equal(art.actionText, '#ffffff');
+  assert.equal(art.material, 'flat');
+  assert.equal(art.materialStops, undefined);
+  assert.equal(art.border, undefined);
+  assert.equal(art.shadow, undefined);
+  assert.equal(art.fontFamily, undefined);
+  assert.equal(art.keyOpacity, 1);
+  assert.equal(mayHavePhoto(plainDesign), false);
+  // q…p, a…l, ⇧ z…m ⌫, 符号 中/英 空格 ， ↵: the App's touch layout without the home-row insets.
+  assert.deepEqual(art.keys.map(key => key.label).join(''), 'qwertyuiopasdfghjkl⇧zxcvbnm⌫符号中/英空格，↵');
+  assert.deepEqual(art.keys.filter(key => key.action).map(key => key.label), ['⇧', '⌫', '↵']);
+  for (const key of art.keys) {
+    assert.ok(key.labelX > 0 && key.labelX < ART_WIDTH && key.labelY > 28 && key.labelY < ART_HEIGHT, key.label);
+    assert.equal(key.depthPath, undefined);
+    assert.equal(key.paperPath, undefined);
+  }
+  assert.ok(art.keys[0].path.includes('Q'), 'rounded keys use the quadratic corners');
+});
+
+test('nine-key preview draws an aligned 3 by 3 group with side controls and keeps the skin design', () => {
+  for (const design of [plainDesign, photoDesign, { ...plainDesign, keyMaterial: 'paper', keyShape: 'pebble' }, { ...plainDesign, keyMaterial: 'glass', keyShape: 'capsule' }]) {
+    const parsed = keyboardSkinDesignSchema.parse(design);
+    const { keys, ...style } = keyboardArt(parsed, 'nine-key');
+    const { keys: fullKeys, ...fullStyle } = keyboardArt(parsed);
+    assert.deepEqual(style, fullStyle, 'layout changes preserve the skin palette, wallpaper and material');
+    assert.equal(keys.length, 20);
+    assert.equal(keys.filter(key => /^[A-Z]+$/.test(key.label)).map(key => key.label).join(''), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    assert.ok(!keys.some(key => key.label === 'q' || key.label === '⇧'));
+    assert.deepEqual(keys.filter(key => key.action).map(key => key.label), ['⌫', '↵']);
+    assert.ok(keys.some(key => key.label === '空格'));
+    assert.ok(keys.some(key => key.label === '分词'));
+    const grid = keys.filter(key => key.label === '@#' || /^[A-Z]+$/.test(key.label));
+    assert.equal(grid.length, 9);
+    for (let index = 0; index < grid.length; index++) {
+      assert.equal(grid[index].labelX, grid[index % 3].labelX, 'the three grid columns align');
+      assert.equal(grid[index].labelY, grid[Math.floor(index / 3) * 3].labelY, 'each grid row shares a baseline');
+    }
+    for (const key of keys) {
+      assert.ok(key.labelX > 0 && key.labelX < ART_WIDTH && key.labelY > 28 && key.labelY < ART_HEIGHT, key.label);
+      assert.equal(Boolean(key.depthPath), design.keyMaterial === 'raised');
+      assert.equal(Boolean(key.paperPath), design.keyMaterial === 'paper');
+    }
+    assert.ok(fullKeys.length > keys.length, 'the default preview still draws the full keyboard');
+  }
+});
+
+test('gradient, photo, material, border, shadow and pattern follow the design', () => {
+  const art = keyboardArt(keyboardSkinDesignSchema.parse(photoDesign));
+  assert.deepEqual(art.gradient, { end: skinColor(3809360), horizontal: true });
+  assert.ok(mayHavePhoto(photoDesign));
+  assert.deepEqual(art.photo, { align: 'xMidYMid', shade: 0.08 });
+  assert.equal(art.material, 'raised');
+  assert.deepEqual(art.materialStops.key.map(stop => stop.opacity), [0.13, 0.92, 0.1], 'raised keys carry the key opacity in the middle stop');
+  assert.deepEqual(art.materialStops.action.map(stop => stop.opacity), [0.13, 1, 0.1]);
+  assert.ok(art.keys.every(key => key.depthPath), 'raised keys sit on a depth slab');
+  assert.ok(art.keys[0].path.includes('A'), 'ticket keys have notched sides');
+  assert.deepEqual(art.border, { width: 1, color: skinColor(7062968) }, 'without customBorderColor the border is the accent');
+  assert.deepEqual(art.shadow, { opacity: 0.3, dy: 1, blur: 2 });
+
+  const glass = keyboardArt(keyboardSkinDesignSchema.parse({ ...plainDesign, keyMaterial: 'glass', keyShape: 'capsule', gradientEnd: 0x30224a, customBorderColor: 0xa987e8, borderWidth: 1, pattern: 1, patternOpacity: 0.07, monospaced: true, photoPosition: 0.9 }));
+  assert.deepEqual(glass.gradient, { end: '#30224a', horizontal: false }, 'gradients run top to bottom unless horizontal');
+  assert.deepEqual(glass.materialStops.key.map(stop => stop.opacity), [0.24, 1, 0.03]);
+  assert.equal(glass.border.color, '#a987e8');
+  assert.equal(glass.pattern, 1);
+  assert.equal(glass.patternOpacity, 0.07);
+  assert.equal(glass.fontFamily, MONOSPACED_FONT);
+  assert.equal(glass.photo.align, 'xMaxYMax');
+  assert.ok(glass.keys.every(key => key.depthPath === undefined));
+
+  const paper = keyboardArt(keyboardSkinDesignSchema.parse({ ...plainDesign, keyMaterial: 'paper', pattern: 3, photoPosition: 0.1 }));
+  assert.ok(paper.keys.every(key => key.paperPath?.startsWith(key.path)), 'paper keys add ruled lines inside the outline');
+  assert.equal(paper.patternOpacity, 0.15, 'the App default pattern opacity');
+  assert.equal(paper.photo.align, 'xMinYMin');
+  assert.equal(paper.photo.shade, 0.25, 'the App default photo shade');
+});
+
+test('key outlines match the App for every shape', () => {
+  assert.equal(keyboardKeyPath(0, 0, 40, 20, 'capsule', 4), 'M10 0H30Q40 0 40 10V10Q40 20 30 20H10Q0 20 0 10V10Q0 0 10 0Z');
+  assert.equal(keyboardKeyPath(0, 0, 40, 20, 'rounded', 4), 'M4 0H36Q40 0 40 4V16Q40 20 36 20H4Q0 20 0 16V4Q0 0 4 0Z');
+  assert.equal(keyboardKeyPath(0, 0, 40, 20, 'rounded', 30), keyboardKeyPath(0, 0, 40, 20, 'capsule', 0), 'a radius larger than half the key is clamped');
+  assert.match(keyboardKeyPath(0, 0, 40, 20, 'ticket', 4), /^M0 0H40V7\.6A2\.4 2\.4 0 0 0 40 12\.4/);
+  assert.match(keyboardKeyPath(0, 0, 40, 20, 'pebble', 4), /^M14 0C33\.19\d* 0 40 0\.8 40 6C40 17 36 20 27\.2/);
+});
+
+const downloadPack = () => ({
+  id: CANDIDATE_ID,
+  package_id: 'sample-skin',
+  manifest: "schema_version = 2\nid = 'sample-skin'\nname = '合成皮肤'\npreview = 'images/preview.png'\n[license]\nassets = 'CC0-1.0'\n",
+  files: { 'images/preview.png': PNG, 'background.jpg': JPEG },
+});
+
+test('候选窗皮肤 ZIP 保留皮肤目录、原始清单和每张图片', () => {
+  const pack = downloadPack();
+  const archive = candidateSkinArchive(pack, CANDIDATE_ID);
+  assert.equal(archive.filename, 'sample-skin.zip');
+  const files = unzipSync(archive.bytes);
+  assert.deepEqual(Object.keys(files).sort(), ['sample-skin/background.jpg', 'sample-skin/images/preview.png', 'sample-skin/skin.toml']);
+  assert.equal(strFromU8(files['sample-skin/skin.toml']), pack.manifest);
+  for (const [path, data] of Object.entries(pack.files)) assert.deepEqual(Buffer.from(files[`sample-skin/${path}`]), Buffer.from(data, 'base64'));
+});
+
+test('拒绝错误作品、路径穿越、绝对路径、清单覆盖和非法编码', () => {
+  for (const path of ['../image.png', '/image.png', 'images/../../image.png', 'images//image.png', 'images\\image.png', 'C:/image.png', 'skin.toml', 'script.js', '__proto__', 'a/./image.jpg']) {
+    assert.throws(() => candidateSkinArchive({ ...downloadPack(), files: { [path]: PNG } }, CANDIDATE_ID), path);
+  }
+  for (const packageId of ['..', '../sample', '/sample', 'C:sample', 'sample/child', '.hidden']) assert.throws(() => candidateSkinArchive({ ...downloadPack(), package_id: packageId }, CANDIDATE_ID));
+  assert.throws(() => candidateSkinArchive(downloadPack(), KEYBOARD_ID));
+  assert.throws(() => candidateSkinArchive({ ...downloadPack(), manifest: "id = 'other'" }, CANDIDATE_ID));
+  for (const data of ['@@@', 'AAA', '', 'AAAA\n']) assert.throws(() => candidateSkinArchive({ ...downloadPack(), files: { 'preview.png': data } }, CANDIDATE_ID));
+});
+
+test('清单按 UTF-8 字节限长，图片数量、单图和整包均限长', () => {
+  const pack = downloadPack();
+  const image = Buffer.alloc(1 << 20).toString('base64');
+  assert.doesNotThrow(() => candidateSkinArchive({ ...pack, files: { 'a.png': image, 'b.png': image } }, CANDIDATE_ID));
+  for (const files of [{}, { 'a.png': image, 'b.png': image, 'c.png': PNG }, { 'a.png': Buffer.alloc((1 << 20) + 1).toString('base64') }, { 'a.png': PNG, 'b.png': PNG, 'c.png': PNG, 'd.png': PNG }]) assert.throws(() => candidateSkinArchive({ ...pack, files }, CANDIDATE_ID));
+  assert.throws(() => candidateSkinArchive({ ...pack, manifest: `${pack.manifest}#${'字'.repeat(22_000)}` }, CANDIDATE_ID));
+});
+
+for (const signedIn of [false, true]) test(`浏览器导航直接取得候选窗皮肤 ZIP（登录：${signedIn}）`, async () => {
+  const calls = [];
+  const backend = async (url, init) => {
+    calls.push({ url, method: init.method, authorized: new Headers(init.headers).has('Authorization') });
+    return Response.json(downloadPack());
+  };
+  const response = await serveCandidateDownload({
+    request: new Request(`https://msime.app/api/skins/candidate/${CANDIDATE_ID}/download`, { method: 'POST', headers: { Origin: 'https://msime.app', ...(signedIn ? { Cookie: `${ACCESS_COOKIE}=synthetic-access-token` } : {}) } }),
+    env: {}, params: { id: CANDIDATE_ID },
+  }, backend);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('Content-Type'), 'application/zip');
+  assert.equal(response.headers.get('Content-Disposition'), 'attachment; filename="sample-skin.zip"');
+  assert.equal(response.headers.get('Cache-Control'), 'no-store');
+  assert.deepEqual(calls, [{ url: `${ORIGIN}/v1/community/candidate-skins/${CANDIDATE_ID}/download`, method: 'POST', authorized: signedIn }]);
+  assert.equal(strFromU8(unzipSync(new Uint8Array(await response.arrayBuffer()))['sample-skin/skin.toml']), downloadPack().manifest);
+});
+
+test('下载失败、无效 ID 或跨站提交不生成 ZIP', async () => {
+  for (const status of [401, 403, 404, 429, 503]) {
+    let calls = 0;
+    const response = await serveCandidateDownload({
+      request: new Request(`https://msime.app/api/skins/candidate/${CANDIDATE_ID}/download`, { method: 'POST', headers: { Origin: 'https://msime.app' } }),
+      env: {}, params: { id: CANDIDATE_ID },
+    }, async () => { calls++; return Response.json({ error: { code: 'download_denied' } }, { status }); });
+    assert.equal(response.status, status);
+    assert.notEqual(response.headers.get('Content-Type'), 'application/zip');
+    assert.equal(calls, 1);
+  }
+  const invalid = await serveCandidateDownload({ request: new Request('https://msime.app/api/skins/candidate/bad/download', { method: 'POST', headers: { Origin: 'https://msime.app' } }), env: {}, params: { id: 'bad' } }, async () => { throw new Error('must not call'); });
+  assert.equal(invalid.status, 404);
+  const crossSite = await serveCandidateDownload({ request: new Request(`https://msime.app/api/skins/candidate/${CANDIDATE_ID}/download`, { method: 'POST', headers: { Origin: 'https://other.example' } }), env: {}, params: { id: CANDIDATE_ID } }, async () => { throw new Error('must not call'); });
+  assert.equal(crossSite.status, 403);
+  const invalidPack = await serveCandidateDownload({ request: new Request(`https://msime.app/api/skins/candidate/${CANDIDATE_ID}/download`, { method: 'POST', headers: { Origin: 'https://msime.app' } }), env: {}, params: { id: CANDIDATE_ID } }, async () => Response.json({ ...downloadPack(), id: KEYBOARD_ID }));
+  assert.equal(invalidPack.status, 502);
+  assert.notEqual(invalidPack.headers.get('Content-Type'), 'application/zip');
+});

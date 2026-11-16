@@ -1,0 +1,10 @@
+
+    (() => {
+      try {
+        const theme = localStorage.getItem("msime-theme");
+        document.documentElement.dataset.theme = ["light", "dark", "system"].includes(theme) ? theme : "system";
+      } catch {
+        document.documentElement.dataset.theme = "system";
+      }
+    })();
+  
