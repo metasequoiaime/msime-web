@@ -1,3 +1,4 @@
+import { otherEditionSites } from "./edition-sites";
 import { Outlet, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { LOCALES, localePath } from "../shared/locales";
@@ -244,12 +245,12 @@ function ExternalFooterLink({ href, children }: { href: string; children: ReactN
 }
 
 function SiteFooter({ inert }: { inert: boolean }) {
-  const { messages } = useLocale();
+  const { locale, messages } = useLocale();
   const { common, footer } = messages;
   return (
     <footer className="site-footer" inert={inert}>
       <div className="mx-auto max-w-[1240px] overflow-hidden rounded-shell bg-panel shadow-hair">
-        <div className="grid grid-cols-2 gap-[clamp(28px,4vw,48px)] p-[clamp(28px,4vw,48px)] sm:grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))]">
+        <div className="grid grid-cols-2 gap-[clamp(28px,4vw,48px)] p-[clamp(28px,4vw,48px)] sm:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
           <div className="col-span-full min-w-0 sm:col-span-1">
             <div className="flex items-center gap-2.5">
               <LogoMark size={36} />
@@ -273,6 +274,12 @@ function SiteFooter({ inert }: { inert: boolean }) {
             <ExternalFooterLink href={MSIME_REPO}>{footer.source}</ExternalFooterLink>
             <ExternalFooterLink href="https://msime.app/privacy/">{footer.privacy}</ExternalFooterLink>
             <ExternalFooterLink href="https://msime.app/terms/">{footer.terms}</ExternalFooterLink>
+          </FooterColumn>
+
+          <FooterColumn title={footer.family}>
+            {otherEditionSites("japanese", locale !== "zh").map((site) => (
+              <a key={site.url} className={footerLink} href={site.url}>{site.label}</a>
+            ))}
           </FooterColumn>
         </div>
 

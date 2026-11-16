@@ -31,6 +31,7 @@ export const vi = {
       source: "Mã nguồn",
       privacy: "Quyền riêng tư",
       terms: "Điều khoản sử dụng",
+      family: "Các phiên bản khác",
     },
   },
   notFound: {

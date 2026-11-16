@@ -50,6 +50,7 @@ export type Messages = {
     source: string;
     privacy: string;
     terms: string;
+    family: string;
   };
   home: {
     eyebrow: string;

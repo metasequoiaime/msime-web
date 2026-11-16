@@ -1,3 +1,4 @@
+import { otherEditionSites } from "./edition-sites";
 import { Link, Outlet } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { basePath, HTML_LANG, localizedPath, PAGE_PATHS, type Locale } from "../shared/locales";
@@ -69,13 +70,14 @@ function Header() {
 }
 
 function Footer() {
-  const { messages } = useLocale();
+  const { locale, messages } = useLocale();
   const links = [
     { href: "https://msime.app/", label: messages.footer.fullProduct },
     { href: "https://github.com/metasequoiaime/msime", label: messages.footer.source, icon: <GitHubIcon size={15} /> },
     { href: "https://msime.app/feedback/", label: messages.footer.feedback },
     { href: "https://msime.app/privacy/", label: messages.footer.privacy },
     { href: "https://msime.app/terms/", label: messages.footer.terms },
+    ...otherEditionSites("tibetan", locale !== "zh").map((site) => ({ href: site.url, label: site.label })),
   ];
   return (
     <footer className="mt-24 pb-10">

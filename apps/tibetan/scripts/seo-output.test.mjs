@@ -108,7 +108,7 @@ test('internal links and assets resolve to built files; no link leads to a remov
 
 test('Tibetan pages contain no Chinese beyond product names, the language switcher and quoted app labels', () => {
   // Chinese that may appear on a Tibetan page: product names, the switcher's own label and the app's Chinese settings labels quoted with a Tibetan gloss.
-  const allowed = ['水杉藏文', '水杉输入法', '中文', '设置', '输入', '语言与方案', '添加语言', '藏语', '维护与诊断', '卸载'];
+  const allowed = ['水杉藏文', '水杉输入法', '水杉五笔', '水杉日语', '水杉越南语', '中文', '设置', '输入', '语言与方案', '添加语言', '藏语', '维护与诊断', '卸载'];
   for (const path of PAGE_PATHS) {
     const document = load(path);
     let text = `${visibleText(document)} ${document.title} ${document.querySelector('meta[name="description"]').getAttribute('content')}`;

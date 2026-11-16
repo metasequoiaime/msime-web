@@ -1,3 +1,4 @@
+import { otherEditionSites } from "./edition-sites";
 import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { basePath } from "../shared/site-seo";
@@ -356,7 +357,7 @@ function SiteFooter({ inert }: { inert: boolean }) {
   return (
     <footer className="site-footer" inert={inert}>
       <div className="mx-auto max-w-[1240px] overflow-hidden rounded-shell bg-panel shadow-hair">
-        <div className="grid grid-cols-2 gap-[clamp(28px,4vw,48px)] p-[clamp(28px,4vw,48px)] lg:grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))]">
+        <div className="grid grid-cols-2 gap-[clamp(28px,4vw,48px)] p-[clamp(28px,4vw,48px)] lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
           <div className="col-span-full min-w-0 lg:col-span-1">
             <div className="flex items-center gap-2.5">
               <LogoMark size={36} />
@@ -379,6 +380,12 @@ function SiteFooter({ inert }: { inert: boolean }) {
             <ExternalFooterLink href={`${FULL_SITE}/feedback/`}>{shell.footer.feedback}</ExternalFooterLink>
             <ExternalFooterLink href={`${REPOSITORY}/issues`}>{shell.footer.issues}</ExternalFooterLink>
             <ExternalFooterLink href={REPOSITORY}>{shell.footer.source}</ExternalFooterLink>
+          </FooterColumn>
+
+          <FooterColumn title={shell.footer.others}>
+            {otherEditionSites("wubi", false).map((site) => (
+              <a key={site.url} className={footerLink} href={site.url}>{site.label}</a>
+            ))}
           </FooterColumn>
         </div>
 
