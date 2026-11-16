@@ -1,36 +1,32 @@
-import { PageLoadError } from "./page-load-error";
-import { isTraditional } from "../shared/locales";
-import { loadTraditional } from "../shared/translate";
-import { useLocale } from "./use-locale";
-import { redirect, createMemoryHistory, createRootRoute, createRoute, createRouter, lazyRouteComponent, Outlet } from "@tanstack/react-router";
+import { createMemoryHistory, createRootRoute, createRoute, createRouter, lazyRouteComponent, Outlet } from "@tanstack/react-router";
 import { usePageMeta } from "./page-meta";
-import { docsSearchSchema } from "./docs-search";
-import { downloadSearchSchema } from "./download-search";
-import { SiteShell } from "./site-shell";
-import { Container, Grove, LinkButton } from "./ui";
+import { SiteShell } from "./shell";
+import { LinkButton } from "./ui/button";
+import { Container } from "./ui/container";
+import { Grove } from "./ui/tree";
+import { useLocale } from "./use-locale";
 
-/** The dawn redwood grove beside the 404 message: far row faint, near row solid, as in the home hero. */
 const NOT_FOUND_GROVE = {
   far: [[8, 95, 0.62], [122, 81, 0.7], [224, 101, 0.58]],
   near: [[56, 27, 1.02], [170, 44, 0.92]],
 } as const;
 
 function NotFoundPage() {
-  const { t } = useLocale();
+  const { messages } = useLocale();
   usePageMeta();
   return (
-    <main>
+    <main className="copy">
       <Container width="inner" className="page-enter grid items-center gap-[clamp(28px,5vw,72px)] pt-[clamp(48px,8vw,112px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
         <div className="min-w-0">
-          <p className="m-0 font-mono text-sm font-medium tracking-[.16em] text-accent-ink">404</p>
-          <h1 className="mt-3 mb-3.5 font-heading text-[clamp(32px,4.2vw,50px)] leading-[1.25] font-bold text-ink">{t("页面不存在")}</h1>
-          <p className="m-0 text-[16.5px] leading-[1.85] text-body">{t("这个地址下没有内容，可能是链接过期或输错了。可以回到首页重新开始，或者直接查看使用指南。")}</p>
+          <p className="m-0 font-code text-sm font-medium tracking-[.16em] text-accent-ink">404</p>
+          <h1 className="mt-3 mb-3.5 text-[clamp(30px,4.2vw,48px)] leading-[1.35] font-bold">{messages.notFound.title}</h1>
+          <p className="m-0 text-[16.5px] text-body">{messages.notFound.body}</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <LinkButton size="lg" to="/">
-              {t("回到首页")}
+              {messages.notFound.home}
             </LinkButton>
-            <LinkButton size="lg" variant="secondary" to="/docs/$guide/" params={{ guide: "windows" }}>
-              {t("查看文档")}
+            <LinkButton size="lg" variant="secondary" to="/guide/">
+              {messages.notFound.guide}
             </LinkButton>
           </div>
         </div>
@@ -40,6 +36,18 @@ function NotFoundPage() {
           <path d="M0 199.5H300" style={{ stroke: "var(--hair-2)" }} />
         </svg>
       </Container>
+    </main>
+  );
+}
+
+function LoadError({ error }: { error: unknown }) {
+  return (
+    <main className="mx-auto max-w-xl px-6 py-24">
+      <h1 className="m-0 text-2xl font-bold">MSIME Tibetan</h1>
+      <p className="mt-4 text-body">{error instanceof Error ? error.message : String(error)}</p>
+      <p className="mt-4">
+        <a href="/">tibetan.msime.app</a>
+      </p>
     </main>
   );
 }
@@ -58,197 +66,38 @@ function ShellNotFound() {
   );
 }
 
-const rootRoute = createRootRoute({ component: RootLayout, notFoundComponent: ShellNotFound, beforeLoad: ({ location }) => isTraditional(location.pathname) ? loadTraditional() : undefined });
+const rootRoute = createRootRoute({ component: RootLayout, notFoundComponent: ShellNotFound });
 
-/**
- * 无路径的布局层：顶栏、导航和页脚都挂在这里，站内换页时它们不重挂，导航胶囊才能连续地滑过去。
- *
- * 简历页是独立排版，直接挂在根节点下，不进这一层。
- */
-const shellRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  id: "site-shell",
-  component: SiteShell,
-  notFoundComponent: NotFoundPage,
-});
+/** Header and footer stay mounted across page changes. */
+const shellRoute = createRoute({ getParentRoute: () => rootRoute, id: "site-shell", component: SiteShell, notFoundComponent: NotFoundPage });
 
-// 各页独立加载，文档访客无需下载首页演示和社区图表。
-const indexRoute = createRoute({ getParentRoute: () => shellRoute, path: "/", component: lazyRouteComponent(() => import("./page-home"), "HomePage") });
+const home = lazyRouteComponent(() => import("./page-home"), "HomePage");
+const download = lazyRouteComponent(() => import("./page-download"), "DownloadPage");
+const guide = lazyRouteComponent(() => import("./page-guide"), "GuidePage");
+const faq = lazyRouteComponent(() => import("./page-faq"), "FaqPage");
 
-const featuresRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/features",
-  component: lazyRouteComponent(() => import("./page-features"), "FeaturesPage"),
-});
-
-const docsRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/docs",
-  component: lazyRouteComponent(() => import("./page-docs"), "DocsPage"),
-  validateSearch: docsSearchSchema,
-});
-
-const guideRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/docs/$guide",
-  component: lazyRouteComponent(() => import("./page-docs"), "DocsPage"),
-});
-
-const faqRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/faq",
-  component: lazyRouteComponent(() => import("./page-faq"), "FaqPage"),
-});
-
-const downloadRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/download",
-  component: lazyRouteComponent(() => import("./page-download"), "DownloadPage"),
-  validateSearch: downloadSearchSchema,
-});
-
-function redirectBeta({ location }: { location: { pathname: string; search: Record<string, unknown> } }) {
-  throw redirect({
-    to: isTraditional(location.pathname) ? "/zh-TW/download/" : "/download/",
-    search: { ...location.search, platform: location.search.platform === "macos" ? "macos" : "ios" },
-    replace: true,
-  });
-}
-
-const betaRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/beta",
-  beforeLoad: redirectBeta,
-});
-
-const aboutRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/about",
-  component: lazyRouteComponent(() => import("./page-about"), "AboutPage"),
-});
-
-const codeRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/code",
-  component: lazyRouteComponent(() => import("./page-code"), "CodePage"),
-});
-
-const modelRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/model",
-  component: lazyRouteComponent(() => import("./page-model"), "ModelPage"),
-});
-
-const engineRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/engine",
-  component: lazyRouteComponent(() => import("./page-engine"), "EnginePage"),
-});
-
-const priceRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/price",
-  component: lazyRouteComponent(() => import("./page-price"), "PricePage"),
-});
-
-const privacyRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/privacy",
-  component: lazyRouteComponent(() => import("./page-privacy"), "PrivacyPage"),
-});
-
-const termsRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/terms",
-  component: lazyRouteComponent(() => import("./page-terms"), "TermsPage"),
-});
-
-const feedbackRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/feedback",
-  component: lazyRouteComponent(() => import("./page-feedback"), "FeedbackPage"),
-});
-
-const wordsRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/words",
-  component: lazyRouteComponent(() => import("./page-words"), "WordsPage"),
-});
-
-const skinsRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/skins",
-  component: lazyRouteComponent(() => import("./page-skins"), "SkinsPage"),
-});
-
-const galleryRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/gallery",
-  component: lazyRouteComponent(() => import("./page-gallery"), "GalleryPage"),
-});
-
-const dictionariesRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/dictionaries",
-  component: lazyRouteComponent(() => import("./page-dictionaries"), "DictionariesPage"),
-});
-
-const pluginsRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/plugins",
-  component: lazyRouteComponent(() => import("./page-plugins"), "PluginsPage"),
-});
-
-const meRoute = createRoute({
-  getParentRoute: () => shellRoute,
-  path: "/me",
-  component: lazyRouteComponent(() => import("./page-me"), "MePage"),
-});
-
-const resumeRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/resume",
-  component: lazyRouteComponent(() => import("./page-resume"), "ResumePage"),
-});
-
-const traditionalRoutes = [
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/beta", beforeLoad: redirectBeta }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/", component: lazyRouteComponent(() => import("./page-home"), "HomePage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/features", component: lazyRouteComponent(() => import("./page-features"), "FeaturesPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/download", component: lazyRouteComponent(() => import("./page-download"), "DownloadPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/faq", component: lazyRouteComponent(() => import("./page-faq"), "FaqPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/feedback", component: lazyRouteComponent(() => import("./page-feedback"), "FeedbackPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/words", component: lazyRouteComponent(() => import("./page-words"), "WordsPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/skins", component: lazyRouteComponent(() => import("./page-skins"), "SkinsPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/gallery", component: lazyRouteComponent(() => import("./page-gallery"), "GalleryPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/dictionaries", component: lazyRouteComponent(() => import("./page-dictionaries"), "DictionariesPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/plugins", component: lazyRouteComponent(() => import("./page-plugins"), "PluginsPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/me", component: lazyRouteComponent(() => import("./page-me"), "MePage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/about", component: lazyRouteComponent(() => import("./page-about"), "AboutPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/code", component: lazyRouteComponent(() => import("./page-code"), "CodePage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/model", component: lazyRouteComponent(() => import("./page-model"), "ModelPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/engine", component: lazyRouteComponent(() => import("./page-engine"), "EnginePage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/price", component: lazyRouteComponent(() => import("./page-price"), "PricePage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/privacy", component: lazyRouteComponent(() => import("./page-privacy"), "PrivacyPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/terms", component: lazyRouteComponent(() => import("./page-terms"), "TermsPage") }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/docs", component: lazyRouteComponent(() => import("./page-docs"), "DocsPage"), validateSearch: docsSearchSchema }),
-  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/docs/$guide", component: lazyRouteComponent(() => import("./page-docs"), "DocsPage") })
+// Tibetan pages at the root, the same pages in Chinese under /zh/ (shared/locales.ts).
+const pageRoutes = [
+  createRoute({ getParentRoute: () => shellRoute, path: "/", component: home }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/download", component: download }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/guide", component: guide }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/faq", component: faq }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/zh/", component: home }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/zh/download", component: download }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/zh/guide", component: guide }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/zh/faq", component: faq }),
 ];
 
-const routeTree = rootRoute.addChildren([
-  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, modelRoute, engineRoute, priceRoute, privacyRoute, termsRoute, feedbackRoute, wordsRoute, skinsRoute, galleryRoute, dictionariesRoute, pluginsRoute, meRoute]),
-  resumeRoute,
-]);
+const routeTree = rootRoute.addChildren([shellRoute.addChildren(pageRoutes)]);
 
 export const makeRouter = (url?: string) => createRouter({
   ...(url ? { history: createMemoryHistory({ initialEntries: [url] }), isServer: true } : {}),
   routeTree,
-  // 站点部署成目录结构，规范地址一直带尾斜杠（`/docs/` 而不是 `/docs`）。生成的链接必须跟着带，直接访问才不会先吃一次跳转。
+  // The site is deployed as directories, so canonical addresses end with a slash and generated links must too.
   trailingSlash: "always",
   defaultNotFoundComponent: NotFoundPage,
-  defaultErrorComponent: PageLoadError,
+  defaultErrorComponent: LoadError,
   scrollRestoration: true,
-  // 鼠标停到链接上就开始取该路由的代码块。限速网络下实测，不预取的话点完要等 1.4 秒内容才换，这段等待被挪到了用户还在瞄准的时候。真赶上没取完，顶栏下的进度线会顶上。
   defaultPreload: "intent",
   defaultPreloadDelay: 50,
 });

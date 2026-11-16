@@ -22,9 +22,27 @@
   }
 }
 
+/* Installed Tibetan faces draw their letters much smaller than Latin text at the same font size (Kailasa and Microsoft Himalaya most of all), so Tibetan in the copy read like footnotes. This alias picks the first installed face for the Tibetan block only and scales it up; nothing is downloaded. */
+@font-face {
+  font-family: "MSIME Tibetan";
+  src: local("Noto Serif Tibetan"), local("NotoSerifTibetan-Regular"), local("Noto Sans Tibetan"), local("Jomolhari"), local("Kailasa"), local("Microsoft Himalaya"), local("Tibetan Machine Uni");
+  unicode-range: U+0F00-0FFF;
+  size-adjust: 122%;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "MSIME Tibetan";
+  src: local("Noto Serif Tibetan Bold"), local("NotoSerifTibetan-Bold"), local("Kailasa Bold"), local("Kailasa-Bold"), local("Noto Serif Tibetan"), local("Kailasa"), local("Microsoft Himalaya");
+  unicode-range: U+0F00-0FFF;
+  size-adjust: 122%;
+  font-weight: 600 900;
+}
+
 @layer site {
   html {
-    --site-font-sans: "Noto Sans SC", "Noto Sans", "Microsoft YaHei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --tibetan-faces: "MSIME Tibetan", "Noto Serif Tibetan", "Noto Sans Tibetan", "Jomolhari", "Kailasa", "Microsoft Himalaya", "Tibetan Machine Uni";
+    --site-font-sans: "Noto Sans SC", "Noto Sans", "Microsoft YaHei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", var(--tibetan-faces), sans-serif;
     background-color: var(--bg);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -42,13 +60,13 @@
     isolation: isolate;
   }
 
-  /* Region-appropriate glyphs for zh-TW without downloading a font. */
-  html:lang(zh-Hant-TW) {
-    --site-font-sans: "Noto Sans TC", "Noto Sans", "Microsoft JhengHei", "PingFang TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Tibetan pages: Latin system faces first (they carry no Tibetan, so Tibetan falls through to the next faces), then the common Tibetan faces on each platform (Noto on Android and Linux, Kailasa on Apple systems, Microsoft Himalaya on Windows, Jomolhari and Tibetan Machine Uni where installed), then Chinese faces for the product names. Tibetan stacks tall vowels and subscripts, so lines get more room. */
+  html:lang(bo) {
+    --site-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", var(--tibetan-faces), "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
   }
 
-  body.menu-open {
-    overflow: hidden;
+  html:lang(bo) body {
+    line-height: 1.9;
   }
 
   :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
