@@ -37,6 +37,8 @@ function Header() {
   const { locale, path, messages, href } = useLocale();
   const current = basePath(path);
   const other = OTHER[locale];
+  // On an unknown address the switcher leads to the other language's home page rather than to another missing page.
+  const switchTo = localizedPath((PAGE_PATHS as readonly string[]).includes(current) ? current : "/", other.locale);
   const nav = PAGE_PATHS.map(page => ({ page, label: { "/": messages.nav.home, "/download/": messages.nav.download, "/guide/": messages.nav.guide, "/faq/": messages.nav.faq }[page] }));
   return (
     <header className="site-header">
@@ -56,7 +58,7 @@ function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <a href={localizedPath(current, other.locale)} hrefLang={HTML_LANG[other.locale]} lang={HTML_LANG[other.locale]} aria-label={other.label} className="inline-flex h-9 items-center rounded-full px-3.5 text-sm font-semibold text-ink shadow-ring-2 hover:bg-hover hover:text-ink">
+          <a href={switchTo} hrefLang={HTML_LANG[other.locale]} lang={HTML_LANG[other.locale]} aria-label={other.label} className="inline-flex h-9 items-center rounded-full px-3.5 text-sm font-semibold text-ink shadow-ring-2 hover:bg-hover hover:text-ink">
             {other.name}
           </a>
           <ThemeButton />

@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { selectEdition } from "./src/release";
+import { selectEdition } from "./src/release.ts";
 
 const RELEASES_MODULE = "virtual:edition-releases";
 
