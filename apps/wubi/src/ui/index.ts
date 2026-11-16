@@ -5,40 +5,9 @@ export { Card } from "./card";
 export { Container } from "./container";
 export { SectionHeading } from "./section-heading";
 export { LogoMark } from "./logo";
-export { MetasequoiaTree, Grove, type GroveTree } from "./tree";
+export { Grove, type GroveTree } from "./tree";
 export { ToastProvider, useToast, copyText } from "./toast";
 export { BackToTop } from "./back-to-top";
 export { SeasonBackdrop } from "./season-backdrop";
-export {
-  GitHubIcon,
-  TelegramIcon,
-  HuggingFaceIcon,
-  RustIcon,
-  SunIcon,
-  MoonIcon,
-  MonitorIcon,
-  KeyboardIcon,
-  PaletteIcon,
-  MenuIcon,
-  CloseIcon,
-  DownloadIcon,
-  ArrowRightIcon,
-  ArrowUpIcon,
-  ExternalIcon,
-  CheckIcon,
-  CopyIcon,
-  SearchIcon,
-  ChevronDownIcon,
-  UserIcon,
-  HeartIcon,
-  StarIcon,
-  WaveformIcon,
-  MusicIcon,
-  SlashIcon,
-  SparkleIcon,
-  TableIcon,
-  OmegaIcon,
-  PhraseIcon,
-  BookIcon,
-} from "./icons";
-export { PlatformIcon, WindowsIcon, AppleIcon, LinuxIcon, AndroidIcon, HarmonyOSIcon, WebIcon, QQIcon, CloudDownloadIcon } from "./platform-icons";
+export { GitHubIcon, SunIcon, MoonIcon, MonitorIcon, PaletteIcon, MenuIcon, CloseIcon, DownloadIcon, ArrowRightIcon, ArrowUpIcon, ExternalIcon, CheckIcon, CopyIcon } from "./icons";
+export { PlatformIcon, type PlatformIconId } from "./platform-icons";
