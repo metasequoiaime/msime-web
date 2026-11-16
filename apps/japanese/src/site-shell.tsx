@@ -1,535 +1,122 @@
-import { useSearchReady } from "./use-page-search";
+import { Outlet, useRouterState } from "@tanstack/react-router";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { LOCALES, localePath } from "../shared/locales";
+import { PAGE_PATHS } from "../shared/site-seo";
+import { MESSAGES } from "./i18n";
 import { LocaleLink as Link } from "./locale-link";
+import { THEME_CHOICES, useTheme, type ThemeChoice } from "./theme";
+import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, SunIcon, cx } from "./ui";
 import { useLocale } from "./use-locale";
-import { baseLocalePath, traditionalPages, traditionalPath, isTraditional } from "../shared/locales";
-import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
-import { NoticeBanner } from "./notice-banner";
-import { COMMUNITY_SECTIONS } from "./community/sections";
-import { FEEDBACK_SECTIONS } from "./feedback/sections";
-import { INTEGRATION_SECTIONS } from "./integration/sections";
-import { inSectionGroup } from "./section-nav";
-import { AccountProvider, useAccount } from "./account/session";
-import { Avatar } from "./account/avatar";
-import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
-import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
-import { HELPCODE_LABELS, HELPCODE_SCHEMES, SHUANGPIN_LAYOUTS, WEB_IME_LABELS, WEB_IME_SWITCH_KEY, isShuangpin, takesHelpcode, useWebIme, type WebImeStatus } from "./web-ime/use-web-ime";
-import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, KeyboardIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
-type NavItem = {
-  to: "/" | "/download/" | "/engine/" | "/skins/" | "/gallery/" | "/docs/$guide/" | "/feedback/" | "/about/" | "/code/";
-  label: string;
-  /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
-  github?: boolean;
-};
+type NavItem = { to: "/" | "/download/" | "/guide/" | "/faq/"; label: "home" | "download" | "guide" | "faq" };
 
-/** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). 社区 stands for the three community pages (皮肤, 词库, 插件) and opens 皮肤, the address the tab had as 社区皮肤, so the entry still lands where it always did; 反馈 likewise stands for the two feedback forms (Bug 与需求, 词库缺失) and opens the first; 接入 stands for the two pages for developers who build on the project (引擎库, 神经联想) and opens 引擎库, the main one: the engine works on its own and 神经联想 is an optional add-on to it. Each group's pages switch between each other with the sub-navigation under their heroes, and the footer still links to each one. */
 const NAV_ITEMS: readonly NavItem[] = [
-  { to: "/", label: "首页" },
-  { to: "/download/", label: "下载" },
-  { to: "/engine/", label: "接入" },
-  { to: "/skins/", label: "社区" },
-  { to: "/gallery/", label: "水杉娘" },
-  { to: "/docs/$guide/", label: "文档" },
-  { to: "/feedback/", label: "反馈" },
-  { to: "/about/", label: "关于" },
+  { to: "/", label: "home" },
+  { to: "/download/", label: "download" },
+  { to: "/guide/", label: "guide" },
+  { to: "/faq/", label: "faq" },
 ];
 
-/** On wide screens 开源代码 is the round GitHub button among the header controls; the menu panel has no room for that button, so it lists the page as its last item instead. */
-const CODE_ITEM: NavItem = { to: "/code/", label: "开源代码", github: true };
+const FULL_PRODUCT = "https://msime.app/";
+const MSIME_REPO = "https://github.com/metasequoiaime/msime";
+// Same query Tailwind emits for the `lg:` variant (--breakpoint-lg in app.css): the four tabs fit the bar from 760px.
+const DESKTOP_NAV_QUERY = "(width >= 47.5rem)";
 
-const ORG_URL = "https://github.com/metasequoiaime";
-// Same query Tailwind emits for the `nav:` variant (--breakpoint-nav in app.css), so JS and CSS switch layouts at the same width whatever the root font size.
-const DESKTOP_NAV_QUERY = "(width >= 73.75rem)";
-const QQ_GROUP = "829919142";
-
-/** The docs tab also covers the FAQ, which lives under the docs toolbar in the design; the 社区 tab covers all three community pages, the 反馈 tab both feedback forms and the 接入 tab 引擎库 and 神经联想. */
-const isCurrent = (item: NavItem, path: string) =>
-  item.to === "/"
-    ? path === "/"
-    : item.to === "/docs/$guide/"
-      ? path.startsWith("/docs/") || path === "/faq/"
-      : item.to === "/skins/"
-        ? inSectionGroup(COMMUNITY_SECTIONS, path)
-        : item.to === "/feedback/"
-          ? inSectionGroup(FEEDBACK_SECTIONS, path)
-          : item.to === "/engine/"
-            ? inSectionGroup(INTEGRATION_SECTIONS, path)
-            : path.startsWith(item.to);
-
-const linkParams = (item: NavItem) => (item.to === "/docs/$guide/" ? { guide: "windows" } : {});
-
-/** Round 36px header control. No display utility here: each use adds its own (`inline-flex`, or `hidden sm:inline-flex`), because two display utilities on one element resolve by stylesheet order, not class order. */
+/** Round 36px header control. No display utility here: each use adds its own, because two display utilities on one element resolve by stylesheet order, not class order. */
 const roundControl = "h-9 min-w-9 items-center justify-center rounded-full text-ink shadow-ring-2 transition-colors hover:bg-panel-2 hover:text-ink";
 
-/** Closes a header dropdown on Escape, on a pointer press outside it, or when keyboard focus moves out of it. */
-function useDismiss(ref: RefObject<HTMLElement | null>, isOpen: boolean, close: (restoreFocus: boolean) => void) {
-  useEffect(() => {
-    if (!isOpen) return;
-    const onPointer = (event: PointerEvent) => {
-      if (!ref.current?.contains(event.target as Node)) close(false);
-    };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        close(true);
-      }
-    };
-    const onFocus = (event: FocusEvent) => {
-      if (!ref.current?.contains(event.target as Node)) close(false);
-    };
-    document.addEventListener("pointerdown", onPointer);
-    document.addEventListener("keydown", onKey);
-    document.addEventListener("focusin", onFocus);
-    return () => {
-      document.removeEventListener("pointerdown", onPointer);
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("focusin", onFocus);
-    };
-  }, [ref, isOpen, close]);
-}
+const THEME_ICONS: Record<ThemeChoice, ReactNode> = { light: <SunIcon />, dark: <MoonIcon />, system: <MonitorIcon /> };
 
-/** Moves focus between the popover's options with the arrow keys, as the menu role promises. Left and right step too, because the options sit in rows. */
-const onMenuKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-  const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
-  const backward = event.key === "ArrowUp" || event.key === "ArrowLeft";
-  if (!forward && !backward && event.key !== "Home" && event.key !== "End") return;
-  const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitemradio"]'));
-  const index = items.indexOf(document.activeElement as HTMLElement);
-  const next = event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : forward ? (index + 1) % items.length : (index - 1 + items.length) % items.length;
-  event.preventDefault();
-  items[next]?.focus();
-};
-
-const buttonCenter = (button: HTMLElement | null): RevealOrigin | undefined => {
-  const box = button?.getBoundingClientRect();
-  return box && { x: box.left + box.width / 2, y: box.top + box.height / 2 };
-};
-
-/** One option tile in the palette popover. */
-const optionClass = (checked: boolean) =>
-  cx(
-    "flex min-w-0 flex-col items-center justify-center gap-1.5 rounded-tab px-1 py-2 text-[13px] font-semibold no-underline transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent",
-    checked ? "bg-accent-soft text-accent-ink shadow-ring-accent hover:text-accent-ink" : "text-body hover:bg-panel-2 hover:text-ink"
-  );
-
-function OptionGroup({ label, columns, children }: { label: string; columns: string; children: ReactNode }) {
-  const { t } = useLocale();
-  const labelId = useId();
+/** One button that steps through light, dark and system; its label names the current choice. */
+function ThemeButton() {
+  const { messages } = useLocale();
+  const { theme, setTheme } = useTheme();
+  const ref = useRef<HTMLButtonElement>(null);
+  const label = `${messages.common.theme}: ${messages.common.themes[theme]}`;
   return (
-    <div className="not-first:mt-2 not-first:pt-2 not-first:shadow-divider-t">
-      <p id={labelId} className="m-0 px-1.5 pt-0.5 pb-1.5 text-xs font-semibold text-muted">
-        {t(label)}
-      </p>
-      <fieldset aria-labelledby={labelId} className={cx("m-0 grid min-w-0 gap-1 border-0 p-0", columns)}>
-        {children}
-      </fieldset>
-    </div>
-  );
-}
-
-function OptionButton({ checked, onSelect, children }: { checked: boolean; onSelect: () => void; children: ReactNode }) {
-  return (
-    <button type="button" role="menuitemradio" aria-checked={checked} data-checked={checked || undefined} onClick={onSelect} className={optionClass(checked)}>
-      {children}
+    <button
+      ref={ref}
+      type="button"
+      className={cx(roundControl, "inline-flex w-9")}
+      title={label}
+      aria-label={label}
+      onClick={() => {
+        const box = ref.current?.getBoundingClientRect();
+        const next = THEME_CHOICES[(THEME_CHOICES.indexOf(theme) + 1) % THEME_CHOICES.length];
+        setTheme(next, box && { x: box.left + box.width / 2, y: box.top + box.height / 2 });
+      }}
+    >
+      {THEME_ICONS[theme]}
     </button>
   );
 }
 
-const THEME_ICONS: Record<ThemeChoice, ReactNode> = {
-  light: <SunIcon />,
-  dark: <MoonIcon />,
-  system: <MonitorIcon />,
-};
-
-/** The 简/繁 pair in the palette popover. The other script is a plain link (`.header-language`, a full page load, keeping the search params once they are known); the current one only closes the popover. */
-function LanguageOptions({ onCurrent }: { onCurrent: () => void }) {
-  const languagePath = useLocation({ select: (value) => value.pathname });
-  const languageSearch = useLocation({ select: (value) => value.searchStr });
-  const searchReady = useSearchReady();
-  const tw = isTraditional(languagePath);
-  const base = baseLocalePath(languagePath);
-  const target = tw ? (base === "/docs/" ? "/docs/windows/" : base) : traditionalPath(base in traditionalPages ? base : "/");
-  const current = (
-    <OptionButton key="current" checked onSelect={onCurrent}>
-      <span lang={tw ? "zh-Hant-TW" : "zh-Hans"}>{tw ? "繁體中文" : "简体中文"}</span>
-    </OptionButton>
-  );
-  const other = (
-    <a
-      key="other"
-      role="menuitemradio"
-      aria-checked={false}
-      className={cx("header-language", optionClass(false))}
-      lang={tw ? "zh-Hans" : "zh-Hant-TW"}
-      hrefLang={tw ? "zh-Hans" : "zh-Hant-TW"}
-      href={target + (searchReady ? languageSearch : "")}
-      title={tw ? "切換到簡體中文" : "切换到繁体中文"}
-    >
-      {tw ? "简体中文" : "繁體中文"}
-    </a>
-  );
-  // Simplified always comes first, whichever page this is.
-  return tw ? [other, current] : [current, other];
-}
-
-/**
- * The one round palette button: light/dark/system, the seasonal skin and the 简/繁 switch in a single popover.
- *
- * The popover stays open while options are picked, so theme and season can be tried in a row; the colour wipe still starts from the button. Escape closes it and returns focus to the button, a press outside or tabbing away closes it without moving focus.
- */
-function PaletteMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
-  const { t } = useLocale();
-  const { theme, setTheme, season, setSeason } = useTheme();
-  const rootRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const close = useCallback(
-    (restoreFocus: boolean) => {
-      setOpen(false);
-      if (restoreFocus) buttonRef.current?.focus();
-    },
-    [setOpen]
-  );
-  useDismiss(rootRef, isOpen, close);
-
-  useEffect(() => {
-    if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitemradio"][aria-checked="true"]')?.focus();
-  }, [isOpen]);
-
-  const monthSeason = SEASON_NAMES[seasonForMonth(new Date().getMonth() + 1)];
-  const label = t("外观与语言");
-
+/** Links to the same page in the other language (its home page from an unknown address). A plain link: a full page load gives the visitor the other language's prerendered HTML and `<html lang>`. */
+function LanguageSwitch() {
+  const { locale, base: current, messages } = useLocale();
+  const base = PAGE_PATHS.includes(current) ? current : "/";
+  const others = LOCALES.filter((value) => value !== locale);
   return (
-    <div className="relative" id="theme-switcher" ref={rootRef}>
-      <button
-        ref={buttonRef}
-        className={cx(roundControl, "inline-flex w-9", isOpen && "bg-panel-2")}
-        id="theme-button"
-        type="button"
-        title={label}
-        aria-label={label}
-        aria-haspopup="menu"
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? "theme-options" : undefined}
-        onClick={() => setOpen(!isOpen)}
-      >
-        <PaletteIcon />
-      </button>
-
-      {isOpen && (
-        <div
-          id="theme-options"
-          role="menu"
-          aria-label={label}
-          onKeyDown={onMenuKeyDown}
-          // Below 560px the popover spans the bar (the header wrap's backdrop filter makes it the containing block), so it never runs off the left edge.
-          className="absolute top-11 right-0 z-40 w-[300px] rounded-menu bg-panel p-2 shadow-card max-sm:fixed max-sm:inset-x-3 max-sm:top-[62px] max-sm:w-auto"
+    <>
+      {others.map((other) => (
+        <a
+          key={other}
+          className={cx(roundControl, "inline-flex px-3 text-[13px] font-semibold whitespace-nowrap no-underline")}
+          href={localePath(base, other)}
+          hrefLang={MESSAGES[other].lang}
+          lang={MESSAGES[other].lang}
+          title={`${messages.common.language}: ${MESSAGES[other].languageName}`}
         >
-          <OptionGroup label="主题" columns="grid-cols-3">
-            {THEME_CHOICES.map((choice) => (
-              <OptionButton
-                key={choice}
-                checked={theme === choice}
-                // 擦除从调色盘按钮的中心铺开，而不是从被点的那个选项 —— 按钮才是这个控件在页面上的位置
-                onSelect={() => setTheme(choice, buttonCenter(buttonRef.current))}
-              >
-                <span className="flex size-4 items-center justify-center" aria-hidden="true">
-                  {THEME_ICONS[choice]}
-                </span>
-                {t(THEME_LABELS[choice])}
-              </OptionButton>
-            ))}
-          </OptionGroup>
-
-          <OptionGroup label="季节皮肤" columns="grid-cols-5">
-            {SEASON_CHOICES.map((choice) => {
-              const option = SEASON_OPTIONS[choice];
-              return (
-                <OptionButton key={choice} checked={season === choice} onSelect={() => setSeason(choice, buttonCenter(buttonRef.current))}>
-                  <span className="size-4 flex-none rounded-full shadow-hair" style={{ background: option.dot }} aria-hidden="true" />
-                  <span title={t(choice === "auto" ? `${option.sub} · 当前${monthSeason}` : option.sub)}>{t(option.name)}</span>
-                </OptionButton>
-              );
-            })}
-          </OptionGroup>
-
-          <OptionGroup label="语言" columns="grid-cols-2">
-            <LanguageOptions onCurrent={() => close(true)} />
-          </OptionGroup>
-        </div>
-      )}
-    </div>
+          {MESSAGES[other].languageName}
+        </a>
+      ))}
+    </>
   );
 }
 
-const WEB_IME_ERRORS: Record<string, string> = {
-  unsupported: "这个浏览器不支持网页输入法，需要 Chrome / Edge 80、Firefox 114 或 Safari 16.4 及以上。",
-  network: "引擎或词库没能下载下来，检查网络后再选一次方案重试。",
-  memory: "内存不足，引擎没能启动。关掉一些标签页后再选一次方案重试。",
-};
-
-const webImeStatusText = (on: boolean, status: WebImeStatus | null) => {
-  if (!on) return "已关闭，本站的文本框交还给系统输入法。选一个方案就能在本站任意文本框里用水杉打字。";
-  if (!status) return "本站的文本框默认用水杉打字，引擎在你的浏览器里运行，打的字不会发到任何服务器。第一次点进文本框时下载十几 MB 的引擎和词库，之后由浏览器缓存。";
-  if (status.state === "ready") return `已就绪：点进任意文本框就能打字。在文本框里按 ${WEB_IME_SWITCH_KEY} 切换方案，单按 Shift 切换中英文。`;
-  if (status.state === "loading") return status.total > 0 ? `正在下载引擎和词库… ${Math.floor((status.loaded / status.total) * 100)}%` : "正在加载引擎…";
-  return WEB_IME_ERRORS[status.code] ?? "引擎出错了，再选一次方案可以重新启动。";
-};
-
-/**
- * 顶栏的「网页输入法」按钮：本站每一页的文本框默认用浏览器里运行的水杉引擎（@msime/web-engine）打字，这里换方案；选「关闭」交还给系统输入法。
- *
- * 方案分三类：全拼、双拼、五笔。选了双拼才出现「双拼布局」一行（小鹤、自然码、首道、微软），「双拼」回到最近用的那套布局；全拼和双拼下才出现「辅助码」一组，默认关闭。
- *
- * 只在有键盘和精确指针的设备上显示（`any-pointer-fine`）：手机的软键盘不发出引擎认得的按键，在那里打开它只会白下载一遍词库。开着时按钮带强调色的圈，加载中圈会闪，出错时换成警示色。
- */
-function WebImeMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
-  const { t } = useLocale();
-  const { scheme, shuangpin, helpcode, status, choose, chooseHelpcode } = useWebIme();
-  const rootRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const close = useCallback(
-    (restoreFocus: boolean) => {
-      setOpen(false);
-      if (restoreFocus) buttonRef.current?.focus();
-    },
-    [setOpen]
-  );
-  useDismiss(rootRef, isOpen, close);
-
-  useEffect(() => {
-    if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitemradio"][aria-checked="true"]')?.focus();
-  }, [isOpen]);
-
-  const label = t(scheme ? `网页输入法：${WEB_IME_LABELS[scheme]}${isShuangpin(scheme) ? "双拼" : ""}${helpcode && takesHelpcode(scheme) ? ` + ${HELPCODE_LABELS[helpcode]}辅助码` : ""}` : "网页输入法");
-  const state = status?.state;
-
-  return (
-    <div className="relative hidden any-pointer-fine:block" ref={rootRef}>
-      <button
-        ref={buttonRef}
-        className={cx(
-          roundControl,
-          "inline-flex w-9",
-          isOpen && "bg-panel-2",
-          scheme && (state === "error" ? "text-warn shadow-[inset_0_0_0_2px_var(--color-warn)]" : "text-accent-ink shadow-ring-accent"),
-          state === "loading" && "animate-pulse"
-        )}
-        type="button"
-        title={label}
-        aria-label={label}
-        aria-haspopup="menu"
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? "web-ime-options" : undefined}
-        aria-busy={state === "loading" || undefined}
-        onClick={() => setOpen(!isOpen)}
-      >
-        <KeyboardIcon />
-      </button>
-
-      {isOpen && (
-        <div
-          id="web-ime-options"
-          role="menu"
-          aria-label={t("网页输入法")}
-          onKeyDown={onMenuKeyDown}
-          className="absolute top-11 right-0 z-40 w-[300px] rounded-menu bg-panel p-2 shadow-card max-sm:fixed max-sm:inset-x-3 max-sm:top-[62px] max-sm:w-auto"
-        >
-          <OptionGroup label="网页输入法" columns="grid-cols-4">
-            <OptionButton checked={!scheme} onSelect={() => choose(null)}>
-              {t("关闭")}
-            </OptionButton>
-            <OptionButton checked={scheme === "quanpin"} onSelect={() => choose("quanpin")}>
-              {t("全拼")}
-            </OptionButton>
-            <OptionButton checked={isShuangpin(scheme)} onSelect={() => choose(isShuangpin(scheme) ? scheme : shuangpin)}>
-              {t("双拼")}
-            </OptionButton>
-            <OptionButton checked={scheme === "wubi86"} onSelect={() => choose("wubi86")}>
-              {t("五笔")}
-            </OptionButton>
-          </OptionGroup>
-          {isShuangpin(scheme) && (
-            <OptionGroup label="双拼布局" columns="grid-cols-4">
-              {SHUANGPIN_LAYOUTS.map((layout) => (
-                <OptionButton key={layout} checked={scheme === layout} onSelect={() => choose(layout)}>
-                  {t(WEB_IME_LABELS[layout])}
-                </OptionButton>
-              ))}
-            </OptionGroup>
-          )}
-          {takesHelpcode(scheme) && (
-            <OptionGroup label="辅助码" columns="grid-cols-4">
-              <OptionButton checked={!helpcode} onSelect={() => chooseHelpcode(null)}>
-                {t("关闭")}
-              </OptionButton>
-              {HELPCODE_SCHEMES.map((name) => (
-                <OptionButton key={name} checked={helpcode === name} onSelect={() => chooseHelpcode(name)}>
-                  {t(HELPCODE_LABELS[name])}
-                </OptionButton>
-              ))}
-            </OptionGroup>
-          )}
-          {helpcode && takesHelpcode(scheme) && (
-            <p className="m-0 px-1.5 pt-2.5 text-xs leading-[1.7] text-muted">
-              {t(scheme === "quanpin" ? "辅助码：拼音后打一个大写字母调整顺序，末尾打两个大写字母筛选。候选后面是它的辅助码。" : "辅助码：音节后接着打第三键调整顺序，第四键按住 Shift 筛选。候选后面是它的辅助码。")}
-            </p>
-          )}
-          <p className={cx("m-0 px-1.5 pt-2.5 pb-1 text-xs leading-[1.7]", state === "error" ? "text-warn" : "text-muted")} aria-live="polite">
-            {t(webImeStatusText(Boolean(scheme), status))}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/**
- * 顶栏的账号入口：未登录时是「登录」，已登录时是头像，展开后是「我的」和「退出登录」。
- *
- * 会话状态未知时（静态页面接管前，或曾登录过的浏览器还在等 `/api/me`）只占位，不先画出「登录」再换成头像。未登录时同样先占位，等 `/api/auth/config` 说明网页是否开放登录：开放才画「登录」，未开放则整个入口都不画，免得点开只看到一句「请在 App 中登录」。
- */
-function AccountMenu({ isOpen, setOpen }: { isOpen: boolean; setOpen: (open: boolean) => void }) {
-  const { t } = useLocale();
-  const { status, me, loginAvailable, openLogin, signOut } = useAccount();
-  const rootRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const close = useCallback(
-    (restoreFocus: boolean) => {
-      setOpen(false);
-      if (restoreFocus) buttonRef.current?.focus();
-    },
-    [setOpen]
-  );
-  useDismiss(rootRef, isOpen, close);
-
-  useEffect(() => {
-    if (isOpen) rootRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
-  }, [isOpen]);
-
-  if (status === "unknown" || (status === "signed-out" && loginAvailable === undefined)) return <span className="inline-flex size-9 flex-none" aria-hidden="true" />;
-  if (status === "signed-out" || !me)
-    return loginAvailable === false ? null : (
-      <button type="button" className={cx(roundControl, "inline-flex w-9 gap-1.5 text-sm font-semibold sm:w-auto sm:px-3.5")} title={t("登录")} onClick={openLogin}>
-        <UserIcon size={17} className="sm:hidden" />
-        <span className="max-sm:sr-only">{t("登录")}</span>
-      </button>
-    );
-
-  const label = t(`账号：${me.user.display_name}`);
-  const itemClass = "flex h-10 w-full cursor-pointer items-center rounded-tab border-0 bg-transparent px-3 text-left text-sm font-medium text-body no-underline hover:bg-panel-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent";
-  return (
-    <div className="relative" ref={rootRef}>
-      <button
-        ref={buttonRef}
-        className={cx("inline-flex size-9 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 shadow-ring-2 transition-shadow hover:shadow-ring-accent", isOpen && "shadow-ring-accent")}
-        type="button"
-        title={label}
-        aria-label={label}
-        aria-haspopup="menu"
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? "account-menu" : undefined}
-        onClick={() => setOpen(!isOpen)}
-      >
-        <Avatar user={me.user} size={32} />
-      </button>
-      {isOpen && (
-        <div
-          id="account-menu"
-          role="menu"
-          aria-label={label}
-          className="absolute top-11 right-0 z-40 w-[232px] rounded-menu bg-panel p-2 shadow-card max-sm:fixed max-sm:inset-x-3 max-sm:top-[62px] max-sm:w-auto"
-          onKeyDown={event => {
-            if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-            event.preventDefault();
-            const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]'));
-            const index = items.indexOf(document.activeElement as HTMLElement);
-            items[(index + (event.key === "ArrowDown" ? 1 : items.length - 1)) % items.length]?.focus();
-          }}
-        >
-          <div className="flex min-w-0 items-center gap-2.5 px-2 pt-1 pb-2.5 shadow-divider-b">
-            <Avatar user={me.user} size={34} />
-            <div className="min-w-0">
-              <p className="m-0 truncate text-sm font-semibold text-ink">{me.user.display_name}</p>
-              {me.user.email && <p className="m-0 truncate text-xs text-muted">{me.user.email}</p>}
-            </div>
-          </div>
-          <div className="mt-1.5 grid gap-0.5">
-            <Link role="menuitem" className={itemClass} to="/me/" onClick={() => close(false)}>
-              {t("我的")}
-            </Link>
-            <button role="menuitem" type="button" className={itemClass} onClick={() => { close(true); void signOut(); }}>
-              {t("退出登录")}
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/**
- * 顶栏下沿的换页进度线。
- *
- * 路由预取通常让换页在一两帧内完成，那种时候不该闪一下进度条；只有等待长到看得出来才显示。这段时间里旧内容一直留在原地 —— 比清空成骨架屏更不容易让人以为点击没生效。
- */
+/** A 2px line under the header while a slow navigation is pending; quick ones never show it. */
 function RouteProgress() {
   const isPending = useRouterState({ select: (state) => state.status === "pending" });
   const [isVisible, setIsVisible] = useState(false);
-
   useEffect(() => {
     if (!isPending) {
       setIsVisible(false);
       return;
     }
-
-    const timer = window.setTimeout(() => {
-      setIsVisible(true);
-    }, 150);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
+    const timer = window.setTimeout(() => setIsVisible(true), 150);
+    return () => window.clearTimeout(timer);
   }, [isPending]);
-
   return <div className={`route-progress${isVisible ? " is-active" : ""}`} aria-hidden="true" />;
 }
 
-/** Desktop pill group (≥1180px). */
+const isCurrent = (item: NavItem, base: string) => (item.to === "/" ? base === "/" : base.startsWith(item.to));
+
+/** The pill group on screens from 760px. */
 function DesktopNav() {
-  const { t } = useLocale();
-  const path = useLocation({ select: (location) => baseLocalePath(location.pathname) });
+  const { messages, base } = useLocale();
   const listRef = useRef<HTMLUListElement>(null);
   const activeLinkRef = useRef<HTMLElement | null>(null);
 
-  // 当前 tab 的胶囊从上一页的位置滑过来。偏移要在浏览器画这一帧之前写好，否则胶囊会先出现在终点再跳回起点。
-  // biome-ignore lint/correctness/useExhaustiveDependencies: path 不在函数体里用，它是触发条件 —— 换页之后才去量新旧两个标签的位置差
+  // The current tab's pill slides over from the previous tab; the offset is written before paint.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: base is the trigger, not an input of the effect body.
   useLayoutEffect(() => {
     const list = listRef.current;
     if (!list) return;
-
     const active = list.querySelector<HTMLElement>('.nav-link[aria-current="page"]');
     const previous = activeLinkRef.current;
     activeLinkRef.current = active;
-
     if (!active || !previous || previous === active) return;
-
     list.style.setProperty("--pill-from", `${previous.offsetLeft - active.offsetLeft}px`);
     list.classList.add("is-sliding");
-  }, [path]);
+  }, [base]);
 
   return (
-    <nav aria-label={t("站点导航")} className="hidden min-w-0 flex-1 justify-center nav:flex">
-      <ul
-        className="nav-list"
-        ref={listRef}
-        // 动画挂在活动链接的 ::before 上，事件从伪元素冒泡到链接再到这里。跑完就摘掉 is-sliding，下次换页才能重新触发。
-        onAnimationEnd={() => listRef.current?.classList.remove("is-sliding")}
-      >
+    <nav aria-label={messages.common.siteNav} className="hidden min-w-0 flex-1 justify-center lg:flex">
+      <ul className="nav-list" ref={listRef} onAnimationEnd={() => listRef.current?.classList.remove("is-sliding")}>
         {NAV_ITEMS.map((item) => (
           <li key={item.to}>
-            <Link to={item.to} params={linkParams(item)} className="nav-link" activeOptions={{ exact: true, includeSearch: false }} activeProps={{}} aria-current={isCurrent(item, path) ? "page" : undefined}>
-              {t(item.label)}
+            <Link to={item.to} className="nav-link" activeOptions={{ exact: true, includeSearch: false }} activeProps={{}} aria-current={isCurrent(item, base) ? "page" : undefined}>
+              {messages.common[item.label]}
             </Link>
           </li>
         ))}
@@ -538,52 +125,28 @@ function DesktopNav() {
   );
 }
 
-/** 开源代码 as a round GitHub button beside the palette, on wide screens only: below 1180px the bar is already full and the menu panel lists the page. */
-function CodeButton() {
-  const { t } = useLocale();
-  const current = useLocation({ select: (location) => baseLocalePath(location.pathname) === CODE_ITEM.to });
-  const label = t(CODE_ITEM.label);
-  return (
-    <Link
-      to={CODE_ITEM.to}
-      className={cx(roundControl, "hidden w-9 nav:inline-flex", current && "bg-panel-2")}
-      activeOptions={{ exact: true, includeSearch: false }}
-      activeProps={{}}
-      aria-current={current ? "page" : undefined}
-      title={label}
-      aria-label={label}
-    >
-      <GitHubIcon />
-    </Link>
-  );
-}
-
-/** The menu panel below 1180px: a grid of large targets that opens under the header (design-home §3.1). */
+/** The menu panel below 760px. */
 function MobileNav({ isOpen, onNavigate }: { isOpen: boolean; onNavigate: () => void }) {
-  const { t } = useLocale();
-  const path = useLocation({ select: (location) => baseLocalePath(location.pathname) });
-
+  const { messages, base } = useLocale();
   return (
-    <nav id="nav-menu" aria-label={t("站点导航")} hidden={!isOpen} className="px-[clamp(16px,3.6vw,40px)] pt-2 pb-[18px] shadow-divider-t nav:hidden">
-      <ul className="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
-        {[...NAV_ITEMS, CODE_ITEM].map((item) => {
-          const current = isCurrent(item, path);
+    <nav id="nav-menu" aria-label={messages.common.siteNav} hidden={!isOpen} className="px-[clamp(16px,3.6vw,40px)] pt-2 pb-[18px] shadow-divider-t lg:hidden">
+      <ul className="m-0 mx-auto grid max-w-[1240px] list-none grid-cols-2 gap-1.5 p-0">
+        {NAV_ITEMS.map((item) => {
+          const current = isCurrent(item, base);
           return (
             <li key={item.to}>
               <Link
                 to={item.to}
-                params={linkParams(item)}
                 activeOptions={{ exact: true, includeSearch: false }}
                 activeProps={{}}
                 aria-current={current ? "page" : undefined}
                 onClick={onNavigate}
                 className={cx(
-                  "flex h-[46px] items-center rounded-field px-4 text-[15px] transition-colors",
+                  "flex h-[46px] items-center rounded-field px-4 text-[15px] no-underline transition-colors",
                   current ? "bg-accent-soft font-semibold text-accent-ink hover:text-accent-ink" : "font-medium text-body hover:bg-hover hover:text-ink"
                 )}
               >
-                {item.github && <GitHubIcon size={16} className="mr-2 flex-none" />}
-                {t(item.label)}
+                {messages.common[item.label]}
               </Link>
             </li>
           );
@@ -593,11 +156,7 @@ function MobileNav({ isOpen, onNavigate }: { isOpen: boolean; onNavigate: () => 
   );
 }
 
-/**
- * 向下滚动时收起顶栏，向上滚或回到顶部时放出来；滚过 8px 或菜单展开时顶栏带一道阴影。
- *
- * Works on the DOM directly (class and attribute), so scrolling never re-renders the shell. React owns neither `header--hidden` nor `data-raised`, so its renders leave them alone.
- */
+/** Hides the header while scrolling down and brings it back on the way up; a shadow appears once the page has scrolled. Works on the DOM directly so scrolling never re-renders the shell. */
 function useHeaderBehaviour(pinned: boolean) {
   const pinnedRef = useRef(pinned);
   pinnedRef.current = pinned;
@@ -612,30 +171,17 @@ function useHeaderBehaviour(pinned: boolean) {
   useEffect(() => {
     const headerWrap = document.querySelector<HTMLElement>(".header-wrap");
     if (!headerWrap) return;
-
     let lastScrollY = Math.max(0, window.scrollY);
     let ticking = false;
     let hidden = false;
-
-    const updateHeader = () => {
+    const update = () => {
       ticking = false;
       const currentY = Math.max(0, window.scrollY);
       headerWrap.toggleAttribute("data-raised", pinnedRef.current || currentY > 8);
-
-      // 菜单打开时保持顶栏可见
-      if (pinnedRef.current) {
-        if (hidden) {
-          headerWrap.classList.remove("header--hidden");
-          hidden = false;
-        }
-        lastScrollY = currentY;
-        return;
-      }
-
       const delta = currentY - lastScrollY;
-      const shouldHide = delta > 2 && currentY > 68;
-      const shouldShow = delta < -2 || currentY <= 68;
-
+      lastScrollY = currentY;
+      const shouldHide = !pinnedRef.current && delta > 2 && currentY > 68;
+      const shouldShow = pinnedRef.current || delta < -2 || currentY <= 68;
       if (shouldHide && !hidden) {
         headerWrap.classList.add("header--hidden");
         hidden = true;
@@ -643,51 +189,27 @@ function useHeaderBehaviour(pinned: boolean) {
         headerWrap.classList.remove("header--hidden");
         hidden = false;
       }
-
-      lastScrollY = currentY;
     };
-
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
-      window.requestAnimationFrame(updateHeader);
+      window.requestAnimationFrame(update);
     };
-
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 }
 
-/** While the menu panel is open, Tab cycles inside the header and Escape closes the panel; resizing to the desktop layout closes it too. */
-function useMenuFocus(isOpen: boolean, close: () => void) {
+/** While the menu panel is open, Escape closes it and resizing to the desktop layout closes it too. */
+function useMenuClose(isOpen: boolean, close: () => void) {
   useEffect(() => {
     if (!isOpen) return;
-    const header = document.querySelector<HTMLElement>(".header-wrap");
     const opener = document.getElementById("btn-toggle");
-    (header?.querySelector<HTMLElement>('#nav-menu [aria-current="page"]') ?? header?.querySelector<HTMLElement>("#nav-menu a[href]"))?.focus();
-
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        // A header dropdown handles its own Escape first.
-        if (header?.querySelector('[role="menu"]')) return;
-        event.preventDefault();
-        close();
-        opener?.focus();
-        return;
-      }
-      if (event.key !== "Tab" || !header) return;
-      const items = Array.from(header.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")).filter((element) => element.offsetParent !== null);
-      const first = items[0];
-      const last = items.at(-1);
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last?.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first?.focus();
-      }
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      close();
+      opener?.focus();
     };
     const desktop = window.matchMedia(DESKTOP_NAV_QUERY);
     const onResize = () => {
@@ -705,10 +227,9 @@ function useMenuFocus(isOpen: boolean, close: () => void) {
 const footerLink = "w-max max-w-full text-sm text-muted no-underline transition-colors hover:text-accent-ink";
 
 function FooterColumn({ title, children }: { title: string; children: ReactNode }) {
-  const { t } = useLocale();
   return (
     <div>
-      <p className="m-0 mb-3.5 text-[13px] font-semibold text-ink">{t(title)}</p>
+      <p className="m-0 mb-3.5 text-[13px] font-semibold text-ink">{title}</p>
       <div className="flex flex-col gap-2.5">{children}</div>
     </div>
   );
@@ -723,159 +244,96 @@ function ExternalFooterLink({ href, children }: { href: string; children: ReactN
 }
 
 function SiteFooter({ inert }: { inert: boolean }) {
-  const { t } = useLocale();
-  const { show } = useToast();
+  const { messages } = useLocale();
+  const { common, footer } = messages;
   return (
     <footer className="site-footer" inert={inert}>
       <div className="mx-auto max-w-[1240px] overflow-hidden rounded-shell bg-panel shadow-hair">
-        <div className="grid grid-cols-2 gap-[clamp(28px,4vw,48px)] p-[clamp(28px,4vw,48px)] sm:grid-cols-3 xl:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
-          <div className="col-span-full min-w-0 xl:col-span-1">
+        <div className="grid grid-cols-2 gap-[clamp(28px,4vw,48px)] p-[clamp(28px,4vw,48px)] sm:grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))]">
+          <div className="col-span-full min-w-0 sm:col-span-1">
             <div className="flex items-center gap-2.5">
               <LogoMark size={36} />
-              <span className="text-lg font-bold tracking-[.03em] text-ink">{t("水杉输入法")}</span>
+              <span className="text-lg font-bold tracking-[.03em] text-ink">{common.productName}</span>
             </div>
-            <p className="m-0 mt-3.5 text-sm leading-[1.85] text-muted">{t("开源多平台中文输入法，覆盖 Windows、macOS、Linux、Android、iOS 与 HarmonyOS，各平台原生实现，也能嵌入网页使用。")}</p>
-            <div className="mt-[18px] flex flex-wrap gap-2">
-              <a className={chipClass()} href="https://t.me/msimegroup" target="_blank" rel="noreferrer" title="Telegram" aria-label="Telegram">
-                <TelegramIcon size={16} />
-              </a>
-              <button
-                type="button"
-                className={chipClass("gap-1.5")}
-                title={t("点击复制群号")}
-                aria-label={t(`QQ 群 ${QQ_GROUP}`)}
-                onClick={async () => {
-                  show(t((await copyText(QQ_GROUP)) ? `已复制 QQ 群号 ${QQ_GROUP}` : `QQ 群号：${QQ_GROUP}`));
-                }}
-              >
-                <QQIcon size={15} className="flex-none" />
-                {QQ_GROUP}
-              </button>
-              <a className={chipClass()} href="mailto:metasequoiaime@gmail.com">{t("邮箱")}</a>
-            </div>
+            <p className="m-0 mt-3.5 max-w-[42ch] text-sm leading-[1.85] text-muted">{footer.tagline}</p>
           </div>
 
-          <FooterColumn title="产品">
-            <Link className={footerLink} to="/features/">{t("功能")}</Link>
-            <Link className={footerLink} to="/skins/">{t("社区皮肤")}</Link>
-            <Link className={footerLink} to="/dictionaries/">{t("社区词库")}</Link>
-            <Link className={footerLink} to="/plugins/">{t("社区插件")}</Link>
-            <Link className={footerLink} to="/download/">{t("下载")}</Link>
-            <Link className={footerLink} to="/download/" hash="releases">{t("更新日志")}</Link>
-            <Link className={footerLink} to="/docs/$guide/" params={{ guide: "windows" }}>{t("使用指南")}</Link>
-            <Link className={footerLink} to="/faq/">{t("常见问题")}</Link>
-            <Link className={footerLink} to="/price/">{t("价格")}</Link>
+          <FooterColumn title={footer.pages}>
+            {NAV_ITEMS.map((item) => (
+              <Link key={item.to} className={footerLink} to={item.to}>
+                {common[item.label]}
+              </Link>
+            ))}
           </FooterColumn>
 
-          <FooterColumn title="参与">
-            <Link className={footerLink} to="/feedback/">{t("Bug 与需求反馈")}</Link>
-            <Link className={footerLink} to="/words/">{t("词库缺失反馈")}</Link>
-            <ExternalFooterLink href="https://github.com/metasequoiaime/.github/blob/main/RECRUITING.md">{t("招募开发者")}</ExternalFooterLink>
-            <ExternalFooterLink href="https://github.com/metasequoiaime/.github/blob/main/CONTRIBUTING.md">{t("贡献指南")}</ExternalFooterLink>
-            <ExternalFooterLink href="https://github.com/metasequoiaime/.github/blob/main/CODE_OF_CONDUCT.md">{t("行为准则")}</ExternalFooterLink>
-          </FooterColumn>
-
-          <FooterColumn title="项目">
-            <Link className={footerLink} to="/gallery/">{t("水杉娘画廊")}</Link>
-            <Link className={footerLink} to="/code/">{t("开源代码")}</Link>
-            <Link className={footerLink} to="/engine/">{t("引擎库")}</Link>
-            <Link className={footerLink} to="/model/">{t("神经联想")}</Link>
-            <Link className={footerLink} to="/about/">{t("关于")}</Link>
-            <Link className={footerLink} to="/privacy/">{t("隐私政策")}</Link>
-            <Link className={footerLink} to="/terms/">{t("用户协议")}</Link>
-            <ExternalFooterLink href={ORG_URL}>{t("GitHub 组织")}</ExternalFooterLink>
+          <FooterColumn title={footer.project}>
+            <ExternalFooterLink href={FULL_PRODUCT}>{footer.fullProduct}</ExternalFooterLink>
+            <ExternalFooterLink href="https://msime.app/feedback/">{footer.feedback}</ExternalFooterLink>
+            <ExternalFooterLink href={`${MSIME_REPO}/issues`}>{footer.issues}</ExternalFooterLink>
+            <ExternalFooterLink href={MSIME_REPO}>{footer.source}</ExternalFooterLink>
+            <ExternalFooterLink href="https://msime.app/privacy/">{footer.privacy}</ExternalFooterLink>
+            <ExternalFooterLink href="https://msime.app/terms/">{footer.terms}</ExternalFooterLink>
           </FooterColumn>
         </div>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-panel-2 px-[clamp(28px,4vw,48px)] py-[18px] text-[13px] text-muted">
           <span>
             Copyright © 2026-present{" "}
-            <a href="https://github.com/fanlusky" target="_blank" rel="noreferrer">fanlusky</a>
-            {" @"}
-            {t("乱序楼")}
+            <a href="https://github.com/fanlusky" target="_blank" rel="noreferrer">
+              fanlusky
+            </a>
           </span>
-          <span className="ml-auto flex flex-wrap gap-x-4 gap-y-2">
-            <span>GPL-3.0</span>
-            <a className="text-muted hover:text-ink" href="https://msime.app" target="_blank" rel="noreferrer">msime.app</a>
-          </span>
+          <a className="ml-auto inline-flex items-center gap-1.5 text-muted hover:text-ink" href="https://github.com/metasequoiaime" target="_blank" rel="noreferrer">
+            <GitHubIcon size={15} />
+            metasequoiaime
+          </a>
         </div>
       </div>
     </footer>
   );
 }
 
-/** Header, nav, footer and the global overlays around the current route. `children` replaces the route outlet; the not-found page uses it so unmatched addresses still get the full chrome. */
+/** Header, navigation and footer around the current route. `children` replaces the route outlet; the not-found page uses it so unmatched addresses still get the full chrome. */
 export function SiteShell({ children }: { children?: ReactNode }) {
-  return (
-    <ToastProvider>
-      <AccountProvider>
-        <Shell>{children}</Shell>
-      </AccountProvider>
-    </ToastProvider>
-  );
-}
-
-function Shell({ children }: { children?: ReactNode }) {
-  const { t } = useLocale();
+  const { messages } = useLocale();
+  const { common } = messages;
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const [paletteIsOpen, setPaletteIsOpen] = useState(false);
-  const [accountIsOpen, setAccountIsOpen] = useState(false);
-  const [webImeIsOpen, setWebImeIsOpen] = useState(false);
-  const closeMenu = useCallback(() => {
-    setMenuIsOpen(false);
-  }, []);
+  const closeMenu = useCallback(() => setMenuIsOpen(false), []);
 
-  useHeaderBehaviour(menuIsOpen || paletteIsOpen || accountIsOpen || webImeIsOpen);
-  useMenuFocus(menuIsOpen, closeMenu);
-
-  useEffect(() => {
-    document.body.classList.toggle("menu-open", menuIsOpen);
-    return () => {
-      document.body.classList.remove("menu-open");
-    };
-  }, [menuIsOpen]);
+  useHeaderBehaviour(menuIsOpen);
+  useMenuClose(menuIsOpen, closeMenu);
 
   return (
     <>
-      {/* 键盘和读屏用户的第一站：不加这个，每换一页都要按十几次 Tab 才走完顶栏 */}
       <a className="skip-link" href="#site-content">
-        {t("跳到正文")}
+        {common.skipToContent}
       </a>
-
-      <SeasonBackdrop />
 
       <div className="header-wrap">
         <header className="mx-auto flex h-[68px] max-w-[calc(1240px+2*clamp(16px,3.6vw,40px))] items-center gap-3 px-[clamp(16px,3.6vw,40px)] sm:gap-4">
-          {/* Exact: on Traditional pages the target is /zh-TW/, which every other /zh-TW/* path would otherwise match as a prefix and mark current. */}
-          <Link className="flex flex-none items-center gap-2.5 text-ink no-underline hover:text-ink" to="/" activeOptions={{ exact: true, includeSearch: false }} aria-label={t("水杉输入法 首页")}>
+          <Link className="flex flex-none items-center gap-2.5 text-ink no-underline hover:text-ink" to="/" activeOptions={{ exact: true, includeSearch: false }} aria-label={common.homeLink}>
             <LogoMark size={34} ring />
-            {/* On phones the account and input controls need the wordmark's space; the home link keeps its accessible name. */}
-            <span className="hidden text-[17px] font-bold tracking-[.03em] whitespace-nowrap xs:inline">{t("水杉输入法")}</span>
+            <span className="hidden text-[17px] font-bold tracking-[.03em] whitespace-nowrap xs:inline">{common.productName}</span>
           </Link>
 
           <DesktopNav />
 
           <div className="ml-auto flex flex-none items-center gap-1.5">
-            <CodeButton />
-            <WebImeMenu isOpen={webImeIsOpen} setOpen={setWebImeIsOpen} />
-            <PaletteMenu isOpen={paletteIsOpen} setOpen={setPaletteIsOpen} />
-            <AccountMenu isOpen={accountIsOpen} setOpen={setAccountIsOpen} />
-            {/* The bar's one accent action, kept on every width (the menu panel no longer lists 下载). */}
-            <LinkButton to="/download/" size="pill">
+            <LanguageSwitch />
+            <ThemeButton />
+            <LinkButton to="/download/" size="pill" className="max-sm:hidden">
               <DownloadIcon size={16} />
-              {t("下载")}
+              {common.download}
             </LinkButton>
             <button
-              className={cx(roundControl, "inline-flex w-9 nav:hidden", menuIsOpen && "bg-panel-2")}
+              className={cx(roundControl, "inline-flex w-9 lg:hidden", menuIsOpen && "bg-panel-2")}
               id="btn-toggle"
               type="button"
-              title={t("菜单")}
-              aria-label={t(menuIsOpen ? "关闭导航菜单" : "打开导航菜单")}
+              title={common.menu}
+              aria-label={common.menu}
               aria-expanded={menuIsOpen}
               aria-controls="nav-menu"
-              onClick={() => {
-                setMenuIsOpen((open) => !open);
-              }}
+              onClick={() => setMenuIsOpen((open) => !open)}
             >
               {menuIsOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
@@ -886,8 +344,6 @@ function Shell({ children }: { children?: ReactNode }) {
       </div>
 
       <RouteProgress />
-
-      <NoticeBanner inert={menuIsOpen} />
 
       <div id="site-content" className="focus:outline-none" tabIndex={-1} inert={menuIsOpen}>
         {children ?? <Outlet />}

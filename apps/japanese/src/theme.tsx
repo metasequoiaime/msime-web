@@ -6,12 +6,6 @@ export const THEME_CHOICES = ["light", "dark", "system"] as const;
 
 export type ThemeChoice = (typeof THEME_CHOICES)[number];
 
-export const THEME_LABELS: Record<ThemeChoice, string> = {
-  light: "亮色",
-  dark: "暗色",
-  system: "跟随系统",
-};
-
 const STORAGE_KEY = "msime-theme";
 const LIGHT_QUERY = "(prefers-color-scheme: light)";
 

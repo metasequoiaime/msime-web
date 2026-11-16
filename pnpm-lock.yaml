@@ -20,45 +20,18 @@ importers:
 
   apps/japanese:
     dependencies:
-      '@msime-web/download-stats':
-        specifier: workspace:*
-        version: link:../../packages/download-stats
-      '@msime/web-engine':
-        specifier: ^0.4.1
-        version: 0.4.1
-      '@tanstack/charts':
-        specifier: 1.1.0
-        version: 1.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tanstack/react-query':
         specifier: ^5.105.0
         version: 5.105.0(@types/react@19.3.0)(react@19.3.1)
       '@tanstack/react-router':
         specifier: ^1.170.46
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      fflate:
-        specifier: ^0.8.3
-        version: 0.8.3
-      markdown-it:
-        specifier: ^15.0.3
-        version: 15.0.3
-      opencc-js:
-        specifier: ^1.4.2
-        version: 1.4.2
-      prismjs:
-        specifier: ^1.30.0
-        version: 1.30.0
       react:
         specifier: ^19.3.1
         version: 19.3.1
       react-dom:
         specifier: ^19.3.1
         version: 19.3.1(react@19.3.1)
-      smol-toml:
-        specifier: ^1.9.1
-        version: 1.9.1
-      yaml:
-        specifier: ^2.9.1
-        version: 2.9.1
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -66,12 +39,6 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.5(jiti@2.7.0)(sass@1.103.1)(yaml@2.9.1))
-      '@types/markdown-it':
-        specifier: ^14.2.0
-        version: 14.2.0
-      '@types/prismjs':
-        specifier: ^1.26.6
-        version: 1.26.6
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0
@@ -84,9 +51,6 @@ importers:
       linkedom:
         specifier: ^0.18.14
         version: 0.18.14
-      swiper:
-        specifier: ^14.3.0
-        version: 14.3.0
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3

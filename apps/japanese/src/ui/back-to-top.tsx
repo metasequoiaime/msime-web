@@ -5,7 +5,7 @@ import { cx } from "./cx";
 
 /** Round button in the bottom-right corner, shown after scrolling past 700px (design-home §3.3). */
 export function BackToTop() {
-  const { t } = useLocale();
+  const { messages } = useLocale();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -28,8 +28,8 @@ export function BackToTop() {
   return (
     <button
       type="button"
-      title={t("回到顶部")}
-      aria-label={t("回到顶部")}
+      title={messages.common.backToTop}
+      aria-label={messages.common.backToTop}
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       onClick={() => {

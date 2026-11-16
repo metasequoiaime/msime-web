@@ -1,5 +1,5 @@
 import type { SVGProps } from "react";
-import type { SitePlatform } from "../data/platforms.ts";
+type SitePlatform = "windows" | "macos" | "linux" | "android" | "ios" | "harmony" | "web";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "children" | "aria-hidden"> & { size?: number };
 

@@ -1,27 +1,25 @@
 // Stylesheets first: app.css declares the cascade layer order before any other stylesheet reaches the page.
 import "./app.css";
-import { PageLoadError } from "./page-load-error";
-import { isTraditional } from "../shared/locales";
-import { loadTraditional } from "../shared/translate";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { hydrate } from "@tanstack/react-router/ssr/client";
 import { RouterProvider } from "@tanstack/react-router";
+import { hydrate } from "@tanstack/react-router/ssr/client";
 import { StrictMode } from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
+import { PageLoadError } from "./page-load-error";
 import { makeRouter } from "./routes";
 import { ThemeProvider } from "./theme";
-import { startSiteAnalytics } from "../shared/site-analytics";
 
 async function start() {
-  startSiteAnalytics();
-  if (isTraditional(window.location.pathname)) await loadTraditional();
   const router = makeRouter();
 
   const queryClient = new QueryClient();
   const initialData = document.getElementById("static-query-data");
   if (initialData?.textContent) {
-    try { for (const [key, value] of Object.entries(JSON.parse(initialData.textContent))) queryClient.setQueryData([key], value); }
-    catch { /* The live queries recover if an HTML snapshot is incomplete. */ }
+    try {
+      for (const [key, value] of Object.entries(JSON.parse(initialData.textContent))) queryClient.setQueryData([key], value);
+    } catch {
+      // The live query recovers if an HTML snapshot is incomplete.
+    }
     initialData.remove();
   }
 
@@ -55,10 +53,9 @@ async function start() {
 
   if (prerendered) hydrateRoot(rootElement, app);
   else createRoot(rootElement).render(app);
-
 }
 
-void start().catch(error => {
+void start().catch((error) => {
   const root = document.getElementById("root");
   if (root) createRoot(root).render(<PageLoadError error={error} />);
 });
