@@ -8,7 +8,7 @@ import { useLocale } from "./use-locale";
 import { useReveal } from "./use-reveal";
 
 const TELEGRAM_URL = "https://t.me/msimegroup";
-const QQ_GROUP = "829919142";
+const QQ_GROUP = "1130214982";
 const EMAIL = "metasequoiaime@gmail.com";
 
 const eyebrowClass = "m-0 text-[13.5px] tracking-[0.16em] text-accent-ink";

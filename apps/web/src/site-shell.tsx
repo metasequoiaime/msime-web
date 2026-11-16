@@ -42,7 +42,7 @@ const CODE_ITEM: NavItem = { to: "/code/", label: "开源代码", github: true }
 const ORG_URL = "https://github.com/metasequoiaime";
 // Same query Tailwind emits for the `nav:` variant (--breakpoint-nav in app.css), so JS and CSS switch layouts at the same width whatever the root font size.
 const DESKTOP_NAV_QUERY = "(width >= 73.75rem)";
-const QQ_GROUP = "829919142";
+const QQ_GROUP = "1130214982";
 
 /** The docs tab also covers the FAQ, which lives under the docs toolbar in the design; the 社区 tab covers all three community pages, the 反馈 tab both feedback forms and the 接入 tab 引擎库 and 神经联想. */
 const isCurrent = (item: NavItem, path: string) =>
