@@ -1,4 +1,4 @@
-import { traditionalPages, traditionalPath, baseLocalePath, isTraditional, languageAlternates } from "../shared/locales.ts";
+import { baseLocalePath, isTraditional, languageAlternates } from "../shared/locales.ts";
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -19,15 +19,13 @@ markdown.keep(['table']);
 const contents = [];
 const docsCommit = execFileSync('git', ['-C', '../../vendor/MSIME-Docs', 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const pages = [...Object.keys(seoPages), '/404/'];
-const translatedTemplates = Object.fromEntries(Object.keys(traditionalPages).map(path => [traditionalPath(path), readFileSync(`${dist}/${path === '/' ? 'index.html' : path.startsWith('/docs/') ? 'docs/index.html' : `${path.slice(1)}index.html`}`, 'utf8')]));
-const docsTemplate = readFileSync(`${dist}/docs/index.html`, 'utf8');
+// Every page starts from the single Vite entry. Read it once: the loop writes the home page back to dist/index.html, and later pages must not start from that prerendered copy.
+const template = readFileSync(`${dist}/index.html`, 'utf8');
 for (const path of pages) {
   const metadata = pageSeo(path);
   const basePath = baseLocalePath(path);
-  const guide = /^\/docs\/([^/]+)\/$/.exec(path)?.[1];
   const file = path === '/404/' ? '404.html' : path === '/' ? 'index.html' : `${path.slice(1)}index.html`;
-  const template = guide ? 'docs/index.html' : file;
-  const html = parseHTML(translatedTemplates[path] ?? (guide ? docsTemplate : readFileSync(`${dist}/${template}`, 'utf8')));
+  const html = parseHTML(template);
   const document = html.document;
   // The features page reads the dictionary release from platforms.json, so it is seeded too and its dictionary block is in the static HTML. The home page gets only the counters needed by its social-proof card, not the full release list.
   // `downloadHistory` is the automation's per-asset download ledger (every nightly included, HarmonyOS HAPs among them). The page never reads it and the schema drops it, so it stays out of the seeded state rather than shipping some 120 KB of asset names with every prerendered page.
@@ -50,6 +48,11 @@ for (const path of pages) {
   const stateScript = document.createElement('script'); stateScript.src = bootstrapFile; stateScript.setAttribute('defer', ''); stateScript.setAttribute('data-router-state', ''); document.body.append(stateScript);
   const statePreload = document.createElement('link'); statePreload.rel = 'preload'; statePreload.setAttribute('as', 'script'); statePreload.href = bootstrapFile; document.head.append(statePreload);
   document.documentElement.classList.remove('preload');
+  // The résumé is a personal page, not part of the installable site: no web manifest, and its body styling is in place before hydration (src/page-resume.tsx adds the same class at runtime).
+  if (basePath === '/resume/') {
+    document.head.querySelector('link[rel="manifest"]')?.remove();
+    document.body.classList.add('resume-body');
+  }
   document.documentElement.setAttribute('data-prerendered', 'true');
   const pageModule = basePath.startsWith('/docs/') ? 'docs' : basePath === '/' ? 'home' : basePath.split('/')[1];
   const routeEntry = Object.keys(manifest).find(key => key === `src/page-${pageModule}.tsx`);
@@ -88,7 +91,7 @@ for (const path of pages) {
   if (metadata.canonical) {
     const canonical = document.createElement('link'); canonical.rel = 'canonical'; canonical.href = metadata.canonical; document.head.append(canonical);
     meta('property', 'og:url', metadata.canonical);
-  }
+  } else document.head.querySelector('meta[property="og:url"]')?.remove();
   const schema = structuredData(path);
   if (schema) { const script = document.createElement('script'); script.id = 'site-structured-data'; script.type = 'application/ld+json'; script.textContent = serializeJsonLd(schema); document.head.append(script); }
   const module = `src/page-${pageModule}.tsx`;

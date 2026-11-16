@@ -34,7 +34,7 @@ pnpm workspace，依赖和锁文件只在根目录装一次：
 
 | 目录 | 内容 |
 | --- | --- |
-| `apps/web/` | 官网（Cloudflare Pages 项目的 Root directory）：各页面的 `index.html`、`src/`、Pages Functions `functions/`、前后端共用的 `shared/`、`public/`，以及构建、清单生成与测试脚本 `scripts/` |
+| `apps/web/` | 官网（Cloudflare Pages 项目的 Root directory）：唯一入口 `index.html`、`src/`、Pages Functions `functions/`、前后端共用的 `shared/`、`public/`，以及构建、清单生成与测试脚本 `scripts/` |
 | `apps/dl-worker/` | `dl.msime.app` 下载镜像 Worker，单独用 `wrangler deploy` 发布 |
 | `packages/download-stats/` | 安装包分类与下载统计，官网清单生成和镜像 Worker 共用 |
 | `vendor/MSIME-Docs/` | 用户指南的固定 gitlink |
@@ -53,9 +53,9 @@ pnpm workspace，依赖和锁文件只在根目录装一次：
 
 Biome 只开了 linter，formatter 处于关闭状态——仓库既有代码尚未按 Biome 的风格格式化，统一格式化是一次独立的机械提交，不与功能改动混在一起。
 
-站点是 React + TanStack Router，但仍然多入口：每个目录下的 `index.html` 负责直接访问时的首帧、标题与分享元数据，页面本身由路由渲染。新增一页要动五处——`<name>/index.html`、`src/page-<name>.tsx`、`src/routes.tsx` 的路由、`vite.config.ts` 的 `input`、`shared/site-seo.ts` 的页面元数据注册。站点地图、静态正文和 AI 内容入口由构建自动生成。正文是散文的页面把内容写在 `src/content/<name>.md`，交给 `src/page-content.tsx` 渲染；自定义排版的页面直接写 JSX。`scripts/site-metadata.test.mjs` 会盯着 canonical、og 标签与页面注册表保持一致。
+站点是 React + TanStack Router 的单页应用，只有一个入口 `index.html`。`scripts/build-seo.mjs` 以它为模板，在 Node 里按 `shared/site-seo.ts` 注册表逐页渲染出 `dist/<路径>/index.html` 和 `dist/404.html`，写入正文、标题和分享元数据，浏览器端再由 React 接管。新增一页要动三处——`src/page-<name>.tsx`、`src/routes.tsx` 的路由、`shared/site-seo.ts` 的页面元数据注册。站点地图、静态正文和 AI 内容入口由构建自动生成。正文是散文的页面把内容写在 `src/content/<name>.md`，交给 `src/page-content.tsx` 渲染；自定义排版的页面直接写 JSX。`scripts/site-metadata.test.mjs` 会检查路由表里的每个页面都已在注册表登记。
 
-入口 HTML 里那段读主题的内联脚本必须逐字节照抄现有页面：CSP 不含 `unsafe-inline`，`scripts/csp-hashes.mjs` 在构建时按摘要放行，改动一个字符就会多出一条需要放行的摘要。
+`index.html` 里那段读主题的内联脚本是每个页面共用的：CSP 不含 `unsafe-inline`，`scripts/csp-hashes.mjs` 在构建时按摘要放行，改动一个字符就会多出一条需要放行的摘要。
 
 ## 水杉娘画廊图片
 

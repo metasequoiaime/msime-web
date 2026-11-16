@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { test } from 'node:test';
 import { docsSearchSchema } from '../src/docs-search.ts';
 import { downloadSearchSchema } from '../src/download-search.ts';
@@ -11,27 +11,27 @@ const root = new URL('../', import.meta.url);
 const read = path => readFileSync(new URL(path, root), 'utf8');
 const SITE = 'https://msime.app';
 
-/** 仓库里每个带 index.html 的目录就是一个页面；根目录的 index.html 是首页。 */
-const pageDirectories = () =>
-  readdirSync(new URL('.', root), { withFileTypes: true })
-    .filter(entry => entry.isDirectory() && !entry.name.startsWith('.'))
-    .filter(entry => !['node_modules', 'dist', 'public', 'scripts', 'src', 'vendor'].includes(entry.name))
-    .filter(entry => existsSync(new URL(`${entry.name}/index.html`, root)))
-    .map(entry => `/${entry.name}/`);
+/** 路由表里每条静态路径都是一个页面。构建只为 SEO 注册表里的地址生成 HTML，漏注册的页面直接访问会落到 404。 */
+const routedPages = () =>
+  [...read('src/routes.tsx').matchAll(/path: "(\/[^"$]*)"/g)]
+    .map(match => match[1].endsWith('/') ? match[1] : `${match[1]}/`)
+    .filter(path => !REDIRECTS.includes(path));
+
+// 旧的 /beta/ 只在路由里重定向到下载页，没有自己的页面。
+const REDIRECTS = ['/beta/', '/zh-TW/beta/'];
 
 // 简历页是个人页面，「我的」只对登录用户有内容，入口里都带 noindex，不进站点地图。
 const NOINDEX = ['/resume/', '/me/'];
 
-test('the SEO registry includes every entry page', () => {
-  for (const path of ['/', ...pageDirectories()]) assert.ok(seoPages[path], path);
+test('the SEO registry includes every routed page', () => {
+  const routes = routedPages();
+  assert.ok(routes.includes('/') && routes.includes('/zh-TW/docs/'));
+  for (const path of routes) assert.ok(seoPages[path], path);
   assert.equal(Object.keys(seoPages).filter(path => path.startsWith('/docs/') && path !== '/docs/').length, 7);
 });
 
-test('pages excluded from the sitemap actually say so in their own markup', () => {
-  for (const path of NOINDEX) {
-    const html = read(`${path.slice(1)}index.html`);
-    assert.match(html, /<meta name="robots"[^>]*noindex/, `${path} 必须自己声明 noindex`);
-  }
+test('pages excluded from the sitemap are registered as noindex', () => {
+  for (const path of NOINDEX) assert.equal(seoPages[path].noindex, true, `${path} 必须登记 noindex，构建据此写入 robots`);
 });
 
 test('robots exposes the sitemap and permits reading noindex directives', () => {
@@ -41,25 +41,22 @@ test('robots exposes the sitemap and permits reading noindex directives', () => 
   assert.match(robots, /^Disallow: \/api\/$/m);
 });
 
-test('every entry carries its registered canonical and matching sharing metadata', () => {
-  for (const path of ['/', ...pageDirectories()]) {
-    const html = read(path === '/' ? 'index.html' : `${path.slice(1)}index.html`);
-    const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
-    assert.equal(canonical, pageSeo(path).canonical, `${path} canonical`);
-    assert.match(html, /<meta property="og:image" content="[^"]+og-cover\.png"/, `${path} 缺 og:image`);
-    assert.match(html, /<meta name="twitter:card" content="summary_large_image"/, `${path} 缺 twitter card`);
+test('the single entry carries the home metadata and the sharing tags every page inherits', () => {
+  const html = read('index.html');
+  const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+  assert.equal(canonical, pageSeo('/').canonical);
+  assert.match(html, /<meta property="og:image" content="[^"]+og-cover\.png"/, '缺 og:image');
+  assert.match(html, /<meta name="twitter:card" content="summary_large_image"/, '缺 twitter card');
 
-    const ogTitle = html.match(/<meta property="og:title" content="([^"]+)"/)?.[1];
-    const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
-    assert.equal(ogTitle, title, `${path} og:title 应与 <title> 一致`);
-  }
+  const ogTitle = html.match(/<meta property="og:title" content="([^"]+)"/)?.[1];
+  const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
+  assert.equal(ogTitle, title, 'og:title 应与 <title> 一致');
 });
 
-test('the 404 entry exists, is not indexable, and has no canonical of its own', () => {
-  const html = read('404.html');
-  assert.match(html, /<meta name="robots"[^>]*noindex/);
-  assert.doesNotMatch(html, /rel="canonical"/);
-  assert.match(read('vite.config.ts'), /404\.html/, '404.html 必须是构建入口，否则不会进产物');
+test('the 404 page is generated as not indexable and without a canonical of its own', () => {
+  assert.equal(pageSeo('/404/').noindex, true);
+  assert.equal(pageSeo('/404/').canonical, undefined);
+  assert.match(read('scripts/build-seo.mjs'), /'\/404\/'/, '构建必须生成 dist/404.html，Cloudflare Pages 用它应答未匹配的地址');
 });
 
 test('the web manifest is valid and points at icons that exist', () => {
