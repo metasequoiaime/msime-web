@@ -109,7 +109,7 @@ test('the guide and FAQ answers are in the static HTML', () => {
 });
 
 // Han characters may appear on Vietnamese pages only as product names and quoted settings labels of the app, which is itself labelled in Chinese.
-const HAN_ALLOWED = ['水杉越南语', '水杉输入法', '设置', '输入', '越南语', '26', '键', '方案', '声调位置', '新式', '旧式', '立即安装', '维护与诊断', '卸载'];
+const HAN_ALLOWED = ['水杉越南语', '水杉输入法', '水杉五笔', '水杉日语', '水杉藏文', '设置', '输入', '越南语', '26', '键', '方案', '声调位置', '新式', '旧式', '立即安装', '维护与诊断', '卸载'];
 test('Vietnamese pages contain no Han text outside the allowlist', () => {
   for (const path of [...vietnamesePages, '/404/']) {
     const doc = parseHTML(read(path === '/404/' ? '404.html' : file(path))).document;

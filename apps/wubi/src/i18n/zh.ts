@@ -41,6 +41,7 @@ export const zh = {
       source: "源代码",
       privacy: "隐私政策",
       terms: "用户协议",
+      others: "其他单独版本",
     },
     notFound: {
       title: "页面不存在",

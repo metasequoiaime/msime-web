@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import androidPgyerQr from "../assets/download/android-pgyer-qr.png?no-inline";
 import harmonyAppTestQr from "../assets/download/harmony-apptest-qr.png?no-inline";
 import iosTestFlightQr from "../assets/download/ios-testflight-qr.png?no-inline";
-import { HARMONY_APPTEST_CODE, HARMONY_BUILD_GUIDE_URL, type SitePlatformEntry } from "../data/platforms.ts";
+import { EDITION_SITES, HARMONY_APPTEST_CODE, HARMONY_BUILD_GUIDE_URL, type SitePlatformEntry } from "../data/platforms.ts";
 import type { PlatformRelease, PreviewRelease } from "../platforms-data.ts";
 import type { Platform, ReleasePlatform } from "../platform.ts";
 import { useDownloadMirrorsQuery } from "../data/queries";
@@ -114,6 +114,8 @@ function MirrorAction({ platform, version, entry, className, label = "下载", a
 /* 主推那个之外的包，按架构分组收进折叠区。正式版和预览版各用一份。有国内镜像的包在大小前面多一个「国内镜像」链接。`id` 给 Linux 按钮下那一行用，点它会展开这里。 */
 function MorePackages({ platform, version, downloads, id }: { platform: ReleasePlatform; version: string; downloads: PlatformRelease["downloads"]; id?: string }) {
   const { t } = useLocale();
+  // Single-scheme editions listed here also have their own site; link the ones this list actually contains.
+  const editions = EDITION_SITES.filter((site) => downloads.some((entry) => entry.label.startsWith(site.name)));
   return (
     <details id={id} className="group mt-4 scroll-mt-[84px] rounded-group bg-panel-2 px-4 [&[open]]:pb-3">
       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
@@ -121,6 +123,14 @@ function MorePackages({ platform, version, downloads, id }: { platform: ReleaseP
         <ChevronDownIcon className="flex-none text-muted transition-transform group-open:rotate-180" />
       </summary>
       <div className="grid gap-3">
+        {editions.length > 0 && (
+          <p className="m-0 flex flex-wrap gap-x-3 gap-y-1 text-[13px] text-muted">
+            {t("单独版本介绍")}
+            {editions.map((site) => (
+              <a key={site.url} className="font-medium text-accent-ink hover:text-ink" href={site.url}>{t(site.name)}</a>
+            ))}
+          </p>
+        )}
         {groupByArch(downloads).map(([arch, entries]) => (
           <section key={arch}>
             <h3 className="m-0 mb-1.5 font-mono text-xs font-medium tracking-wide text-muted">{t(arch)}</h3>

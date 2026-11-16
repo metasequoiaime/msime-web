@@ -29,6 +29,7 @@ export const zh: Messages = {
       source: "源代码",
       privacy: "隐私政策",
       terms: "用户协议",
+      family: "其他单独版本",
     },
   },
   notFound: {

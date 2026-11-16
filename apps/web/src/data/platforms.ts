@@ -63,6 +63,14 @@ export const HARMONY_BUILD_GUIDE_URL = `${MSIME}/blob/develop/platforms/harmony/
 /** The web engine's npm package; the same files are attached to every `web-engine-v…` release in the msime repository. */
 export const WEB_ENGINE_NPM_URL = "https://www.npmjs.com/package/@msime/web-engine";
 
+/** The single-scheme editions that have their own site (apps/<id> in this repository). `name` is the prefix generate-platforms.mjs puts on each edition's package labels, so the download page can tell which editions a package list contains. */
+export const EDITION_SITES = [
+  { name: "水杉五笔", url: "https://wubi.msime.app/" },
+  { name: "水杉日语", url: "https://japanese.msime.app/" },
+  { name: "水杉越南语", url: "https://vietnamese.msime.app/" },
+  { name: "水杉藏文", url: "https://tibetan.msime.app/" },
+] as const;
+
 /*
  * Static facts about the seven platforms. `public/platforms.json` belongs to the release automation and covers desktop, Android, and HarmonyOS packages. iOS keeps its publication metadata separate because it has no downloadable package; HarmonyOS is handled the same way: its HAPs stay in the manifest for the download statistics, but the site does not offer them, and its store link is `HARMONY_APPGALLERY_URL`. Windows keeps its separate repository; the other releases come from the merged `msime` repository.
  */

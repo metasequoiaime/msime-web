@@ -32,6 +32,7 @@ export const ja: Messages = {
     source: "ソースコード",
     privacy: "プライバシーポリシー",
     terms: "利用規約",
+    family: "ほかの単体版",
   },
   home: {
     eyebrow: "オープンソース・無料 · macOS / Linux / Android",

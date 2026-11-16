@@ -5,6 +5,7 @@ import { baseLocalePath, traditionalPages, traditionalPath, isTraditional } from
 import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { NoticeBanner } from "./notice-banner";
+import { EDITION_SITES } from "./data/platforms";
 import { COMMUNITY_SECTIONS } from "./community/sections";
 import { FEEDBACK_SECTIONS } from "./feedback/sections";
 import { INTEGRATION_SECTIONS } from "./integration/sections";
@@ -728,7 +729,7 @@ function SiteFooter({ inert }: { inert: boolean }) {
   return (
     <footer className="site-footer" inert={inert}>
       <div className="mx-auto max-w-[1240px] overflow-hidden rounded-shell bg-panel shadow-hair">
-        <div className="grid grid-cols-2 gap-[clamp(28px,4vw,48px)] p-[clamp(28px,4vw,48px)] sm:grid-cols-3 xl:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
+        <div className="grid grid-cols-2 gap-[clamp(28px,4vw,48px)] p-[clamp(28px,4vw,48px)] sm:grid-cols-3 xl:grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))]">
           <div className="col-span-full min-w-0 xl:col-span-1">
             <div className="flex items-center gap-2.5">
               <LogoMark size={36} />
@@ -784,6 +785,12 @@ function SiteFooter({ inert }: { inert: boolean }) {
             <Link className={footerLink} to="/privacy/">{t("隐私政策")}</Link>
             <Link className={footerLink} to="/terms/">{t("用户协议")}</Link>
             <ExternalFooterLink href={ORG_URL}>{t("GitHub 组织")}</ExternalFooterLink>
+          </FooterColumn>
+
+          <FooterColumn title="单独版本">
+            {EDITION_SITES.map((site) => (
+              <a key={site.url} className={footerLink} href={site.url}>{t(site.name)}</a>
+            ))}
           </FooterColumn>
         </div>
 
