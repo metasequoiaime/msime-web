@@ -1,10 +1,10 @@
 {
-  "name": "水杉输入法",
-  "short_name": "水杉",
-  "description": "开源多平台中文输入法，覆盖 Windows、macOS、Linux、Android、iOS 与 HarmonyOS，也能嵌入网页使用。",
+  "name": "水杉日语",
+  "short_name": "水杉日语",
+  "description": "水杉输入法（MSIME）の日本語入力だけを収めたオープンソースの単体版。",
   "start_url": "/",
   "display": "browser",
-  "lang": "zh-CN",
+  "lang": "ja",
   "background_color": "#F5FAF6",
   "theme_color": "#F5FAF6",
   "icons": [

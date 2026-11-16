@@ -13,7 +13,7 @@ const TONES = {
 } as const;
 
 type CardProps = HTMLAttributes<HTMLElement> & {
-  as?: "div" | "section" | "article" | "aside" | "li";
+  as?: "div" | "section" | "article" | "aside" | "li" | "figure";
   tone?: keyof typeof TONES;
 };
 

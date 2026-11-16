@@ -1,31 +1,29 @@
 <!doctype html>
-<html lang="zh-CN" class="preload">
+<html lang="ja" class="preload">
 
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/x-icon" href="/msime.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="开源中文输入法，面向 Windows、macOS、Linux、Android、iOS 与 HarmonyOS 开发，也能嵌入网页使用。" />
-  <title>MSIME | 水杉输入法</title>
-  <link rel="canonical" href="https://msime.app/" />
+  <meta name="description" content="水杉日语は、水杉输入法（MSIME）の日本語入力だけを収めたオープンソースの単体版です。" />
+  <title>水杉日语（MSIME Japanese）</title>
+  <link rel="canonical" href="https://japanese.msime.app/" />
   <link rel="apple-touch-icon" href="/msime-logo.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <meta name="theme-color" content="#F5FAF6" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0E1712" media="(prefers-color-scheme: dark)" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="水杉输入法" />
-  <meta property="og:locale" content="zh_CN" />
-  <meta property="og:url" content="https://msime.app/" />
-  <meta property="og:title" content="MSIME | 水杉输入法" />
-  <meta property="og:description" content="开源中文输入法，面向 Windows、macOS、Linux、Android、iOS 与 HarmonyOS 开发，也能嵌入网页使用。" />
-  <meta property="og:image" content="https://msime.app/og-cover.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="水杉输入法：打字就能背单词，候选旁直接显示译文" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="MSIME | 水杉输入法" />
-  <meta name="twitter:description" content="开源中文输入法，面向 Windows、macOS、Linux、Android、iOS 与 HarmonyOS 开发，也能嵌入网页使用。" />
-  <meta name="twitter:image" content="https://msime.app/og-cover.png" />
+  <meta property="og:site_name" content="水杉日语" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:url" content="https://japanese.msime.app/" />
+  <meta property="og:title" content="水杉日语（MSIME Japanese）" />
+  <meta property="og:description" content="水杉日语は、水杉输入法（MSIME）の日本語入力だけを収めたオープンソースの単体版です。" />
+  <meta property="og:image" content="https://japanese.msime.app/msime-logo.png" />
+  <meta property="og:image:alt" content="水杉日语" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="水杉日语（MSIME Japanese）" />
+  <meta name="twitter:description" content="水杉日语は、水杉输入法（MSIME）の日本語入力だけを収めたオープンソースの単体版です。" />
+  <meta name="twitter:image" content="https://japanese.msime.app/msime-logo.png" />
 
   <script>
     (() => {
@@ -64,7 +62,7 @@
       background-color: inherit;
     }
 
-    /* 页面由 React 渲染，样式到位之前先把挂载点遮住。只遮 #root，脚本被禁用时下面的提示还要看得见。 */
+    /* The page is rendered by React; hide the mount point until the styles are in place. Only #root, so the note below stays visible with scripts disabled. */
     html.preload #root {
       visibility: hidden;
     }
@@ -74,7 +72,7 @@
       margin: 4rem auto;
       padding: 0 1.5rem;
       color: #5E7266;
-      font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
       line-height: 1.8;
     }
   </style>
@@ -84,7 +82,7 @@
   <div id="root"></div>
 
   <noscript>
-    <p class="noscript-note">本站需要 JavaScript 才能显示内容。请在浏览器中启用后重试，或直接前往 <a href="https://github.com/metasequoiaime">GitHub 组织</a> 查看项目、文档与下载。</p>
+    <p class="noscript-note">このサイトの表示には JavaScript が必要です。ブラウザーで有効にするか、<a href="https://github.com/metasequoiaime/msime/releases">GitHub のリリース一覧</a>から直接ダウンロードしてください。</p>
   </noscript>
 
   <script type="module" src="/src/app.tsx"></script>
