@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T00:00:20.210Z",
+  "generatedAt": "2026-11-17T00:09:54.489Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -603,7 +603,7 @@
     ]
   },
   "downloadStats": {
-    "total": 85019,
+    "total": 85020,
     "platforms": {
       "windows": 48491,
       "windowsRust": 3014,
@@ -611,7 +611,7 @@
       "macos": 6791,
       "linux": 16157,
       "android": 9076,
-      "harmony": 938
+      "harmony": 939
     }
   },
   "downloadHistory": [
@@ -10903,7 +10903,7 @@
       "repository": "metasequoiaime/msime",
       "id": 756874183,
       "name": "msime-harmony-0.5.0.hap",
-      "download_count": 2
+      "download_count": 3
     },
     {
       "repository": "metasequoiaime/msime",
@@ -11807,20 +11807,20 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 26076,
+    "total": 26079,
     "platforms": {
-      "android": 4187,
+      "android": 4189,
       "harmony": 102,
       "linux": 1733,
       "macos": 1277,
-      "windows": 17135,
+      "windows": 17136,
       "windowsRust": 1642
     },
-    "generatedAt": "2026-11-17T00:00:19.217414Z"
+    "generatedAt": "2026-11-17T00:09:53.797491Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-17T00:00:18.712Z",
-    "total": 6989,
+    "generatedAt": "2026-11-17T00:09:53.297Z",
+    "total": 6990,
     "builds": [
       {
         "id": "0c06140c932e34bd7048ed1eb31f358dbff0556f3e3399b578f75c11fa59b71f",
@@ -11832,7 +11832,7 @@
       },
       {
         "id": "43cd20c1dc3a900c2e5b8a6c979d4f9424a5b75ce4740d7814ae2ba6204b8d3f",
-        "downloads": 586
+        "downloads": 587
       },
       {
         "id": "5a4b727841661c3fc60e10d1820be47471b4a5f29d0c835dfd74883de4bd981f",
@@ -11889,7 +11889,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-17T00:00:19.635Z",
+    "generatedAt": "2026-11-17T00:09:53.958Z",
     "downloads": 4105,
     "periodStart": "2025-11-17",
     "periodEnd": "2026-11-17"
