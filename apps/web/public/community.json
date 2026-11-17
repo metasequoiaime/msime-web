@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-17T11:45:27.988Z",
-  "totalStars": 5819,
+  "generatedAt": "2026-11-17T20:51:09.828Z",
+  "totalStars": 5832,
   "repoCount": 9,
   "starHistory": [
     {
@@ -149,11 +149,11 @@
     },
     {
       "month": "2026-10",
-      "stars": 5301
+      "stars": 5300
     },
     {
       "month": "2026-11",
-      "stars": 5818
+      "stars": 5831
     }
   ],
   "starSeries": [
@@ -306,11 +306,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 3248
+          "stars": 3247
         },
         {
           "date": "2026-11-17",
-          "stars": 3469
+          "stars": 3473
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-17",
-          "stars": 1343
+          "stars": 1352
         }
       ]
     },
@@ -783,13 +783,13 @@
       ]
     }
   ],
-  "starDelta30d": 1974,
+  "starDelta30d": 1988,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26425,
+      "contributions": 26436,
       "repos": 8
     },
     {
@@ -856,18 +856,18 @@
       "repos": 3
     },
     {
+      "login": "nuthatadf",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
+      "url": "https://github.com/nuthatadf",
+      "contributions": 30,
+      "repos": 2
+    },
+    {
       "login": "yangkx1024",
       "avatarUrl": "https://avatars.githubusercontent.com/u/8359081?v=4",
       "url": "https://github.com/yangkx1024",
       "contributions": 30,
       "repos": 1
-    },
-    {
-      "login": "nuthatadf",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
-      "url": "https://github.com/nuthatadf",
-      "contributions": 28,
-      "repos": 2
     }
   ]
 }
