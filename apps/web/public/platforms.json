@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T07:04:43.625Z",
+  "generatedAt": "2026-11-18T07:12:58.312Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -648,14 +648,14 @@
     ]
   },
   "downloadStats": {
-    "total": 87832,
+    "total": 87836,
     "platforms": {
       "windows": 49595,
       "windowsRust": 3288,
       "windows7": 592,
-      "macos": 6959,
-      "linux": 16819,
-      "android": 9601,
+      "macos": 6961,
+      "linux": 16820,
+      "android": 9602,
       "harmony": 978
     }
   },
@@ -9484,7 +9484,7 @@
       "repository": "metasequoiaime/msime",
       "id": 730558720,
       "name": "msime-linux_0.16.1_amd64.deb",
-      "download_count": 327
+      "download_count": 328
     },
     {
       "repository": "metasequoiaime/msime",
@@ -10906,7 +10906,7 @@
       "repository": "metasequoiaime/msime",
       "id": 753607864,
       "name": "msime-macos-0.60.0-universal.pkg",
-      "download_count": 84
+      "download_count": 86
     },
     {
       "repository": "metasequoiaime/msime",
@@ -11056,7 +11056,7 @@
       "repository": "metasequoiaime/msime",
       "id": 757618035,
       "name": "msime-android.apk",
-      "download_count": 232
+      "download_count": 233
     },
     {
       "repository": "metasequoiaime/msime",
@@ -12380,19 +12380,19 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 27752,
+    "total": 27761,
     "platforms": {
-      "android": 4618,
+      "android": 4619,
       "harmony": 103,
       "linux": 1808,
       "macos": 1277,
-      "windows": 17966,
+      "windows": 17974,
       "windowsRust": 1980
     },
-    "generatedAt": "2026-11-18T07:04:42.990667Z"
+    "generatedAt": "2026-11-18T07:12:57.600956Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-18T07:04:42.688Z",
+    "generatedAt": "2026-11-18T07:12:57.275Z",
     "total": 7124,
     "builds": [
       {
@@ -12470,7 +12470,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-18T07:04:43.160Z",
+    "generatedAt": "2026-11-18T07:12:57.822Z",
     "downloads": 4216,
     "periodStart": "2025-11-18",
     "periodEnd": "2026-11-18"
