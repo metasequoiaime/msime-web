@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T01:43:29.322Z",
+  "generatedAt": "2026-11-18T01:45:41.975Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -11966,20 +11966,20 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 27434,
+    "total": 27437,
     "platforms": {
       "android": 4567,
       "harmony": 103,
       "linux": 1790,
       "macos": 1277,
-      "windows": 17808,
-      "windowsRust": 1889
+      "windows": 17809,
+      "windowsRust": 1891
     },
-    "generatedAt": "2026-11-18T01:43:28.202825Z"
+    "generatedAt": "2026-11-18T01:45:41.305102Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-18T01:43:27.734Z",
-    "total": 7105,
+    "generatedAt": "2026-11-18T01:45:40.849Z",
+    "total": 7107,
     "builds": [
       {
         "id": "0c06140c932e34bd7048ed1eb31f358dbff0556f3e3399b578f75c11fa59b71f",
@@ -12011,7 +12011,7 @@
       },
       {
         "id": "8a66d63680170076ab5b84f47a0a5bfaa3b5de6b081d159e42ea963416a14b19",
-        "downloads": 83
+        "downloads": 85
       },
       {
         "id": "a857688b2ac9baf92450397d5105726782c2a1d75469fa0afa59200d2c03a984",
@@ -12056,7 +12056,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-18T01:43:28.469Z",
+    "generatedAt": "2026-11-18T01:45:41.475Z",
     "downloads": 4216,
     "periodStart": "2025-11-18",
     "periodEnd": "2026-11-18"
