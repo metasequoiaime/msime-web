@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T01:53:54.969Z",
+  "generatedAt": "2026-11-19T02:04:13.912Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -603,14 +603,14 @@
     ]
   },
   "downloadStats": {
-    "total": 89251,
+    "total": 89264,
     "platforms": {
-      "windows": 50061,
-      "windowsRust": 3446,
+      "windows": 50069,
+      "windowsRust": 3450,
       "windows7": 617,
       "macos": 7094,
       "linux": 17124,
-      "android": 9902,
+      "android": 9903,
       "harmony": 1007
     }
   },
@@ -11023,7 +11023,7 @@
       "repository": "metasequoiaime/msime",
       "id": 757983007,
       "name": "MetasequoiaIME-Full_Setup_v0.5.0.exe",
-      "download_count": 180
+      "download_count": 181
     },
     {
       "repository": "metasequoiaime/msime",
@@ -11479,7 +11479,7 @@
       "repository": "metasequoiaime/msime",
       "id": 762436770,
       "name": "msime-android-wubi.apk",
-      "download_count": 36
+      "download_count": 37
     },
     {
       "repository": "metasequoiaime/msime",
@@ -11503,7 +11503,7 @@
       "repository": "metasequoiaime/msime",
       "id": 763146396,
       "name": "MetasequoiaIME-Full_Setup_v0.6.0.exe",
-      "download_count": 92
+      "download_count": 95
     },
     {
       "repository": "metasequoiaime/msime",
@@ -12553,23 +12553,23 @@
       "repository": "metasequoiaime/msime-windows",
       "id": 759728802,
       "name": "MetasequoiaIME_Setup_v0.14.1.exe",
-      "download_count": 892
+      "download_count": 900
     }
   ],
   "mirrorDownloadStats": {
-    "total": 28778,
+    "total": 28790,
     "platforms": {
       "android": 4862,
       "harmony": 103,
       "linux": 1894,
       "macos": 1277,
-      "windows": 18420,
-      "windowsRust": 2222
+      "windows": 18429,
+      "windowsRust": 2225
     },
-    "generatedAt": "2026-11-19T01:53:54.241767Z"
+    "generatedAt": "2026-11-19T02:04:13.17665Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-19T01:53:53.684Z",
+    "generatedAt": "2026-11-19T02:04:12.696Z",
     "total": 7208,
     "builds": [
       {
@@ -12651,7 +12651,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-19T01:53:54.558Z",
+    "generatedAt": "2026-11-19T02:04:13.369Z",
     "downloads": 4291,
     "periodStart": "2025-11-19",
     "periodEnd": "2026-11-19"
