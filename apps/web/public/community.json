@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-19T18:39:42.964Z",
-  "totalStars": 5943,
+  "generatedAt": "2026-11-20T00:55:51.082Z",
+  "totalStars": 5945,
   "repoCount": 9,
   "starHistory": [
     {
@@ -153,7 +153,7 @@
     },
     {
       "month": "2026-11",
-      "stars": 5941
+      "stars": 5943
     }
   ],
   "starSeries": [
@@ -309,8 +309,8 @@
           "stars": 3245
         },
         {
-          "date": "2026-11-19",
-          "stars": 3541
+          "date": "2026-11-20",
+          "stars": 3543
         }
       ]
     },
@@ -330,7 +330,7 @@
           "stars": 1070
         },
         {
-          "date": "2026-11-19",
+          "date": "2026-11-20",
           "stars": 1393
         }
       ]
@@ -387,7 +387,7 @@
           "stars": 891
         },
         {
-          "date": "2026-11-19",
+          "date": "2026-11-20",
           "stars": 912
         }
       ]
@@ -448,7 +448,7 @@
           "stars": 65
         },
         {
-          "date": "2026-11-19",
+          "date": "2026-11-20",
           "stars": 65
         }
       ]
@@ -605,7 +605,7 @@
           "stars": 11
         },
         {
-          "date": "2026-11-19",
+          "date": "2026-11-20",
           "stars": 13
         }
       ]
@@ -622,7 +622,7 @@
           "stars": 4
         },
         {
-          "date": "2026-11-19",
+          "date": "2026-11-20",
           "stars": 6
         }
       ]
@@ -663,7 +663,7 @@
           "stars": 5
         },
         {
-          "date": "2026-11-19",
+          "date": "2026-11-20",
           "stars": 6
         }
       ]
@@ -764,7 +764,7 @@
           "stars": 3
         },
         {
-          "date": "2026-11-19",
+          "date": "2026-11-20",
           "stars": 3
         }
       ]
@@ -777,26 +777,26 @@
           "stars": 1
         },
         {
-          "date": "2026-11-19",
+          "date": "2026-11-20",
           "stars": 2
         }
       ]
     }
   ],
-  "starDelta30d": 1117,
+  "starDelta30d": 1023,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26519,
+      "contributions": 26524,
       "repos": 8
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 2029,
+      "contributions": 2032,
       "repos": 7
     },
     {
@@ -821,18 +821,18 @@
       "repos": 1
     },
     {
+      "login": "metasequoiaime-dev",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
+      "url": "https://github.com/metasequoiaime-dev",
+      "contributions": 42,
+      "repos": 3
+    },
+    {
       "login": "apple-ouyang",
       "avatarUrl": "https://avatars.githubusercontent.com/u/45086632?v=4",
       "url": "https://github.com/apple-ouyang",
       "contributions": 41,
       "repos": 2
-    },
-    {
-      "login": "metasequoiaime-dev",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
-      "url": "https://github.com/metasequoiaime-dev",
-      "contributions": 41,
-      "repos": 3
     },
     {
       "login": "Neptrue-Lin",
