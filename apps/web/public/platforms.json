@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-20T02:13:39.581Z",
+  "generatedAt": "2026-11-20T02:18:40.884Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -603,10 +603,10 @@
     ]
   },
   "downloadStats": {
-    "total": 90813,
+    "total": 90814,
     "platforms": {
       "windows": 50574,
-      "windowsRust": 3670,
+      "windowsRust": 3671,
       "windows7": 632,
       "macos": 7215,
       "linux": 17488,
@@ -11725,7 +11725,7 @@
       "repository": "metasequoiaime/msime",
       "id": 768571934,
       "name": "MetasequoiaIME-Full_Setup_v0.6.1.exe",
-      "download_count": 46
+      "download_count": 47
     },
     {
       "repository": "metasequoiaime/msime",
@@ -12821,19 +12821,19 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 29903,
+    "total": 29908,
     "platforms": {
-      "android": 5111,
+      "android": 5112,
       "harmony": 103,
-      "linux": 1960,
+      "linux": 1961,
       "macos": 1277,
-      "windows": 18962,
+      "windows": 18965,
       "windowsRust": 2490
     },
-    "generatedAt": "2026-11-20T02:13:38.878963Z"
+    "generatedAt": "2026-11-20T02:18:40.180018Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-20T02:13:38.561Z",
+    "generatedAt": "2026-11-20T02:18:39.641Z",
     "total": 7291,
     "builds": [
       {
@@ -12915,7 +12915,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-20T02:13:39.153Z",
+    "generatedAt": "2026-11-20T02:18:40.437Z",
     "downloads": 4362,
     "periodStart": "2025-11-20",
     "periodEnd": "2026-11-20"
