@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-21T13:00:17.397Z",
-  "totalStars": 5987,
+  "generatedAt": "2026-11-21T20:04:14.692Z",
+  "totalStars": 5994,
   "repoCount": 9,
   "starHistory": [
     {
@@ -145,15 +145,15 @@
     },
     {
       "month": "2026-09",
-      "stars": 1707
+      "stars": 1706
     },
     {
       "month": "2026-10",
-      "stars": 5291
+      "stars": 5290
     },
     {
       "month": "2026-11",
-      "stars": 5985
+      "stars": 5992
     }
   ],
   "starSeries": [
@@ -302,15 +302,15 @@
         },
         {
           "date": "2026-09-30",
-          "stars": 1538
+          "stars": 1537
         },
         {
           "date": "2026-10-31",
-          "stars": 3243
+          "stars": 3242
         },
         {
           "date": "2026-11-21",
-          "stars": 3558
+          "stars": 3562
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-21",
-          "stars": 1419
+          "stars": 1422
         }
       ]
     },
@@ -783,13 +783,13 @@
       ]
     }
   ],
-  "starDelta30d": 1023,
+  "starDelta30d": 1031,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26548,
+      "contributions": 26550,
       "repos": 8
     },
     {
@@ -810,7 +810,7 @@
       "login": "Tokisaki-Galaxy",
       "avatarUrl": "https://avatars.githubusercontent.com/u/61621971?v=4",
       "url": "https://github.com/Tokisaki-Galaxy",
-      "contributions": 144,
+      "contributions": 145,
       "repos": 3
     },
     {
