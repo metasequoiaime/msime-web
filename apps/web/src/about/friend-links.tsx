@@ -4,6 +4,14 @@ import { useLocale } from "../use-locale";
 /** 友链。图标放在 public/img/friends/ 自托管：CSP 的 img-src 不放行第三方图床。加一个项目就在这里加一项。 */
 const FRIEND_LINKS = [
   {
+    name: "鼠输入法 NanoMouse",
+    tag: "iOS 输入法",
+    url: "https://apps.apple.com/cn/app/%E9%BC%A0%E8%BE%93%E5%85%A5%E6%B3%95-nanomouse/id6757662900",
+    host: "apps.apple.com",
+    icon: "/img/friends/nanomouse.webp",
+    desc: "基于 Rime 的 iOS 输入法，支持多种输入方案、AI 语音输入，以及通过 iCloud 跨设备同步常用短语和剪贴板内容。",
+  },
+  {
     name: "TempX",
     tag: "临时邮箱",
     url: "https://tempx.yldm.ai/",
@@ -58,14 +66,6 @@ const FRIEND_LINKS = [
     host: "kando.yldm.ai",
     icon: "/img/friends/kando.png",
     desc: "免费开源的桌面应用：在电脑上转录原声视频、逐句翻译，播放时同时显示原文和译文，用视频学习视频里的语言。",
-  },
-  {
-    name: "鼠输入法 NanoMouse",
-    tag: "iOS 输入法",
-    url: "https://apps.apple.com/cn/app/%E9%BC%A0%E8%BE%93%E5%85%A5%E6%B3%95-nanomouse/id6757662900",
-    host: "apps.apple.com",
-    icon: "/img/friends/nanomouse.webp",
-    desc: "基于 Rime 的 iOS 输入法，支持多种输入方案、AI 语音输入，以及通过 iCloud 跨设备同步常用短语和剪贴板内容。",
   },
 ] as const;
 
