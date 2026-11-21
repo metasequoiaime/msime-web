@@ -24,8 +24,13 @@ type NavItem = {
   github?: boolean;
 };
 
+/** A header entry that leaves the site, such as 论坛 on forum.msime.app: a plain link opened in a new tab, never the current page. */
+type ExternalNavItem = { href: string; label: string };
+
+const isExternal = (item: NavItem | ExternalNavItem): item is ExternalNavItem => "href" in item;
+
 /** Wide screens show these as a pill group in the header; below 1180px they move into the menu panel. 下载 is both a tab and the accent button at the right end of the bar; 功能, 常见问题, 价格 and 更新日志 are reached from the footer (常见问题 also from the docs toolbar). 社区 stands for the three community pages (皮肤, 词库, 插件) and opens 皮肤, the address the tab had as 社区皮肤, so the entry still lands where it always did; 反馈 likewise stands for the two feedback forms (Bug 与需求, 词库缺失) and opens the first; 接入 stands for the two pages for developers who build on the project (引擎库, 神经联想) and opens 引擎库, the main one: the engine works on its own and 神经联想 is an optional add-on to it. Each group's pages switch between each other with the sub-navigation under their heroes, and the footer still links to each one. */
-const NAV_ITEMS: readonly NavItem[] = [
+const NAV_ITEMS: readonly (NavItem | ExternalNavItem)[] = [
   { to: "/", label: "首页" },
   { to: "/download/", label: "下载" },
   { to: "/engine/", label: "接入" },
@@ -33,6 +38,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { to: "/gallery/", label: "水杉娘" },
   { to: "/docs/$guide/", label: "文档" },
   { to: "/feedback/", label: "反馈" },
+  { href: "https://forum.msime.app", label: "论坛" },
   { to: "/about/", label: "关于" },
 ];
 
@@ -527,7 +533,13 @@ function DesktopNav() {
         // 动画挂在活动链接的 ::before 上，事件从伪元素冒泡到链接再到这里。跑完就摘掉 is-sliding，下次换页才能重新触发。
         onAnimationEnd={() => listRef.current?.classList.remove("is-sliding")}
       >
-        {NAV_ITEMS.map((item) => (
+        {NAV_ITEMS.map((item) => isExternal(item) ? (
+          <li key={item.href}>
+            <a href={item.href} className="nav-link" target="_blank" rel="noreferrer">
+              {t(item.label)}
+            </a>
+          </li>
+        ) : (
           <li key={item.to}>
             <Link to={item.to} params={linkParams(item)} className="nav-link" activeOptions={{ exact: true, includeSearch: false }} activeProps={{}} aria-current={isCurrent(item, path) ? "page" : undefined}>
               {t(item.label)}
@@ -568,6 +580,14 @@ function MobileNav({ isOpen, onNavigate }: { isOpen: boolean; onNavigate: () => 
     <nav id="nav-menu" aria-label={t("站点导航")} hidden={!isOpen} className="px-[clamp(16px,3.6vw,40px)] pt-2 pb-[18px] shadow-divider-t nav:hidden">
       <ul className="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
         {[...NAV_ITEMS, CODE_ITEM].map((item) => {
+          if (isExternal(item))
+            return (
+              <li key={item.href}>
+                <a href={item.href} target="_blank" rel="noreferrer" onClick={onNavigate} className="flex h-[46px] items-center rounded-field px-4 text-[15px] font-medium text-body transition-colors hover:bg-hover hover:text-ink">
+                  {t(item.label)}
+                </a>
+              </li>
+            );
           const current = isCurrent(item, path);
           return (
             <li key={item.to}>

@@ -273,7 +273,7 @@ test('the home page has an 引擎库 section linking the page, the crate and the
 });
 
 test('the header includes 接入 and 水杉娘, and 开源代码 is a GitHub button there and the last item of the menu panel', () => {
-  for (const [prefix, labels, code] of [['', ['首页', '下载', '接入', '社区', '水杉娘', '文档', '反馈', '关于'], '开源代码'], ['/zh-TW', ['首頁', '下載', '接入', '社群', '水杉娘', '文件', '回報', '關於'], '開源程式碼']]) {
+  for (const [prefix, labels, code] of [['', ['首页', '下载', '接入', '社区', '水杉娘', '文档', '反馈', '论坛', '关于'], '开源代码'], ['/zh-TW', ['首頁', '下載', '接入', '社群', '水杉娘', '文件', '回報', '論壇', '關於'], '開源程式碼']]) {
     for (const base of ['/', '/code/', '/download/', '/gallery/']) {
       const doc = document(`${prefix}${base}`);
       assert.deepEqual([...doc.querySelectorAll('.nav-list a')].map(link => link.textContent.trim()), labels, `${prefix}${base}`);
