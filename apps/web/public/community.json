@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-20T08:30:10.408Z",
-  "totalStars": 5956,
+  "generatedAt": "2026-11-20T23:20:30.674Z",
+  "totalStars": 5970,
   "repoCount": 9,
   "starHistory": [
     {
@@ -149,11 +149,11 @@
     },
     {
       "month": "2026-10",
-      "stars": 5295
+      "stars": 5294
     },
     {
       "month": "2026-11",
-      "stars": 5954
+      "stars": 5968
     }
   ],
   "starSeries": [
@@ -306,11 +306,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 3245
+          "stars": 3244
         },
         {
           "date": "2026-11-20",
-          "stars": 3546
+          "stars": 3551
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-20",
-          "stars": 1401
+          "stars": 1410
         }
       ]
     },
@@ -783,20 +783,20 @@
       ]
     }
   ],
-  "starDelta30d": 1034,
+  "starDelta30d": 1049,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26531,
+      "contributions": 26536,
       "repos": 8
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 2032,
+      "contributions": 2035,
       "repos": 7
     },
     {
@@ -824,8 +824,8 @@
       "login": "metasequoiaime-dev",
       "avatarUrl": "https://avatars.githubusercontent.com/u/215940592?v=4",
       "url": "https://github.com/metasequoiaime-dev",
-      "contributions": 42,
-      "repos": 3
+      "contributions": 44,
+      "repos": 4
     },
     {
       "login": "apple-ouyang",
