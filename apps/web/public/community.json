@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-21T20:04:14.692Z",
-  "totalStars": 5994,
+  "generatedAt": "2026-11-22T00:18:55.106Z",
+  "totalStars": 5993,
   "repoCount": 9,
   "starHistory": [
     {
@@ -153,7 +153,7 @@
     },
     {
       "month": "2026-11",
-      "stars": 5992
+      "stars": 5991
     }
   ],
   "starSeries": [
@@ -309,8 +309,8 @@
           "stars": 3242
         },
         {
-          "date": "2026-11-21",
-          "stars": 3562
+          "date": "2026-11-22",
+          "stars": 3561
         }
       ]
     },
@@ -330,7 +330,7 @@
           "stars": 1068
         },
         {
-          "date": "2026-11-21",
+          "date": "2026-11-22",
           "stars": 1422
         }
       ]
@@ -387,7 +387,7 @@
           "stars": 891
         },
         {
-          "date": "2026-11-21",
+          "date": "2026-11-22",
           "stars": 913
         }
       ]
@@ -448,7 +448,7 @@
           "stars": 65
         },
         {
-          "date": "2026-11-21",
+          "date": "2026-11-22",
           "stars": 65
         }
       ]
@@ -605,7 +605,7 @@
           "stars": 11
         },
         {
-          "date": "2026-11-21",
+          "date": "2026-11-22",
           "stars": 13
         }
       ]
@@ -622,7 +622,7 @@
           "stars": 4
         },
         {
-          "date": "2026-11-21",
+          "date": "2026-11-22",
           "stars": 6
         }
       ]
@@ -663,7 +663,7 @@
           "stars": 5
         },
         {
-          "date": "2026-11-21",
+          "date": "2026-11-22",
           "stars": 6
         }
       ]
@@ -764,7 +764,7 @@
           "stars": 3
         },
         {
-          "date": "2026-11-21",
+          "date": "2026-11-22",
           "stars": 3
         }
       ]
@@ -777,19 +777,19 @@
           "stars": 1
         },
         {
-          "date": "2026-11-21",
+          "date": "2026-11-22",
           "stars": 2
         }
       ]
     }
   ],
-  "starDelta30d": 1031,
+  "starDelta30d": 987,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26550,
+      "contributions": 26552,
       "repos": 8
     },
     {
