@@ -144,7 +144,7 @@ function MorePackages({ platform, version, downloads, id }: { platform: ReleaseP
                       </a>
                     )}
                     <a className="min-w-0 text-sm font-medium text-accent-ink [overflow-wrap:anywhere] hover:text-ink" href={entry.url} rel="noreferrer" onClick={reportPackage(platform, version, entry)}>
-                      {t(entry.label)}
+                      {t(platform === "linux" && entry.name.endsWith(".rpm") ? describeLinuxPackage(entry) : entry.label)}
                     </a>
                   </span>
                   <span className="flex flex-none items-baseline gap-3 text-[13px] text-muted tabular-nums">

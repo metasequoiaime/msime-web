@@ -32,13 +32,13 @@ const isNoise = name =>
  *
  * - `.deb` 和 `.tar.gz` 在 Debian 12（bookworm）容器里构建，要 glibc 2.35、libstdc++ 12（GLIBCXX_3.4.30）、WebKitGTK 4.1 与 libsoup 3，所以是 Debian 12、Ubuntu 22.04 及更新的版本。
  * - `.tar.gz` 和 `.deb` 是同一套文件，不是跨发行版的通用包：库目录是 Debian 的多架构布局 `usr/lib/<三元组>/`，Arch、Fedora 上的 Fcitx5 不会去那里加载插件；它没有依赖声明和卸载入口，只给不经 apt 安装的 Debian 系。以前标成「通用压缩包」，会把 Arch、Fedora 的用户引到一个装上也用不了的包。
- * - `.rpm` 在 Fedora 44 容器里构建，发版时只在干净的 Fedora 44 容器里装过；openSUSE 没有验证过，那边用 OBS 软件源。
+ * - `.rpm` 的 Fedora 版本以该次发布附带的下载指引为准；openSUSE 用 OBS 软件源。
  */
 const LINUX_PACKAGES = [
   [/_amd64\.deb$/i, 'Debian 12+ / Ubuntu 22.04+ · deb', 'x86_64'],
   [/_arm64\.deb$/i, 'Debian 12+ / Ubuntu 22.04+ · deb', 'aarch64'],
-  [/\.x86_64\.rpm$/i, 'Fedora 44 · rpm', 'x86_64'],
-  [/\.aarch64\.rpm$/i, 'Fedora 44 · rpm', 'aarch64'],
+  [/\.x86_64\.rpm$/i, 'Fedora · rpm', 'x86_64'],
+  [/\.aarch64\.rpm$/i, 'Fedora · rpm', 'aarch64'],
   [/-linux-x86_64\.tar\.gz$/i, 'Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz', 'x86_64'],
   [/-linux-aarch64\.tar\.gz$/i, 'Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz', 'aarch64'],
 ];
@@ -161,7 +161,16 @@ const sha256Of = asset =>
     ? asset.digest.slice('sha256:'.length)
     : null;
 
-export function classifyAssets(platform, assets, { repository = SOURCES[platform], rules = RULES[platform] ?? [] } = {}) {
+// 只认发布流水线生成的下载指引；老版本缺失这一段时省略版本号。
+function rpmFedoraVersion(body) {
+  if (typeof body !== 'string') return undefined;
+  const guide = /^<!-- msime-download-guide -->\r?\n([\s\S]*?)^<!-- \/msime-download-guide -->/m.exec(body)?.[1];
+  return /^- Fedora ([1-9][0-9]{1,2})：`\.rpm`/m.exec(guide ?? '')?.[1];
+}
+
+export function classifyAssets(platform, assets, {
+  repository = SOURCES[platform], rules = RULES[platform] ?? [], fedoraVersion,
+} = {}) {
   const downloads = [];
 
   for (const [pattern, label, arch] of rules) {
@@ -170,7 +179,9 @@ export function classifyAssets(platform, assets, { repository = SOURCES[platform
       const url = canonicalGithubUrl(repository, asset.browser_download_url);
       if (!url?.startsWith(`https://github.com/${repository}/releases/download/`)) continue;
       downloads.push({
-        label,
+        label: platform === 'linux' && fedoraVersion
+          ? label.replace(/Fedora · rpm$/, `Fedora ${fedoraVersion} · rpm`)
+          : label,
         arch,
         name: asset.name,
         url,
@@ -205,7 +216,10 @@ export const signingState = (platform, downloads) => {
 const toRelease = (platform, release, source = {}) => {
   const match = releaseTag(platform).exec(String(release.tag_name ?? ''));
   if (release.draft !== false || !release.published_at || !match) return null;
-  const downloads = classifyAssets(platform, release.assets ?? [], source);
+  const downloads = classifyAssets(platform, release.assets ?? [], {
+    ...source,
+    fedoraVersion: platform === 'linux' ? rpmFedoraVersion(release.body) : undefined,
+  });
   if (!downloads.length) return null;
   // 产物地址已经按仓库校验过，发布页地址没有理由松一档 —— 页面上「发布说明与校验值」就指向它。
   const releaseUrl = canonicalGithubUrl(source.repository ?? SOURCES[platform], release.html_url);

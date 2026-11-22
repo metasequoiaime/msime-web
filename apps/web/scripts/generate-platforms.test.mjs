@@ -155,7 +155,7 @@ test('each package is labelled with the distribution family and the architecture
   assert.deepEqual(downloads.map(d => `${d.label} ${d.arch}`), [
     'Debian 12+ / Ubuntu 22.04+ · deb x86_64',
     'Debian 12+ / Ubuntu 22.04+ · deb aarch64',
-    'Fedora 44 · rpm x86_64',
+    'Fedora · rpm x86_64',
     'Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz x86_64',
   ]);
 });
@@ -178,8 +178,8 @@ test('Linux packages are labelled with the systems they install on, and the lega
   assert.deepEqual(downloads.map(d => `${d.name} | ${d.label} | ${d.arch}`), [
     'msime-linux_0.12.1_amd64.deb | Debian 12+ / Ubuntu 22.04+ · deb | x86_64',
     'msime-linux_0.12.1_arm64.deb | Debian 12+ / Ubuntu 22.04+ · deb | aarch64',
-    'msime-linux-0.12.1-1.x86_64.rpm | Fedora 44 · rpm | x86_64',
-    'msime-linux-0.12.1-1.aarch64.rpm | Fedora 44 · rpm | aarch64',
+    'msime-linux-0.12.1-1.x86_64.rpm | Fedora · rpm | x86_64',
+    'msime-linux-0.12.1-1.aarch64.rpm | Fedora · rpm | aarch64',
     'msime-linux-0.12.1-linux-x86_64.tar.gz | Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz | x86_64',
     'msime-linux-0.12.1-linux-aarch64.tar.gz | Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz | aarch64',
     'msime-linux-legacy_0.12.1_amd64.deb | glibc 2.28–2.34（Debian 10/11、Ubuntu 20.04、UOS 20）· 仅 IBus · deb | x86_64',
@@ -189,6 +189,28 @@ test('Linux packages are labelled with the systems they install on, and the lega
   ]);
   // 主下载按钮仍是完整版的 x86_64 deb，legacy 包不会顶上去。
   assert.equal(downloads[0].name, 'msime-linux_0.12.1_amd64.deb');
+});
+
+test('从本次 Linux 发布的生成指引读取 Fedora 版本，分别保留两个架构', () => {
+  const names = ['msime-linux-0.17.0-1.aarch64.rpm', 'msime-linux-0.17.0-1.x86_64.rpm'];
+  const release = {
+    draft: false,
+    prerelease: false,
+    published_at: '2026-11-20T00:00:00Z',
+    tag_name: 'linux-v0.17.0',
+    html_url: 'https://github.com/metasequoiaime/msime/releases/tag/linux-v0.17.0',
+    assets: names.map(name => asset(name, {
+      browser_download_url: `https://github.com/metasequoiaime/msime/releases/download/linux-v0.17.0/${name}`,
+    })),
+  };
+  const guide = '- Fedora 45：`.rpm`，用 `sudo dnf install ./<文件名>` 安装。';
+  const body = `<!-- msime-download-guide -->\r\n## 下载\r\n\r\n${guide}\r\n<!-- /msime-download-guide -->`;
+  assert.deepEqual(selectRelease('linux', [{ ...release, body }]).downloads.map(({ name, arch, label }) =>
+    [name, arch, label]), [
+    [names[1], 'x86_64', 'Fedora 45 · rpm'],
+    [names[0], 'aarch64', 'Fedora 45 · rpm'],
+  ]);
+  assert.equal(selectRelease('linux', [{ ...release, body: guide }]).downloads[0].label, 'Fedora · rpm');
 });
 
 test('checksums, build manifests and the bare source archive stay out of the download list', () => {
@@ -233,10 +255,10 @@ test('the full Linux package leads and the other editions are labelled by name',
   const downloads = classifyAssets('linux', names.map(name => asset(name)));
   assert.deepEqual(downloads.map(d => `${d.name} | ${d.label}`), [
     'msime-linux_0.10.0_amd64.deb | Debian 12+ / Ubuntu 22.04+ · deb',
-    'msime-linux-0.10.0-1.x86_64.rpm | Fedora 44 · rpm',
+    'msime-linux-0.10.0-1.x86_64.rpm | Fedora · rpm',
     'msime-linux-0.10.0-linux-x86_64.tar.gz | Debian 12+ / Ubuntu 22.04+ · 不经 apt 解压 · tar.gz',
     'msime-linux-wubi_0.10.0_amd64.deb | 水杉五笔 · Debian 12+ / Ubuntu 22.04+ · deb',
-    'msime-linux-wubi-0.10.0-1.x86_64.rpm | 水杉五笔 · Fedora 44 · rpm',
+    'msime-linux-wubi-0.10.0-1.x86_64.rpm | 水杉五笔 · Fedora · rpm',
     'msime-linux-japanese_0.10.0_amd64.deb | 水杉日语 · Debian 12+ / Ubuntu 22.04+ · deb',
   ]);
 });

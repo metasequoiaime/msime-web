@@ -189,7 +189,7 @@ curl -fsSL https://msime.app/install.sh | sh
 用本页下载区的安装包，先按系统选格式（`ldd --version` 的第一行是 glibc 版本）：
 
 - Debian 12、Ubuntu 22.04 和更新的版本，以及基于它们的发行版：`.deb`，用 `sudo apt install ./<文件名>.deb` 安装，依赖由 apt 一并装好。
-- Fedora 44：`.rpm`，用 `sudo dnf install ./<文件名>.rpm` 安装。它在 Fedora 44 上构建，其他 RPM 系没有验证过；Fedora 43 和 openSUSE 用上面的软件源。
+- Fedora：按下载条目的 Fedora 版本和架构选择 `.rpm`，用 `sudo dnf install ./<文件名>.rpm` 安装。可用 `uname -m` 查看系统的架构。其他 Fedora 版本和 openSUSE 请查看上面的软件源。
 - glibc 2.28 到 2.34 的 Debian 系（Debian 10、Debian 11、Ubuntu 20.04、UOS 20 专业版这一类）：装不上上面的 `.deb`，用标着 glibc 2.28–2.34 的 legacy `.deb`。它只有水杉输入法（完整版）的 IBus 输入法，没有设置窗口和 Fcitx5 插件，先 `sudo apt install ibus` 再装，首次配置只能在终端运行 `msime-linux-setup --download`。
 - `.tar.gz` 和 `.deb` 是同一套文件，同样只适用于 Debian 12、Ubuntu 22.04 和更新的版本，给不经 apt 安装的场合用：没有依赖声明和卸载入口，用 `sudo tar -xzf <文件名> --strip-components=1 -C /` 解开，依赖要自行安装。它按 Debian 的库目录布局，Arch、Fedora 上的 Fcitx5 找不到它的插件。
 
