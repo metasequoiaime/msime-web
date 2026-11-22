@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-22T00:48:37.622Z",
+  "generatedAt": "2026-11-22T00:50:10.746Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -12352,6 +12352,48 @@
       "download_count": 0
     },
     {
+      "repository": "metasequoiaime/msime",
+      "id": 777383068,
+      "name": "msime-harmony-0.5.0-unsigned-nightly.44958759476.1.hap",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 777383422,
+      "name": "MetasequoiaIME-Vietnamese_Setup_v0.6.1-nightly.44958759476.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 777383426,
+      "name": "MetasequoiaIME-Pinyin_Setup_v0.6.1-nightly.44958759476.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 777383431,
+      "name": "MetasequoiaIME-Japanese_Setup_v0.6.1-nightly.44958759476.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 777383432,
+      "name": "MetasequoiaIME-Tibetan_Setup_v0.6.1-nightly.44958759476.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 777383433,
+      "name": "MetasequoiaIME-Full_Setup_v0.6.1-nightly.44958759476.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 777383634,
+      "name": "MetasequoiaIME-Wubi_Setup_v0.6.1-nightly.44958759476.1.exe",
+      "download_count": 0
+    },
+    {
       "repository": "metasequoiaime/msime-linux",
       "id": 545412939,
       "name": "metasequoia-ime-linux-0.2.0-Linux.rpm",
@@ -13232,10 +13274,10 @@
       "windows": 19852,
       "windowsRust": 2784
     },
-    "generatedAt": "2026-11-22T00:48:36.648041Z"
+    "generatedAt": "2026-11-22T00:50:09.96771Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-22T00:48:36.176Z",
+    "generatedAt": "2026-11-22T00:50:09.634Z",
     "total": 7449,
     "builds": [
       {
@@ -13317,7 +13359,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-22T00:48:36.932Z",
+    "generatedAt": "2026-11-22T00:50:10.204Z",
     "downloads": 4495,
     "periodStart": "2025-11-22",
     "periodEnd": "2026-11-22"
