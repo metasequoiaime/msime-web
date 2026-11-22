@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-22T15:40:36.887Z",
-  "totalStars": 6013,
+  "generatedAt": "2026-11-22T21:17:24.498Z",
+  "totalStars": 6014,
   "repoCount": 9,
   "starHistory": [
     {
@@ -149,11 +149,11 @@
     },
     {
       "month": "2026-10",
-      "stars": 5289
+      "stars": 5288
     },
     {
       "month": "2026-11",
-      "stars": 6011
+      "stars": 6013
     }
   ],
   "starSeries": [
@@ -310,7 +310,7 @@
         },
         {
           "date": "2026-11-22",
-          "stars": 3570
+          "stars": 3572
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-22",
-          "stars": 1433
+          "stars": 1434
         }
       ]
     },
@@ -384,11 +384,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 891
+          "stars": 890
         },
         {
           "date": "2026-11-22",
-          "stars": 913
+          "stars": 912
         }
       ]
     },
@@ -783,13 +783,13 @@
       ]
     }
   ],
-  "starDelta30d": 1008,
+  "starDelta30d": 1011,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26612,
+      "contributions": 26615,
       "repos": 8
     },
     {
@@ -835,18 +835,18 @@
       "repos": 2
     },
     {
+      "login": "nuthatadf",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
+      "url": "https://github.com/nuthatadf",
+      "contributions": 41,
+      "repos": 2
+    },
+    {
       "login": "Neptrue-Lin",
       "avatarUrl": "https://avatars.githubusercontent.com/u/29837162?v=4",
       "url": "https://github.com/Neptrue-Lin",
       "contributions": 40,
       "repos": 1
-    },
-    {
-      "login": "nuthatadf",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
-      "url": "https://github.com/nuthatadf",
-      "contributions": 40,
-      "repos": 2
     },
     {
       "login": "ouchihao",
