@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-23T10:42:23.939Z",
-  "totalStars": 6032,
+  "generatedAt": "2026-11-23T22:37:17.349Z",
+  "totalStars": 6043,
   "repoCount": 9,
   "starHistory": [
     {
@@ -149,11 +149,11 @@
     },
     {
       "month": "2026-10",
-      "stars": 5286
+      "stars": 5287
     },
     {
       "month": "2026-11",
-      "stars": 6031
+      "stars": 6042
     }
   ],
   "starSeries": [
@@ -310,7 +310,7 @@
         },
         {
           "date": "2026-11-23",
-          "stars": 3578
+          "stars": 3582
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-23",
-          "stars": 1445
+          "stars": 1449
         }
       ]
     },
@@ -384,11 +384,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 890
+          "stars": 891
         },
         {
           "date": "2026-11-23",
-          "stars": 913
+          "stars": 916
         }
       ]
     },
@@ -783,13 +783,13 @@
       ]
     }
   ],
-  "starDelta30d": 994,
+  "starDelta30d": 1004,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26625,
+      "contributions": 26626,
       "repos": 8
     },
     {
@@ -814,6 +814,13 @@
       "repos": 3
     },
     {
+      "login": "nuthatadf",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
+      "url": "https://github.com/nuthatadf",
+      "contributions": 47,
+      "repos": 2
+    },
+    {
       "login": "CuartPyaw",
       "avatarUrl": "https://avatars.githubusercontent.com/u/142556778?v=4",
       "url": "https://github.com/CuartPyaw",
@@ -826,13 +833,6 @@
       "url": "https://github.com/metasequoiaime-dev",
       "contributions": 44,
       "repos": 4
-    },
-    {
-      "login": "nuthatadf",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
-      "url": "https://github.com/nuthatadf",
-      "contributions": 44,
-      "repos": 2
     },
     {
       "login": "apple-ouyang",
