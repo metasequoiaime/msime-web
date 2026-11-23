@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-23T01:58:16.455Z",
-  "totalStars": 6018,
+  "generatedAt": "2026-11-23T10:42:23.939Z",
+  "totalStars": 6032,
   "repoCount": 9,
   "starHistory": [
     {
@@ -149,11 +149,11 @@
     },
     {
       "month": "2026-10",
-      "stars": 5287
+      "stars": 5286
     },
     {
       "month": "2026-11",
-      "stars": 6017
+      "stars": 6031
     }
   ],
   "starSeries": [
@@ -306,11 +306,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 3240
+          "stars": 3239
         },
         {
           "date": "2026-11-23",
-          "stars": 3573
+          "stars": 3578
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-23",
-          "stars": 1437
+          "stars": 1445
         }
       ]
     },
@@ -388,7 +388,7 @@
         },
         {
           "date": "2026-11-23",
-          "stars": 912
+          "stars": 913
         }
       ]
     },
@@ -783,13 +783,13 @@
       ]
     }
   ],
-  "starDelta30d": 979,
+  "starDelta30d": 994,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26621,
+      "contributions": 26625,
       "repos": 8
     },
     {
@@ -803,7 +803,7 @@
       "login": "jsfaint",
       "avatarUrl": "https://avatars.githubusercontent.com/u/571829?v=4",
       "url": "https://github.com/jsfaint",
-      "contributions": 234,
+      "contributions": 235,
       "repos": 4
     },
     {
@@ -828,16 +828,16 @@
       "repos": 4
     },
     {
-      "login": "apple-ouyang",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/45086632?v=4",
-      "url": "https://github.com/apple-ouyang",
-      "contributions": 41,
-      "repos": 2
-    },
-    {
       "login": "nuthatadf",
       "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
       "url": "https://github.com/nuthatadf",
+      "contributions": 44,
+      "repos": 2
+    },
+    {
+      "login": "apple-ouyang",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/45086632?v=4",
+      "url": "https://github.com/apple-ouyang",
       "contributions": 41,
       "repos": 2
     },
