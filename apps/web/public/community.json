@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-22T21:17:24.498Z",
-  "totalStars": 6014,
+  "generatedAt": "2026-11-23T01:58:16.455Z",
+  "totalStars": 6018,
   "repoCount": 9,
   "starHistory": [
     {
@@ -149,11 +149,11 @@
     },
     {
       "month": "2026-10",
-      "stars": 5288
+      "stars": 5287
     },
     {
       "month": "2026-11",
-      "stars": 6013
+      "stars": 6017
     }
   ],
   "starSeries": [
@@ -306,11 +306,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 3241
+          "stars": 3240
         },
         {
-          "date": "2026-11-22",
-          "stars": 3572
+          "date": "2026-11-23",
+          "stars": 3573
         }
       ]
     },
@@ -330,8 +330,8 @@
           "stars": 1068
         },
         {
-          "date": "2026-11-22",
-          "stars": 1434
+          "date": "2026-11-23",
+          "stars": 1437
         }
       ]
     },
@@ -387,7 +387,7 @@
           "stars": 890
         },
         {
-          "date": "2026-11-22",
+          "date": "2026-11-23",
           "stars": 912
         }
       ]
@@ -448,7 +448,7 @@
           "stars": 65
         },
         {
-          "date": "2026-11-22",
+          "date": "2026-11-23",
           "stars": 65
         }
       ]
@@ -605,7 +605,7 @@
           "stars": 11
         },
         {
-          "date": "2026-11-22",
+          "date": "2026-11-23",
           "stars": 13
         }
       ]
@@ -622,7 +622,7 @@
           "stars": 4
         },
         {
-          "date": "2026-11-22",
+          "date": "2026-11-23",
           "stars": 6
         }
       ]
@@ -663,7 +663,7 @@
           "stars": 5
         },
         {
-          "date": "2026-11-22",
+          "date": "2026-11-23",
           "stars": 6
         }
       ]
@@ -764,7 +764,7 @@
           "stars": 3
         },
         {
-          "date": "2026-11-22",
+          "date": "2026-11-23",
           "stars": 3
         }
       ]
@@ -777,19 +777,19 @@
           "stars": 1
         },
         {
-          "date": "2026-11-22",
+          "date": "2026-11-23",
           "stars": 2
         }
       ]
     }
   ],
-  "starDelta30d": 1011,
+  "starDelta30d": 979,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26615,
+      "contributions": 26621,
       "repos": 8
     },
     {
