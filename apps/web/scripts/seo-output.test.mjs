@@ -275,12 +275,15 @@ test('the home page has an 引擎库 section linking the page, the crate and the
   }
 });
 
-test('the header includes 接入 and 水杉娘, and 开源代码 is a GitHub button there and the last item of the menu panel', () => {
-  for (const [prefix, labels, code] of [['', ['首页', '下载', '接入', '社区', '水杉娘', '文档', '反馈', '论坛', '关于'], '开源代码'], ['/zh-TW', ['首頁', '下載', '接入', '社群', '水杉娘', '文件', '回報', '論壇', '關於'], '開源程式碼']]) {
+test('the header includes 接入 and 水杉娘, 赞助 is a heart button there and the item before 开源代码 in the menu panel, and 开源代码 is a GitHub button there and the last item of the menu panel', () => {
+  for (const [prefix, labels, code, sponsor] of [['', ['首页', '下载', '接入', '社区', '水杉娘', '文档', '反馈', '论坛', '关于'], '开源代码', '赞助'], ['/zh-TW', ['首頁', '下載', '接入', '社群', '水杉娘', '文件', '回報', '論壇', '關於'], '開源程式碼', '贊助']]) {
     for (const base of ['/', '/code/', '/download/', '/gallery/']) {
       const doc = document(`${prefix}${base}`);
       assert.deepEqual([...doc.querySelectorAll('.nav-list a')].map(link => link.textContent.trim()), labels, `${prefix}${base}`);
-      assert.deepEqual([...doc.querySelectorAll('#nav-menu a')].map(link => link.textContent.trim()), [...labels, code], `${prefix}${base}`);
+      assert.deepEqual([...doc.querySelectorAll('#nav-menu a')].map(link => link.textContent.trim()), [...labels, sponsor, code], `${prefix}${base}`);
+      const sponsorButtons = [...doc.querySelectorAll('header .ml-auto a')].filter(link => link.getAttribute('href') === `${prefix}/sponsor/`);
+      assert.equal(sponsorButtons.length, 1, `${prefix}${base}: one 赞助 button in the header bar`);
+      assert.equal(sponsorButtons[0].getAttribute('aria-label'), sponsor);
       assert.equal(doc.querySelector('#nav-menu li:last-child a').getAttribute('href'), `${prefix}/code/`);
       const buttons = [...doc.querySelectorAll('header a')].filter(link => link.getAttribute('href') === `${prefix}/code/`);
       assert.equal(buttons.length, 1, `${prefix}${base}: one GitHub button in the header bar`);
