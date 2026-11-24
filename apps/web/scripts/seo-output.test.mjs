@@ -129,6 +129,9 @@ test('duplicate guide bodies share a canonical and AI indexes include them only 
   assert.equal(app.offers.price, 0);
   assert.equal(app.offers.url, `${SITE_ORIGIN}/price/`);
   assert.ok(document('/price/').querySelector('#root').textContent.includes('可免费使用'));
+  const sponsor = document('/sponsor/');
+  assert.ok(sponsor.querySelector('a[href="https://afdian.com/a/msime"]'), 'the sponsor page links the project Afdian account without JavaScript');
+  assert.ok(document('/zh-TW/sponsor/').querySelector('#page-title').textContent.includes('贊助'));
   assert.equal(app.aggregateRating, undefined);
   assert.equal(app.review, undefined);
 });

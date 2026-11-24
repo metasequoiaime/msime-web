@@ -13,6 +13,7 @@ export const seoPages: Record<string, { title: string; description: string; noin
   "/engine/": { title: "引擎库：可嵌入的拼音与多语言输入引擎｜水杉输入法", description: "水杉输入法的输入引擎单独发布成库，供其他输入法嵌入：Rust 用 crates.io 上的 msime-engine，C、C++、Swift、Kotlin、Go、Python 等用预编译的 C 库。十种输入方案、词格整句、拼写纠错与学习，可选神经联想重排整句；代码 MPL-2.0，数据按各自的许可证。" },
   "/about/": { title: "关于项目与开发者｜水杉输入法", description: "了解水杉输入法的名字由来、项目理念、开源许可、签名与社区联系方式。" },
   "/price/": { title: "价格与付费计划｜水杉输入法", description: "水杉输入法当前可免费使用。查看后续自愿付费支持计划，以及第三方联网服务的费用说明。" },
+  "/sponsor/": { title: "赞助水杉输入法｜水杉输入法", description: "通过爱发电或 GitHub Sponsors 自愿赞助水杉输入法，资金用于开发维护、服务器与基础设施，以及发布签名费用。赞助不解锁任何功能。" },
   "/privacy/": { title: "隐私政策｜水杉输入法", description: "了解水杉输入法哪些功能会联网、默认状态、数据用途，以及如何关闭联网功能。" },
   "/terms/": { title: "用户协议｜水杉输入法", description: "水杉输入法账号、云同步、社区与官网等在线服务的用户协议：账号与注销、行为规范、用户发布的内容、开源许可与第三方服务。" },
   "/feedback/": { title: "问题反馈与功能建议｜水杉输入法", description: "无需 GitHub 账号，选择平台反馈问题或提出建议，支持截图与预览。提交内容将公开发布到 GitHub。" },

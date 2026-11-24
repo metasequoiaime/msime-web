@@ -791,6 +791,7 @@ function SiteFooter({ inert }: { inert: boolean }) {
           <FooterColumn title="参与">
             <Link className={footerLink} to="/feedback/">{t("Bug 与需求反馈")}</Link>
             <Link className={footerLink} to="/words/">{t("词库缺失反馈")}</Link>
+            <Link className={footerLink} to="/sponsor/">{t("赞助")}</Link>
             <ExternalFooterLink href="https://github.com/metasequoiaime/.github/blob/main/RECRUITING.md">{t("招募开发者")}</ExternalFooterLink>
             <ExternalFooterLink href="https://github.com/metasequoiaime/.github/blob/main/CONTRIBUTING.md">{t("贡献指南")}</ExternalFooterLink>
             <ExternalFooterLink href="https://github.com/metasequoiaime/.github/blob/main/CODE_OF_CONDUCT.md">{t("行为准则")}</ExternalFooterLink>

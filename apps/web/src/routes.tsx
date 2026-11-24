@@ -151,6 +151,12 @@ const priceRoute = createRoute({
   component: lazyRouteComponent(() => import("./page-price"), "PricePage"),
 });
 
+const sponsorRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/sponsor",
+  component: lazyRouteComponent(() => import("./page-sponsor"), "SponsorPage"),
+});
+
 const privacyRoute = createRoute({
   getParentRoute: () => shellRoute,
   path: "/privacy",
@@ -229,6 +235,7 @@ const traditionalRoutes = [
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/model", component: lazyRouteComponent(() => import("./page-model"), "ModelPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/engine", component: lazyRouteComponent(() => import("./page-engine"), "EnginePage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/price", component: lazyRouteComponent(() => import("./page-price"), "PricePage") }),
+  createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/sponsor", component: lazyRouteComponent(() => import("./page-sponsor"), "SponsorPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/privacy", component: lazyRouteComponent(() => import("./page-privacy"), "PrivacyPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/terms", component: lazyRouteComponent(() => import("./page-terms"), "TermsPage") }),
   createRoute({ getParentRoute: () => shellRoute, path: "/zh-TW/docs", component: lazyRouteComponent(() => import("./page-docs"), "DocsPage"), validateSearch: docsSearchSchema }),
@@ -236,7 +243,7 @@ const traditionalRoutes = [
 ];
 
 const routeTree = rootRoute.addChildren([
-  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, modelRoute, engineRoute, priceRoute, privacyRoute, termsRoute, feedbackRoute, wordsRoute, skinsRoute, galleryRoute, dictionariesRoute, pluginsRoute, meRoute]),
+  shellRoute.addChildren([...traditionalRoutes, indexRoute, featuresRoute, docsRoute, guideRoute, faqRoute, downloadRoute, betaRoute, aboutRoute, codeRoute, modelRoute, engineRoute, priceRoute, sponsorRoute, privacyRoute, termsRoute, feedbackRoute, wordsRoute, skinsRoute, galleryRoute, dictionariesRoute, pluginsRoute, meRoute]),
   resumeRoute,
 ]);
 
