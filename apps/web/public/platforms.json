@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T05:53:40.034Z",
+  "generatedAt": "2026-11-24T05:54:53.007Z",
   "platforms": {
     "windows": {
       "repository": "metasequoiaime/MSIME-Windows",
@@ -12568,6 +12568,54 @@
       "download_count": 0
     },
     {
+      "repository": "metasequoiaime/msime",
+      "id": 785895191,
+      "name": "msime-linux-wubi-0.17.0-1.x86_64-nightly.45322391066.1.rpm",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 785895351,
+      "name": "msime-harmony-0.5.0-unsigned-nightly.45322391066.1.hap",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 785895720,
+      "name": "MetasequoiaIME-Pinyin_Setup_v0.6.1-nightly.45322391066.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 785895721,
+      "name": "MetasequoiaIME-Tibetan_Setup_v0.6.1-nightly.45322391066.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 785895723,
+      "name": "MetasequoiaIME-Full_Setup_v0.6.1-nightly.45322391066.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 785895724,
+      "name": "MetasequoiaIME-Japanese_Setup_v0.6.1-nightly.45322391066.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 785895727,
+      "name": "MetasequoiaIME-Vietnamese_Setup_v0.6.1-nightly.45322391066.1.exe",
+      "download_count": 0
+    },
+    {
+      "repository": "metasequoiaime/msime",
+      "id": 785896045,
+      "name": "MetasequoiaIME-Wubi_Setup_v0.6.1-nightly.45322391066.1.exe",
+      "download_count": 0
+    },
+    {
       "repository": "metasequoiaime/msime-linux",
       "id": 545412939,
       "name": "metasequoia-ime-linux-0.2.0-Linux.rpm",
@@ -13439,19 +13487,19 @@
     }
   ],
   "mirrorDownloadStats": {
-    "total": 33065,
+    "total": 33066,
     "platforms": {
       "android": 5524,
       "harmony": 105,
       "linux": 2251,
       "macos": 1277,
-      "windows": 20851,
+      "windows": 20852,
       "windowsRust": 3057
     },
-    "generatedAt": "2026-11-24T05:53:39.371642Z"
+    "generatedAt": "2026-11-24T05:54:52.343555Z"
   },
   "pgyerDownloadStats": {
-    "generatedAt": "2026-11-24T05:53:38.781Z",
+    "generatedAt": "2026-11-24T05:54:51.877Z",
     "total": 7607,
     "builds": [
       {
@@ -13533,7 +13581,7 @@
     ]
   },
   "npmDownloadStats": {
-    "generatedAt": "2026-11-24T05:53:39.642Z",
+    "generatedAt": "2026-11-24T05:54:52.577Z",
     "downloads": 4629,
     "periodStart": "2025-11-24",
     "periodEnd": "2026-11-24"
