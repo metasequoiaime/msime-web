@@ -15,13 +15,15 @@ import { Avatar } from "./account/avatar";
 import { THEME_CHOICES, THEME_LABELS, useTheme, type RevealOrigin, type ThemeChoice } from "./theme";
 import { SEASON_CHOICES, SEASON_NAMES, SEASON_OPTIONS, seasonForMonth } from "./season";
 import { HELPCODE_LABELS, HELPCODE_SCHEMES, SHUANGPIN_LAYOUTS, WEB_IME_LABELS, WEB_IME_SWITCH_KEY, isShuangpin, takesHelpcode, useWebIme, type WebImeStatus } from "./web-ime/use-web-ime";
-import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, KeyboardIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
+import { BackToTop, CloseIcon, DownloadIcon, GitHubIcon, HeartIcon, KeyboardIcon, LinkButton, LogoMark, MenuIcon, MonitorIcon, MoonIcon, PaletteIcon, QQIcon, SeasonBackdrop, SunIcon, TelegramIcon, ToastProvider, UserIcon, chipClass, copyText, cx, useToast } from "./ui";
 
 type NavItem = {
-  to: "/" | "/download/" | "/engine/" | "/skins/" | "/gallery/" | "/docs/$guide/" | "/feedback/" | "/about/" | "/code/";
+  to: "/" | "/download/" | "/engine/" | "/skins/" | "/gallery/" | "/docs/$guide/" | "/feedback/" | "/about/" | "/code/" | "/sponsor/";
   label: string;
   /** Shows the GitHub mark before the label: the open-source page is also where the site's GitHub link now lives. */
   github?: boolean;
+  /** Shows the heart before the label, matching the 赞助 button in the header bar. */
+  heart?: boolean;
 };
 
 /** A header entry that leaves the site, such as 论坛 on forum.msime.app: a plain link opened in a new tab, never the current page. */
@@ -44,6 +46,9 @@ const NAV_ITEMS: readonly (NavItem | ExternalNavItem)[] = [
 
 /** On wide screens 开源代码 is the round GitHub button among the header controls; the menu panel has no room for that button, so it lists the page as its last item instead. */
 const CODE_ITEM: NavItem = { to: "/code/", label: "开源代码", github: true };
+
+/** 赞助 follows the same pattern: a pill with a heart and its label beside the GitHub button on wide screens, an item just before 开源代码 in the menu panel. */
+const SPONSOR_ITEM: NavItem = { to: "/sponsor/", label: "赞助", heart: true };
 
 const ORG_URL = "https://github.com/metasequoiaime";
 // Same query Tailwind emits for the `nav:` variant (--breakpoint-nav in app.css), so JS and CSS switch layouts at the same width whatever the root font size.
@@ -551,22 +556,22 @@ function DesktopNav() {
   );
 }
 
-/** 开源代码 as a round GitHub button beside the palette, on wide screens only: below 1180px the bar is already full and the menu panel lists the page. */
-function CodeButton() {
+/** 开源代码 (a round GitHub button) and 赞助 (a pill with a heart and its label) beside the palette, on wide screens only: below 1180px the bar is already full and the menu panel lists the pages. */
+function HeaderIconButton({ item, labelled = false, children }: { item: NavItem; labelled?: boolean; children: ReactNode }) {
   const { t } = useLocale();
-  const current = useLocation({ select: (location) => baseLocalePath(location.pathname) === CODE_ITEM.to });
-  const label = t(CODE_ITEM.label);
+  const current = useLocation({ select: (location) => baseLocalePath(location.pathname) === item.to });
+  const label = t(item.label);
   return (
     <Link
-      to={CODE_ITEM.to}
-      className={cx(roundControl, "hidden w-9 nav:inline-flex", current && "bg-panel-2")}
+      to={item.to}
+      className={cx(roundControl, "hidden nav:inline-flex", labelled ? "gap-1.5 px-3.5 text-sm font-semibold" : "w-9", current && "bg-panel-2")}
       activeOptions={{ exact: true, includeSearch: false }}
       activeProps={{}}
       aria-current={current ? "page" : undefined}
       title={label}
       aria-label={label}
     >
-      <GitHubIcon />
+      {children}
     </Link>
   );
 }
@@ -579,7 +584,7 @@ function MobileNav({ isOpen, onNavigate }: { isOpen: boolean; onNavigate: () => 
   return (
     <nav id="nav-menu" aria-label={t("站点导航")} hidden={!isOpen} className="px-[clamp(16px,3.6vw,40px)] pt-2 pb-[18px] shadow-divider-t nav:hidden">
       <ul className="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
-        {[...NAV_ITEMS, CODE_ITEM].map((item) => {
+        {[...NAV_ITEMS, SPONSOR_ITEM, CODE_ITEM].map((item) => {
           if (isExternal(item))
             return (
               <li key={item.href}>
@@ -604,6 +609,7 @@ function MobileNav({ isOpen, onNavigate }: { isOpen: boolean; onNavigate: () => 
                 )}
               >
                 {item.github && <GitHubIcon size={16} className="mr-2 flex-none" />}
+                {item.heart && <HeartIcon filled size={16} className="mr-2 flex-none text-accent-ink" />}
                 {t(item.label)}
               </Link>
             </li>
@@ -884,7 +890,13 @@ function Shell({ children }: { children?: ReactNode }) {
           <DesktopNav />
 
           <div className="ml-auto flex flex-none items-center gap-1.5">
-            <CodeButton />
+            <HeaderIconButton item={SPONSOR_ITEM} labelled>
+              <HeartIcon filled size={16} className="text-accent-ink" />
+              {t(SPONSOR_ITEM.label)}
+            </HeaderIconButton>
+            <HeaderIconButton item={CODE_ITEM}>
+              <GitHubIcon />
+            </HeaderIconButton>
             <WebImeMenu isOpen={webImeIsOpen} setOpen={setWebImeIsOpen} />
             <PaletteMenu isOpen={paletteIsOpen} setOpen={setPaletteIsOpen} />
             <AccountMenu isOpen={accountIsOpen} setOpen={setAccountIsOpen} />
