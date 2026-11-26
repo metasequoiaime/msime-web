@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-26T04:22:56.496Z",
-  "totalStars": 6100,
+  "generatedAt": "2026-11-26T14:27:46.342Z",
+  "totalStars": 6112,
   "repoCount": 9,
   "starHistory": [
     {
@@ -141,19 +141,19 @@
     },
     {
       "month": "2026-08",
-      "stars": 821
+      "stars": 820
     },
     {
       "month": "2026-09",
-      "stars": 1705
+      "stars": 1704
     },
     {
       "month": "2026-10",
-      "stars": 5285
+      "stars": 5281
     },
     {
       "month": "2026-11",
-      "stars": 6100
+      "stars": 6112
     }
   ],
   "starSeries": [
@@ -298,19 +298,19 @@
         },
         {
           "date": "2026-08-31",
-          "stars": 776
+          "stars": 775
         },
         {
           "date": "2026-09-30",
-          "stars": 1536
+          "stars": 1535
         },
         {
           "date": "2026-10-31",
-          "stars": 3237
+          "stars": 3235
         },
         {
           "date": "2026-11-26",
-          "stars": 3611
+          "stars": 3618
         }
       ]
     },
@@ -327,11 +327,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 1068
+          "stars": 1066
         },
         {
           "date": "2026-11-26",
-          "stars": 1477
+          "stars": 1481
         }
       ]
     },
@@ -388,7 +388,7 @@
         },
         {
           "date": "2026-11-26",
-          "stars": 917
+          "stars": 918
         }
       ]
     },
@@ -783,13 +783,13 @@
       ]
     }
   ],
-  "starDelta30d": 956,
+  "starDelta30d": 971,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26690,
+      "contributions": 26704,
       "repos": 8
     },
     {
@@ -810,14 +810,14 @@
       "login": "Tokisaki-Galaxy",
       "avatarUrl": "https://avatars.githubusercontent.com/u/61621971?v=4",
       "url": "https://github.com/Tokisaki-Galaxy",
-      "contributions": 147,
+      "contributions": 149,
       "repos": 3
     },
     {
       "login": "nuthatadf",
       "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
       "url": "https://github.com/nuthatadf",
-      "contributions": 49,
+      "contributions": 50,
       "repos": 2
     },
     {
