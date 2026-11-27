@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-27T05:21:19.579Z",
-  "totalStars": 6127,
+  "generatedAt": "2026-11-27T15:35:24.555Z",
+  "totalStars": 6135,
   "repoCount": 9,
   "starHistory": [
     {
@@ -149,11 +149,11 @@
     },
     {
       "month": "2026-10",
-      "stars": 5279
+      "stars": 5278
     },
     {
       "month": "2026-11",
-      "stars": 6127
+      "stars": 6135
     }
   ],
   "starSeries": [
@@ -306,11 +306,11 @@
         },
         {
           "date": "2026-10-31",
-          "stars": 3235
+          "stars": 3234
         },
         {
           "date": "2026-11-27",
-          "stars": 3623
+          "stars": 3628
         }
       ]
     },
@@ -331,7 +331,7 @@
         },
         {
           "date": "2026-11-27",
-          "stars": 1489
+          "stars": 1492
         }
       ]
     },
@@ -783,20 +783,20 @@
       ]
     }
   ],
-  "starDelta30d": 943,
+  "starDelta30d": 952,
   "contributors": [
     {
       "login": "houko",
       "avatarUrl": "https://avatars.githubusercontent.com/u/12625278?v=4",
       "url": "https://github.com/houko",
-      "contributions": 26728,
+      "contributions": 26964,
       "repos": 8
     },
     {
       "login": "fanlusky",
       "avatarUrl": "https://avatars.githubusercontent.com/u/69321395?v=4",
       "url": "https://github.com/fanlusky",
-      "contributions": 2039,
+      "contributions": 2040,
       "repos": 7
     },
     {
@@ -817,7 +817,14 @@
       "login": "nuthatadf",
       "avatarUrl": "https://avatars.githubusercontent.com/u/272649940?v=4",
       "url": "https://github.com/nuthatadf",
-      "contributions": 51,
+      "contributions": 53,
+      "repos": 2
+    },
+    {
+      "login": "apple-ouyang",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/45086632?v=4",
+      "url": "https://github.com/apple-ouyang",
+      "contributions": 48,
       "repos": 2
     },
     {
@@ -833,13 +840,6 @@
       "url": "https://github.com/metasequoiaime-dev",
       "contributions": 44,
       "repos": 4
-    },
-    {
-      "login": "apple-ouyang",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/45086632?v=4",
-      "url": "https://github.com/apple-ouyang",
-      "contributions": 41,
-      "repos": 2
     },
     {
       "login": "Neptrue-Lin",
